@@ -1,0 +1,99 @@
+# ============================================================================
+#  4Story (Araz-4ever) — .gitignore
+#  C++ / MSVC (MFC client + ATL servers, DirectX 9). Tracks source + vendored
+#  3rd-party deps; ignores build output, secrets, logs, and large DB binaries.
+#  NOTE: .gitignore has no inline comments — every comment is on its own line.
+# ============================================================================
+
+# ----- Visual Studio / MSBuild build-output directories (any depth) -----
+[Dd]ebug/
+[Rr]elease/
+[Tt]est [Rr]elease/
+ipch/
+*.tlog/
+
+# ----- Visual Studio editor / cache files -----
+.vs/
+*.suo
+*.user
+*.sln.docstates
+*.aps
+*.ncb
+*.opensdf
+*.sdf
+*.cachefile
+*.VC.db
+*.VC.opendb
+enc_temp_folder/
+
+# ----- Compiler / linker intermediates & artifacts (never vendored) -----
+*.obj
+*.o
+*.pch
+*.ipch
+*.pdb
+*.idb
+*.ilk
+*.exp
+*.iobj
+*.ipdb
+*.res
+*.tlog
+*.lastbuildstate
+*.unsuccessfulbuild
+*.bsc
+*.sbr
+*.cod
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+
+# ----- MIDL output regenerated from the ATL servers' *.idl on build -----
+**/*_i.c
+**/*_p.c
+**/dlldata.c
+
+# ----- Linker map next to the client output (per-project maps land under Release/) -----
+/Game/TClient.map
+
+# ----- Built static libs: ignore our own outputs, KEEP vendored/prebuilt libs -----
+*.lib
+!/Lib/3rdParty/**/*.lib
+!/Servers/Lib/*.lib
+
+# ----- Built executables (original assets like Game\Uninstall.exe stay tracked) -----
+/Servers/Services/*.exe
+/Servers/Servicesd/*.exe
+/Game/TClient.exe
+
+# ----- Runtime logs & crash dumps -----
+*.dmp
+*.log
+/Servers/Services/Logs/
+/Servers/Servicesd/Logs/
+
+# ----- SECRETS: server config holds the real SQL 'sa' password. NEVER commit. -----
+# (Commit a sanitized *.ini.example instead if you want templates in-repo.)
+/Servers/Services/Configurations/*.ini
+/Servers/Servicesd/Configurations/*.ini
+*.env
+.env
+
+# ----- SQL Server data files & DB baselines (large binaries; obtained externally) -----
+*.mdf
+*.ldf
+/TGLOBAL_RAGEZONE.bak
+/TGAME_RAGEZONE.bak
+
+# ----- OS / misc junk -----
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+*.orig
+*_BACKUP_*
+*_BASE_*
+*_LOCAL_*
+*_REMOTE_*
