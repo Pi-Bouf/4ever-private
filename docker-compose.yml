@@ -55,5 +55,25 @@ services:
     ports:
       - "4816:4816"
 
+  # World server (Phase 1 port). Accept-only inter-server hub on port 3815; its peers (TMap/TControl/
+  # TRelay) are the C++ cluster, not part of this stack — so it boots and listens but stays idle until a
+  # map server connects. See Servers/TWorldSvr.Net/README.md.
+  worldsvr:
+    build:
+      context: ./Servers/TWorldSvr.Net
+      dockerfile: Dockerfile
+    container_name: araz-worldsvr
+    depends_on:
+      mssql-importer:
+        condition: service_completed_successfully
+    environment:
+      World__Port: "3816"
+      World__GroupID: "1"
+      World__ServerID: "1"
+      World__Db__GameConnectionString: "Server=mssql,1433;Database=TGame_gsp;User ID=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;Encrypt=False"
+      World__Db__GlobalConnectionString: "Server=mssql,1433;Database=TGlobal_gsp;User ID=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;Encrypt=False"
+    ports:
+      - "3816:3816"
+
 volumes:
   mssql-data:

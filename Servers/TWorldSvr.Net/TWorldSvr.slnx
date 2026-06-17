@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="TWorld.Protocol/TWorld.Protocol.csproj" />
+  <Project Path="TWorld.Protocol.Tests/TWorld.Protocol.Tests.csproj" />
+  <Project Path="TWorld.Data/TWorld.Data.csproj" />
+  <Project Path="TWorld.Data.Tests/TWorld.Data.Tests.csproj" />
+  <Project Path="TWorld.Server/TWorld.Server.csproj" />
+  <Project Path="TWorld.Server.Tests/TWorld.Server.Tests.csproj" />
+</Solution>
