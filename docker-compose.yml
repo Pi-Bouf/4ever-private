@@ -1,0 +1,59 @@
+name: araz
+
+# Araz-4ever local stack:
+#   mssql           - SQL Server 2022
+#   mssql-importer  - one-shot: restores the .bak baselines (once), then runs Database/migrations in order
+#   loginsvr        - the .NET TLogin server (Servers/TLoginSvr.Net)
+#
+#   docker compose up --build
+#
+# SA_PASSWORD is read from the .env file next to this compose file.
+# The .bak baselines and the Database/ folder live here at the repo root.
+
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: araz-mssql
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${SA_PASSWORD}
+      MSSQL_PID: Developer
+    ports:
+      - "11433:1433"          # host 11433 -> container 1433 (avoids clashing with a local SQL on 1433)
+    volumes:
+      - mssql-data:/var/opt/mssql
+      - ./TGLOBAL_RAGEZONE.bak:/backups/TGLOBAL_RAGEZONE.bak:ro
+      - ./TGAME_RAGEZONE.bak:/backups/TGAME_RAGEZONE.bak:ro
+
+  # Restores the databases on first boot (idempotent), then applies every Database/migrations/*.sql that
+  # has not been applied yet. Reuses the server image, which bundles sqlcmd at /opt/mssql-tools18/bin.
+  mssql-importer:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: araz-mssql-importer
+    depends_on:
+      - mssql
+    environment:
+      SA_PASSWORD: ${SA_PASSWORD}
+      SQL_HOST: mssql
+    volumes:
+      - ./Database:/Database:ro
+    entrypoint: ["/bin/bash", "/Database/run-migrations.sh"]
+    restart: "no"
+
+  loginsvr:
+    build:
+      context: ./Servers/TLoginSvr.Net
+      dockerfile: Dockerfile
+    container_name: araz-loginsvr
+    depends_on:
+      mssql-importer:
+        condition: service_completed_successfully
+    environment:
+      Login__Port: "4816"
+      Login__Db__GlobalConnectionString: "Server=mssql,1433;Database=TGlobal_gsp;User ID=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;Encrypt=False"
+      Login__Db__GameConnectionStringsByDsn__TGAME_GSP: "Server=mssql,1433;Database=TGame_gsp;User ID=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;Encrypt=False"
+    ports:
+      - "4816:4816"
+
+volumes:
+  mssql-data:
