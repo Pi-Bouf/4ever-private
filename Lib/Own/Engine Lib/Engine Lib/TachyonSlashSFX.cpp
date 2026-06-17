@@ -248,7 +248,7 @@ void CTachyonSlashSFX::BeginSFXScene( CD3DDevice *pDevice)
 	pDevice->m_pDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE);
 	pDevice->m_pDevice->SetRenderState( D3DRS_ZENABLE, TRUE);
 
-	pDevice->m_pDevice->SetSoftwareVertexProcessing( true);
+	CTachyonMesh::ApplySWVP(pDevice->m_pDevice, TRUE);
 	pDevice->m_pDevice->SetFVF(T3DFVF_WLVERTEX);
 
 	pDevice->m_pDevice->SetRenderState( D3DRS_INDEXEDVERTEXBLENDENABLE, TRUE);
@@ -269,7 +269,7 @@ void CTachyonSlashSFX::EndSFXScene( CD3DDevice *pDevice)
 	pDevice->m_pDevice->SetRenderState( D3DRS_VERTEXBLEND, D3DVBF_DISABLE);
 	pDevice->m_pDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW);
 
-	pDevice->m_pDevice->SetSoftwareVertexProcessing(FALSE);
+	CTachyonMesh::ApplySWVP(pDevice->m_pDevice, FALSE);
 }
 
 void CTachyonSlashSFX::Render( CD3DDevice *pDevice)

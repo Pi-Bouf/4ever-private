@@ -1,6 +1,84 @@
 #include "stdafx.h"
 #include "TachyonWnd.h"
 
+namespace
+{
+	// Helpers for the GPU (hardware vertex-shader) skinning path. The skinned
+	// vertex shader expects its constants in this fixed layout:
+	//   c0   light counts (dir, point)      c139/140 material ambient/diffuse
+	//   c2   scene ambient                  c157-168 world / view / projection
+	//   c3/5 texcoord transforms (4x2)      c170     options (x = skinning on)
+	//   c175.. directional[3] + point[3] lights
+	inline D3DMATRIX TransposeM(const D3DXMATRIX& m)
+	{
+		D3DXMATRIX r;
+		D3DXMatrixTranspose(&r, &m);
+		return r;
+	}
+
+	inline D3DXVECTOR4 ColorV(const D3DCOLORVALUE& v)
+	{
+		return D3DXVECTOR4(v.r, v.g, v.b, v.a);
+	}
+
+	inline D3DXVECTOR4 ColorARGB(D3DCOLOR v)
+	{
+		D3DXVECTOR4 r;
+		r.w = (((v & 0xFF000000) >> 24) & 0xFF) / 255.0f;
+		r.x = (((v & 0x00FF0000) >> 16) & 0xFF) / 255.0f;
+		r.y = (((v & 0x0000FF00) >>  8) & 0xFF) / 255.0f;
+		r.z =  ( v & 0x000000FF)               / 255.0f;
+		return r;
+	}
+
+	// Gather up to 3 directional + 3 point enabled lights from the fixed-function
+	// light state and upload them where the skinned vertex shader reads them.
+	void UploadSkinLights(LPDIRECT3DDEVICE9 pDev)
+	{
+		struct Lights
+		{
+			D3DXVECTOR4 dir_dir[3], dir_amb[3], dir_dif[3];
+			D3DXVECTOR4 pt_pos[3], pt_amb[3], pt_dif[3], pt_att[3], pt_rng[3];
+		} L;
+		ZeroMemory(&L, sizeof(L));
+
+		int dl = 0, pl = 0;
+		for( int i = 0; i < 8 && (dl < 3 || pl < 3); i++ )
+		{
+			BOOL bEnable = FALSE;
+			if( FAILED(pDev->GetLightEnable(i, &bEnable)) || !bEnable )
+				continue;
+
+			D3DLIGHT9 lt;
+			ZeroMemory(&lt, sizeof(lt));
+			if( FAILED(pDev->GetLight(i, &lt)) )
+				continue;
+
+			if( lt.Type == D3DLIGHT_DIRECTIONAL && dl < 3 )
+			{
+				L.dir_dir[dl] = D3DXVECTOR4(lt.Direction.x, lt.Direction.y, lt.Direction.z, 0.0f);
+				L.dir_amb[dl] = ColorV(lt.Ambient);
+				L.dir_dif[dl] = ColorV(lt.Diffuse);
+				dl++;
+			}
+			else if( lt.Type == D3DLIGHT_POINT && pl < 3 )
+			{
+				L.pt_pos[pl] = D3DXVECTOR4(lt.Position.x, lt.Position.y, lt.Position.z, 1.0f);
+				L.pt_amb[pl] = ColorV(lt.Ambient);
+				L.pt_dif[pl] = ColorV(lt.Diffuse);
+				L.pt_att[pl] = D3DXVECTOR4(lt.Attenuation0, lt.Attenuation1, lt.Attenuation2, 0.0f);
+				L.pt_rng[pl] = D3DXVECTOR4(lt.Range, 0.0f, 0.0f, 0.0f);
+				pl++;
+			}
+		}
+
+		pDev->SetVertexShaderConstantF(175, (const float*) &L, sizeof(L) / 16);
+
+		FLOAT counts[4] = { (FLOAT) dl, (FLOAT) pl, 1.0f, 0.0f };
+		pDev->SetVertexShaderConstantF(0, counts, 1);
+	}
+}
+
 CTachyonMedia *CTachyonObject::m_pMedia = NULL;
 
 FLOAT CTachyonObject::m_fMipFactor = DEF_MIPFACTOR;
@@ -1398,6 +1476,52 @@ void CTachyonObject::RenderSILHOUETTE( CD3DDevice *pDevice, CD3DCamera *pCamera,
 
 	ApplyMatrix(pDevice);
 
+	// ----- GPU skinning per-object setup for the silhouette (bones filled once;
+	//        framePacket/view is uploaded per outline pass below) -----
+	BOOL bObjGPUSkin = FALSE;
+	LPDIRECT3DTEXTURE9 pBonesTex = NULL;
+	if( pDevice->m_bGPUSkinReady && pANI && pANI->m_pANI )
+	{
+		LPANIDATA pDATA = pANI->m_pANI->GetAniData();
+
+		pBonesTex = pDevice->m_pBonesTexture[pDevice->m_dwBonesIndex];
+		pDevice->m_dwBonesIndex = (pDevice->m_dwBonesIndex + 1) % CD3DDevice::BONES_RING;
+
+		if( pDATA && pDATA->m_pAni && pBonesTex )
+		{
+			int nNode = pDATA->m_pAni->GetNodeCount();
+			LPD3DXMATRIX pInit = GetMeshMatrix();
+
+			D3DMATRIX vBONES[256];
+			ZeroMemory(vBONES, sizeof(vBONES));
+			D3DXMatrixTranspose((LPD3DXMATRIX) &vBONES[0], &m_pBone[0]);
+			for( int n = 0; n < nNode && (n + 1) < 256; n++ )
+			{
+				D3DXMATRIX mB = pInit ? (pInit[n] * m_pBone[n + 1]) : m_pBone[n + 1];
+				D3DXMatrixTranspose((LPD3DXMATRIX) &vBONES[n + 1], &mB);
+			}
+
+			D3DLOCKED_RECT lr;
+			ZeroMemory(&lr, sizeof(lr));
+			if( SUCCEEDED(pBonesTex->LockRect(0, &lr, NULL, 0)) )
+			{
+				if( lr.pBits )
+					memcpy(lr.pBits, vBONES, sizeof(vBONES));
+
+				pBonesTex->UnlockRect(0);
+			}
+
+			pDevice->m_pDevice->SetSamplerState(D3DVERTEXTEXTURESAMPLER0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
+			pDevice->m_pDevice->SetSamplerState(D3DVERTEXTEXTURESAMPLER0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
+			pDevice->m_pDevice->SetSamplerState(D3DVERTEXTEXTURESAMPLER0, D3DSAMP_MIPFILTER, D3DTEXF_POINT);
+			pDevice->m_pDevice->SetSamplerState(D3DVERTEXTEXTURESAMPLER0, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP);
+			pDevice->m_pDevice->SetSamplerState(D3DVERTEXTEXTURESAMPLER0, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP);
+			pDevice->m_pDevice->SetSamplerState(D3DVERTEXTEXTURESAMPLER0, D3DSAMP_ADDRESSW, D3DTADDRESS_CLAMP);
+
+			bObjGPUSkin = TRUE;
+		}
+	}
+
 	D3DXVECTOR3 vOffset[4] =
 	{
 		D3DXVECTOR3(0.010f, 0.0f, 0.0f),
@@ -1415,6 +1539,21 @@ void CTachyonObject::RenderSILHOUETTE( CD3DDevice *pDevice, CD3DCamera *pCamera,
 
 		pDevice->m_pDevice->SetTransform( D3DTS_VIEW, &mView);
 
+		if(bObjGPUSkin)
+		{
+			// per outline-pass: world=identity (baked into bones), view=this pass's offset view, projection
+			D3DMATRIX framePacket[3];
+			D3DXMATRIX idn;
+			D3DXMatrixIdentity(&idn);
+			framePacket[0] = TransposeM(idn);
+			framePacket[1] = TransposeM(mView);
+			framePacket[2] = TransposeM(pCamera->m_matProjection);
+			pDevice->m_pDevice->SetVertexShaderConstantF(157, (const float*) &framePacket[0], 12);
+
+			FLOAT vOptions[4] = { 1.0f, 0.0f, 0.0f, 0.0f };
+			pDevice->m_pDevice->SetVertexShaderConstantF(170, vOptions, 1);
+		}
+
 		for( it = m_OBJ.m_mapDRAW.begin(); it != m_OBJ.m_mapDRAW.end(); it++)
 		{
 			VECTOROBJPART *pDRAW = (*it).second;
@@ -1428,7 +1567,19 @@ void CTachyonObject::RenderSILHOUETTE( CD3DDevice *pDevice, CD3DCamera *pCamera,
 						-1.0f,
 						0.0f, 0.0f};
 
-				if(m_bUseSHADER)
+				BOOL bPartGPUSkin = bObjGPUSkin && pPART->m_pMESH->m_dwNodeCount > 0;
+
+				if(bPartGPUSkin)
+				{
+					// hardware vertex-shader skinning; flat outline color comes from the
+					// fixed-function TFACTOR texture stage set up above (PS = none).
+					pDevice->m_pDevice->SetRenderState( D3DRS_VERTEXBLEND, D3DVBF_DISABLE);
+					pDevice->m_pDevice->SetVertexShader(pDevice->m_pSkinnedVS);
+					pDevice->m_pDevice->SetVertexDeclaration(pDevice->m_pSkinnedDECL);
+					pDevice->m_pDevice->SetPixelShader(NULL);
+					pDevice->m_pDevice->SetTexture(D3DVERTEXTEXTURESAMPLER0, pBonesTex);
+				}
+				else if(m_bUseSHADER)
 				{
 					FLOAT vCOLOR[4] = {
 						((FLOAT) ((dwCOLOR & 0x00FF0000) >> 16)) / 255.0f,
@@ -1465,11 +1616,21 @@ void CTachyonObject::RenderSILHOUETTE( CD3DDevice *pDevice, CD3DCamera *pCamera,
 					pDevice->m_pDevice->SetFVF(pPART->m_pMESH->m_dwNodeCount ? T3DFVF_WMESHVERTEX : T3DFVF_MESHVERTEX);
 				}
 
+				CTachyonMesh::m_bGPUSkin = bPartGPUSkin;
+
 				if( pPART->m_pMESH->m_bVBType != VBTYPE_GLOBAL || pPART->m_pMESH->m_bUseVB )
 					pPART->m_pMESH->Render( pDevice->m_pDevice, pPART->m_dwIndex, 0 );
 
+				CTachyonMesh::m_bGPUSkin = FALSE;
+
 				pDevice->m_pDevice->SetVertexShader(NULL);
 				pDevice->m_pDevice->SetPixelShader(NULL);
+
+				if(bPartGPUSkin)
+				{
+					pDevice->m_pDevice->SetVertexDeclaration(NULL);
+					pDevice->m_pDevice->SetTexture(D3DVERTEXTEXTURESAMPLER0, NULL);
+				}
 			}
 		}
 
@@ -1599,6 +1760,88 @@ void CTachyonObject::Render(CD3DDevice *pDevice, CD3DCamera *pCamera, BYTE bNoBl
 	pDevice->m_pDevice->SetRenderState( D3DRS_NORMALIZENORMALS, TRUE);
 
 	ApplyMatrix(pDevice);
+
+	// ----- GPU skinning per-object setup -----
+	// Build the bone palette (same matrices as the legacy software path) into the
+	// bones texture and upload the skinned shader's per-object constants, so skinned
+	// meshes can be transformed on the GPU instead of CPU software vertex processing.
+	BOOL bObjGPUSkin = FALSE;
+	LPDIRECT3DTEXTURE9 pBonesTex = NULL;
+	if( pDevice->m_bGPUSkinReady && pANI && pANI->m_pANI )
+	{
+		LPANIDATA pDATA = pANI->m_pANI->GetAniData();
+
+		// Cycle through the bones-texture ring so this object doesn't lock a texture
+		// the GPU is still reading from another object this frame (which stalls).
+		pBonesTex = pDevice->m_pBonesTexture[pDevice->m_dwBonesIndex];
+		pDevice->m_dwBonesIndex = (pDevice->m_dwBonesIndex + 1) % CD3DDevice::BONES_RING;
+
+		if( pDATA && pDATA->m_pAni && pBonesTex )
+		{
+			int nNode = pDATA->m_pAni->GetNodeCount();
+			LPD3DXMATRIX pInit = GetMeshMatrix();
+
+			D3DMATRIX vBONES[256];
+			ZeroMemory(vBONES, sizeof(vBONES));
+
+			D3DXMatrixTranspose((LPD3DXMATRIX) &vBONES[0], &m_pBone[0]);
+			for( int n = 0; n < nNode && (n + 1) < 256; n++ )
+			{
+				D3DXMATRIX mB = pInit ? (pInit[n] * m_pBone[n + 1]) : m_pBone[n + 1];
+				D3DXMatrixTranspose((LPD3DXMATRIX) &vBONES[n + 1], &mB);
+			}
+
+			D3DLOCKED_RECT lr;
+			ZeroMemory(&lr, sizeof(lr));
+			if( SUCCEEDED(pBonesTex->LockRect(0, &lr, NULL, 0)) )
+			{
+				if( lr.pBits )
+					memcpy(lr.pBits, vBONES, sizeof(vBONES));
+
+				pBonesTex->UnlockRect(0);
+			}
+
+			D3DMATRIX framePacket[3];
+			D3DXMATRIX idn;
+			D3DXMatrixIdentity(&idn);
+			framePacket[0] = TransposeM(idn);						// g_world (object world is baked into the bones)
+			framePacket[1] = TransposeM(pCamera->m_matView);		// g_view
+			framePacket[2] = TransposeM(pCamera->m_matProjection);	// g_projection
+			pDevice->m_pDevice->SetVertexShaderConstantF(157, (const float*) &framePacket[0], 12);
+
+			FLOAT vOptions[4] = { 1.0f, 0.0f, 0.0f, 0.0f };			// x = skinning enabled
+			pDevice->m_pDevice->SetVertexShaderConstantF(170, vOptions, 1);
+
+			// identity texcoord transforms (milestone 1: raw mesh UVs)
+			FLOAT vTexId[8] = { 1,0,0,0, 0,1,0,0 };
+			pDevice->m_pDevice->SetVertexShaderConstantF(3, vTexId, 2);
+			pDevice->m_pDevice->SetVertexShaderConstantF(5, vTexId, 2);
+
+			DWORD dwAmbient = 0xFFFFFFFF;
+			pDevice->m_pDevice->GetRenderState(D3DRS_AMBIENT, &dwAmbient);
+			D3DXVECTOR4 vAmb = ColorARGB(dwAmbient);
+			pDevice->m_pDevice->SetVertexShaderConstantF(2, &vAmb.x, 1);
+
+			D3DMATERIAL9 mtl;
+			ZeroMemory(&mtl, sizeof(mtl));
+			pDevice->m_pDevice->GetMaterial(&mtl);
+			D3DXVECTOR4 vMtl[2] = { ColorV(mtl.Ambient), ColorV(mtl.Diffuse) };
+			pDevice->m_pDevice->SetVertexShaderConstantF(139, &vMtl[0].x, 2);
+
+			UploadSkinLights(pDevice->m_pDevice);
+
+			pDevice->m_pDevice->SetSamplerState(D3DVERTEXTEXTURESAMPLER0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
+			pDevice->m_pDevice->SetSamplerState(D3DVERTEXTEXTURESAMPLER0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
+			pDevice->m_pDevice->SetSamplerState(D3DVERTEXTEXTURESAMPLER0, D3DSAMP_MIPFILTER, D3DTEXF_POINT);
+			pDevice->m_pDevice->SetSamplerState(D3DVERTEXTEXTURESAMPLER0, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP);
+			pDevice->m_pDevice->SetSamplerState(D3DVERTEXTEXTURESAMPLER0, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP);
+			pDevice->m_pDevice->SetSamplerState(D3DVERTEXTEXTURESAMPLER0, D3DSAMP_ADDRESSW, D3DTADDRESS_CLAMP);
+			// (the bones texture itself is bound/unbound per skinned part below, so it
+			//  never stays bound into a software-VP draw, which would crash d3d9.)
+
+			bObjGPUSkin = TRUE;
+		}
+	}
 
 	for( it = m_OBJ.m_mapDRAW.begin(); it != m_OBJ.m_mapDRAW.end(); it++)
 	{
@@ -1738,7 +1981,20 @@ void CTachyonObject::Render(CD3DDevice *pDevice, CD3DCamera *pCamera, BYTE bNoBl
 			if( itCOLOR != m_mapCOLOR.end() )
 				dwCOLOR = (*itCOLOR).second;
 
-			if(m_bUseSHADER)
+			BOOL bPartGPUSkin = bObjGPUSkin && pPART->m_pMESH->m_dwNodeCount > 0;
+
+			if(bPartGPUSkin)
+			{
+				// Hardware vertex-shader skinning (bones from m_pBonesTexture);
+				// pixel shading uses the fixed-function stages configured above.
+				pDevice->m_pDevice->SetRenderState( D3DRS_VERTEXBLEND, D3DVBF_DISABLE);
+				pDevice->m_pDevice->SetRenderState( D3DRS_TEXTUREFACTOR, dwCOLOR);
+				pDevice->m_pDevice->SetVertexShader(pDevice->m_pSkinnedVS);
+				pDevice->m_pDevice->SetVertexDeclaration(pDevice->m_pSkinnedDECL);
+				pDevice->m_pDevice->SetPixelShader(NULL);
+				pDevice->m_pDevice->SetTexture(D3DVERTEXTEXTURESAMPLER0, pBonesTex);
+			}
+			else if(m_bUseSHADER)
 			{
 				FLOAT vCOLOR[4] = {
 					((FLOAT) ((dwCOLOR & 0x00FF0000) >> 16)) / 255.0f,
@@ -1775,14 +2031,24 @@ void CTachyonObject::Render(CD3DDevice *pDevice, CD3DCamera *pCamera, BYTE bNoBl
 				pDevice->m_pDevice->SetFVF(pPART->m_pMESH->m_dwNodeCount ? T3DFVF_WMESHVERTEX : T3DFVF_MESHVERTEX);
 			}
 
+			CTachyonMesh::m_bGPUSkin = bPartGPUSkin;
+
 			if( pPART->m_pMESH->m_bVBType != VBTYPE_GLOBAL || pPART->m_pMESH->m_bUseVB )
 				pPART->m_pMESH->Render( pDevice->m_pDevice, pPART->m_dwIndex, m_bLOD ? pPART->m_pMESH->GetLevel(fDIST) : 0);
+
+			CTachyonMesh::m_bGPUSkin = FALSE;
 
 			if(bPSC)
 				pDevice->m_pDevice->SetTextureStageState( 0, D3DTSS_CONSTANT, 0xFFFFFFFF);
 
 			pDevice->m_pDevice->SetVertexShader(NULL);
 			pDevice->m_pDevice->SetPixelShader(NULL);
+
+			if(bPartGPUSkin)
+			{
+				pDevice->m_pDevice->SetVertexDeclaration(NULL);
+				pDevice->m_pDevice->SetTexture(D3DVERTEXTEXTURESAMPLER0, NULL);
+			}
 		}
 	}
 

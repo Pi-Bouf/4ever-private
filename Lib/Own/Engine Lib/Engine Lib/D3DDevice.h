@@ -162,6 +162,17 @@ public:
 	LPDIRECT3DPIXELSHADER9 m_pPixelShader[PS_COUNT];
 	LPDIRECT3DVERTEXDECLARATION9 m_pDECL[VS_COUNT];
 
+	// GPU skinning (ported from 4retro): bones uploaded to a float texture and read
+	// in a vs_3_0 shader via vertex-texture-fetch, so skinning runs in hardware
+	// instead of the legacy software-VP constant-palette path. m_bGPUSkinReady is
+	// TRUE only when all three were created successfully.
+	static const int BONES_RING = 64;	// cycle bones textures per object to avoid per-frame lock stalls
+	LPDIRECT3DVERTEXSHADER9 m_pSkinnedVS;
+	LPDIRECT3DVERTEXDECLARATION9 m_pSkinnedDECL;
+	LPDIRECT3DTEXTURE9 m_pBonesTexture[BONES_RING];
+	DWORD m_dwBonesIndex;
+	BYTE m_bGPUSkinReady;
+
 	CString m_strResourceType;
 	BYTE m_bEnableSHADER;
 

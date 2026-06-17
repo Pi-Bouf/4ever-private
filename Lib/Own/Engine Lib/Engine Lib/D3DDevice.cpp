@@ -6,6 +6,10 @@
 #include "D3DSphere.h"
 #include <dxdiag.h>
 
+// Compiled vs_3_0 GPU-skinning vertex shader (reads the bone palette from a float
+// texture via vertex-texture-fetch). Ported from 4retro: const BYTE g_wmesh_skinned_vertex[].
+#include "wmesh_skinned_vertex.h"
+
 DWORD CD3DDevice::m_dwPolyCount = 0;
 
 //////////////////////////////////////////////////////////////////////
@@ -32,6 +36,12 @@ CD3DDevice::CD3DDevice()
 		m_dwPixelShader[i] = 0;
 	}
 	m_strResourceType.Empty();
+
+	m_pSkinnedVS = NULL;
+	m_pSkinnedDECL = NULL;
+	for( int i=0; i<BONES_RING; i++) m_pBonesTexture[i] = NULL;
+	m_dwBonesIndex = 0;
+	m_bGPUSkinReady = FALSE;
 
 	m_pGRAYTEX = NULL;
 	m_pGLOWTEX = NULL;
@@ -448,7 +458,7 @@ BOOL CD3DDevice::InitDevices( CWnd *pWnd)
 
 	if( (m_vCAPS.VertexShaderVersion & 0x0000FFFF) < 0x0300 ||
 		(m_vCAPS.PixelShaderVersion & 0x0000FFFF) < 0x0300 ||
-		m_lVIDEOMEM < 256 )
+		(m_lVIDEOMEM != 0 && m_lVIDEOMEM < 256) )
 		m_option.m_bUseSHADER = FALSE;
 
 	D3DVERTEXELEMENT9 vWMESHDECL[] = {
@@ -576,6 +586,43 @@ BOOL CD3DDevice::InitDevices( CWnd *pWnd)
 			}
 	}
 
+	// ----- GPU skinning resources: bones texture + skinned vertex shader + UBYTE4 decl -----
+	// (Vertex declaration is byte-identical to the WMESHVERTEX FVF; blend indices read as
+	//  raw UBYTE4 to match the shader. Pairs with the fixed-function pixel pipeline.)
+	m_bGPUSkinReady = FALSE;
+	m_pSkinnedVS = NULL;
+	m_pSkinnedDECL = NULL;
+	m_dwBonesIndex = 0;
+	for( int i=0; i<BONES_RING; i++) m_pBonesTexture[i] = NULL;
+	{
+		D3DVERTEXELEMENT9 vSKINDECL[] = {
+			{ 0,  0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
+			{ 0, 12, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_BLENDWEIGHT, 0},
+			{ 0, 24, D3DDECLTYPE_UBYTE4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_BLENDINDICES, 0},
+			{ 0, 28, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_NORMAL, 0},
+			{ 0, 40, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},
+			D3DDECL_END()};
+
+		D3DDISPLAYMODE dmCAP;
+		HRESULT hrVS  = m_pDevice->CreateVertexShader((const DWORD*) g_wmesh_skinned_vertex, &m_pSkinnedVS);
+		HRESULT hrDCL = m_pDevice->CreateVertexDeclaration(vSKINDECL, &m_pSkinnedDECL);
+
+		BOOL bTEX = TRUE;
+		for( int i=0; i<BONES_RING; i++)
+			if( FAILED(m_pDevice->CreateTexture(256 * 4, 1, 1, 0, D3DFMT_A32B32G32R32F, D3DPOOL_MANAGED, &m_pBonesTexture[i], NULL)) || !m_pBonesTexture[i] )
+				bTEX = FALSE;
+
+		HRESULT hrCAP = m_pD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &dmCAP);
+
+		// Hardware vertex-texture-fetch of a float4 texture must be supported.
+		if(SUCCEEDED(hrCAP))
+			hrCAP = m_pD3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, dmCAP.Format,
+				D3DUSAGE_QUERY_VERTEXTEXTURE, D3DRTYPE_TEXTURE, D3DFMT_A32B32G32R32F);
+
+		m_bGPUSkinReady = (SUCCEEDED(hrVS) && SUCCEEDED(hrDCL) && bTEX && SUCCEEDED(hrCAP) &&
+			m_pSkinnedVS && m_pSkinnedDECL) ? TRUE : FALSE;
+	}
+
 	m_pMainWnd = pWnd;
 	InitBACK(&d3ddm);
 
@@ -653,6 +700,10 @@ BOOL CD3DDevice::Reset()
 	m_pDevice->GetDeviceCaps(&m_vCAPS);
 	InitBACK(&d3ddm);
 
+	// A device reset returns SW-VP mode to its default (FALSE); invalidate the
+	// cached state so the next ApplySWVP re-syncs rather than skipping a needed set.
+	CTachyonMesh::m_bCurSWVP = 0xFF;
+
 	return TRUE;
 }
 
@@ -690,6 +741,12 @@ void CD3DDevice::ReleaseDevice()
 			m_pPixelShader[i]->Release();
 			m_pPixelShader[i] = NULL;
 		}
+
+	m_bGPUSkinReady = FALSE;
+	if(m_pSkinnedVS)     { m_pSkinnedVS->Release();     m_pSkinnedVS = NULL; }
+	if(m_pSkinnedDECL)   { m_pSkinnedDECL->Release();   m_pSkinnedDECL = NULL; }
+	for( int i=0; i<BONES_RING; i++)
+		if(m_pBonesTexture[i]) { m_pBonesTexture[i]->Release(); m_pBonesTexture[i] = NULL; }
 
 	if(m_pDevice)
 	{

@@ -16,12 +16,18 @@ public:
 	static DWORD m_dwMaxVB;
 	static FLOAT m_fLevelFactor;
 	static BYTE m_bSoftwareVP;
+	static BYTE m_bCurSWVP;
+	static BYTE m_bGPUSkin;	// TRUE while a hardware (vertex-shader) skinned draw is active
 	static BYTE m_gZEnable;
 	static BYTE m_gZWriteable;
 
 public:
 	static void BeginGlobalDraw( LPDIRECT3DDEVICE9 pDevice);
 	static void EndGlobalDraw( LPDIRECT3DDEVICE9 pDevice);
+	// Sets the device software-vertex-processing mode only when it actually
+	// changes, collapsing the per-draw SW<->HW toggle storm that tanks FPS on
+	// modern D3D9 drivers (each real switch forces a full pipeline flush).
+	static void ApplySWVP( LPDIRECT3DDEVICE9 pDevice, BYTE bSoftware);
 	static void SetGlobalZState( BOOL bZEnable, BOOL bZWriteable );
 	static void ReleaseGlobalVB();
 	static void InitGlobalVB();

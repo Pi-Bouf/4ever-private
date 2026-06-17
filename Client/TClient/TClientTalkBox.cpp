@@ -145,7 +145,7 @@ void CTClientTalkBox::Render( LPDIRECT3DDEVICE9 pDevice,
 	pDevice->SetStreamSource( 0, m_vVB.GetVB(), 0, sizeof(WPVERTEX));
 	pDevice->SetIndices(m_vIB.GetIB());
 
-	pDevice->SetSoftwareVertexProcessing(TRUE);
+	CTachyonMesh::ApplySWVP(pDevice, TRUE);
 	pDevice->SetFVF(T3DFVF_WPVERTEX);
 	pDevice->SetTexture( 0, m_pSKIN ? m_pSKIN->GetTexture() : NULL);
 
@@ -171,7 +171,7 @@ void CTClientTalkBox::Render( LPDIRECT3DDEVICE9 pDevice,
 	pDevice->SetRenderState( D3DRS_DEPTHBIAS, *((LPDWORD) &fDepthBias));
 	pDevice->SetRenderState( D3DRS_INDEXEDVERTEXBLENDENABLE, FALSE);
 	pDevice->SetRenderState( D3DRS_VERTEXBLEND, D3DVBF_DISABLE);
-	pDevice->SetSoftwareVertexProcessing(FALSE);
+	CTachyonMesh::ApplySWVP(pDevice, FALSE);
 
 	vLOCAL._11 = 1.0f;
 	vLOCAL._22 = 1.0f;

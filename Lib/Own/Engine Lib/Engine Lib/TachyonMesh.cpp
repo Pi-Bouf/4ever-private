@@ -12,6 +12,8 @@ DWORD CTachyonMesh::m_dwCurrentVB = 0xFFFFFFFF;
 DWORD CTachyonMesh::m_dwMaxVB = 0; 
 FLOAT CTachyonMesh::m_fLevelFactor = 1.0f;
 BYTE CTachyonMesh::m_bSoftwareVP = FALSE;
+BYTE CTachyonMesh::m_bCurSWVP = 0xFF;	// 0xFF = unknown; forces first ApplySWVP to sync
+BYTE CTachyonMesh::m_bGPUSkin = FALSE;
 BYTE CTachyonMesh::m_gZEnable = TRUE;
 BYTE CTachyonMesh::m_gZWriteable = TRUE;
 
@@ -73,11 +75,23 @@ void CTachyonMesh::ReleaseGlobalVB()
 void CTachyonMesh::BeginGlobalDraw( LPDIRECT3DDEVICE9 pDevice)
 {
 	m_dwCurrentVB = 0xFFFFFFFF;
+	m_bCurSWVP = 0xFF;	// resync the SW-VP cache each frame (also covers a prior device reset)
 }
 
 void CTachyonMesh::EndGlobalDraw( LPDIRECT3DDEVICE9 pDevice)
 {
-	pDevice->SetSoftwareVertexProcessing(FALSE);
+	ApplySWVP(pDevice, FALSE);
+}
+
+void CTachyonMesh::ApplySWVP( LPDIRECT3DDEVICE9 pDevice, BYTE bSoftware)
+{
+	bSoftware = bSoftware ? TRUE : FALSE;
+
+	if( bSoftware != m_bCurSWVP )
+	{
+		pDevice->SetSoftwareVertexProcessing(bSoftware);
+		m_bCurSWVP = bSoftware;
+	}
 }
 
 void CTachyonMesh::SetGlobalZState( BOOL bZEnable, BOOL bZWriteable )
@@ -697,12 +711,12 @@ void CTachyonMesh::Render( LPDIRECT3DDEVICE9 pDevice,
 
 				pDevice->SetStreamSource( 0, pVB, 0, m_dwNodeCount ? sizeof(WMESHVERTEX) : sizeof(MESHVERTEX));
 				pDevice->SetIndices(pIB);
-				pDevice->SetSoftwareVertexProcessing(m_dwNodeCount ? TRUE : m_bSoftwareVP);
+				ApplySWVP(pDevice, (m_dwNodeCount && !m_bGPUSkin) ? TRUE : m_bSoftwareVP);
 
 				m_dwCurrentVB = GLOBALVB_ID( m_bGroupID, m_bFileID, m_bMESHType, m_bVBID);
 			}
 
-			pDevice->SetRenderState( D3DRS_INDEXEDVERTEXBLENDENABLE, m_dwNodeCount ? TRUE : FALSE);
+			pDevice->SetRenderState( D3DRS_INDEXEDVERTEXBLENDENABLE, (m_dwNodeCount && !m_bGPUSkin) ? TRUE : FALSE);
 			pDevice->DrawIndexedPrimitive(
 				D3DPT_TRIANGLELIST,
 				m_dwVBIndex, 0,
@@ -719,9 +733,9 @@ void CTachyonMesh::Render( LPDIRECT3DDEVICE9 pDevice,
 		{
 			pDevice->SetStreamSource( 0, m_pVB, 0, m_dwNodeCount ? sizeof(WMESHVERTEX) : sizeof(MESHVERTEX));
 			pDevice->SetIndices(m_pIB[dwIndex][nLevel]);
-			pDevice->SetSoftwareVertexProcessing(m_dwNodeCount ? TRUE : m_bSoftwareVP);
+			ApplySWVP(pDevice, (m_dwNodeCount && !m_bGPUSkin) ? TRUE : m_bSoftwareVP);
 
-			pDevice->SetRenderState( D3DRS_INDEXEDVERTEXBLENDENABLE, m_dwNodeCount ? TRUE : FALSE);
+			pDevice->SetRenderState( D3DRS_INDEXEDVERTEXBLENDENABLE, (m_dwNodeCount && !m_bGPUSkin) ? TRUE : FALSE);
 			pDevice->DrawIndexedPrimitive(
 				D3DPT_TRIANGLELIST,
 				0, 0,
@@ -729,7 +743,8 @@ void CTachyonMesh::Render( LPDIRECT3DDEVICE9 pDevice,
 				m_pMESH[dwIndex][nLevel]->m_dwCount / 3);
 
 			pDevice->SetRenderState( D3DRS_INDEXEDVERTEXBLENDENABLE, FALSE);
-			pDevice->SetSoftwareVertexProcessing(FALSE);
+			// (per-mesh SW-VP reset removed: consecutive skinned parts now stay in
+			//  SW-VP; a following non-skinned draw or EndGlobalDraw resets it once.)
 		}
 
 		break;
