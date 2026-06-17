@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="TLogin.Protocol/TLogin.Protocol.csproj" />
+  <Project Path="TLogin.Protocol.Tests/TLogin.Protocol.Tests.csproj" />
+  <Project Path="TLogin.Data/TLogin.Data.csproj" />
+  <Project Path="TLogin.Data.Tests/TLogin.Data.Tests.csproj" />
+  <Project Path="TLogin.Server/TLogin.Server.csproj" />
+  <Project Path="TLogin.Server.Tests/TLogin.Server.Tests.csproj" />
+</Solution>
