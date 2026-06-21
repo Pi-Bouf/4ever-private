@@ -120,4 +120,22 @@ public sealed class Guild
         var chief = FindMember(Chief);
         return chief?.Peer ?? 0;
     }
+
+    /// <summary>True while the guild has fewer than 49 members+tactics applied to <paramref name="castle"/>
+    /// (CTGuild::CanApplyWar — the per-guild castle-war slot cap).</summary>
+    public bool CanApplyWar(ushort castle)
+    {
+        int count = Members.Values.Count(m => m.Castle == castle) + Tactics.Values.Count(t => t.Castle == castle);
+        return count < 49;
+    }
+
+    /// <summary>Number of members+tactics applied to <paramref name="castle"/>, plus the last camp seen
+    /// (CTGuild::GetCastleApplicantCount → MAKEWORD(count, camp)).</summary>
+    public (byte Count, byte Camp) GetCastleApplicantCount(ushort castle)
+    {
+        byte count = 0, camp = 0;
+        foreach (var m in Members.Values) if (m.Castle == castle) { count++; camp = m.Camp; }
+        foreach (var t in Tactics.Values) if (t.Castle == castle) { count++; camp = t.Camp; }
+        return (count, camp);
+    }
 }

@@ -69,6 +69,9 @@ public sealed class WorldState
     // --- Phase 4c: scheduled battle-field windows (local / castle / mission / sky-garden). ---
     public BattleSchedule? Battles { get; set; }
 
+    // --- Phase 5d: castle-war scoreboard (castleId -> aggregated occupation/def/atk). ---
+    public Dictionary<ushort, CastleWarInfo> CastleWarInfo { get; } = new();
+
     // --- Phase 4d: tournament config + announce state (null until config loads at startup). ---
     public TournamentState? Tournament { get; set; }
 

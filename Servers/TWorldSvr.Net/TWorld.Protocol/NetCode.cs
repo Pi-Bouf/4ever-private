@@ -27,6 +27,55 @@ public static class Msg
     public const ushort MW_RELEASEMAIN_ACK = MW_BASE + 0x0017; // map -> world: main released
     public const ushort MW_CHECKMAIN_REQ = MW_BASE + 0x00C4;   // world -> map: confirm main (charId,key,channel,mapId,pos)
     public const ushort MW_CHECKMAIN_ACK = MW_BASE + 0x00C5;   // map -> world: main confirmed
+
+    // --- Phase 5a: cross-map movement / teleport / routing (MWProtocol.h) ---
+    public const ushort MW_CLOSECHAR_REQ = MW_BASE + 0x000B;   // world -> map: close a (dead) connection
+    public const ushort MW_MAPSVRLIST_REQ = MW_BASE + 0x0012;  // world -> map: which map servers cover dest (charId,key,channel,mapId,pos)
+    public const ushort MW_MAPSVRLIST_ACK = MW_BASE + 0x0013;  // map -> world: server list (charId,key,count,serverIds)
+    public const ushort MW_ROUTELIST_REQ = MW_BASE + 0x0014;   // world -> main: route to these new servers (charId,key,count,serverIds)
+    public const ushort MW_REGION_ACK = MW_BASE + 0x00BC;      // map -> world: char changed region (charId,key,region)
+    public const ushort MW_TELEPORT_REQ = MW_BASE + 0x00BD;    // world -> map: teleport result (charId,key,channel,mapId,pos,result)
+    public const ushort MW_TELEPORT_ACK = MW_BASE + 0x00BE;    // map -> world: teleport request (charId,key,destServerId)
+    public const ushort MW_CONLIST_REQ = MW_BASE + 0x00BF;     // world -> map: which connections are needed at dest (charId,key,channel,mapId,pos)
+    public const ushort MW_CONLIST_ACK = MW_BASE + 0x00C0;     // map -> world: needed connection list (charId,key,count,serverIds)
+    public const ushort MW_ENTERSOLOMAP_REQ = MW_BASE + 0x00C1;// world -> map: enter solo/instance map (charId,key,partyId,partyType,chiefId)
+    public const ushort MW_ENTERSOLOMAP_ACK = MW_BASE + 0x00C2;// map -> world: entered solo map (charId,key)
+    public const ushort MW_LEAVESOLOMAP_ACK = MW_BASE + 0x00C3;// map -> world: left solo map (charId,key)
+    public const ushort MW_BEGINTELEPORT_ACK = MW_BASE + 0x00C7;// map -> world: begin teleport (charId,key,sameChannel,channel[,mapId,pos])
+    public const ushort MW_STARTTELEPORT_REQ = MW_BASE + 0x00C8;// world -> map: start teleport on a connection (charId,key,channel,mapId,pos)
+
+    // --- Phase 5b: combat / progression / loot (MWProtocol.h) ---
+    public const ushort MW_LEVELUP_REQ = MW_BASE + 0x0026;            // world -> map: propagate level to other connections
+    public const ushort MW_LEVELUP_ACK = MW_BASE + 0x0027;           // map -> world: char leveled up (charId,key,level)
+    public const ushort MW_MONSTERDIE_REQ = MW_BASE + 0x0042;        // world -> main: forwarded monster-death
+    public const ushort MW_MONSTERDIE_ACK = MW_BASE + 0x0043;        // map -> world: monster died (route to main)
+    public const ushort MW_TAKEMONMONEY_REQ = MW_BASE + 0x0044;      // world -> main: forwarded loot-money
+    public const ushort MW_TAKEMONMONEY_ACK = MW_BASE + 0x0045;      // map -> world: took monster money (route to main)
+    public const ushort MW_ADDITEM_REQ = MW_BASE + 0x0046;           // world -> main: forwarded loot-item grant
+    public const ushort MW_ADDITEM_ACK = MW_BASE + 0x0047;           // map -> world: add looted item (charId,key,svr,chan,map,monId,inven,slot,itemId,...)
+    public const ushort MW_PARTYORDERTAKEITEM_REQ = MW_BASE + 0x0048;// world -> next member's main: ordered-loot item
+    public const ushort MW_PARTYORDERTAKEITEM_ACK = MW_BASE + 0x0049;// map -> world: ordered-loot drop (round-robin)
+    public const ushort MW_ADDITEMRESULT_REQ = MW_BASE + 0x0061;     // world -> map: loot-item result (charId,key,chan,map,monId,itemId,result)
+    public const ushort MW_ADDITEMRESULT_ACK = MW_BASE + 0x0062;     // map -> world: relay loot result to origin server
+
+    // --- Phase 5c: castle / territory war — ownership broadcasts (MWProtocol.h) ---
+    public const ushort MW_LOCALOCCUPY_REQ = MW_BASE + 0x0069;       // world -> all maps: local territory owner changed
+    public const ushort MW_LOCALOCCUPY_ACK = MW_BASE + 0x006A;       // map -> world: local territory captured
+    public const ushort MW_CASTLEOCCUPY_REQ = MW_BASE + 0x0085;      // world -> all maps: castle owner changed
+    public const ushort MW_CASTLEOCCUPY_ACK = MW_BASE + 0x0086;      // map -> world: castle captured
+    public const ushort MW_CASTLEWARINFO_REQ = MW_BASE + 0x010F;     // world -> all maps: castle-war scoreboard (def/atk, country points, top-3, per-guild bonus)
+    public const ushort MW_CASTLEWARINFO_ACK = MW_BASE + 0x0110;     // map -> world: castle-war occupation snapshot (castle[,guild,locals×(guild,type)×6])
+    public const ushort MW_ENDWAR_REQ = MW_BASE + 0x0111;            // world -> all maps: castle war ended
+    public const ushort MW_ENDWAR_ACK = MW_BASE + 0x0112;            // map -> world: castle war ended
+    public const ushort MW_MISSIONOCCUPY_REQ = MW_BASE + 0x0166;     // world -> all maps: mission territory owner changed
+    public const ushort MW_MISSIONOCCUPY_ACK = MW_BASE + 0x0167;     // map -> world: mission territory captured
+    public const ushort MW_SKYGARDENOCCUPY_REQ = MW_BASE + 0x0183;   // world -> all maps: sky-garden owner changed
+    public const ushort MW_SKYGARDENOCCUPY_ACK = MW_BASE + 0x0184;   // map -> world: sky-garden captured
+
+    // --- Phase 5d: castle-war application (MWProtocol.h) ---
+    public const ushort MW_CASTLEAPPLY_REQ = MW_BASE + 0x0080;        // world -> map: apply result (charId,key,result,castle,target,camp)
+    public const ushort MW_CASTLEAPPLY_ACK = MW_BASE + 0x0081;        // map -> world: guild chief assigns a member to a castle slot
+    public const ushort MW_CASTLEAPPLICANTCOUNT_REQ = MW_BASE + 0x013C;// world -> all maps: a guild's applicant count for a castle (castle,guildId,camp,count)
     public const ushort MW_CHARINFO_REQ = MW_BASE + 0x000E;    // world -> map: guild/tactics/party/title info
     public const ushort MW_ROUTE_REQ = MW_BASE + 0x000F;       // world -> map: route the char (post char-data)
     public const ushort MW_ROUTE_ACK = MW_BASE + 0x0010;       // map -> world: routing done (charId,key,extraConnCount)
@@ -373,6 +422,48 @@ public enum Contry : byte
     Peace = 4,   // TCONTRY_PEACE
 }
 
+/// <summary>enum TELEPORT_RESULT (NetCode.h) — result code carried by MW_TELEPORT_REQ.</summary>
+public enum TprResult : byte
+{
+    Success = 0,        // TPR_SUCCESS
+    NotTeleportNpc = 1, // TPR_NOTTELEPORTNPC
+    NoPortal = 2,       // TPR_NOPORTAL
+    NoDestination = 3,  // TPR_NODESTINATION
+    NeedMoney = 4,      // TPR_NEEDMONEY
+    NoItem = 5,         // TPR_NOITEM
+    Invalid = 6,        // TPR_INVALID
+    Used = 7,           // TPR_USED
+    Channel = 8,        // TPR_CHANNEL
+}
+
+/// <summary>enum CASTLEBESIEGE_STATUS (NetCode.h) — result of a castle-war application.</summary>
+public enum CastleApplyResult : byte
+{
+    Success = 0,    // CBS_SUCCESS
+    Full = 1,       // CBS_FULL
+    NotFound = 2,   // CBS_NOTFOUND
+    NotReady = 3,   // CBS_NOTREADY
+    CantApply = 4,  // CBS_CANTAPPLY
+}
+
+/// <summary>enum OCCUPY_TYPE (NetCode.h) — a guild's role in a local's occupation snapshot.</summary>
+public enum OccupyType : byte
+{
+    Defend = 0,  // OCCUPY_DEFEND (bonus 11)
+    Accept = 1,  // OCCUPY_ACCEPT (bonus 10, counts toward per-day occupation)
+}
+
+/// <summary>enum MONITEMTAKE_RESULT (NetCode.h) — result code for looting a monster-drop item.</summary>
+public enum MonItemTake : byte
+{
+    Success = 0,    // MIT_SUCCESS
+    FullInven = 1,  // MIT_FULLINVEN
+    NotFound = 2,   // MIT_NOTFOUND
+    Authority = 3,  // MIT_AUTHORITY
+    Dealing = 4,    // MIT_DEALING
+    Lottery = 5,    // MIT_LOTTERY
+}
+
 /// <summary>enum BATTLE_STATUS (NetCode.h) — the BoW/BR/castle phase machine states.</summary>
 public enum BattleStatus : byte
 {
@@ -512,6 +603,10 @@ public static class Proto
     public const int WorldPort = 3815;   // DEF_WORLDPORT
 
     public const byte CnSuccess = 0;     // CN_SUCCESS (connect-result code)
+
+    public const uint LocalOccupyStatExp = 1000;   // LOCALOCCUPY_STATEXP — guild stat-exp for taking a local
+    public const uint CastleOccupyStatExp = 2000;  // CASTLEOCCUPY_STATEXP — guild stat-exp for taking a castle
+    public const uint GuildStatExpPerLevel = 2400; // CALCULATE_NEXTGEXP(level) = level * 2400
 
     public const byte BowServerId = 30;  // BOW_SERVER_ID
     public const byte BrServerId = 50;   // BR_SERVER_ID

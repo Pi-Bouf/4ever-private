@@ -96,4 +96,17 @@ public sealed class Character
 
     /// <summary>serverId → connection (a char can be connected to several map servers).</summary>
     public Dictionary<byte, CharConnection> Connections { get; } = new();
+
+    // --- Phase 5a: cross-map movement / teleport ---
+
+    /// <summary>Connections marked for closing (m_vTDEADCON) — flushed by ClearDeadCON on the next CHECKMAIN.</summary>
+    public List<byte> DeadCons { get; } = new();
+
+    /// <summary>The new main-server id being adopted during a main-server hand-off (m_bCHGMainID), else 0.</summary>
+    public byte ChgMainId { get; set; }
+
+    /// <summary>Per-char serialization queue for the multi-message teleport/connect cycles (m_qConCess):
+    /// CHECKCONNECT_ACK and cross-channel BEGINTELEPORT_ACK are processed one cycle at a time. Stores the
+    /// sender's map-server id plus the raw packet bytes so the deferred item can be re-dispatched.</summary>
+    public Queue<(byte ServerId, byte[] Packet)> ConCess { get; } = new();
 }

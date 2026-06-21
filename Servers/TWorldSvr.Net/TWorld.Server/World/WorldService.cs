@@ -60,7 +60,7 @@ public sealed partial class WorldService
                 case Msg.MW_ENTERCHAR_ACK: await OnMW_ENTERCHAR_ACK(session, r); break;
                 case Msg.MW_CHECKMAIN_ACK: OnMW_CHECKMAIN_ACK(session, r); break;
                 case Msg.MW_CLOSECHAR_ACK: OnMW_CLOSECHAR_ACK(session, r); break;
-                case Msg.MW_CHECKCONNECT_ACK: break;
+                case Msg.MW_CHECKCONNECT_ACK: OnMW_CHECKCONNECT_ACK(session, packet); break;
                 case Msg.MW_CHAT_ACK: OnMW_CHAT_ACK(session, packet); break;
                 case Msg.CT_CTRLSVR_REQ: _state.ControlServer = session; _log.LogInformation("Control server registered."); break;
                 case Msg.RW_RELAYSVR_REQ: OnRW_RELAYSVR_REQ(session, r); break;
@@ -86,6 +86,9 @@ public sealed partial class WorldService
                 case Msg.MW_PARTYMANSTAT_ACK: OnPartyManStat(r); break;
 
                 default:
+                    if (DispatchMovement(session, r, packet)) break;
+                    if (DispatchCombat(session, r, packet)) break;
+                    if (await DispatchCastleAsync(session, r, packet)) break;
                     if (await DispatchGuild2bAsync(session, r, packet)) break;
                     if (await DispatchCorpsAsync(session, r, packet)) break;
                     if (await DispatchFriendAsync(session, r)) break;
@@ -236,6 +239,16 @@ public sealed partial class WorldService
         ch.Logout = logout != 0; ch.Save = save != 0; ch.TitleId = titleId; ch.RankPoint = rankPoint;
 
         if (result != 0) { session.Send(BuildInvalidChar(charId, key, false)); CloseChar(ch); return; }
+
+        // Main-server hand-off completion (a regular cross-map-server switch, not a BoW/BR transition): the
+        // char was re-loaded on the new main, so reconcile its connection set via MAPSVRLIST rather than
+        // running the first-login CHARINFO/ROUTE path. C++ OnMW_ENTERSVR_ACK m_bCHGMainID branch.
+        if (ch.ChgMainId != 0 && ch.ChgMainId != Proto.BowServerId && ch.ChgMainId != Proto.BrServerId)
+        {
+            ch.ChgMainId = 0;
+            main.Send(BuildPosReq(Msg.MW_MAPSVRLIST_REQ, ch));
+            return;
+        }
 
         if (!string.IsNullOrEmpty(name)) _state.CharactersByName[name] = ch;
 
@@ -390,8 +403,12 @@ public sealed partial class WorldService
 
         if (main == session)
         {
+            // Close any connections this teleport/connect cycle made redundant, grant the connection, then
+            // advance the per-char ConCess queue so a deferred teleport/connect cycle can run.
+            ClearDeadCON(ch);
             session.Send(BuildConResultReq(ch, Proto.CnSuccess));
             _log.LogInformation("Char {Char} connection granted on map {Sid} (CONRESULT CN_SUCCESS).", charId, session.ServerId);
+            PopConCess(ch);
         }
         else
         {
@@ -401,6 +418,7 @@ public sealed partial class WorldService
             w.WriteFloat(ch.PosX); w.WriteFloat(ch.PosY); w.WriteFloat(ch.PosZ);
             main.Send(w.ToArray());
             ch.MainId = session.ServerId;
+            ch.Save = false;
         }
     }
 
