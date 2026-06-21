@@ -577,11 +577,11 @@ void CTachyonWater::Render( LPDIRECT3DDEVICE9 pDevice)
 	D3DMATERIAL9 vMaterial;
 
 	pDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-	pDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+	pDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, CD3DDevice::m_WorldMinFilter);
 	pDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
 
 	pDevice->SetSamplerState( 1, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-	pDevice->SetSamplerState( 1, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+	pDevice->SetSamplerState( 1, D3DSAMP_MINFILTER, CD3DDevice::m_WorldMinFilter);
 	pDevice->SetSamplerState( 1, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
 
 	pDevice->SetRenderState( D3DRS_SPECULARMATERIALSOURCE, D3DMCS_MATERIAL);
@@ -616,11 +616,11 @@ void CTachyonWater::Render( LPDIRECT3DDEVICE9 pDevice)
 void CTachyonWater::RenderREF( LPDIRECT3DDEVICE9 pDevice)
 {
 	pDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-	pDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+	pDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, CD3DDevice::m_WorldMinFilter);
 	pDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
 
 	pDevice->SetSamplerState( 1, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-	pDevice->SetSamplerState( 1, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+	pDevice->SetSamplerState( 1, D3DSAMP_MINFILTER, CD3DDevice::m_WorldMinFilter);
 	pDevice->SetSamplerState( 1, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
 
 	pDevice->SetRenderState( D3DRS_ALPHAFUNC, D3DCMP_GREATER);

@@ -1235,7 +1235,7 @@ void CTachyonSFX::Render( CD3DDevice *pDevice, CD3DCamera *pCamera, BYTE bMaxAlp
 		pDevice->m_pDevice->SetTextureStageState( 1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 
 		pDevice->m_pDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-		pDevice->m_pDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+		pDevice->m_pDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, CD3DDevice::m_WorldMinFilter);
 		pDevice->m_pDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
 
 		pDevice->m_pDevice->SetRenderState( D3DRS_ALPHAFUNC, D3DCMP_GREATER);

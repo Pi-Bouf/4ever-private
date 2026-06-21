@@ -89,6 +89,12 @@ public:
 	FLOAT m_fNearPlane;
 	FLOAT m_fFarPlane;
 
+	// Far clip plane for the perspective world camera (Item 3: render distance). Was a
+	// hardcoded 300; raised here so distant terrain/objects aren't clipped. Static so it
+	// can be tuned/driven from options in one place. The ortho (screen-space) camera keeps
+	// its own fixed range and is unaffected.
+	static FLOAT m_fWorldFarPlane;
+
 	FLOAT m_fDotFOV;
 	FLOAT m_fAspect;
 	FLOAT m_fFOV;

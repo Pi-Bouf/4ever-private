@@ -11,6 +11,34 @@
 #include "wmesh_skinned_vertex.h"
 
 DWORD CD3DDevice::m_dwPolyCount = 0;
+DWORD CD3DDevice::m_dwWorldAniso = 0;
+D3DTEXTUREFILTERTYPE CD3DDevice::m_WorldMinFilter = D3DTEXF_LINEAR;
+
+// Item 4: color controls. 1.0 = identity / no visual change (defaults). Tune these (or wire
+// to the options UI) to brighten/grade the image.
+FLOAT CD3DDevice::m_fAmbientScale = 1.0f;
+FLOAT CD3DDevice::m_fBrightness   = 1.0f;
+FLOAT CD3DDevice::m_fContrast     = 1.0f;
+FLOAT CD3DDevice::m_fGamma        = 1.0f;
+
+// Scale only the RGB channels of an ambient color by m_fAmbientScale, preserving alpha and
+// clamping to 255. With the default scale of 1.0 the color is returned unchanged.
+DWORD CD3DDevice::ScaleAmbient( DWORD dwAmbient)
+{
+	if( m_fAmbientScale == 1.0f )
+		return dwAmbient;
+
+	DWORD a = (dwAmbient >> 24) & 0xFF;
+	DWORD r = (dwAmbient >> 16) & 0xFF;
+	DWORD g = (dwAmbient >>  8) & 0xFF;
+	DWORD b =  dwAmbient        & 0xFF;
+
+	r = (DWORD) min( 255.0f, r * m_fAmbientScale);
+	g = (DWORD) min( 255.0f, g * m_fAmbientScale);
+	b = (DWORD) min( 255.0f, b * m_fAmbientScale);
+
+	return (a << 24) | (r << 16) | (g << 8) | b;
+}
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -447,6 +475,8 @@ BOOL CD3DDevice::InitDevices( CWnd *pWnd)
 		return FALSE;
 	}
 	InitCAPS();
+	InitAnisoCaps();
+	ApplyGammaRamp();
 
 	if( m_option.m_nTextureDetail == TEXTURE_DETAIL_COUNT )
 		if( m_lSYSMEM < 1000000000 )
@@ -698,6 +728,8 @@ BOOL CD3DDevice::Reset()
 	}
 
 	m_pDevice->GetDeviceCaps(&m_vCAPS);
+	InitAnisoCaps();
+	ApplyGammaRamp();
 	InitBACK(&d3ddm);
 
 	// A device reset returns SW-VP mode to its default (FALSE); invalidate the
@@ -944,6 +976,60 @@ void CD3DDevice::EndGLOWScene( CD3DCamera *pCAMERA,
 
 	m_pDevice->SetRenderState( D3DRS_FOGENABLE, TRUE);
 	pCAMERA->Activate(TRUE);
+}
+
+void CD3DDevice::InitAnisoCaps()
+{
+	m_dwWorldAniso = 0;
+	m_WorldMinFilter = D3DTEXF_LINEAR;
+
+	if( m_option.m_bAniso &&
+		(m_vCAPS.RasterCaps & D3DPRASTERCAPS_ANISOTROPY) &&
+		m_vCAPS.MaxAnisotropy > 1 )
+	{
+		m_dwWorldAniso = (m_vCAPS.MaxAnisotropy > 16) ? 16 : m_vCAPS.MaxAnisotropy;
+		m_WorldMinFilter = D3DTEXF_ANISOTROPIC;
+	}
+
+	// MAXANISOTROPY is never touched by the per-draw paths and a device Reset returns it to
+	// 1, so (re)apply it on the pixel samplers the world surfaces use (0..7) whenever the
+	// device is (re)created. The per-draw MINFILTER (m_WorldMinFilter) is what actually
+	// enables anisotropy for a given surface.
+	if( m_dwWorldAniso && m_pDevice )
+		for( DWORD s = 0; s < 8; ++s )
+			m_pDevice->SetSamplerState( s, D3DSAMP_MAXANISOTROPY, m_dwWorldAniso);
+}
+
+void CD3DDevice::ApplyGammaRamp()
+{
+	// D3D9 gamma ramps only take effect on a fullscreen device that advertises the
+	// FULLSCREENGAMMA cap. Skip entirely when the controls are at their identity defaults
+	// so windowed play and unconfigured installs are unaffected.
+	if( !m_pDevice ||
+		m_option.m_bWindowedMode ||
+		!(m_vCAPS.Caps2 & D3DCAPS2_FULLSCREENGAMMA) ||
+		(m_fBrightness == 1.0f && m_fContrast == 1.0f && m_fGamma == 1.0f) )
+		return;
+
+	FLOAT fInvGamma = (m_fGamma > 0.0f) ? (1.0f / m_fGamma) : 1.0f;
+
+	D3DGAMMARAMP vRAMP;
+	for( int i = 0; i < 256; ++i )
+	{
+		FLOAT v = i / 255.0f;
+
+		v = (FLOAT) pow( v, fInvGamma);			// gamma
+		v = (v - 0.5f) * m_fContrast + 0.5f;	// contrast about mid-grey
+		v = v * m_fBrightness;					// brightness
+
+		if( v < 0.0f ) v = 0.0f;
+		if( v > 1.0f ) v = 1.0f;
+
+		WORD w = (WORD) (v * 65535.0f);
+		vRAMP.red[i] = vRAMP.green[i] = vRAMP.blue[i] = w;
+	}
+
+	m_pDevice->SetGammaRamp( 0, D3DSGR_NO_CALIBRATION, &vRAMP);
 }
 
 void CD3DDevice::InitCAPS()

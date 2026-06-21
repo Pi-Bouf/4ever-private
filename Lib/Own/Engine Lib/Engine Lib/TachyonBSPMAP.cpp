@@ -39,7 +39,7 @@ void CTachyonBSPMAP::Render( LPMAPVECTORTEXWINDING pLIGHT,
 	CTBSPNode::m_pDevice->m_pDevice->SetTextureStageState( 1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 	CTBSPNode::m_pDevice->m_pDevice->SetTextureStageState( 1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 	CTBSPNode::m_pDevice->m_pDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-	CTBSPNode::m_pDevice->m_pDevice->SetRenderState( D3DRS_AMBIENT, m_dwAmbient);
+	CTBSPNode::m_pDevice->m_pDevice->SetRenderState( D3DRS_AMBIENT, CD3DDevice::ScaleAmbient(m_dwAmbient));
 
 	if(m_bLIGHTMAP)
 	{
@@ -50,7 +50,7 @@ void CTachyonBSPMAP::Render( LPMAPVECTORTEXWINDING pLIGHT,
 		CTBSPNode::m_pDevice->m_pDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
 
 		CTBSPNode::m_pDevice->m_pDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-		CTBSPNode::m_pDevice->m_pDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+		CTBSPNode::m_pDevice->m_pDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, CD3DDevice::m_WorldMinFilter);
 
 		CTBSPNode::m_pDevice->m_pDevice->SetRenderState( D3DRS_VERTEXBLEND, D3DVBF_DISABLE);
 		CTBSPNode::m_pDevice->m_pDevice->SetRenderState( D3DRS_FILLMODE, D3DFILL_SOLID);
@@ -155,11 +155,11 @@ void CTachyonBSPMAP::Render( LPMAPTBSPNODE pPVS,
 	CTBSPNode::m_pDevice->m_pDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 
 	CTBSPNode::m_pDevice->m_pDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-	CTBSPNode::m_pDevice->m_pDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+	CTBSPNode::m_pDevice->m_pDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, CD3DDevice::m_WorldMinFilter);
 
 	CTBSPNode::m_pDevice->m_pDevice->SetRenderState( D3DRS_VERTEXBLEND, D3DVBF_DISABLE);
 	CTBSPNode::m_pDevice->m_pDevice->SetRenderState( D3DRS_FILLMODE, D3DFILL_SOLID);
-	CTBSPNode::m_pDevice->m_pDevice->SetRenderState( D3DRS_AMBIENT, m_dwAmbient);
+	CTBSPNode::m_pDevice->m_pDevice->SetRenderState( D3DRS_AMBIENT, CD3DDevice::ScaleAmbient(m_dwAmbient));
 
 	CTBSPNode::m_pDevice->m_pDevice->SetRenderState( D3DRS_DEPTHBIAS, *((LPDWORD) &fDepthBias));
 	CTBSPNode::m_pDevice->m_pDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, FALSE);

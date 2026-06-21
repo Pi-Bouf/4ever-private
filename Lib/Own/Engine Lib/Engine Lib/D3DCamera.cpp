@@ -5,6 +5,12 @@
 #include "stdafx.h"
 
 
+// Item 3: render distance. The perspective world far clip plane was hardcoded to 300,
+// which clipped distant terrain/objects (and capped high-detail object range). Raised to
+// give headroom; per-map fog still governs what is actually visible beyond this.
+FLOAT CD3DCamera::m_fWorldFarPlane = 700.0f;
+
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -25,7 +31,7 @@ CD3DCamera::CD3DCamera()
 	m_fFOV = 0.0f;
 
 	m_fNearPlane = 0.0f;
-	m_fFarPlane = 300.0f;
+	m_fFarPlane = m_fWorldFarPlane;
 
 	m_fHeight = 0.0f;
 	m_fWidth = 0.0f;
@@ -91,14 +97,14 @@ BOOL CD3DCamera::InitCamera( LPDIRECT3DDEVICE9 pDevice,
 	m_fFOV = fFovV;
 
 	m_fNearPlane = fNearPlane;
-	m_fFarPlane = 300.0f;
+	m_fFarPlane = m_fWorldFarPlane;
 
 	D3DXMatrixPerspectiveFovLH(
 		&m_matProjection,
 		m_fFOV,
 		m_fAspect,
 		m_fNearPlane,
-		300.0f);
+		m_fFarPlane);
 
 	m_vPosition = D3DXVECTOR3( 0.0f, 0.0f, 0.0f);
 	m_vTarget = D3DXVECTOR3( 0.0f, 0.0f, 0.0f);
@@ -119,7 +125,7 @@ void CD3DCamera::ResetFOV( FLOAT fFOV)
 		m_fFOV,
 		m_fAspect,
 		m_fNearPlane,
-		300.0f);
+		m_fFarPlane);
 }
 
 void CD3DCamera::SetPosition( D3DXVECTOR3& vPosition,

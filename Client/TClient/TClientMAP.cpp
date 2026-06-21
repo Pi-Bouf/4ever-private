@@ -2957,7 +2957,7 @@ void CTClientMAP::ResetTMINIMAPSIEGE( CD3DDevice *pDevice,
 
 void CTClientMAP::Render( CD3DDevice *pDevice)
 {
-	pDevice->m_pDevice->SetRenderState( D3DRS_AMBIENT, m_dwTMapCOLOR);
+	pDevice->m_pDevice->SetRenderState( D3DRS_AMBIENT, CD3DDevice::ScaleAmbient(m_dwTMapCOLOR));
 	pDevice->m_pDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
 	m_pMAP->m_bDrawShadow = CTClientGame::GetMapSHADOWOption();
 	m_pMAP->Render(pDevice);

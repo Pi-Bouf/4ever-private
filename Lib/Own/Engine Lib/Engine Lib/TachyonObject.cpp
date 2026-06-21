@@ -1445,13 +1445,13 @@ void CTachyonObject::RenderSILHOUETTE( CD3DDevice *pDevice, CD3DCamera *pCamera,
 	MAPOBJPART::iterator it;
 
 	pDevice->m_pDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-	pDevice->m_pDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+	pDevice->m_pDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, CD3DDevice::m_WorldMinFilter);
 
 	pDevice->m_pDevice->SetSamplerState( 0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
 	pDevice->m_pDevice->SetSamplerState( 0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
 
 	pDevice->m_pDevice->SetSamplerState( 1, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-	pDevice->m_pDevice->SetSamplerState( 1, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+	pDevice->m_pDevice->SetSamplerState( 1, D3DSAMP_MINFILTER, CD3DDevice::m_WorldMinFilter);
 
 	pDevice->m_pDevice->SetSamplerState( 1, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
 	pDevice->m_pDevice->SetSamplerState( 1, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
@@ -1741,13 +1741,13 @@ void CTachyonObject::Render(CD3DDevice *pDevice, CD3DCamera *pCamera, BYTE bNoBl
 	MAPOBJPART::iterator it;
 
 	pDevice->m_pDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-	pDevice->m_pDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+	pDevice->m_pDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, CD3DDevice::m_WorldMinFilter);
 
 	pDevice->m_pDevice->SetSamplerState( 0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
 	pDevice->m_pDevice->SetSamplerState( 0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
 
 	pDevice->m_pDevice->SetSamplerState( 1, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-	pDevice->m_pDevice->SetSamplerState( 1, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+	pDevice->m_pDevice->SetSamplerState( 1, D3DSAMP_MINFILTER, CD3DDevice::m_WorldMinFilter);
 
 	pDevice->m_pDevice->SetSamplerState( 1, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
 	pDevice->m_pDevice->SetSamplerState( 1, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);

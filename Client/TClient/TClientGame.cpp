@@ -7191,7 +7191,7 @@ void CTClientGame::CalcSLAVEMON( DWORD dwTick)
 					}
 					else
 					{
-						// ¿©±â´Â AB¾È¿¡ µé¾î¿Â »óÅÂ.
+						// ï¿½ï¿½ï¿½ï¿½ï¿½ ABï¿½È¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 
 
 
@@ -7592,7 +7592,7 @@ void CTClientGame::CalcSLAVEMON( DWORD dwTick)
 					D3DXVECTOR3 vCROSS;
 					D3DXVec3Cross( &vCROSS, &(CTClientObjBase::m_vADJACENCY[ index ]), &n );
 
-					// °¡ÁßÄ¡¿¡ ÀÇÇØ¼­ Left¿Í RightÀÇ ¿ÀÇÁ¼ÂÀ» Á¶ÀýÇÏÀÚ.
+					// ï¿½ï¿½ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½Ø¼ï¿½ Leftï¿½ï¿½ Rightï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
 
 
 
@@ -7601,7 +7601,7 @@ void CTClientGame::CalcSLAVEMON( DWORD dwTick)
 					INT nLeftCount = 5;
 					INT nRightCount = 5;
 
-					if( vCROSS.y >= 0.0f ) //±âÁØ º¤ÅÍ¿¡¼­ ¿À¸¥ÂÊ¿¡ ÀÖÀ¸¸é Å©·Î½º °á°úº¤ÅÍÀÇ YÃàÀÌ ¾ç¼ö´Ù.
+					if( vCROSS.y >= 0.0f ) //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Í¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ê¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å©ï¿½Î½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Yï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½.
 
 
 
@@ -7611,7 +7611,7 @@ void CTClientGame::CalcSLAVEMON( DWORD dwTick)
 						nLeftCount -= 1;
 						nRightCount += 1;
 					}
-					else if( vCROSS.y < 0.0f ) //±âÁØ º¤ÅÍ¿¡¼­ ¿ÞÂÊ¿¡ ÀÖÀ¸¸é Å©·Î½º °á°úº¤ÅÍÀÇ YÃàÀÌ À½¼ö´Ù.
+					else if( vCROSS.y < 0.0f ) //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Í¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ê¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å©ï¿½Î½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Yï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
 
 
 
@@ -8126,13 +8126,13 @@ void CTClientGame::CalcSLAVERECALL( CTClientRecall *pTRECALL,
 		{
 			D3DXVECTOR3 vTARGET = m_pMainChar->GetPosition();
 
-			// °øÆ÷µð¹öÇÁ±¸Çö
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 
 
 
 
-			if( bOnSDT_RUNAWAY ) // °øÆ÷È¿°ú°¡ ¾øÀ¸¸é ±× Å¸°ÙÀ» ´ë»óÀ¸·Î.
+			if( bOnSDT_RUNAWAY ) // ï¿½ï¿½ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
 			{
 				TRUNAWAY* pDATA = &(pTRECALL->m_vRecallRunAway[ pTRECALL->m_nRecallRunAwayIndex ]);
                 
@@ -10895,7 +10895,7 @@ void CTClientGame::BeginCharge( DWORD dwTick, TCHARGETYPE eCHARGETYPE)
 	m_bCHARGE = TRUE;
 	m_eCHARGETYPE = eCHARGETYPE;
 
-	// Àº½Å ÁßÀÌ¸é Ç¬´Ù.
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ Ç¬ï¿½ï¿½.
 
 
 
@@ -13086,7 +13086,7 @@ void CTClientGame::OnLButtonDblClk( UINT nFlags, CPoint pt)
 						}
 						else if( pTITEM->GetTITEM()->m_bType == IT_INVEN )
 						{
-							// ÀÎº¥Åä¸®¿¡ ÀÖ´Â °¡¹æÀ» °¡¹æ½½·Ô¿¡ ²Å´Â °æ¿ì.
+							// ï¿½Îºï¿½ï¿½ä¸®ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½æ½½ï¿½Ô¿ï¿½ ï¿½Å´ï¿½ ï¿½ï¿½ï¿½.
 
 
 
@@ -13096,7 +13096,7 @@ void CTClientGame::OnLButtonDblClk( UINT nFlags, CPoint pt)
 
 							for( BYTE nSLOT=0 ; nSLOT < MAX_SUBINVEN ; ++nSLOT )
 							{
-								if(pChatInfoDlg->m_pTSUBINVEN[nSLOT]->GetCurImage() == 0) // ºó ÀÎº¥Åä¸® ½½·ÔÀ» Ã£´Â´Ù.
+								if(pChatInfoDlg->m_pTSUBINVEN[nSLOT]->GetCurImage() == 0) // ï¿½ï¿½ ï¿½Îºï¿½ï¿½ä¸® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½Â´ï¿½.
 								{
 									BYTE FromInven = pTINVEN->m_bInvenID;
 									BYTE FromSlot = pTITEM->GetItemSlot();
@@ -13166,7 +13166,7 @@ void CTClientGame::OnLButtonDblClk( UINT nFlags, CPoint pt)
 				}
 				else
 				{
-					// °¡¹æ °Ë»ç
+					// ï¿½ï¿½ï¿½ï¿½ ï¿½Ë»ï¿½
 
 					CTCharNewDlg* pChatInfoDlg = static_cast<CTCharNewDlg*>(m_vTFRAME[TFRAME_CHARINFO_NEW]);
 
@@ -13175,10 +13175,10 @@ void CTClientGame::OnLButtonDblClk( UINT nFlags, CPoint pt)
 						if( pChatInfoDlg->m_pTSUBINVEN[n]->HitTest(pt) &&
 							pChatInfoDlg->m_pTSUBINVEN[n]->GetCurImage() != 0)
 						{
-							WORD wInvenPos = GetBlankInvenPosExceptInven( n ); // ÀÚ½ÅÀ» Á¦¿ÜÇÑ °¡¹æÀÇ ºóÄ­À» Ã£¾Æ¾ß ÇÑ´Ù.
+							WORD wInvenPos = GetBlankInvenPosExceptInven( n ); // ï¿½Ú½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä­ï¿½ï¿½ Ã£ï¿½Æ¾ï¿½ ï¿½Ñ´ï¿½.
 
-							BYTE ToInven = HIBYTE(wInvenPos); // ÀÎº¥
-							BYTE ToSlot = LOBYTE(wInvenPos); // ½½·Ô
+							BYTE ToInven = HIBYTE(wInvenPos); // ï¿½Îºï¿½
+							BYTE ToSlot = LOBYTE(wInvenPos); // ï¿½ï¿½ï¿½ï¿½
 
 							if( ToSlot != INVALID_SLOT &&
 								ToInven != n )
@@ -14492,7 +14492,7 @@ BOOL CTClientGame::Defend( CTClientObjBase *pTATTACK,
 			{
 				if( pTDEFEND )
 				{
-					// ÀÌ µðÆæ´õ´Â m_pMainCharÀÌ°Å³ª ³»°¡ È£½ºÆ® ÁßÀÎ ¸ó½ºÅÍ, ¼ÒÈ¯¼öÀÏ ¼ö ¾ø´Ù.
+					// ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ m_pMainCharï¿½Ì°Å³ï¿½ ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½È¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 
 
 
@@ -14633,8 +14633,8 @@ void CTClientGame::ShotArrow( CTClientObjBase *pTOBJ, LPTSKILLDATA pSKILLDATA, L
 			DWORD dwOBJPIVOT = FindOBJPIVOT(pTOBJ, pTVISUAL);
 			if( dwOBJPIVOT == (DWORD)T_INVALID )
 			{
-				TRACE("Warning(CTClientGame::ShotArrow): °ø°ÝÀÚ(TYPE:%u ID:%u)°¡ ¹ß»çÁöÁ¡À¸·Î »ç¿ëÇÒ "
-					"ÇÇº¿Á¡(0x%x)À» Ã£À» ¼ö ¾ø¾î Å¸°Ù¿¡ ´ëÇÏ¿© ½ºÅ³(%s)À» »ç¿ëÇÒ ¼ö ¾ø½À´Ï´Ù.\n",
+				TRACE("Warning(CTClientGame::ShotArrow): ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(TYPE:%u ID:%u)ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ "
+					"ï¿½Çºï¿½ï¿½ï¿½(0x%x)ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½Ù¿ï¿½ ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½Å³(%s)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.\n",
 
 
 
@@ -15048,7 +15048,7 @@ void CTClientGame::DisableTargetUI()
 		DisableUI( TFRAME_RPS_REWARD );
 
 		m_bRPSGaming = FALSE;
-		GetSession()->SendCS_RPSGAME_REQ( RPSCARD_COUNT ); // Æ÷±â
+		GetSession()->SendCS_RPSGAME_REQ( RPSCARD_COUNT ); // ï¿½ï¿½ï¿½ï¿½
 	}
 #endif
 }
@@ -15718,9 +15718,9 @@ CTClientObjBase* CTClientGame::GetSkillTarget(CTClientObjBase* pTARGET, LPTSKILL
 			if( pTARGET )
 				bAlliance = m_pMainChar->IsAlliance(pTARGET);
 
-			// TARGETÀÌ ¾ø°Å³ª Àû±¹ÀÌ¸é ½ºÅ³½ÃÀüÀÇ ´ë»óÀ» ÀÚ½ÅÀ¸·Î ÇÑ´Ù.
-			// TARGETÀÌ µ¿¸ÍÀÌ¸é PC,MON,RECALL,SELF°¡ ¾Æ´Ñ °æ¿ì(SWITCH³ª GATE°°Àº) ½ºÅ³½ÃÀüÀÇ ´ë»óÀ» ÀÚ½ÅÀ¸·Î ÇÑ´Ù.
-			// TARGETÀÌ ÆêÀÌ¸é ´ë»óÀ» ÀÚ½ÅÀ¸·Î ÇÑ´Ù.
+			// TARGETï¿½ï¿½ ï¿½ï¿½ï¿½Å³ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½Å³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ú½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ´ï¿½.
+			// TARGETï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½ PC,MON,RECALL,SELFï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½ï¿½ï¿½(SWITCHï¿½ï¿½ GATEï¿½ï¿½ï¿½ï¿½) ï¿½ï¿½Å³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ú½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ´ï¿½.
+			// TARGETï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ú½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ´ï¿½.
 
 
 
@@ -18448,7 +18448,7 @@ void CTClientGame::DropItem_InvenToAuctionReg( UINT nFlags, BYTE bTargetUI, BYTE
 		{
 			if( pItem &&
 				pItem->GetWrap() || 
-				pItem->GetTITEM()->m_bCanTrade & 1 ) // °Å·¡°¡´É ¾ÆÀÌÅÛ
+				pItem->GetTITEM()->m_bCanTrade & 1 ) // ï¿½Å·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			{
 				pRegFrame->SetItem( pItem );
 				pRegFrame->SetInvenID( bInvenID );
@@ -18473,7 +18473,7 @@ void CTClientGame::DropItem_InvenToAuctionReg( UINT nFlags, BYTE bTargetUI, BYTE
 
 				pRegFrame->UpdateByComp();
 			}
-			else	// °Å·¡ºÒ°¡.
+			else	// ï¿½Å·ï¿½ï¿½Ò°ï¿½.
 
 
 
@@ -18799,7 +18799,7 @@ void CTClientGame::DropItem_MainUIToDefault( UINT nFlags, BYTE bTargetUI, BYTE b
 	if(!m_pSESSION)
 		return;
 
-	if( m_vDRAG.m_dwParam == -1 ) // ÀÌ ¹®Àå°ú °ü·ÃµÈ ·ÎÁ÷ : CTRSCSDlg::OnBeginDrag
+	if( m_vDRAG.m_dwParam == -1 ) // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ãµï¿½ ï¿½ï¿½ï¿½ï¿½ : CTRSCSDlg::OnBeginDrag
 		return ;
 
 	TMAINSLOTID_TYPE eSlotType = CTMainUI::ToSlotType(m_vDRAG.m_bSlotID);
@@ -20682,7 +20682,7 @@ void CTClientGame::UseTItem( BYTE bInvenID,
 						}
 						break;
 
-					case TNPC_DIVINER: //Á¡¼ú°¡(¼Ò¿ï¸ÞÀÌÆ®)
+					case TNPC_DIVINER: //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½Ò¿ï¿½ï¿½ï¿½ï¿½Æ®)
 						{
 							WORD wItemID = MAKEWORD( bSlotID, bInvenID );
 							DWORD dwPARAM = MAKELONG( wItemID, wNPCID );
@@ -20698,7 +20698,7 @@ void CTClientGame::UseTItem( BYTE bInvenID,
 						}
 						break;
 
-					case TNPC_GAMBLE: //°×ºí
+					case TNPC_GAMBLE: //ï¿½×ºï¿½
 						{
 							CTItemGambleDlg* pITEMGAMBLEDLG = (CTItemGambleDlg*) GetFrame( TFRAME_ITEM_GAMBLE );
 							pITEMGAMBLEDLG->ClearOpenByCash();
@@ -20707,7 +20707,7 @@ void CTClientGame::UseTItem( BYTE bInvenID,
 						}
 						break;
 					
-					case TNPC_REPAIR:	//¼ö¸®
+					case TNPC_REPAIR:	//ï¿½ï¿½ï¿½ï¿½
 						{
 							CTItemRepairDlg* pITEMREPAIRDLG = (CTItemRepairDlg*) GetFrame( TFRAME_ITEM_REPAIR );
 							pITEMREPAIRDLG->ClearOpenByCash();
@@ -20716,7 +20716,7 @@ void CTClientGame::UseTItem( BYTE bInvenID,
 						}
 						break;
 
-					case TNPC_REFINE:	//Á¦·ÃTSTR_ERROR_WRONGREGION_ITEM
+					case TNPC_REFINE:	//ï¿½ï¿½ï¿½ï¿½TSTR_ERROR_WRONGREGION_ITEM
 						{
 							CTItemRefineDlg* pITEMREFINDDLG = (CTItemRefineDlg*) GetFrame( TFRAME_ITEM_REFINE );
 							pITEMREFINDDLG->ClearOpenByCash();
@@ -22081,16 +22081,16 @@ void CTClientGame::BuildPickList(
 					{
 						D3DXVECTOR2 vDIR(
 							(*itTOBJ)->GetPositionX() - m_pMainChar->GetPositionX(),
-							(*itTOBJ)->GetPositionZ() - m_pMainChar->GetPositionZ()); // Ä³¸¯ÅÍ¿¡¼­ Å¸°ÙÀ» º¸´Â Direction. (Ä³¸¯ÅÍ°¡ º¸´Â ¹æÇâÀÌ ¾Æ´Ï´Ù)
+							(*itTOBJ)->GetPositionZ() - m_pMainChar->GetPositionZ()); // Ä³ï¿½ï¿½ï¿½Í¿ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Direction. (Ä³ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Æ´Ï´ï¿½)
 						D3DXVec2Normalize( &vDIR, &vDIR);
 
-						int nTargetDIR = m_pMainChar->GetTargetDIR( vDIR.x, vDIR.y); // DirectionÀ» °¢µµ·Î ¹Ù²Þ.
-						nTargetDIR = abs(nTargetDIR-m_pMainChar->m_wDIR); // Ä³¸¯ÅÍ°¡ º¸°í ÀÖ´Â ¹æÇâ°úÀÇ Â÷¸¦ ±¸ÇÔ.
-						nTargetDIR = nTargetDIR > 900 ? 1800-nTargetDIR : nTargetDIR; // 180µµ ³Ñ´Â °æ¿ì, ¿¹¸¦ µé¸é 270µµ¸¦ 90µµ·Î ¹Ù²Þ.
+						int nTargetDIR = m_pMainChar->GetTargetDIR( vDIR.x, vDIR.y); // Directionï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù²ï¿½.
+						nTargetDIR = abs(nTargetDIR-m_pMainChar->m_wDIR); // Ä³ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+						nTargetDIR = nTargetDIR > 900 ? 1800-nTargetDIR : nTargetDIR; // 180ï¿½ï¿½ ï¿½Ñ´ï¿½ ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ 270ï¿½ï¿½ï¿½ï¿½ 90ï¿½ï¿½ï¿½ï¿½ ï¿½Ù²ï¿½.
 
 						(*itTOBJ)->m_fPickWeight =
 							(TPICK_DIST- (*itTOBJ)->m_fZValue ) / TPICK_DIST * 43.0f
-							+ (900.0f - nTargetDIR) / 900.0f * 57.0f; // ÇÈÅ·°¡ÁßÄ¡, °Å¸®´Â 43%, °¢µµ´Â 57%, ÃÖ´ë°ªÀº 100ÀÌ´Ù.
+							+ (900.0f - nTargetDIR) / 900.0f * 57.0f; // ï¿½ï¿½Å·ï¿½ï¿½ï¿½ï¿½Ä¡, ï¿½Å¸ï¿½ï¿½ï¿½ 43%, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 57%, ï¿½Ö´ë°ªï¿½ï¿½ 100ï¿½Ì´ï¿½.
 
 						if(!((*itTOBJ)->m_vTSKILLTARGET.empty()))
 						{
@@ -22101,7 +22101,7 @@ void CTClientGame::BuildPickList(
 							for(; itST != endST ; ++itST)
 								if( (*itST)->m_dwID == m_pMainChar->m_dwID )
 								{
-									(*itTOBJ)->m_fPickWeight += 100.0f; // ³ª¸¦ Å¸°ÙÀ¸·Î »ï°í ÀÖ´Â ´ë»óÀ» ÃÖ¿ì¼±À¸·Î »ï´Â´Ù. (À§ÀÇ ÃÖ´ë°ª 100À» ´õÇØÁÖ´Â ÀÌÀ¯)
+									(*itTOBJ)->m_fPickWeight += 100.0f; // ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¿ì¼±ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Â´ï¿½. (ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ë°ª 100ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½)
 
 
 
@@ -22688,7 +22688,7 @@ void CTClientGame::NotifyNewMsgChat(CTMessengerChat* pChat)
 	if( pChat->IsVisible() )
 		return;
 
-	// ¸Þ½ÅÀú
+	// ï¿½Þ½ï¿½ï¿½ï¿½
 
 
 
@@ -26037,7 +26037,11 @@ BYTE CTClientGame::GetBGMOption()
 
 FLOAT CTClientGame::GetOBJRangeOption()
 {
-	return GetInstance()->m_pDevice->m_lVIDEOMEM < 256 ? min( m_vTOPTION.m_fOBJRange, 0.7f) : m_vTOPTION.m_fOBJRange;
+	// Item 3: only cap object range on cards with *detected* low VRAM. The original test
+	// (m_lVIDEOMEM < 256) also fired when VRAM detection returned 0, needlessly clamping
+	// range to 0.7x on modern GPUs. Mirror the device's own gate (D3DDevice InitDevices).
+	ULONGLONG lVIDEOMEM = GetInstance()->m_pDevice->m_lVIDEOMEM;
+	return (lVIDEOMEM != 0 && lVIDEOMEM < 256) ? min( m_vTOPTION.m_fOBJRange, 0.7f) : m_vTOPTION.m_fOBJRange;
 }
 
 CString CTClientGame::ToTimeString(DWORD dwTick)
@@ -26646,7 +26650,7 @@ void CTClientGame::SetMonRoaming( BOOL bMonRoaming)
 			{
 				CTClientMonster *pMONSTER = (*itMON).second;
 
-				if( pMONSTER->m_bFollowType != OT_NONE ) // ¹«¾ð°¡¸¦ µû¶ó°¡´Â ¸ó½ºÅÍ´Â ±× ´ë»ó°ú ÇØÃ¼!
+				if( pMONSTER->m_bFollowType != OT_NONE ) // ï¿½ï¿½ï¿½ð°¡¸ï¿½ ï¿½ï¿½ï¿½ó°¡´ï¿½ ï¿½ï¿½ï¿½Í´ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼!
 				{
 					CTClientObjBase *pFollow = FindOBJ(
 						pMONSTER->m_dwFollowID,
@@ -26813,8 +26817,8 @@ void CTClientGame::DebugMSG( const CString& strMSG, BOOL bPrintChat, BOOL bFile,
 
 	if( m_pChatFrame && bPrintChat )
 		m_pChatFrame->ChatSysMSG(
-			"µð¹ö±×",
-			"µð¹ö±×",
+			"ï¿½ï¿½ï¿½ï¿½ï¿½",
+			"ï¿½ï¿½ï¿½ï¿½ï¿½",
 
 
 
@@ -27150,7 +27154,7 @@ void CTClientGame::CheckItemupUseCashItem()
 			CString strCost = MakeMoneyStr(dwCost);
 			BYTE bProtectionOfUpgrading = FALSE;
 
-			// Çà¿îÀÇ ¹°¾à // 7609
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ // 7609
 
 
 
@@ -27163,7 +27167,7 @@ void CTClientGame::CheckItemupUseCashItem()
 				pCashDlg->AddItem( CTChart::FindTITEMTEMP( CTItemUpCashDlg::CASHITEM_POTIONOFFORTUNE ), CTChart::Format( TSTR_ITEMUP_WARN_UP_NOTUSE_POTIONOFFORTUNE ) );
 			}
 
-			// °­È­ º¸È£Á¦ // 7654
+			// ï¿½ï¿½È­ ï¿½ï¿½È£ï¿½ï¿½ // 7654
 
 
 
@@ -27196,7 +27200,7 @@ void CTClientGame::CheckItemupUseCashItem()
 			pCashDlg->m_pTopMessage->m_strText = CTChart::Format( TSTR_ITEMUP_WARN_MAGIC_NOTUSE_CASHITEM_MESSAGE_1 );
 			pCashDlg->m_pBottonMessage->m_strText = CTChart::Format( TSTR_ITEMUP_WARN_MAGIC_NOTUSE_CASHITEM_MESSAGE_2 );
 
-			// Àü¼³ÀÇ Á¦ÀÛ ºñÀü¼­ // 7611
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ // 7611
 
 
 
@@ -27215,7 +27219,7 @@ void CTClientGame::CheckItemupUseCashItem()
 			pCashDlg->m_pTopMessage->m_strText = CTChart::Format( TSTR_ITEMUP_WARN_RARE_NOTUSE_CASHITEM_MESSAGE_1 );
 			pCashDlg->m_pBottonMessage->m_strText = CTChart::Format( TSTR_ITEMUP_WARN_RARE_NOTUSE_CASHITEM_MESSAGE_2 );
 
-			// Àü¼³ÀÇ Á¦ÀÛ ºñÀü¼­ // 7611
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ // 7611
 
 
 
@@ -27253,7 +27257,7 @@ void CTClientGame::CheckRefineUseCashItem( DWORD dwCost, BYTE bDiscountRate )
 	}
 	pCashDlg->m_pBottonMessage->m_strText = CTChart::Format( TSTR_ITEMUP_WARN_REFINE_NOTUSE_CASHITEM_MESSAGE_2 );
 
-	// Àü¼³ÀÇ Á¦·Ã ºñÀü¼­ // 7612
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ // 7612
 
 
 
@@ -27264,7 +27268,7 @@ void CTClientGame::CheckRefineUseCashItem( DWORD dwCost, BYTE bDiscountRate )
 		pCashDlg->AddItem( CTChart::FindTITEMTEMP( CTItemUpCashDlg::CASHITEM_LEGENDREFINEBOOK ), CTChart::Format( TSTR_ITEMUP_WARN_RARE_NOTUSE_LEGENDREFINEBOOK ) );
 	}
 
-	// ¸¶¹ý¼Ó¼º ÀüÀÌ ÁÖ¹®¼­ // 7613
+	// ï¿½ï¿½ï¿½ï¿½ï¿½Ó¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¹ï¿½ï¿½ï¿½ // 7613
 
 
 
@@ -27417,15 +27421,15 @@ CString GetFameTitle( BYTE bType, DWORD dwRank )
 	static DWORD ENTRYTITLE[] =
 	{
 		0,
-		TSTR_TOURNAMENT_ENTRY_1, //¿©½ÅÀÇ ±â»ç´Ü
-		TSTR_TOURNAMENT_ENTRY_2, //ÆÈÄËÇÏÀÎÀÇ È­½Å
-		TSTR_TOURNAMENT_ENTRY_3, //·ç¸¶ÆÄ¸£Å©ÀÇ È­½Å
-		TSTR_TOURNAMENT_ENTRY_4, //Ææ´ÙÆ®·ÐÀÇ È­½Å
-		TSTR_TOURNAMENT_ENTRY_5, //¶óÇÇ¸®½ºÀÇ È­½Å
-		TSTR_TOURNAMENT_ENTRY_6, //ÆÄ¿ïµå·ÐÀÇ È­½Å
-		TSTR_TOURNAMENT_ENTRY_7, //·¹Ä«¹Ì¿¡ÀÇ È­½Å
-		TSTR_TOURNAMENT_ENTRY_8, //¿£µ§µå·Î½ºÀÇ È­½Å
-		TSTR_TOURNAMENT_ENTRY_9 //ÀÌº¥Æ®
+		TSTR_TOURNAMENT_ENTRY_1, //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+		TSTR_TOURNAMENT_ENTRY_2, //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È­ï¿½ï¿½
+		TSTR_TOURNAMENT_ENTRY_3, //ï¿½ç¸¶ï¿½Ä¸ï¿½Å©ï¿½ï¿½ È­ï¿½ï¿½
+		TSTR_TOURNAMENT_ENTRY_4, //ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ È­ï¿½ï¿½
+		TSTR_TOURNAMENT_ENTRY_5, //ï¿½ï¿½ï¿½Ç¸ï¿½ï¿½ï¿½ï¿½ï¿½ È­ï¿½ï¿½
+		TSTR_TOURNAMENT_ENTRY_6, //ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ È­ï¿½ï¿½
+		TSTR_TOURNAMENT_ENTRY_7, //ï¿½ï¿½Ä«ï¿½Ì¿ï¿½ï¿½ï¿½ È­ï¿½ï¿½
+		TSTR_TOURNAMENT_ENTRY_8, //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î½ï¿½ï¿½ï¿½ È­ï¿½ï¿½
+		TSTR_TOURNAMENT_ENTRY_9 //ï¿½Ìºï¿½Æ®
 	};
 
 	switch( bType )
@@ -28239,7 +28243,7 @@ CString CTClientGame::GetWMIValue(char* type,wchar_t *value)
     CoUninitialize(); 
   
 
-    // Wenn alles geklappt hat Wert zurück geben! 
+    // Wenn alles geklappt hat Wert zurï¿½ck geben! 
     return ReturnValue; 
 }
 

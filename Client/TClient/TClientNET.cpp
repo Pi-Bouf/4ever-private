@@ -297,7 +297,7 @@ void CTClientNET::InitEffectLIGHT()
 	m_pDevice->m_pDevice->LightEnable(0, TRUE);
 
 	DWORD dwAmbient = D3DCOLOR_XRGB(128, 128, 128);
-	m_pDevice->m_pDevice->SetRenderState(D3DRS_AMBIENT, dwAmbient);
+	m_pDevice->m_pDevice->SetRenderState(D3DRS_AMBIENT, CD3DDevice::ScaleAmbient(dwAmbient));
 }
 
 void CTClientNET::InitModelLIGHT(D3DXMATRIX& matWorld, BYTE bSelected)
@@ -616,7 +616,7 @@ void CTClientNET::SetTargetSlot(INT nTargetSlot, INT nDir)
 {
 	m_bTargetROT = TRUE;
 	m_fROT = RealignRot(m_fROT);
-	m_fTargetROT = GetSlotROT(nTargetSlot); // ´ë»ó ¹æÇâ
+	m_fTargetROT = GetSlotROT(nTargetSlot); // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 	if (nDir > 0)
 	{
@@ -677,7 +677,7 @@ HRESULT CTClientNET::Render(DWORD dwTickCount)
 	else
 		dwTickCount = 0;
 
-	// ·Îºñ »óÅÂ Ã³¸® & UI Ã³¸®
+	// ï¿½Îºï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ & UI Ã³ï¿½ï¿½
 	{
 		TFrame *pFRAME = FindFrame(m_dwLevel);
 		TComponent* pPCROOM = pFRAME->FindKid(ID_CTRLINST_PCROOM);
@@ -932,10 +932,10 @@ HRESULT CTClientNET::Render(DWORD dwTickCount)
 	break;
 	}
 
-	// ·»´õ¸µ
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	if (m_dwLevel != ID_FRAME_LOADING)
 	{
-		// RenderState ¼¼ÆÃ
+		// RenderState ï¿½ï¿½ï¿½ï¿½
 		m_pDevice->m_pDevice->SetRenderState(D3DRS_AMBIENT, 0xFF000000);
 		m_pDevice->m_pDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
 		m_vCamera.Activate(TRUE);
@@ -956,7 +956,7 @@ HRESULT CTClientNET::Render(DWORD dwTickCount)
 			m_pDevice,
 			&m_vCamera);
 
-		// ¸ðµ¨ ·»´õ¸µ
+		// ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		if (m_dwLevel == ID_FRAME_CHAR_NEW || m_dwLevel == ID_FRAME_NEWCHAR_NEW)
 		{
 			CalcMODEL(dwTickCount);
@@ -996,7 +996,7 @@ HRESULT CTClientNET::Render(DWORD dwTickCount)
 			DrawModelShadow();
 		}
 
-		// ÀÌÆåÆ® ·»´õ¸µ
+		// ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		CTachyonSFX::CalcBUF(
 			m_pDevice->m_pDevice,
 			dwTickCount);
@@ -1052,7 +1052,7 @@ HRESULT CTClientNET::Render(DWORD dwTickCount)
 	break;
 	}
 
-	// ÆäÀÌµå ÀÎ/¾Æ¿ô ·»´õ¸µ
+	// ï¿½ï¿½ï¿½Ìµï¿½ ï¿½ï¿½/ï¿½Æ¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	if (m_bWndAni)
 	{
 		if (m_bWndAni != 3)

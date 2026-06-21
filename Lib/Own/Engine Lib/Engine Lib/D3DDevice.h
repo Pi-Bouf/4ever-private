@@ -95,6 +95,7 @@ typedef struct tagGAMEOPTION
 
 	BYTE m_bWindowedMode;
 	BYTE m_bUseSHADER;
+	BYTE m_bAniso;					// anisotropic texture filtering on world surfaces
 
 	TEXTURE_DETAIL_LEVEL m_nTextureDetail;
 
@@ -102,12 +103,13 @@ typedef struct tagGAMEOPTION
 	{
 		m_dwPresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
 		m_dwSwapEffect = D3DSWAPEFFECT_COPY;
-		m_dwBehavior = D3DCREATE_MIXED_VERTEXPROCESSING; 
+		m_dwBehavior = D3DCREATE_MIXED_VERTEXPROCESSING;
 		m_dwScreenX = 1024;
 		m_dwScreenY = 768;
 
 		m_bWindowedMode = TRUE;
 		m_bUseSHADER = TRUE;
+		m_bAniso = TRUE;
 
 		m_nTextureDetail = TEXTURE_DETAIL_COUNT;
 	}
@@ -125,6 +127,8 @@ protected:
 	void InitBACK( D3DDISPLAYMODE *pMODE);
 	void ReleaseBACK();
 	void InitCAPS();
+	void InitAnisoCaps();	// derive aniso state from caps + option and (re)apply MAXANISOTROPY
+	void ApplyGammaRamp();	// build + set the fullscreen gamma ramp from the color controls
 
 public:
 	LPDIRECT3DTEXTURE9 LoadTexture(
@@ -154,6 +158,23 @@ public:
 
 public:
 	static DWORD m_dwPolyCount;
+
+	// Anisotropic filtering (Item 1). m_dwWorldAniso is 0 when off/unsupported, else the
+	// MaxAnisotropy to use; m_WorldMinFilter is ANISOTROPIC when enabled else LINEAR. World
+	// render paths read m_WorldMinFilter for their MINFILTER sampler state. Statics so the
+	// LPDIRECT3DDEVICE9-only paths (e.g. water) can reach them without a CD3DDevice handle.
+	static DWORD m_dwWorldAniso;
+	static D3DTEXTUREFILTERTYPE m_WorldMinFilter;
+
+	// Color controls (Item 4). All default to 1.0 = no change. m_fAmbientScale brightens the
+	// world ambient light (works windowed; applied to the variable scene-ambient setters via
+	// ScaleAmbient). m_fBrightness/m_fContrast/m_fGamma drive a fullscreen gamma ramp (D3D9
+	// gamma ramps only take effect in fullscreen mode).
+	static FLOAT m_fAmbientScale;
+	static FLOAT m_fBrightness;
+	static FLOAT m_fContrast;
+	static FLOAT m_fGamma;
+	static DWORD ScaleAmbient( DWORD dwAmbient);	// scale the RGB of an ambient color by m_fAmbientScale
 
 	LPDIRECT3DDEVICE9 m_pDevice;
 	LPDIRECT3D9 m_pD3D;
