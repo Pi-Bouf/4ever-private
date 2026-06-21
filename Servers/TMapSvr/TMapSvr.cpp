@@ -1633,8 +1633,19 @@ DWORD CTMapSvrModule::InitDB()
 	return EC_NOERROR;
 }
 
+// --- startup data-load instrumentation ------------------------------------------------------
+// Each LOAD_STEP() logs how long the PREVIOUS step took. A hang shows up as the last printed
+// step (the one currently loading); the slow step shows up as a large "(prev N ms)" on the next
+// line. Delete this block and the LOAD_STEP() calls to remove the per-step logging.
+static DWORD g_dwLoadStep = 0;
+#define LOAD_STEP(name) do { DWORD __now = GetTickCount(); \
+		SSLogInfo("[load] %-24s (prev %lu ms)", (name), __now - g_dwLoadStep); \
+		g_dwLoadStep = __now; } while(0)
+
 DWORD CTMapSvrModule::LoadData()
 {
+	g_dwLoadStep = GetTickCount();
+	DWORD __ldStart = g_dwLoadStep;
 	CTMap::m_vTCHANNEL.clear();
 	m_mapTLOGCHANNEL.clear();
 	m_mapTCHANNEL.clear();
@@ -1690,12 +1701,14 @@ DWORD CTMapSvrModule::LoadData()
 	m_mapTSvrMsg.clear();
 	m_vCashCategory.clear();
 
+	LOAD_STEP("CSPQuestSendPost");
 	DEFINE_QUERY(&m_db,CSPQuestSendPost)
 	UNDEFINE_QUERY()
 
 	for(BYTE ik=0; ik<IK_COUNT; ik++)
 		m_mapTITEMKINDATTR[ik].clear();
 
+	LOAD_STEP("CSPLoadService");
 	DEFINE_QUERY(&m_db, CSPLoadService)
 	query->m_bWorld = SVRGRP_NULL;
 	query->m_bServiceGroup = SVRGRP_CTLSVR;
@@ -1706,6 +1719,7 @@ DWORD CTMapSvrModule::LoadData()
 	m_addrCtrl.sin_port = query->m_wPort;
 	UNDEFINE_QUERY();
 
+	LOAD_STEP("CSPLoadService");
 	DEFINE_QUERY(&m_db, CSPLoadService)
 	query->m_bWorld = m_bGroupID;
 	query->m_bServiceGroup = SVRGRP_RLYSVR;
@@ -1716,6 +1730,7 @@ DWORD CTMapSvrModule::LoadData()
 	m_addrRelay.sin_port = query->m_wPort;
 	UNDEFINE_QUERY();
 
+	LOAD_STEP("CSPInitGenItemID");
 	DEFINE_QUERY(&m_db, CSPInitGenItemID)
 	query->m_bServerID = m_bServerID;
 	if(!query->Call())
@@ -1725,12 +1740,14 @@ DWORD CTMapSvrModule::LoadData()
 		return EC_INITSERVICE_DBOPENFAILED;
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CSPGetLimitedLevel");
 	DEFINE_QUERY(&m_db, CSPGetLimitedLevel)
 	if(!query->Call())
 		return EC_INITSERVICE_LIMITEDLEVEL;
 	m_bMaxLevel = query->m_bMaxLevel;
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CSPGetNation");
 	DEFINE_QUERY(&m_db, CSPGetNation)
 	if(!query->Call())
 		return EC_INITSERVICE_NATION;
@@ -1739,6 +1756,7 @@ DWORD CTMapSvrModule::LoadData()
 		return EC_INITSERVICE_NATION;
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLHelpMessage");
 	DEFINE_QUERY(&m_db, CTBLHelpMessage)
 	if(query->Open())
 	{
@@ -1757,6 +1775,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLTutorialCharItem");
 	DEFINE_QUERY(&m_db, CTBLTutorialCharItem)
 	if(query->Open())
 	{
@@ -1779,6 +1798,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLSvrMsg");
 	DEFINE_QUERY(&m_db, CTBLSvrMsg)
 	if(query->Open())
 	{
@@ -1788,6 +1808,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLItemAttrChart");
 	DEFINE_QUERY(&m_db, CTBLItemAttrChart)
 	if(query->Open())
 	{
@@ -1811,6 +1832,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLItemGradeChart");
 	DEFINE_QUERY(&m_db, CTBLItemGradeChart)
 	if(query->Open())
 	{
@@ -1825,6 +1847,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLGemGradeChart");
 	DEFINE_QUERY(&m_db, CTBLGemGradeChart)
 	if(query->Open())
 	{
@@ -1837,6 +1860,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLItemMagicChart");
 	DEFINE_QUERY(&m_db, CTBLItemMagicChart)
 
 	for(BYTE i=0; i<IK_COUNT; i++)
@@ -1871,6 +1895,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLItemSetChart");
 	DEFINE_QUERY(&m_db, CTBLItemSetChart)
 	if(query->Open())
 	{
@@ -1893,6 +1918,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLItemChart");
 	DEFINE_QUERY( &m_db, CTBLItemChart)
 	if(query->Open())
 	{
@@ -1973,6 +1999,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLTitleChart");
 	DEFINE_QUERY( &m_db, CTBLTitleChart)
 	if(query->Open())
 	{
@@ -1992,6 +2019,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLRPSGame");
 	DEFINE_QUERY(&m_db, CTBLRPSGame)
 	if(query->Open())
 	{
@@ -2030,6 +2058,7 @@ DWORD CTMapSvrModule::LoadData()
 
 	MAPCASHGAMBLE::iterator itCG;
 	MAPWDWORD::iterator itCD;
+	LOAD_STEP("CTBLCashGambleChart");
 	DEFINE_QUERY(&m_db, CTBLCashGambleChart)
 	if(query->Open())
 	{	
@@ -2073,6 +2102,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLItemMagicSkill");
 	DEFINE_QUERY( &m_db, CTBLItemMagicSkill)
 	if(query->Open())
 	{
@@ -2111,6 +2141,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLLevelChart");
 	DEFINE_QUERY( &m_db, CTBLLevelChart)
 	if(query->Open())
 	{
@@ -2139,6 +2170,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLCashCategory");
 	DEFINE_QUERY( &m_db, CTBLCashCategory)
 	if(query->Open())
 	{
@@ -2154,6 +2186,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLCashShopItem");
 	DEFINE_QUERY(&m_db, CTBLCashShopItem)
 	BYTE bCategory = 0;
 	query->m_item.Reset();
@@ -2186,6 +2219,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLGamble");
 	DEFINE_QUERY(&m_db, CTBLGamble)
 	if(query->Open())
 	{
@@ -2218,6 +2252,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLClassChart");
 	DEFINE_QUERY( &m_db, CTBLClassChart)
 	if(query->Open())
 	{
@@ -2240,6 +2275,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLRaceChart");
 	DEFINE_QUERY( &m_db, CTBLRaceChart)
 	if(query->Open())
 	{
@@ -2262,6 +2298,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLAICommand");
 	DEFINE_QUERY( &m_db, CTBLAICommand)
 	if(query->Open())
 	{
@@ -2304,6 +2341,7 @@ DWORD CTMapSvrModule::LoadData()
 		UNDEFINE_QUERY()
 	}
 
+	LOAD_STEP("CTBLAIChart");
 	DEFINE_QUERY( &m_db, CTBLAIChart)
 	if(query->Open())
 	{
@@ -2340,6 +2378,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLIndunChart");
 	DEFINE_QUERY( &m_db, CTBLIndunChart)
 	if(query->Open())
 	{
@@ -2356,6 +2395,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLChannelList");
 	DEFINE_QUERY( &m_db, CTBLChannelList)
 	if(query->Open())
 	{
@@ -2366,6 +2406,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLServerChart");
 	DEFINE_QUERY( &m_db, CTBLServerChart)
 	query->m_bServerID = m_bServerID;
 	if(query->Open())
@@ -2414,6 +2455,7 @@ DWORD CTMapSvrModule::LoadData()
 	for( itCH = m_mapTCHANNEL.begin(); itCH != m_mapTCHANNEL.end(); itCH++)
 		(*itCH).second->InitChannel( &m_db, m_bServerID);
 
+	LOAD_STEP("CTBLChannelChart");
 	DEFINE_QUERY( &m_db, CTBLChannelChart)
 	query->m_bServerID = m_bServerID;
 
@@ -2431,6 +2473,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLSwitchChart");
 	DEFINE_QUERY( &m_db, CTBLSwitchChart)
 	if(query->Open())
 	{
@@ -2463,6 +2506,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLGateChart");
 	DEFINE_QUERY( &m_db, CTBLGateChart)
 	if(query->Open())
 	{
@@ -2515,6 +2559,7 @@ DWORD CTMapSvrModule::LoadData()
 
 	FLOAT f1stRateX = 0;
 	m_mapTFORMULA.clear();
+	LOAD_STEP("CTBLFormulaChart");
 	DEFINE_QUERY( &m_db, CTBLFormulaChart)
 	if(query->Open())
 	{
@@ -2537,6 +2582,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLSkillChart");
 	DEFINE_QUERY(&m_db, CTBLSkillChart);
 	if(query->Open())
 	{
@@ -2609,6 +2655,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY();
 
+	LOAD_STEP("CTBLSkillPoint");
 	DEFINE_QUERY(&m_db, CTBLSkillPoint)
 	if(query->Open())
 	{
@@ -2657,6 +2704,7 @@ DWORD CTMapSvrModule::LoadData()
 		UNDEFINE_QUERY();
 	}
 
+	LOAD_STEP("CTBLMonster");
 	DEFINE_QUERY( &m_db, CTBLMonster)
 	if(query->Open())
 	{
@@ -2705,6 +2753,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLMonAttr");
 	DEFINE_QUERY(&m_db, CTBLMonAttr)
 	if(query->Open())
 	{
@@ -2776,6 +2825,7 @@ DWORD CTMapSvrModule::LoadData()
 
 
 
+	LOAD_STEP("CTBLQuestMagicItemChart");
 	DEFINE_QUERY( &m_db, CTBLQuestMagicItemChart)
 	query->m_item.Reset();
 	if(query->Open())
@@ -2846,6 +2896,7 @@ DWORD CTMapSvrModule::LoadData()
 	for(WORD i = 0x8000; i < 0xFFFF; i++)
 		m_mapExtraSpawnID.insert(MAPWORD::value_type(i,i));
 #ifndef BR_COMPILE_MODE
+	LOAD_STEP("CTBLMonSpawn");
 	DEFINE_QUERY( &m_db, CTBLMonSpawn)
 	MAPVMONSPAWN::iterator itSG;
 	query->m_bServerID = m_bServerID;
@@ -2907,6 +2958,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 #endif
+	LOAD_STEP("CTBLSpawnPath");
 	DEFINE_QUERY(&m_db, CTBLSpawnPath)
 	if(query->Open())
 	{
@@ -2954,6 +3006,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLBattleZoneChart");
 	DEFINE_QUERY(&m_db, CTBLBattleZoneChart)
 	if(query->Open())
 	{
@@ -3004,6 +3057,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY();
 
+	LOAD_STEP("CTBLMissionTable");
 	DEFINE_QUERY(&m_db, CTBLMissionTable)
 	if(query->Open())
 	{
@@ -3051,6 +3105,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLCastleTable");
 	DEFINE_QUERY(&m_db, CTBLCastleTable)
 	if(query->Open())
 	{
@@ -3151,6 +3206,7 @@ DWORD CTMapSvrModule::LoadData()
 
 
 #ifdef SKYGARDEN
+	LOAD_STEP("CTBLSkygardenTable");
 	DEFINE_QUERY(&m_db, CTBLSkygardenTable)
 	if(query->Open())
 	{
@@ -3201,6 +3257,7 @@ DWORD CTMapSvrModule::LoadData()
 #endif
 
 
+	LOAD_STEP("CTBLGodTower");
 	DEFINE_QUERY(&m_db, CTBLGodTower)
 	if(query->Open())
 	{
@@ -3224,6 +3281,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLGodBall");
 	DEFINE_QUERY(&m_db, CTBLGodBall)
 	if(query->Open())
 	{
@@ -3249,6 +3307,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLLocalTable");
 	DEFINE_QUERY(&m_db, CTBLLocalTable)
 	if(query->Open())
 	{
@@ -3304,6 +3363,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLLocalOccupy");
 	DEFINE_QUERY(&m_db, CTBLLocalOccupy)
 	if(query->Open())
 	{
@@ -3368,6 +3428,7 @@ DWORD CTMapSvrModule::LoadData()
 				(*itCH).second->AddMonSpawn( pSPAWN, pSPAWN->m_bCountry);
 	}
 
+	LOAD_STEP("CTBLQuestChart");
 	DEFINE_QUERY( &m_db, CTBLQuestChart)
 	query->m_dwParentID = 0;
 
@@ -3398,6 +3459,7 @@ DWORD CTMapSvrModule::LoadData()
 	for( int i=0; i<INT(m_vQUESTTEMP.size()); i++)
 		LoadQuestTemp(m_vQUESTTEMP[i]);
 
+	LOAD_STEP("CTBLSpawnPos");
 	DEFINE_QUERY(&m_db, CTBLSpawnPos);
 	if(query->Open())
 	{
@@ -3429,6 +3491,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY();
 
+	LOAD_STEP("CTBLArena");
 	DEFINE_QUERY(&m_db, CTBLArena)
 	if(query->Open())
 	{
@@ -3476,6 +3539,7 @@ DWORD CTMapSvrModule::LoadData()
 
 	vAuctionNpc.clear();
 
+	LOAD_STEP("CTBLNpc");
 	DEFINE_QUERY( &m_db, CTBLNpc)
 	if(query->Open())
 	{
@@ -3537,6 +3601,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 
 	UNDEFINE_QUERY()
+	LOAD_STEP("CTBLPortalChart");
 	DEFINE_QUERY(&m_db, CTBLPortalChart)
 	if(query->Open())
 	{
@@ -3661,6 +3726,7 @@ DWORD CTMapSvrModule::LoadData()
 		UNDEFINE_QUERY();
 	}
 
+	LOAD_STEP("CTBLMonsterShop");
 	DEFINE_QUERY(&m_db, CTBLMonsterShop)
 	if(query->Open())
 	{
@@ -3723,6 +3789,7 @@ DWORD CTMapSvrModule::LoadData()
 		}
 	}
 
+	LOAD_STEP("CTBLOperatorChart");
 	DEFINE_QUERY( &m_db, CTBLOperatorChart)
 	if(query->Open())
 	{
@@ -3752,6 +3819,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLPvPointChart");
 	DEFINE_QUERY( &m_db, CTBLPvPointChart)
 	if(query->Open())
 	{
@@ -3780,6 +3848,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLCompanionBonusChart");
 	DEFINE_QUERY( &m_db, CTBLCompanionBonusChart)
 	if(query->Open())
 	{
@@ -3802,6 +3871,7 @@ DWORD CTMapSvrModule::LoadData()
 	MAPTAUCTIONBIDDER mapTAUCTIONBIDDER;
 	mapTAUCTIONBIDDER.clear();
 
+	LOAD_STEP("CTBLALLAuctionBidder");
 	DEFINE_QUERY(&m_db, CTBLALLAuctionBidder)
 	if(query->Open())
 	{
@@ -3994,6 +4064,7 @@ DWORD CTMapSvrModule::LoadData()
 	vAuctionNpc.clear();
 
 	BYTE bMonthRank = TOTALMONTHRANKCOUNT;
+	LOAD_STEP("CTBLMonthRankTable");
 	DEFINE_QUERY(&m_db,CTBLMonthRankTable)	
 	if(query->Open())
 	{
@@ -4028,6 +4099,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLHeroTable");
 	DEFINE_QUERY(&m_db,CTBLHeroTable)	
 	if(query->Open())
 	{
@@ -4060,6 +4132,7 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLFirstGradeGroup");
 	DEFINE_QUERY(&m_db,CTBLFirstGradeGroup)
 	CTime t = CTime::GetCurrentTime().GetTime();
 	BYTE bRankMonth = t.GetMonth();
@@ -4118,6 +4191,7 @@ DEFINE_QUERY( &m_db, CTBLInvenTournametChart)
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLItemTournamentChart");
 	DEFINE_QUERY( &m_db, CTBLItemTournamentChart)
 	if(query->Open())
 	{
@@ -4142,6 +4216,7 @@ DEFINE_QUERY( &m_db, CTBLInvenTournametChart)
 	}
 UNDEFINE_QUERY();
 
+	LOAD_STEP("CTBLPremiumSkillChart");
 	DEFINE_QUERY( &m_db, CTBLPremiumSkillChart)
 	if(query->Open())
 	{
@@ -4187,6 +4262,7 @@ UNDEFINE_QUERY();
 	}
 	UNDEFINE_QUERY();
 
+	LOAD_STEP("CTBLBattleRankChart");
 	DEFINE_QUERY( &m_db, CTBLBattleRankChart);
 	if(query->Open())
 	{
@@ -4203,6 +4279,7 @@ UNDEFINE_QUERY();
 	}
 	UNDEFINE_QUERY();
 
+	LOAD_STEP("CTBLSpecialBoxChart");
 	DEFINE_QUERY( &m_db, CTBLSpecialBoxChart);
 	if(query->Open())
 	{
@@ -4361,6 +4438,7 @@ UNDEFINE_QUERY();
 
 
 
+	LOAD_STEP("CTBLGuildSkillChart");
 	DEFINE_QUERY(&m_db, CTBLGuildSkillChart);
 	if (query->Open())
 	{
@@ -4379,6 +4457,7 @@ UNDEFINE_QUERY();
 	}
 	UNDEFINE_QUERY()
 
+	LOAD_STEP("CTBLAccessoryMagic");
 	DEFINE_QUERY(&m_db, CTBLAccessoryMagic);
 	if (query->Open())
 	{
@@ -4405,12 +4484,14 @@ UNDEFINE_QUERY();
 	LoadBRData();
 #endif
 
+	SSLogInfo("[load] all data loaded in %lu ms.", GetTickCount() - __ldStart);
 	return EC_NOERROR;
 }
 
 #ifdef BOW_COMPILE_MODE
 void CTMapSvrModule::LoadBOWData()
 {
+	LOAD_STEP("CTBLBOWItemChart");
 	DEFINE_QUERY( &m_db, CTBLBOWItemChart)
 	if(query->Open())
 	{
@@ -4430,6 +4511,7 @@ void CTMapSvrModule::LoadBOWData()
 	}
 	UNDEFINE_QUERY();
 
+	LOAD_STEP("CTBLBOWBonusItems");
 	DEFINE_QUERY(&m_db, CTBLBOWBonusItems)
 	if(query->Open())
 	{
@@ -4453,6 +4535,7 @@ void CTMapSvrModule::LoadBOWData()
 #ifdef BR_COMPILE_MODE
 void CTMapSvrModule::LoadBRData()
 {
+	LOAD_STEP("CTBLBRSpawnPos");
 	DEFINE_QUERY(&m_db, CTBLBRSpawnPos)
 	if(query->Open())
 	{
@@ -4487,6 +4570,7 @@ void CTMapSvrModule::LoadBRData()
 	}
 	UNDEFINE_QUERY();
 
+	LOAD_STEP("CTBLBRSuppliesChart");
 	DEFINE_QUERY(&m_db, CTBLBRSuppliesChart)
 	if(query->Open())
 	{
