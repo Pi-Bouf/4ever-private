@@ -20,6 +20,7 @@ public sealed partial class WorldService
             case Msg.MW_FRIENDREPLY_ACK: await OnFriendReply(r); return true;
             case Msg.MW_FRIENDERASE_ACK: await OnFriendErase(r); return true;
             case Msg.MW_FRIENDPROTECTEDASK_ACK: OnFriendProtectedAsk(r); return true;
+            case Msg.MW_PROTECTEDCHECK_ACK: await OnProtectedCheck(r); return true;
             case Msg.MW_FRIENDGROUPMAKE_ACK: await OnFriendGroupMake(r); return true;
             case Msg.MW_FRIENDGROUPDELETE_ACK: await OnFriendGroupDelete(r); return true;
             case Msg.MW_FRIENDGROUPCHANGE_ACK: await OnFriendGroupChange(r); return true;
@@ -31,6 +32,43 @@ public sealed partial class WorldService
     /// <summary>Number of friends excluding one-way "target" entries (matches the C++ count loops).</summary>
     private static int VisibleFriendCount(Character ch)
         => ch.Friends.Values.Count(f => f.Type != FriendType.Target);
+
+    /// <summary>A protected friend's online state changed: sync both sides' connected/region and notify the
+    /// peer (unless the link is one-way "target"); a disconnect also erases the stored link. C++ OnMW_PROTECTEDCHECK_ACK.</summary>
+    private async Task OnProtectedCheck(PacketReader r)
+    {
+        uint charId = r.ReadUInt32();
+        uint key = r.ReadUInt32();
+        byte connect = r.ReadByte();
+        string protectedName = r.ReadString();
+
+        var ch = _state.FindChar(charId, key);
+        if (ch is null) return;
+
+        var fr = ch.Friends.Values.FirstOrDefault(f => string.Equals(f.Name, protectedName, StringComparison.OrdinalIgnoreCase));
+        if (fr is null) return;
+
+        if (connect == (byte)FriendConnState.Disconnection && _socialDb is not null)
+            await Persist(() => _socialDb!.FriendEraseAsync(ch.CharId, fr.Id), "TFriendDelete");
+
+        if (!_state.CharactersByName.TryGetValue(protectedName, out var target)) return;
+        if (!target.Friends.TryGetValue(charId, out var theirs)) return;   // the target's entry for this char
+        if (!ch.Friends.TryGetValue(target.CharId, out var mine)) return;  // this char's entry for the target
+
+        if (connect == (byte)FriendConnState.Connection)
+        {
+            theirs.Connected = true; theirs.Region = ch.Region;
+            mine.Connected = true; mine.Region = target.Region;
+        }
+        else
+        {
+            theirs.Connected = false; mine.Connected = false;
+        }
+
+        if (theirs.Type != FriendType.Target)
+            SendToChar(target, BuildFriendConnection(target.CharId, target.Key, connect, ch.Name,
+                connect == (byte)FriendConnState.Connection ? ch.Region : 0u));
+    }
 
     // ===== startup load (mirrors OnDM_FRIENDLIST_ACK) =====
 

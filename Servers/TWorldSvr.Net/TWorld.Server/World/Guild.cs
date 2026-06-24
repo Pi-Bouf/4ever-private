@@ -39,6 +39,33 @@ public sealed class GuildMember
 
     /// <summary>Per-member PvP records (TENTRYRECORD list).</summary>
     public List<GuildPvpRecord> Records { get; } = new();
+
+    /// <summary>Rolling 7-day aggregate of <see cref="Records"/> (m_weekrecord), recomputed on each war-end.</summary>
+    public GuildWeekRecord WeekRecord { get; } = new();
+
+    /// <summary>Recompute this member's rolling 7-day record as of <paramref name="date"/>, pruning entries
+    /// older than a week. CTGuild::CalcWeekRecord(member, date).</summary>
+    public void RecalcWeekRecord(uint date)
+    {
+        WeekRecord.KillCount = 0; WeekRecord.DieCount = 0; Array.Clear(WeekRecord.Point);
+        for (int w = 0; w < Records.Count;)
+        {
+            if (Records[w].Date + 7 <= date) { Records.RemoveAt(w); continue; }
+            var rec = Records[w];
+            WeekRecord.KillCount = (ushort)(WeekRecord.KillCount + rec.KillCount);
+            WeekRecord.DieCount = (ushort)(WeekRecord.DieCount + rec.DieCount);
+            for (int e = 0; e < WeekRecord.Point.Length; e++) WeekRecord.Point[e] += rec.Point[e];
+            w++;
+        }
+    }
+}
+
+/// <summary>A member's rolling 7-day PvP totals (the aggregate fields of TENTRYRECORD).</summary>
+public sealed class GuildWeekRecord
+{
+    public ushort KillCount { get; set; }
+    public ushort DieCount { get; set; }
+    public uint[] Point { get; } = new uint[8]; // PVPE_COUNT
 }
 
 /// <summary>
@@ -137,5 +164,58 @@ public sealed class Guild
         foreach (var m in Members.Values) if (m.Castle == castle) { count++; camp = m.Camp; }
         foreach (var t in Tactics.Values) if (t.Castle == castle) { count++; camp = t.Camp; }
         return (count, camp);
+    }
+
+    /// <summary>Recompute every member's rolling 7-day record (CTGuild::CalcWeekRecord).</summary>
+    public void CalcWeekRecord(uint date)
+    {
+        foreach (var m in Members.Values) m.RecalcWeekRecord(date);
+    }
+
+    /// <summary>Add PvP points by flag bits (PVP_TOTAL bumps total+month, PVP_USEABLE bumps useable).
+    /// CTGuild::GainPvPoint (the bEvent argument is unused by the original). Persistence is the caller's job.</summary>
+    public void GainPvPoint(uint point, byte type)
+    {
+        if (point == 0) return;
+        if ((type & Proto.PvpTotal) != 0) { PvPTotalPoint += point; PvPMonthPoint += point; }
+        if ((type & Proto.PvpUseable) != 0) PvPUseablePoint += point;
+    }
+
+    /// <summary>Spend PvP points (clamped at 0). CTGuild::UsePvPoint.</summary>
+    public void UsePvPoint(uint point, byte type)
+    {
+        if (point == 0) return;
+        if ((type & Proto.PvpTotal) != 0) PvPTotalPoint = PvPTotalPoint > point ? PvPTotalPoint - point : 0;
+        if ((type & Proto.PvpUseable) != 0) PvPUseablePoint = PvPUseablePoint > point ? PvPUseablePoint - point : 0;
+    }
+
+    /// <summary>Treasury as a single copper-denominated amount (NetCode.h CalcMoney radix MONEY_MULTIPLY).</summary>
+    private long TreasuryMoney => Cooper + (long)Silver * Proto.MoneyMultiply + (long)Gold * Proto.MoneyMultiply * Proto.MoneyMultiply;
+
+    private void SetTreasury(long money)
+    {
+        Cooper = (uint)(money % Proto.MoneyMultiply);
+        Silver = (uint)(money / Proto.MoneyMultiply % Proto.MoneyMultiply);
+        Gold = (uint)(money / Proto.MoneyMultiply / Proto.MoneyMultiply);
+    }
+
+    /// <summary>Spend treasury money. Returns false (and changes nothing) if the guild can't afford it.
+    /// CTGuild::UseMoney(INT64, bUse). The DB contribution save is the caller's job.</summary>
+    public bool UseMoney(long money, bool use)
+    {
+        if (TreasuryMoney < money) return false;
+        if (use && money != 0) SetTreasury(TreasuryMoney - money);
+        return true;
+    }
+
+    /// <summary>Add treasury money (gold/silver/copper denominations). CTGuild::GainMoney.</summary>
+    public void GainMoney(uint gold, uint silver, uint cooper)
+        => SetTreasury(TreasuryMoney + (cooper + (long)silver * Proto.MoneyMultiply + (long)gold * Proto.MoneyMultiply * Proto.MoneyMultiply));
+
+    /// <summary>Prepend a PvP-point reward to the rolling TOP-50 log. CTGuild::PointLog.</summary>
+    public void PointLog(uint point, string target, long date)
+    {
+        PointRewards.Insert(0, new GuildPointReward { Name = target, Point = point, Date = date });
+        if (PointRewards.Count > 50) PointRewards.RemoveAt(PointRewards.Count - 1);
     }
 }

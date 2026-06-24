@@ -60,14 +60,6 @@ public sealed partial class WorldService
         }
     }
 
-    /// <summary>C++ SetCharLevel — set the level and keep the guild roster's copy in sync. (The war-country
-    /// balance-ladder bookkeeping in the original is part of the not-yet-ported nation-balance subsystem.)</summary>
-    private static void SetCharLevel(Character ch, byte level)
-    {
-        ch.Level = level;
-        if (ch.Guild?.FindMember(ch.CharId) is { } mem) mem.Level = level;
-    }
-
     /// <summary>Add a looted item to the char: route to the authoritative main, or tell the reporting server
     /// the char is gone (ADDITEMRESULT NOTFOUND). C++ OnMW_ADDITEM_ACK.</summary>
     private void OnMW_ADDITEM_ACK(ServerSession session, PacketReader r, byte[] packet)

@@ -57,9 +57,17 @@ public sealed class WorldWorker : BackgroundService
         RankDatabase? rankDb = null;
         BowDatabase? bowDb = null;
         BrDatabase? brDb = null;
+        GameDatabase? gameDb = null;
         if (!string.IsNullOrWhiteSpace(_opt.Db.GameConnectionString))
         {
-            try { await new GameDatabase(_opt.Db.GameConnectionString).PingAsync(stoppingToken); }
+            gameDb = new GameDatabase(_opt.Db.GameConnectionString);
+            try
+            {
+                await gameDb.PingAsync(stoppingToken);
+                state.GenRecallId = await gameDb.GetRecallIdAsync(stoppingToken);
+                await LoadServerMessagesAsync(gameDb, state, stoppingToken);
+                await LoadRpsAsync(gameDb, state, stoppingToken);
+            }
             catch (Exception ex) { _log.LogWarning(ex, "Game DB unavailable at startup."); }
 
             guildDb = new GuildDatabase(_opt.Db.GameConnectionString);
@@ -85,9 +93,9 @@ public sealed class WorldWorker : BackgroundService
         if (state.RankMonth == 0) state.RankMonth = (byte)DateTime.UtcNow.Month;
         state.Nation = nation;
 
-        var service = new WorldService(state, guildDb, _loggerFactory.CreateLogger<WorldService>(), socialDb, rankDb, bowDb, brDb);
-        _log.LogInformation("World group={Grp} server={Sid} nation={Nation} guilds={G} guildLevels={L} rankMonth={RM} bow={Bow} br={Br} battles={Bt} tnmt={Tn}",
-            _opt.GroupId, _opt.ServerId, nation, state.Guilds.Count, state.GuildLevels.Count, state.RankMonth, state.Bow is not null, state.Br is not null, state.Battles is not null, state.Tournament is not null);
+        var service = new WorldService(state, guildDb, _loggerFactory.CreateLogger<WorldService>(), socialDb, rankDb, bowDb, brDb, gameDb);
+        _log.LogInformation("World group={Grp} server={Sid} nation={Nation} guilds={G} guildLevels={L} rankMonth={RM} bow={Bow} br={Br} battles={Bt} tnmt={Tn} recallId={Rid}",
+            _opt.GroupId, _opt.ServerId, nation, state.Guilds.Count, state.GuildLevels.Count, state.RankMonth, state.Bow is not null, state.Br is not null, state.Battles is not null, state.Tournament is not null, state.GenRecallId);
 
         // Single batch task: all packet handling + state mutation happens here, in order.
         var batch = Channel.CreateUnbounded<BatchItem>(new UnboundedChannelOptions { SingleReader = true });
@@ -323,6 +331,28 @@ public sealed class WorldWorker : BackgroundService
         _log.LogInformation("BR initialized: times={N} firstStart={Start} type={Type}.", br.Times.Count, br.Start, br.Type);
     }
 
+
+    /// <summary>Load the system-message text table (CTBLSvrMsg → m_mapTSvrMsg).</summary>
+    private async Task LoadServerMessagesAsync(GameDatabase db, WorldState state, CancellationToken ct)
+    {
+        foreach (var m in await db.LoadServerMessagesAsync(ct)) state.ServerMessages[m.Id] = m.Message;
+        _log.LogInformation("Server messages loaded: {Count}.", state.ServerMessages.Count);
+    }
+
+    /// <summary>Load the RPS chart + standing win records (CTBLRPSGame / CTBLRPSGameRecord → m_mapRPSGame).</summary>
+    private async Task LoadRpsAsync(GameDatabase db, WorldState state, CancellationToken ct)
+    {
+        foreach (var c in await db.LoadRpsChartAsync(ct))
+        {
+            var rps = new RpsGame { Type = c.Type, WinCount = c.WinCount, WinKeep = c.WinKeep, WinPeriod = c.WinPeriod };
+            rps.Prob[0] = c.ProbWin; rps.Prob[1] = c.ProbDraw; rps.Prob[2] = c.ProbLose;
+            state.RpsGames[(ushort)(c.Type | (c.WinCount << 8))] = rps;
+        }
+        foreach (var rec in await db.LoadRpsRecordsAsync(ct))
+            if (state.RpsGames.TryGetValue((ushort)(rec.Type | (rec.WinCount << 8)), out var rps))
+                rps.WinDates.Add(rec.WinDate);
+        _log.LogInformation("RPS chart loaded: {Count} entries.", state.RpsGames.Count);
+    }
 
     private async Task LoadBowAsync(BowDatabase db, WorldState state, CancellationToken ct)
     {

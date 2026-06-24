@@ -13,12 +13,12 @@ public sealed partial class WorldService
 {
     /// <summary>Test/diagnostic seam (the production caller is <see cref="OnTimerAsync"/>). dayOfWeek is the
     /// MFC convention: 1=Sunday .. 7=Saturday, matching the castle <c>m_bDay</c>.</summary>
-    public void BattleTick(uint secondsOfDay, byte dayOfWeek)
+    public void BattleTick(uint secondsOfDay, byte dayOfWeek, uint recentDay = 0)
     {
-        if (_state.Battles is not null) BattleOnTimer(secondsOfDay, dayOfWeek);
+        if (_state.Battles is not null) BattleOnTimer(secondsOfDay, dayOfWeek, recentDay);
     }
 
-    private void BattleOnTimer(uint dwCLT, byte dayOfWeek)
+    private void BattleOnTimer(uint dwCLT, byte dayOfWeek, uint recentDay)
     {
         var sched = _state.Battles!;
         var castle = sched[BattleType.Castle];
@@ -96,7 +96,24 @@ public sealed partial class WorldService
         {
             if (battle.Status == BattleStatus.Peace) leftTime = battle.PeaceDur;
             BroadcastBattleStatus(battle.Type, battle.Status, battle.BattleStart, leftTime);
+
+            // War end (any non-mission field entering PEACE): recompute guild week records, and for a castle
+            // war clear the scoreboard. C++ OnSM_BATTLESTATUS_REQ tail. (PEACE has no alarms, so this fires
+            // exactly once, on the BATTLE->PEACE transition.)
+            if (battle.Type != (byte)BattleType.Mission && battle.Status == BattleStatus.Peace)
+                OnBattlePeace((BattleType)battle.Type, recentDay);
         }
+    }
+
+    /// <summary>The war-end side effects: refresh every guild's rolling 7-day record and, for a castle war,
+    /// clear the aggregated scoreboard so the next war starts clean. C++ OnSM_BATTLESTATUS_REQ (PEACE branch).</summary>
+    private void OnBattlePeace(BattleType type, uint recentDay)
+    {
+        _state.RecentRecordDate = recentDay;
+        foreach (var g in _state.Guilds.Values) g.CalcWeekRecord(recentDay);
+        if (type == BattleType.Castle) _state.CastleWarInfo.Clear();
+        _log.LogInformation("War end ({Type}): guild week records recomputed{Castle}.", type,
+            type == BattleType.Castle ? ", castle scoreboard cleared" : "");
     }
 
     /// <summary>On a mission PEACE→NORMAL, advance its start to the next custom time (C++ OnTimer tail).</summary>

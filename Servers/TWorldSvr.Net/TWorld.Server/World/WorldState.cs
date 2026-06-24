@@ -72,8 +72,47 @@ public sealed class WorldState
     // --- Phase 5d: castle-war scoreboard (castleId -> aggregated occupation/def/atk). ---
     public Dictionary<ushort, CastleWarInfo> CastleWarInfo { get; } = new();
 
+    /// <summary>Day number (unix/86400) of the most recent war-end record recalc (m_dwRecentRecordDate).</summary>
+    public uint RecentRecordDate { get; set; }
+
+    // --- Phase 5i: TMS multi-person private chat (m_mapTMS + m_dwTMSIndex). ---
+    public Dictionary<uint, Tms> TmsMap { get; } = new();
+    public uint TmsIndex { get; set; }
+
+    // --- Phase 5f: nation balance — online char ids bucketed by [country][level-gap] (m_mapWarCountry). ---
+    public HashSet<uint>[][] WarCountry { get; } =
+        Enumerable.Range(0, Proto.CountryCount)
+            .Select(_ => Enumerable.Range(0, Proto.WarCountryMaxGap).Select(_ => new HashSet<uint>()).ToArray())
+            .ToArray();
+
     // --- Phase 4d: tournament config + announce state (null until config loads at startup). ---
     public TournamentState? Tournament { get; set; }
+
+    // --- Final MW slice: minigame / cash-mall / summon state. ---
+    /// <summary>RPS chart keyed by MAKEWORD(type, winCount) (m_mapRPSGame). Seeded from TRPSGAMECHART at startup.</summary>
+    public Dictionary<ushort, RpsGame> RpsGames { get; } = new();
+
+    /// <summary>Localized system-message text keyed by id (m_mapTSvrMsg, from TSVRMSGCHART).</summary>
+    public Dictionary<uint, string> ServerMessages { get; } = new();
+
+    /// <summary>System-message text for an id, or "" if absent. CTWorldSvrModule::GetSvrMsg.</summary>
+    public string GetSvrMsg(uint id) => ServerMessages.TryGetValue(id, out var s) ? s : "";
+
+    /// <summary>Cash-mall gift catalog keyed by gift id (m_mapCMGift). Fed by the un-ported CT plane, so empty.</summary>
+    public Dictionary<ushort, CmGift> CmGifts { get; } = new();
+
+    /// <summary>Active cash-item sale events keyed by index (m_mapTCashItemSale), pushed by CT_CASHITEMSALE.</summary>
+    public Dictionary<uint, CashItemSaleEvent> CashItemSales { get; } = new();
+
+    /// <summary>Monotonic recall/companion-monster id allocator (m_dwGenRecallID, seeded from CSPGetRecallID).</summary>
+    public uint GenRecallId { get; set; }
+
+    /// <summary>The next recall-monster id (++m_dwGenRecallID). CTWorldSvrModule::GenRecallID.</summary>
+    public uint NextRecallId() => ++GenRecallId;
+
+    /// <summary>Active chat bans (name → ban-until unix seconds), set by the control server's CT_CHATBAN.
+    /// Mirrors AddChatBan; consulted when re-applying a ban on a banned char's re-entry (hook-up deferred).</summary>
+    public Dictionary<string, long> ChatBans { get; } = new(StringComparer.OrdinalIgnoreCase);
 
     private static MonthRanker[] NewRow(int n)
     {

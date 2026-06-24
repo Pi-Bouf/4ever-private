@@ -76,6 +76,63 @@ public static class Msg
     public const ushort MW_CASTLEAPPLY_REQ = MW_BASE + 0x0080;        // world -> map: apply result (charId,key,result,castle,target,camp)
     public const ushort MW_CASTLEAPPLY_ACK = MW_BASE + 0x0081;        // map -> world: guild chief assigns a member to a castle slot
     public const ushort MW_CASTLEAPPLICANTCOUNT_REQ = MW_BASE + 0x013C;// world -> all maps: a guild's applicant count for a castle (castle,guildId,camp,count)
+
+    // --- Phase 5e: PvP scoring (MWProtocol.h) ---
+    public const ushort MW_GAINPVPPOINT_REQ = MW_BASE + 0x0120;       // world -> char's main: forwarded PvP-point gain
+    public const ushort MW_GAINPVPPOINT_ACK = MW_BASE + 0x0121;       // map -> world: PvP points gained (char or guild owner)
+    public const ushort MW_LOCALRECORD_ACK = MW_BASE + 0x0122;        // map -> world: per-member kill/die/point records after a war (one-way)
+
+    // --- Phase 5f: nation balance (MWProtocol.h) ---
+    public const ushort MW_WARCOUNTRYBALANCE_REQ = MW_BASE + 0x0170;  // world -> map: D/C online counts in a char's level-gap (charId,key,countD,countC,gap)
+    public const ushort MW_WARCOUNTRYBALANCE_ACK = MW_BASE + 0x0171;  // map -> world: char asks for nation balance (charId,key)
+
+    // --- Phase 5g: pets / mounts / summons / tame (MWProtocol.h) ---
+    public const ushort MW_MONTEMPT_REQ = MW_BASE + 0x0087;          // world -> main: forwarded tame attempt
+    public const ushort MW_MONTEMPT_ACK = MW_BASE + 0x0088;          // map -> world: monster tame attempt (atkId, monId)
+    public const ushort MW_GETBLOOD_REQ = MW_BASE + 0x0089;          // world -> main: forwarded blood gain
+    public const ushort MW_GETBLOOD_ACK = MW_BASE + 0x008A;          // map -> world: blood drawn (atkId, atkType, hostId, bloodType, blood)
+    public const ushort MW_DEALITEMERROR_REQ = MW_BASE + 0x00AD;     // world -> main: forwarded trade error
+    public const ushort MW_DEALITEMERROR_ACK = MW_BASE + 0x00AE;     // map -> world: trade error (target, errorChar, error)
+    public const ushort MW_MAGICMIRROR_REQ = MW_BASE + 0x00B5;       // world -> main: forwarded magic-mirror reflect
+    public const ushort MW_MAGICMIRROR_ACK = MW_BASE + 0x00B6;       // map -> world: magic-mirror (host, attacker, target, types)
+    public const ushort MW_RECALLMONDEL_REQ = MW_BASE + 0x00BA;      // world -> conns: remove a recall monster
+    public const ushort MW_RECALLMONDEL_ACK = MW_BASE + 0x00BB;      // map -> world: recall monster removed (charId, key, monId, forever)
+    public const ushort MW_PETRIDING_REQ = MW_BASE + 0x00CE;         // world -> other conns: mount state changed
+    public const ushort MW_PETRIDING_ACK = MW_BASE + 0x00CF;         // map -> world: char mounted/dismounted (charId, key, riding)
+    public const ushort MW_HELMETHIDE_REQ = MW_BASE + 0x0101;        // world -> sender: helmet-hide confirmed
+    public const ushort MW_HELMETHIDE_ACK = MW_BASE + 0x0102;        // map -> world: toggle helmet visibility (charId, key, hide)
+    public const ushort MW_RECALLMONDATA_REQ = MW_BASE + 0x0117;     // world -> conns: forwarded recall-monster data sync
+    public const ushort MW_RECALLMONDATA_ACK = MW_BASE + 0x0118;     // map -> world: recall-monster data update (charId, key, ...)
+    public const ushort MW_MONTEMPTEVO_ACK = MW_BASE + 0x0185;       // map -> world: tame-evolution (atkId, hostId, hostType)
+    public const ushort MW_MONTEMPTEVO_REQ = MW_BASE + 0x0186;       // world -> main: forwarded tame-evolution
+    public const ushort MW_SPOLECNIKMONDEL_ACK = MW_BASE + 0x0192;   // map -> world: companion monster removed (charId, key, monId, forever)
+    public const ushort MW_SPOLECNIKMONDEL_REQ = MW_BASE + 0x0193;   // world -> conns: remove a companion monster
+
+    // --- Phase 5h: character info / mail / misc forwards (MWProtocol.h) ---
+    public const ushort MW_CHARSTATINFO_REQ = MW_BASE + 0x0063;      // world -> main: forwarded stat-inspect request
+    public const ushort MW_CHARSTATINFO_ACK = MW_BASE + 0x0064;      // map -> world: inspect a char's stats (reqCharId, charId)
+    public const ushort MW_CHARSTATINFOANS_REQ = MW_BASE + 0x0065;   // world -> target's main: deliver the inspect request
+    public const ushort MW_CHARSTATINFOANS_ACK = MW_BASE + 0x0066;   // map -> world: stat-inspect answer (reqCharId, ...)
+    public const ushort MW_POSTRECV_REQ = MW_BASE + 0x007C;          // world -> target's main: forwarded incoming mail
+    public const ushort MW_POSTRECV_ACK = MW_BASE + 0x007D;          // map -> world: mail arrived (postId, sender, target, title, type)
+    public const ushort MW_CHANGECHARBASE_REQ = MW_BASE + 0x0119;    // world -> conns/all: char appearance/name/title changed
+    public const ushort MW_CHANGECHARBASE_ACK = MW_BASE + 0x011A;    // map -> world: change char base (charId,key,type,value,titleId,name)
+    public const ushort MW_HEROSELECT_REQ = MW_BASE + 0x011B;        // world -> all maps: battle-zone hero selected
+    public const ushort MW_HEROSELECT_ACK = MW_BASE + 0x011C;        // map -> world: hero selected (battleZoneId, heroName, time)
+
+    // --- Phase 5i: TMS (multi-person private chat / "whisper conversation") (MWProtocol.h) ---
+    public const ushort MW_TMSSEND_ACK = MW_BASE + 0x0076;           // map -> world: send a message into a conversation (charId,key,tms,message)
+    public const ushort MW_TMSRECV_REQ = MW_BASE + 0x0077;           // world -> member's main: deliver a conversation message
+    public const ushort MW_TMSINVITE_REQ = MW_BASE + 0x0078;         // world -> member's main: conversation member list (after join)
+    public const ushort MW_TMSINVITE_ACK = MW_BASE + 0x0079;         // map -> world: invite/start a conversation (charId,key,tms,count,targets)
+    public const ushort MW_TMSOUT_REQ = MW_BASE + 0x007A;            // world -> member's main: someone left the conversation
+    public const ushort MW_TMSOUT_ACK = MW_BASE + 0x007B;            // map -> world: leave a conversation (charId,key,tms)
+    public const ushort MW_TMSINVITEASK_REQ = MW_BASE + 0x00CC;      // world -> target's main: "join this conversation?" prompt
+    public const ushort MW_TMSINVITEASK_ACK = MW_BASE + 0x00CD;      // map -> world: invite reply (charId,key,targetId,targetKey,result,tms,message)
+
+    // --- Phase 5j: friend protected-check + arena join (MWProtocol.h) ---
+    public const ushort MW_PROTECTEDCHECK_ACK = MW_BASE + 0x008B;    // map -> world: a protected friend's online state changed (charId,key,connect,name)
+    public const ushort MW_ARENAJOIN_ACK = MW_BASE + 0x0174;         // map -> world: party joins/leaves arena (charId,key,join,count,members)
     public const ushort MW_CHARINFO_REQ = MW_BASE + 0x000E;    // world -> map: guild/tactics/party/title info
     public const ushort MW_ROUTE_REQ = MW_BASE + 0x000F;       // world -> map: route the char (post char-data)
     public const ushort MW_ROUTE_ACK = MW_BASE + 0x0010;       // map -> world: routing done (charId,key,extraConnCount)
@@ -87,7 +144,7 @@ public static class Msg
     public const ushort MW_CHECKCONNECT_ACK = MW_BASE + 0x00C9; // keepalive
 
     // --- CT / RW: peer registration ---
-    public const ushort CT_CTRLSVR_REQ = CT_CONTROL + 0x0001;  // control server announces itself
+    public const ushort CT_CTRLSVR_REQ = CT_CONTROL + 0x0058;  // control server announces itself (CTProtocol.h; +0x0001 is CT_OPLOGIN)
     public const ushort RW_RELAYSVR_REQ = RW_RELAY + 0x0001;   // relay server announces itself
     public const ushort RW_RELAYSVR_ACK = RW_RELAY + 0x0002;
 
@@ -346,6 +403,126 @@ public static class Msg
     public const ushort MW_CASTLEENABLE_REQ = MW_BASE + 0x007E;    // castle-siege window
     public const ushort MW_MISSIONENABLE_REQ = MW_BASE + 0x0165;   // mission/event window
     public const ushort MW_SKYGARDENENABLE_REQ = MW_BASE + 0x0181; // sky-garden window (off in the shipped build)
+
+    // --- Remaining MW handlers (final slice) ---
+    public const ushort MW_CREATERECALLMON_REQ = MW_BASE + 0x00B8;   // world -> conns: spawn a recall monster (full record)
+    public const ushort MW_CREATERECALLMON_ACK = MW_BASE + 0x00B9;   // map -> world: create a recall monster (allocates an id)
+    public const ushort MW_CREATESPOLECNIKMON_ACK = MW_BASE + 0x0190;// map -> world: create a companion monster
+    public const ushort MW_CREATESPOLECNIKMON_REQ = MW_BASE + 0x0191;// world -> conns: spawn a companion monster (full record)
+    public const ushort MW_MONSTERBUY_REQ = MW_BASE + 0x012A;        // world -> map: guild monster-shop purchase result
+    public const ushort MW_MONSTERBUY_ACK = MW_BASE + 0x012B;        // map -> world: buy from the guild monster shop (spends treasury)
+    public const ushort MW_CASHITEMSALE_REQ = MW_BASE + 0x0133;      // world -> map: push a cash-item sale event
+    public const ushort MW_CASHITEMSALE_ACK = MW_BASE + 0x0134;      // map -> world: cash-item sale received/applied
+    public const ushort MW_RPSGAME_REQ = MW_BASE + 0x016B;           // world -> map: rock-paper-scissors play result
+    public const ushort MW_RPSGAME_ACK = MW_BASE + 0x016C;           // map -> world: char plays rock-paper-scissors
+    public const ushort MW_RPSGAMECHANGE_REQ = MW_BASE + 0x016D;     // world -> all maps: RPS config changed
+    public const ushort MW_MEETINGROOM_REQ = MW_BASE + 0x0172;       // world -> map: meeting-room invite/result
+    public const ushort MW_MEETINGROOM_ACK = MW_BASE + 0x0173;       // map -> world: meeting-room invite/accept
+    public const ushort MW_CMGIFT_REQ = MW_BASE + 0x0175;            // world -> target map: deliver a cash-mall gift
+    public const ushort MW_CMGIFT_ACK = MW_BASE + 0x0176;            // map -> world: char takes a cash-mall gift
+    public const ushort MW_CMGIFTRESULT_REQ = MW_BASE + 0x0177;      // world -> GM map: gift result (NOTE: same id as ACK)
+    public const ushort MW_CMGIFTRESULT_ACK = MW_BASE + 0x0177;      // map -> world: gift delivery result
+    public const ushort MW_BATTLEMODESTATUS_REQ = MW_BASE + 0x0220;  // world -> map: BoW/BR status snapshot
+    public const ushort MW_BATTLEMODESTATUS_ACK = MW_BASE + 0x0221;  // map -> world: char asks for BoW/BR status
+
+    // --- CT (control plane) ids needed by MW handlers ---
+    public const ushort CT_USERMOVE_ACK = CT_CONTROL + 0x002E;       // world -> map: GM/meeting-room teleport a user
+    public const ushort CT_CMGIFT_ACK = CT_CONTROL + 0x007E;         // world -> control: cash-mall gift result
+
+    // --- CT control plane (TControlSvr <-> world): self-contained admin/monitoring handlers ---
+    public const ushort CT_SERVICEMONITOR_ACK = CT_CONTROL + 0x001D; // control -> world: poll live counts
+    public const ushort CT_SERVICEMONITOR_REQ = CT_CONTROL + 0x001E; // world -> control: counts reply
+    public const ushort CT_CHARMSG_ACK = CT_CONTROL + 0x003D;        // control -> world: send a system message to a char
+    public const ushort CT_USERPOSITION_ACK = CT_CONTROL + 0x0044;   // control -> world: GM asks a char's position
+    public const ushort CT_CHATBAN_REQ = CT_CONTROL + 0x004C;        // control -> world: chat-ban a char
+    public const ushort CT_CHATBAN_ACK = CT_CONTROL + 0x004D;        // world -> control: chat-ban result
+    public const ushort CT_SERVICEDATACLEAR_ACK = CT_CONTROL + 0x004F;// control -> world: rebuild active-user set
+    public const ushort CT_CASTLEGUILDCHG_REQ = CT_CONTROL + 0x005B; // control -> world: force a castle's def/atk guilds
+    public const ushort CT_CASTLEGUILDCHG_ACK = CT_CONTROL + 0x005C; // world -> control: castle-guild-change result
+    public const ushort CT_EVENTMSG_REQ = CT_CONTROL + 0x0065;       // control -> world: broadcast an event message
+    public const ushort CT_CASHSHOPSTOP_REQ = CT_CONTROL + 0x0068;   // control -> world: stop/resume the cash shop
+    public const ushort CT_HELPMESSAGE_REQ = CT_CONTROL + 0x0073;    // control -> world: scheduled help message
+    public const ushort CT_RPSGAMEDATA_REQ = CT_CONTROL + 0x0074;    // control -> world: read RPS config
+    public const ushort CT_RPSGAMEDATA_ACK = CT_CONTROL + 0x0075;    // world -> control: RPS config
+    public const ushort CT_RPSGAMECHANGE_REQ = CT_CONTROL + 0x0076;  // control -> world: change RPS config
+    public const ushort CT_CMGIFT_REQ = CT_CONTROL + 0x007D;         // control -> world: send a cash-mall gift (tool)
+    public const ushort CT_CMGIFTLIST_REQ = CT_CONTROL + 0x007F;     // control -> world: read the gift catalog
+    public const ushort CT_CMGIFTLIST_ACK = CT_CONTROL + 0x0080;     // world -> control: gift catalog
+    public const ushort CT_CASHITEMSALE_REQ = CT_CONTROL + 0x0069;   // control -> world: push/clear a cash-item sale
+
+    // --- CT handlers recognized but deferred (need the DM/DB-job plane or the event/tournament subsystems) ---
+    public const ushort CT_ITEMFIND_REQ = CT_CONTROL + 0x0050;       // DM: find who holds an item
+    public const ushort CT_ITEMSTATE_REQ = CT_CONTROL + 0x0052;      // DM: set item states
+    public const ushort CT_EVENTUPDATE_REQ = CT_CONTROL + 0x005F;    // event/lottery/gift subsystem
+    public const ushort CT_EVENTQUARTERUPDATE_REQ = CT_CONTROL + 0x006D; // DM: event-quarter config
+    public const ushort CT_EVENTQUARTERLIST_REQ = CT_CONTROL + 0x006F;   // DM: event-quarter list
+    public const ushort CT_TOURNAMENTEVENT_REQ = CT_CONTROL + 0x0071;    // tournament-event admin/DB
+    public const ushort CT_CMGIFTCHARTUPDATE_REQ = CT_CONTROL + 0x0081;  // DM: gift-catalog add/update/del (DB-assigned ids)
+
+    // --- MW relay targets used by the CT handlers (world -> map) ---
+    public const ushort MW_USERPOSITION_REQ = MW_BASE + 0x00C6;      // world -> char's map: report position to a GM
+    public const ushort MW_CHATBAN_REQ = MW_BASE + 0x0115;           // world -> char's map: apply a chat ban
+    public const ushort MW_CHARMSG_REQ = MW_BASE + 0x011E;           // world -> char's map: deliver a system message
+    public const ushort MW_CASTLEGUILDCHG_REQ = MW_BASE + 0x012D;    // world -> all maps: castle def/atk guilds changed
+    public const ushort MW_EVENTMSG_REQ = MW_BASE + 0x0131;          // world -> all maps: event message
+    public const ushort MW_CASHSHOPSTOP_REQ = MW_BASE + 0x0132;      // world -> all maps: stop/resume cash shop
+    public const ushort MW_HELPMESSAGE_REQ = MW_BASE + 0x0164;       // world -> all maps: scheduled help message
+}
+
+/// <summary>System-message ids into TSVRMSGCHART (CTProtocol.h SVRMSG enum; the chart starts at 1).
+/// Only the ids the world actually references are listed.</summary>
+public enum SvrMsg : uint
+{
+    PostInvenItem = 1,   // MSG_POSTINVENITEM
+    LocalReward = 2,     // MSG_LOCAL_REWARD
+    CastleReward = 3,    // MSG_CASTLE_REWARD
+    PremiumPetName = 4,  // PREMIUM_PETNAME
+    TmsNoReceiver = 5,   // TMS_NORECEIVER
+    NameOperator = 6,    // NAME_OPERATOR
+    CharLogout = 7,      // MSG_CHAR_LOGOUT
+    GuildPointTake = 8,  // MSG_GUILDPOINT_TAKE
+}
+
+/// <summary>enum GUILDPOINTREWARD_RESULT (NetCode.h): result of a guild PvP-point reward grant.</summary>
+public enum GprResult : byte
+{
+    Success = 0, // GPR_SUCCESS
+    NeedPoint,   // GPR_NEEDPOINT
+    NoMember,    // GPR_NOMEMBER
+}
+
+/// <summary>enum MONSTERBUY_RESULT (NetCode.h): guild monster-shop purchase result.</summary>
+public enum MonsterBuyResult : byte
+{
+    Success = 0, // MSB_SUCCESS
+    InvalidNpc,  // MSB_INVALIDNPC
+    NotFound,    // MSB_NOTFOUND
+    NeedMoney,   // MSB_NEEDMONEY
+    CampMismatch,// MSB_CAMPMISMATCH
+    Authority,   // MSB_AUTHORITY
+    Already,     // MSB_ALREADY
+}
+
+/// <summary>enum MEETING_RESULT (NetCode.h): meeting-room invite/accept outcome.</summary>
+public enum MeetingResult : byte
+{
+    Success = 0, // MTR_SUCCESS
+    Deny,        // MTR_DENY
+    Busy,        // MTR_BUSY
+    NoTarget,    // MTR_NOTARGET
+    NotChief,    // MTR_NOTCHIEF
+    InRoom,      // MTR_INROOM
+}
+
+/// <summary>enum CMGIFT_RESULT (NetCode.h): cash-mall gift outcome.</summary>
+public enum CmGiftResult : byte
+{
+    Success = 0, // CMGIFT_SUCCESS
+    Target,      // CMGIFT_TARGET
+    Id,          // CMGIFT_ID
+    Duplicate,   // CMGIFT_DUPLICATE
+    ErrPost,     // CMGIFT_ERRPOST
+    Fail,        // CMGIFT_FAIL
 }
 
 /// <summary>enum TGUILD_RESULT (NetCode.h).</summary>
@@ -604,6 +781,19 @@ public static class Proto
 
     public const byte CnSuccess = 0;     // CN_SUCCESS (connect-result code)
 
+    public const byte PvpTotal = 1;      // PVP_TOTAL
+    public const byte PvpUseable = 2;    // PVP_USEABLE
+    public const byte PvpeGuild = 0;     // PVPE_GUILD (gain-point event: guild reward)
+    public const byte PvpeEntry = 5;     // PVPE_ENTRY (index into the 8-element gain-point array)
+    public const int PvpeCount = 8;      // PVPE_COUNT
+    public const byte TownerChar = 0;    // TOWNER_CHAR
+    public const byte TownerGuild = 1;   // TOWNER_GUILD
+
+    public const byte ObjTypePc = 1;          // OT_PC (OBJ_TYPE)
+
+    public const byte WarCountryMaxGap = 5;   // WARCOUNTRY_MAXGAP
+    public const byte BroaBaseLevel = 130;    // BROA_BASELEVEL (nation balance only tracks levels 130..179)
+
     public const uint LocalOccupyStatExp = 1000;   // LOCALOCCUPY_STATEXP — guild stat-exp for taking a local
     public const uint CastleOccupyStatExp = 2000;  // CASTLEOCCUPY_STATEXP — guild stat-exp for taking a castle
     public const uint GuildStatExpPerLevel = 2400; // CALCULATE_NEXTGEXP(level) = level * 2400
@@ -613,6 +803,11 @@ public static class Proto
     public const ushort BowMapId = 3000; // BOW_MAP_ID
     public const uint DayOne = 86400;    // DAY_ONE (seconds per day)
     public const uint HourOne = 3600;    // HOUR_ONE
+
+    public const uint MoneyMultiply = 1000;   // MONEY_MULTIPLY (copper→silver→gold radix)
+    public const float UnitSize = 1024f;      // UNIT_SIZE (cell size for the meeting-room position gate)
+    public const ushort MeetingMapId = 1100;  // MEETING_MAPID
+    public const ushort MeetingSroomCount = 5;// MEETING_SROOM_COUNT
 
     public const int TournamentSlot = 8;       // TOURNAMENT_SLOT
     public const int TournamentBasePrize = 100;// TOURNAMENT_BASEPRIZE

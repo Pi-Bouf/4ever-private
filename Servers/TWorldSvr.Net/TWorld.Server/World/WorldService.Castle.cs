@@ -166,7 +166,7 @@ public sealed partial class WorldService
                 _state.FindMapSvr(charTarget.MainId)?.Send(
                     BuildCastleApplyReq(target, charTarget.Key, CastleApplyResult.Success, castle, target, camp));
 
-            // SendDM_CASTLEAPPLY_REQ(castle, target, camp) — DB persistence deferred (no TSaveCastleApply proc ported).
+            if (_gameDb is not null) _ = _gameDb.SaveCastleApplicantAsync(castle, target, camp);   // SendDM_CASTLEAPPLY_REQ
             if (prevCastle != 0) NotifyCastleApply(prevCastle, guild);
             if (castle != 0) NotifyCastleApply(castle, guild);
         }

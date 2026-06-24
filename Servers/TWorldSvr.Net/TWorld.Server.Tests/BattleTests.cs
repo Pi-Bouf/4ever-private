@@ -90,4 +90,38 @@ public class BattleTests
         Assert.True(sawCastle, "expected a CASTLEENABLE on the castle day");
         Assert.Equal(BattleStatus.Battle, host.State.Battles![BattleType.Castle].Status);
     }
+
+    [Fact]
+    public async Task CastleWar_OnPeace_ClearsScoreboard_AndRecomputesWeekRecords()
+    {
+        await using var host = new WorldTestHost(s => s.Battles = Schedule(sc =>
+        {
+            var castle = sc[BattleType.Castle];
+            castle.Day = 4;
+            castle.BattleStart = 100; castle.BattleDur = 20; castle.AlarmStart = 30; castle.AlarmEnd = 10; castle.PeaceDur = 5;
+        }));
+        using var map = await host.ConnectAsync();
+        Connect(map, 1);
+        await Task.Delay(80);
+
+        // A leftover scoreboard from the war, and a guild member with one fresh + one stale PvP record.
+        host.State.CastleWarInfo[200] = new CastleWarInfo { Id = 200 };
+        var guild = new Guild { Id = 7 };
+        var member = new GuildMember { CharId = 70 };
+        member.Records.Add(new GuildPvpRecord { CharId = 70, Date = 99, KillCount = 5 });  // within 7 days of day 100
+        member.Records.Add(new GuildPvpRecord { CharId = 70, Date = 90, KillCount = 3 });  // older than a week -> pruned
+        guild.Members[70] = member;
+        host.State.Guilds[7] = guild;
+
+        void Drain() { for (int i = 0; i < 10; i++) { try { map.Receive(TimeSpan.FromMilliseconds(120)); } catch { break; } } }
+
+        host.Service.BattleTick(101, dayOfWeek: 4, recentDay: 100); Drain();   // -> BATTLE
+        host.Service.BattleTick(121, dayOfWeek: 4, recentDay: 100); Drain();   // -> PEACE (war end)
+
+        Assert.Equal(BattleStatus.Peace, host.State.Battles![BattleType.Castle].Status);
+        Assert.Empty(host.State.CastleWarInfo);                 // scoreboard cleared
+        Assert.Equal(100u, host.State.RecentRecordDate);
+        Assert.Single(member.Records);                          // stale record pruned
+        Assert.Equal((ushort)5, member.WeekRecord.KillCount);   // only the fresh record counts
+    }
 }

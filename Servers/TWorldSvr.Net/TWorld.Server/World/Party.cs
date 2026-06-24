@@ -18,6 +18,9 @@ public sealed class Party
     /// <summary>Round-robin loot pointer for PT_ORDER parties (m_dwOrder): the member due to receive next.</summary>
     public uint Order { get; set; }
 
+    /// <summary>Whether the party has opted into arena play (m_bArena).</summary>
+    public byte Arena { get; set; }
+
     public byte Size => (byte)Members.Count;
     public bool IsFull => Members.Count >= Proto.MaxPartyMember;
     public bool IsChief(uint charId) => ChiefId == charId;

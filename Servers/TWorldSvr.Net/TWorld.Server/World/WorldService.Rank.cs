@@ -152,7 +152,9 @@ public sealed partial class WorldService
         uint nowSec = (uint)DateTime.UtcNow.TimeOfDay.TotalSeconds;
         if (_state.Bow is not null) await BowOnTimerAsync(nowSec);
         if (_state.Br is not null) await BrOnTimerAsync(nowSec);
-        if (_state.Battles is not null) BattleOnTimer(nowSec, (byte)((int)DateTime.UtcNow.DayOfWeek + 1));
+        if (_state.Battles is not null)
+            BattleOnTimer(nowSec, (byte)((int)DateTime.UtcNow.DayOfWeek + 1),
+                (uint)(DateTimeOffset.UtcNow.ToUnixTimeSeconds() / Proto.DayOne));
         if (_state.Tournament is not null)
         {
             long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();

@@ -19,6 +19,10 @@ public sealed class ServerSession
     public byte ServerId => Proto.ServerIdOf(WId);
     public byte ServerType => Proto.ServerTypeOf(WId);
 
+    /// <summary>This map has acknowledged the current cash-item sale (m_bCashSale). A sale only persists once
+    /// every connected map has confirmed.</summary>
+    public bool CashSale { get; set; }
+
     public void Send(PacketWriter w) => Conn.Send(w);
     public void Send(byte[] packet) => Conn.Send(packet);
 }

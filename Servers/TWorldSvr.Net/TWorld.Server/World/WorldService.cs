@@ -19,12 +19,13 @@ public sealed partial class WorldService
     private readonly RankDatabase? _rankDb;
     private readonly BowDatabase? _bowDb;
     private readonly BrDatabase? _brDb;
+    private readonly GameDatabase? _gameDb;
     private readonly ILogger<WorldService> _log;
     private uint _fakeGuildSeq; // used only when no DB is configured (tests)
 
     public WorldService(WorldState state, GuildDatabase? guildDb, ILogger<WorldService> log,
         SocialDatabase? socialDb = null, RankDatabase? rankDb = null, BowDatabase? bowDb = null,
-        BrDatabase? brDb = null)
+        BrDatabase? brDb = null, GameDatabase? gameDb = null)
     {
         _state = state;
         _guildDb = guildDb;
@@ -32,6 +33,7 @@ public sealed partial class WorldService
         _rankDb = rankDb;
         _bowDb = bowDb;
         _brDb = brDb;
+        _gameDb = gameDb;
         _log = log;
     }
 
@@ -88,6 +90,15 @@ public sealed partial class WorldService
                 default:
                     if (DispatchMovement(session, r, packet)) break;
                     if (DispatchCombat(session, r, packet)) break;
+                    if (DispatchPvp(session, r, packet)) break;
+                    if (DispatchPet(session, r, packet)) break;
+                    if (DispatchCharInfo(session, r, packet)) break;
+                    if (DispatchTms(session, r)) break;
+                    if (DispatchMisc(session, r)) break;
+                    if (DispatchMinigame(session, r)) break;
+                    if (DispatchMall(session, r)) break;
+                    if (DispatchControl(session, r, packet)) break;
+                    if (DispatchNation(session, r)) break;
                     if (await DispatchCastleAsync(session, r, packet)) break;
                     if (await DispatchGuild2bAsync(session, r, packet)) break;
                     if (await DispatchCorpsAsync(session, r, packet)) break;
@@ -369,6 +380,7 @@ public sealed partial class WorldService
         if (!ch.SocialLoaded && session.ServerId == ch.MainId)
         {
             ch.SocialLoaded = true;
+            WarCountryEnter(ch);   // bucket the now-online char for nation balance (C++ does this via SetCharLevel on enter)
             await LoadSoulmatesAsync(ch);
             await LoadFriendsAsync(ch);
         }
@@ -724,20 +736,27 @@ public sealed partial class WorldService
 
         var party = _state.FindParty(partyId);
         if (party is null) return;
+        LeaveParty(party, charId, kick);
+    }
+
+    /// <summary>Remove a member from a party: pick a new chief if needed, broadcast PARTYDEL to the remaining
+    /// members and the leaver, and dissolve the party if it drops to one. Shared by OnPartyDel and arena split.</summary>
+    private void LeaveParty(Party party, uint charId, byte kick)
+    {
         var leaving = party.FindMember(charId);
         if (leaving is null) return;
 
-        var nextChief = party.NextChiefAfter(charId);
+        party.NextChiefAfter(charId);
         party.DelMember(charId);
-        byte[] del = BuildPartyDelReq(charId, leaving.Key, charId, party.ChiefId, party.CorpsId, partyId, kick);
+        byte[] del = BuildPartyDelReq(charId, leaving.Key, charId, party.ChiefId, party.CorpsId, party.Id, kick);
         foreach (var m in party.Members) SendToChar(m, del);
         SendToChar(leaving, del);
 
         if (party.Size <= 1)
         {
             foreach (var m in party.Members.ToList()) { party.DelMember(m.CharId); }
-            _state.Parties.Remove(partyId);
-            _state.PartyIds.Free(partyId);
+            _state.Parties.Remove(party.Id);
+            _state.PartyIds.Free(party.Id);
         }
     }
 
@@ -819,6 +838,8 @@ public sealed partial class WorldService
                 _state.PartyIds.Free(party.Id);
             }
         }
+        WarCountryLeave(ch);
+        if (ch.TmsIds.Count > 0) TmsLeaveAll(ch);
         _state.Characters.Remove(ch.CharId);
         if (!string.IsNullOrEmpty(ch.Name)) _state.CharactersByName.Remove(ch.Name);
         _log.LogInformation("Char {Char} closed.", ch.CharId);

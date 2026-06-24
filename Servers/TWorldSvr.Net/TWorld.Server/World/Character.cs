@@ -34,7 +34,7 @@ public sealed class Character
     public byte Country { get; set; }
     public byte Mode { get; set; }
     public byte HelmetHide { get; set; }
-    public byte AidCountry { get; set; }
+    public byte AidCountry { get; set; } = 3;   // TCONTRY_N — "no aid country" until ENTERSVR_ACK sets it
     public byte Class { get; set; }
     public uint Riding { get; set; }
     public long ChatBanTime { get; set; }
@@ -96,6 +96,9 @@ public sealed class Character
 
     /// <summary>serverId → connection (a char can be connected to several map servers).</summary>
     public Dictionary<byte, CharConnection> Connections { get; } = new();
+
+    /// <summary>Ids of the TMS conversations this char belongs to (m_mapTMS).</summary>
+    public HashSet<uint> TmsIds { get; } = new();
 
     // --- Phase 5a: cross-map movement / teleport ---
 
