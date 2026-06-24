@@ -943,6 +943,50 @@ BEGIN_PARAM(1)
 END_PARAM()
 };
 
+// Bulk load-time variant of CTBLMapMon: the whole table in one query, grouped by wSpawnID in memory.
+class CTBLMapMonAll : public CSqlQuery
+{
+public:
+	WORD m_wSpawnID;
+	WORD m_wMonID;
+	BYTE m_bLeader;
+	BYTE m_bEssential;
+	BYTE m_bProb;
+
+DEF_QUERY( CTBLMapMonAll, _T("SELECT \
+	wSpawnID, \
+	wMonID, \
+	bLeader, \
+	bEssential, \
+	bProb \
+	FROM TMAPMONCHART \
+	WITH (NOLOCK) \
+	ORDER BY wSpawnID"))
+
+BEGIN_COLUMN(5)
+	COLUMN_ENTRY(m_wSpawnID)
+	COLUMN_ENTRY(m_wMonID)
+	COLUMN_ENTRY(m_bLeader)
+	COLUMN_ENTRY(m_bEssential)
+	COLUMN_ENTRY(m_bProb)
+END_COL()
+};
+
+// Bulk load-time variant of CTBLMonParty: all party members in one query, grouped by wPartyID.
+class CTBLMonPartyAll : public CSqlQuery
+{
+public:
+	WORD m_wID;
+	WORD m_wPartyID;
+
+DEF_QUERY( CTBLMonPartyAll, _T("SELECT wID, wPartyID FROM TMONSPAWNCHART WITH (NOLOCK) WHERE wPartyID > 0 ORDER BY wPartyID"))
+
+BEGIN_COLUMN(2)
+	COLUMN_ENTRY(m_wID)
+	COLUMN_ENTRY(m_wPartyID)
+END_COL()
+};
+
 class CTBLSpawnPath : public CSqlQuery
 {
 public:
@@ -2241,6 +2285,128 @@ BEGIN_PARAM(1)
 END_PARAM()
 };
 
+// ---- Bulk load-time variants (whole table, no WHERE) -------------------------------------------
+// These replace the per-quest N+1 queries in CTMapSvrModule::LoadQuestTemp: each is fetched once at
+// startup and grouped in memory. ORDER BY preserves the per-parent ordering the originals relied on
+// (bMain DESC for children, bConditionType DESC for conditions, dwID for terms).
+class CTBLQuestChartAll : public CSqlQuery
+{
+public:
+	DWORD m_dwParentID;
+	DWORD m_dwQuestID;
+	DWORD m_dwTriggerID;
+	BYTE m_bTriggerType;
+	BYTE m_bForceRun;
+	BYTE m_bCountMax;
+	BYTE m_bType;
+	BYTE m_bConditionCheck;
+
+DEF_QUERY( CTBLQuestChartAll, _T("SELECT \
+	dwParentID, \
+	dwQuestID, \
+	dwTriggerID, \
+	bTriggerType, \
+	bForceRun, \
+	bCountMax, \
+	bType, \
+	bConditionCheck \
+	FROM TQUESTCHART \
+	WITH (NOLOCK) \
+	ORDER BY dwParentID, bMain DESC"));
+
+BEGIN_COLUMN(8)
+	COLUMN_ENTRY(m_dwParentID)
+	COLUMN_ENTRY(m_dwQuestID)
+	COLUMN_ENTRY(m_dwTriggerID)
+	COLUMN_ENTRY(m_bTriggerType)
+	COLUMN_ENTRY(m_bForceRun)
+	COLUMN_ENTRY(m_bCountMax)
+	COLUMN_ENTRY(m_bType)
+	COLUMN_ENTRY(m_bConditionCheck)
+END_COL()
+};
+
+class CTBLQuestConditionChartAll : public CSqlQuery
+{
+public:
+	DWORD m_dwQuestID;
+	DWORD m_dwConditionID;
+	BYTE m_bConditionType;
+	BYTE m_bCount;
+
+DEF_QUERY( CTBLQuestConditionChartAll, _T("SELECT \
+	dwQuestID, \
+	dwConditionID, \
+	bConditionType, \
+	bCount \
+	FROM TQCONDITIONCHART \
+	WITH (NOLOCK) \
+	ORDER BY dwQuestID, bConditionType DESC"));
+
+BEGIN_COLUMN(4)
+	COLUMN_ENTRY(m_dwQuestID)
+	COLUMN_ENTRY(m_dwConditionID)
+	COLUMN_ENTRY(m_bConditionType)
+	COLUMN_ENTRY(m_bCount)
+END_COL()
+};
+
+class CTBLQuestRewardChartAll : public CSqlQuery
+{
+public:
+	DWORD m_dwQuestID;
+	DWORD m_dwRewardID;
+	BYTE m_bRewardType;
+	BYTE m_bTakeMethod;
+	BYTE m_bTakeData;
+	BYTE m_bCount;
+
+DEF_QUERY( CTBLQuestRewardChartAll, _T("SELECT \
+	dwQuestID, \
+	dwRewardID, \
+	bRewardType, \
+	bTakeMethod, \
+	bTakeData, \
+	bCount \
+	FROM TQREWARDCHART \
+	WITH (NOLOCK) \
+	ORDER BY dwQuestID"));
+
+BEGIN_COLUMN(6)
+	COLUMN_ENTRY(m_dwQuestID)
+	COLUMN_ENTRY(m_dwRewardID)
+	COLUMN_ENTRY(m_bRewardType)
+	COLUMN_ENTRY(m_bTakeMethod)
+	COLUMN_ENTRY(m_bTakeData)
+	COLUMN_ENTRY(m_bCount)
+END_COL()
+};
+
+class CTBLQuestTermChartAll : public CSqlQuery
+{
+public:
+	DWORD m_dwQuestID;
+	DWORD m_dwTermID;
+	BYTE m_bTermType;
+	BYTE m_bCount;
+
+DEF_QUERY( CTBLQuestTermChartAll, _T("SELECT \
+	dwQuestID, \
+	dwTermID, \
+	bTermType, \
+	bCount \
+	FROM TQUESTTERMCHART \
+	WITH (NOLOCK) \
+	ORDER BY dwQuestID, dwID"));
+
+BEGIN_COLUMN(4)
+	COLUMN_ENTRY(m_dwQuestID)
+	COLUMN_ENTRY(m_dwTermID)
+	COLUMN_ENTRY(m_bTermType)
+	COLUMN_ENTRY(m_bCount)
+END_COL()
+};
+
 class CTBLQuestTable : public CSqlQuery
 {
 public:
@@ -2411,6 +2577,22 @@ BEGIN_PARAM(1)
 	PARAM_ENTRY(SQL_PARAM_INPUT, m_wNpcID)
 END_PARAM()
 };
+
+// Bulk load-time variant of CTBLNpcItem: whole table in one query, grouped by wNpcID in memory.
+class CTBLNpcItemAll : public CSqlQuery
+{
+public:
+	WORD m_wNpcID;
+	DWORD m_dwItemID;
+
+DEF_QUERY( CTBLNpcItemAll, _T("SELECT wNpcID, dwItemID FROM TNPCITEMCHART WITH (NOLOCK) ORDER BY wNpcID"));
+
+BEGIN_COLUMN(2)
+	COLUMN_ENTRY(m_wNpcID)
+	COLUMN_ENTRY(m_dwItemID)
+END_COL()
+};
+
 class CTBLMonItem : public CSqlQuery
 {
 public:
@@ -2465,6 +2647,62 @@ END_COL()
 BEGIN_PARAM(1)
 	PARAM_ENTRY( SQL_PARAM_INPUT, m_wMonID)
 END_PARAM()
+};
+
+// Bulk load-time variant of CTBLMonItem: whole table in one query, grouped by wMonID in memory.
+class CTBLMonItemAll : public CSqlQuery
+{
+public:
+	WORD m_wMonID;
+	BYTE m_bChartType;
+	WORD m_wItemID;
+	WORD m_wItemIDMin;
+	WORD m_wItemIDMax;
+	WORD m_wWeight;
+	BYTE m_bLevelMin;
+	BYTE m_bLevelMax;
+	BYTE m_bItemProb[MIP_COUNT];
+	BYTE m_bItemMagicOpt;
+	BYTE m_bItemRareOpt;
+
+DEF_QUERY( CTBLMonItemAll, _T("SELECT \
+	wMonID, \
+	bChartType, \
+	wItemID, \
+	wItemIDMin, \
+	wItemIDMax, \
+	wWeight, \
+	bLevelMin, \
+	bLevelMax, \
+	bItemProb_N1, \
+	bItemProb_N2, \
+	bItemProb_N3, \
+	bItemProb_N4, \
+	bItemProb_M, \
+	bItemProb_S, \
+	bItemProb_R, \
+	bItemMagicOpt, \
+	bItemRareOpt \
+	FROM TMONITEMCHART \
+	WITH (NOLOCK) \
+	ORDER BY wMonID"))
+
+BEGIN_COLUMN(17)
+	COLUMN_ENTRY(m_wMonID)
+	COLUMN_ENTRY(m_bChartType)
+	COLUMN_ENTRY(m_wItemID)
+	COLUMN_ENTRY(m_wItemIDMin)
+	COLUMN_ENTRY(m_wItemIDMax)
+	COLUMN_ENTRY(m_wWeight)
+	COLUMN_ENTRY(m_bLevelMin)
+	COLUMN_ENTRY(m_bLevelMax)
+	for(int i=0; i<MIP_COUNT; i++)
+	{
+		COLUMN_ENTRY(m_bItemProb[i])
+	}
+	COLUMN_ENTRY(m_bItemMagicOpt)
+	COLUMN_ENTRY(m_bItemRareOpt)
+END_COL()
 };
 
 class CTBLItemMagicChart : public CSqlQuery
@@ -2800,6 +3038,46 @@ BEGIN_PARAM(1)
 	PARAM_ENTRY(SQL_PARAM_INPUT, m_wPortalID)
 END_PARAM()
 };
+
+// Bulk load-time variant of CTBLDestinationChart: whole table in one query, grouped by wPortalID.
+class CTBLDestinationChartAll : public CSqlQuery
+{
+public:
+	WORD m_wPortalID;
+	WORD m_wDestID;
+	DWORD m_dwPrice;
+	BYTE m_bEnable;
+	BYTE m_bCondition[3];
+	DWORD m_dwConditionID[3];
+
+DEF_QUERY( CTBLDestinationChartAll, _T("SELECT \
+	wPortalID, \
+	wDestID, \
+	dwPrice, \
+	bEnable, \
+	bCondition1, \
+	dwConditionID1, \
+	bCondition2, \
+	dwConditionID2, \
+	bCondition3, \
+	dwConditionID3 \
+	FROM TDESTINATIONCHART \
+	WITH (NOLOCK) \
+	ORDER BY wPortalID"))
+
+BEGIN_COLUMN(10)
+	COLUMN_ENTRY(m_wPortalID)
+	COLUMN_ENTRY(m_wDestID)
+	COLUMN_ENTRY(m_dwPrice)
+	COLUMN_ENTRY(m_bEnable)
+	for(BYTE i = 0; i < PORTALCONDITION_COUNT; i++)
+	{
+		COLUMN_ENTRY(m_bCondition[i])
+		COLUMN_ENTRY(m_dwConditionID[i])
+	}
+END_COL()
+};
+
 class CTBLGateChart : public CSqlQuery
 {
 public:
@@ -5073,6 +5351,29 @@ BEGIN_PARAM(5)
 END_PARAM()
 };
 
+// Bulk load-time variant of the TGetServerID proc: the same TSVRCHART x TCHANNELCHART join, whole table
+// in one query, grouped by (mapID,unitID,logChannel) in memory. Replaces the per-cell CSPGetServerID
+// calls in CTMap::InitCell.
+class CTBLSvrTopoAll : public CSqlQuery
+{
+public:
+	WORD m_wMapID;
+	WORD m_wUnitID;
+	BYTE m_bLogChannel;
+	BYTE m_bServerID;
+
+DEF_QUERY( CTBLSvrTopoAll, _T("SELECT S.wMapID, S.wUnitID, C.bLogChannel, S.bServerID \
+	FROM TSVRCHART S WITH (NOLOCK) INNER JOIN TCHANNELCHART C WITH (NOLOCK) ON \
+	S.bGroup = C.bGroupID AND S.wMapID = C.wMapID AND S.wUnitID = C.wUnitID AND S.bChannel = C.bPhyChannel"))
+
+BEGIN_COLUMN(4)
+	COLUMN_ENTRY(m_wMapID)
+	COLUMN_ENTRY(m_wUnitID)
+	COLUMN_ENTRY(m_bLogChannel)
+	COLUMN_ENTRY(m_bServerID)
+END_COL()
+};
+
 class CSPEnterServer : public CSqlQuery
 {
 public:
@@ -5922,7 +6223,7 @@ END_PARAM()
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ±æµå
+// ï¿½ï¿½ï¿½
 class CSPGuildItemPutIn : public CSqlQuery
 {
 public:

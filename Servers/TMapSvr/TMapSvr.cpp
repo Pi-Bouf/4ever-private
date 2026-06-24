@@ -1,4 +1,4 @@
-// TMapSvr.cpp : WinMainÀÇ ±¸ÇöÀÔ´Ï´Ù.
+// TMapSvr.cpp : WinMainï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½.
 #include "StdAfx.h"
 #include <SvrInc.h>
 #include "TMapSvrModule.h"
@@ -1580,8 +1580,8 @@ void CTMapSvrModule::SetEventCloseSession(CTMapSession * pSession, BYTE bSave)
 
 void CTMapSvrModule::ClosingSession( CTMapSession *pSession)
 {
-	// pSession¿¡ ´ëÇÑ ÆÐÅ¶Ã³¸®°¡ ¿Ï·áµÇ´Â ½ÃÁ¡À» ¾Ë¸²
-	// pSession¿¡ ´ëÇÑ ¿À¹ö·¦ ¿ÀÆÛ·¡ÀÌ¼ÇÀÌ ¿Ï·áµÈ °ÍÀ» È®ÀÎÈÄ È£Ãâ ÇÏ¿©¾ß ÇÔ.
+	// pSessionï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¶Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¸ï¿½
+	// pSessionï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Û·ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½ ï¿½Ï¿ï¿½ï¿½ï¿½ ï¿½ï¿½.
 	EnterCriticalSection(&m_csBATCH);
 
 
@@ -2451,9 +2451,28 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	// Bulk-load the cell->serverID topology once (was N+1: the TGetServerID proc called ~9x per
+	// channel per map cell in InitCell). Same TSVRCHART x TCHANNELCHART join, done server-side.
+	m_mapSvrTopo.clear();
+	DEFINE_QUERY( &m_db, CTBLSvrTopoAll)
+	if(query->Open())
+	{
+		while(query->Fetch())
+		{
+			__int64 key = MakeSvrTopoKey( query->m_wMapID, query->m_wUnitID, query->m_bLogChannel);
+			// First row wins, matching the proc's SELECT TOP 1.
+			if( m_mapSvrTopo.find(key) == m_mapSvrTopo.end() )
+				m_mapSvrTopo.insert( MAPSVRTOPO::value_type( key, query->m_bServerID));
+		}
+		query->Close();
+	}
+	UNDEFINE_QUERY()
+
 	MAPTCHANNEL::iterator itCH;
 	for( itCH = m_mapTCHANNEL.begin(); itCH != m_mapTCHANNEL.end(); itCH++)
-		(*itCH).second->InitChannel( &m_db, m_bServerID);
+		(*itCH).second->InitChannel( &m_db, m_bServerID, &m_mapSvrTopo);
+
+	m_mapSvrTopo.clear();
 
 	LOAD_STEP("CTBLChannelChart");
 	DEFINE_QUERY( &m_db, CTBLChannelChart)
@@ -2846,50 +2865,74 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	// Bulk-load monster drop tables once (was N+1: one CTBLMonItem query per monster).
+	std::map< WORD, std::vector<QMONITEMROW> > mapMonItem;
+	DEFINE_QUERY(&m_db, CTBLMonItemAll)
+	if(query->Open())
+	{
+		while(query->Fetch())
+		{
+			QMONITEMROW row;
+			row.m_bChartType	= query->m_bChartType;
+			row.m_wItemID		= query->m_wItemID;
+			row.m_wItemIDMin	= query->m_wItemIDMin;
+			row.m_wItemIDMax	= query->m_wItemIDMax;
+			row.m_wWeight		= query->m_wWeight;
+			row.m_bLevelMin		= query->m_bLevelMin;
+			row.m_bLevelMax		= query->m_bLevelMax;
+			memcpy(row.m_bItemProb, query->m_bItemProb, sizeof(BYTE)*MIP_COUNT);
+			row.m_bItemMagicOpt	= query->m_bItemMagicOpt;
+			row.m_bItemRareOpt	= query->m_bItemRareOpt;
+			mapMonItem[query->m_wMonID].push_back(row);
+		}
+		query->Close();
+	}
+	UNDEFINE_QUERY()
+
 	MAPTMONSTERTEMP::iterator itMon;
 	for(itMon = m_mapTMONSTER.begin(); itMon != m_mapTMONSTER.end(); itMon++)
 	{
-		DEFINE_QUERY(&m_db, CTBLMonItem)
-		query->m_wMonID = (*itMon).second->m_wID;
-		if(query->Open())
+		std::map< WORD, std::vector<QMONITEMROW> >::iterator itMIList = mapMonItem.find((*itMon).second->m_wID);
+		if(itMIList == mapMonItem.end())
+			continue;
+
+		std::vector<QMONITEMROW> & vRows = itMIList->second;
+		for(DWORD r=0; r<vRows.size(); r++)
 		{
-			while(query->Fetch())
+			QMONITEMROW & row = vRows[r];
+
+			LPTMONITEM pMonItem = new TMONITEM();
+			pMonItem->m_bChartType = row.m_bChartType;
+
+			if(!pMonItem->m_bChartType)
 			{
-				LPTMONITEM pMonItem = new TMONITEM();
-				pMonItem->m_bChartType = query->m_bChartType;
-
-				if(!pMonItem->m_bChartType)
-				{
-					MAPTSTORAGEITEM::iterator itMI = m_mapTQuestItem.find(query->m_wItemID);
-					if(itMI != m_mapTQuestItem.end())
-						pMonItem->m_pMagicItem = (*itMI).second;
-					else
-						pMonItem->m_pMagicItem = NULL;
-				}
+				MAPTSTORAGEITEM::iterator itMI = m_mapTQuestItem.find(row.m_wItemID);
+				if(itMI != m_mapTQuestItem.end())
+					pMonItem->m_pMagicItem = (*itMI).second;
 				else
-				{
-					LPTITEM pTITEM = FindTItem(query->m_wItemID);
-					if(pTITEM)
-						pMonItem->m_pTITEM = pTITEM;
-					else
-						pMonItem->m_pTITEM = NULL;
-				}
-
-				pMonItem->m_wItemIDMin = query->m_wItemIDMin;
-				pMonItem->m_wItemIDMax = query->m_wItemIDMax;
-				pMonItem->m_wWeight	= query->m_wWeight;
-				pMonItem->m_bLevelMin = query->m_bLevelMin;
-				pMonItem->m_bLevelMax = query->m_bLevelMax;
-
-				memcpy(pMonItem->m_bItemProb, query->m_bItemProb, sizeof(BYTE)*MIP_COUNT);
-				pMonItem->m_bItemMagicOpt = query->m_bItemMagicOpt;
-				pMonItem->m_bItemRareOpt = query->m_bItemRareOpt;
-				(*itMon).second->m_dwMaxWeight += query->m_wWeight;
-				(*itMon).second->m_vMONITEM.push_back(pMonItem);
+					pMonItem->m_pMagicItem = NULL;
 			}
-			query->Close();
+			else
+			{
+				LPTITEM pTITEM = FindTItem(row.m_wItemID);
+				if(pTITEM)
+					pMonItem->m_pTITEM = pTITEM;
+				else
+					pMonItem->m_pTITEM = NULL;
+			}
+
+			pMonItem->m_wItemIDMin = row.m_wItemIDMin;
+			pMonItem->m_wItemIDMax = row.m_wItemIDMax;
+			pMonItem->m_wWeight	= row.m_wWeight;
+			pMonItem->m_bLevelMin = row.m_bLevelMin;
+			pMonItem->m_bLevelMax = row.m_bLevelMax;
+
+			memcpy(pMonItem->m_bItemProb, row.m_bItemProb, sizeof(BYTE)*MIP_COUNT);
+			pMonItem->m_bItemMagicOpt = row.m_bItemMagicOpt;
+			pMonItem->m_bItemRareOpt = row.m_bItemRareOpt;
+			(*itMon).second->m_dwMaxWeight += row.m_wWeight;
+			(*itMon).second->m_vMONITEM.push_back(pMonItem);
 		}
-		UNDEFINE_QUERY();
 	}
 
 	m_mapExtraSpawnID.clear();
@@ -3380,6 +3423,36 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY()
 
+	// --- Bulk-load the per-spawn monster data up front (was N+1: 1-2 queries per spawn row). ---
+	// Party membership comes from a single full-table scan; map-monster rows likewise, grouped by
+	// wSpawnID. The per-spawn loop below then just reads these in-memory maps.
+	std::map< WORD, std::vector<WORD> > mapPartyMembers;
+	DEFINE_QUERY( &m_db, CTBLMonPartyAll)
+	if(query->Open())
+	{
+		while(query->Fetch())
+			mapPartyMembers[query->m_wPartyID].push_back(query->m_wID);
+		query->Close();
+	}
+	UNDEFINE_QUERY()
+
+	std::map< WORD, std::vector<QMAPMONROW> > mapMapMon;
+	DEFINE_QUERY( &m_db, CTBLMapMonAll)
+	if(query->Open())
+	{
+		while(query->Fetch())
+		{
+			QMAPMONROW row;
+			row.m_wMonID	= query->m_wMonID;
+			row.m_bLeader	= query->m_bLeader;
+			row.m_bEssential= query->m_bEssential;
+			row.m_bProb		= query->m_bProb;
+			mapMapMon[query->m_wSpawnID].push_back(row);
+		}
+		query->Close();
+	}
+	UNDEFINE_QUERY()
+
 	MAPTMONSPAWNTEMP::iterator itSPAWN;
 	for( itSPAWN = m_mapTMONSPAWN.begin(); itSPAWN != m_mapTMONSPAWN.end(); itSPAWN++)
 	{
@@ -3391,37 +3464,29 @@ DWORD CTMapSvrModule::LoadData()
 
 		if(pSPAWN->m_wPartyID)
 		{
-			DEFINE_QUERY( &m_db, CTBLMonParty)
-			query->m_wPartyID = pSPAWN->m_wPartyID;
-			if(query->Open())
-			{
-				while(query->Fetch())
-					pSPAWN->m_vPARTY.push_back(query->m_wSpawnID);
-				query->Close();
-			}
-			UNDEFINE_QUERY();
+			std::map< WORD, std::vector<WORD> >::iterator itPM = mapPartyMembers.find(pSPAWN->m_wPartyID);
+			if(itPM != mapPartyMembers.end())
+				for(DWORD i=0; i<itPM->second.size(); i++)
+					pSPAWN->m_vPARTY.push_back(itPM->second[i]);
 		}
 
-		DEFINE_QUERY( &m_db, CTBLMapMon)
-		query->m_wSpawnID = pSPAWN->m_wID;
-		if(query->Open())
+		std::map< WORD, std::vector<QMAPMONROW> >::iterator itMM = mapMapMon.find(pSPAWN->m_wID);
+		if(itMM != mapMapMon.end())
 		{
-			while(query->Fetch())
+			std::vector<QMAPMONROW> & vMon = itMM->second;
+			for(DWORD i=0; i<vMon.size(); i++)
 			{
 				LPTMAPMON pMON = new TMAPMON();
 
-				pMON->m_wSpawnID = query->m_wSpawnID;
-				pMON->m_wMonID = query->m_wMonID;
-				pMON->m_bLeader = query->m_bLeader;
+				pMON->m_wSpawnID = pSPAWN->m_wID;
+				pMON->m_wMonID = vMon[i].m_wMonID;
+				pMON->m_bLeader = vMon[i].m_bLeader;
 
-				pMON->m_bEssential = query->m_bEssential;
-				pMON->m_bProb = query->m_bProb;
+				pMON->m_bEssential = vMon[i].m_bEssential;
+				pMON->m_bProb = vMon[i].m_bProb;
 				pSPAWN->m_vMAPMON.push_back(pMON);
 			}
-
-			query->Close();
 		}
-		UNDEFINE_QUERY()
 
 		if(pSPAWN->m_bEvent == SE_DEFAULT)
 			for( itCH = m_mapTCHANNEL.begin(); itCH != m_mapTCHANNEL.end(); itCH++)
@@ -3429,35 +3494,114 @@ DWORD CTMapSvrModule::LoadData()
 	}
 
 	LOAD_STEP("CTBLQuestChart");
-	DEFINE_QUERY( &m_db, CTBLQuestChart)
-	query->m_dwParentID = 0;
 
+	// --- Bulk-load the whole quest graph up front (was N+1: 4 queries per quest node in
+	// LoadQuestTemp). Each table is fetched once and grouped in memory; LoadQuestTemp then reads
+	// these staging maps instead of querying. ---
+	m_mapQLoadChild.clear();
+	DEFINE_QUERY( &m_db, CTBLQuestChartAll)
 	if(query->Open())
 	{
 		while(query->Fetch())
 		{
-			LPQUESTTEMP pQUEST = new QUESTTEMP();
-
-			pQUEST->m_dwTriggerID	= query->m_dwTriggerID;
-			pQUEST->m_dwParentID	= query->m_dwParentID;
-			pQUEST->m_dwQuestID		= query->m_dwQuestID;
-
-			pQUEST->m_bTriggerType	= query->m_bTriggerType;
-			pQUEST->m_bForceRun		= query->m_bForceRun;
-			pQUEST->m_bCountMax		= query->m_bCountMax;
-			pQUEST->m_bType			= query->m_bType;
-			pQUEST->m_bConditionCheck = query->m_bConditionCheck;
-
-			m_vQUESTTEMP.push_back(pQUEST);
-			AddQuestTemp(pQUEST);
+			QLOADCHILD row;
+			row.m_dwQuestID			= query->m_dwQuestID;
+			row.m_dwTriggerID		= query->m_dwTriggerID;
+			row.m_bTriggerType		= query->m_bTriggerType;
+			row.m_bForceRun			= query->m_bForceRun;
+			row.m_bCountMax			= query->m_bCountMax;
+			row.m_bType				= query->m_bType;
+			row.m_bConditionCheck	= query->m_bConditionCheck;
+			m_mapQLoadChild[query->m_dwParentID].push_back(row);
 		}
-
 		query->Close();
 	}
 	UNDEFINE_QUERY()
 
+	m_mapQLoadCond.clear();
+	DEFINE_QUERY( &m_db, CTBLQuestConditionChartAll)
+	if(query->Open())
+	{
+		while(query->Fetch())
+		{
+			QLOADCOND row;
+			row.m_dwConditionID		= query->m_dwConditionID;
+			row.m_bConditionType	= query->m_bConditionType;
+			row.m_bCount			= query->m_bCount;
+			m_mapQLoadCond[query->m_dwQuestID].push_back(row);
+		}
+		query->Close();
+	}
+	UNDEFINE_QUERY()
+
+	m_mapQLoadReward.clear();
+	DEFINE_QUERY( &m_db, CTBLQuestRewardChartAll)
+	if(query->Open())
+	{
+		while(query->Fetch())
+		{
+			QLOADREWARD row;
+			row.m_dwRewardID		= query->m_dwRewardID;
+			row.m_bRewardType		= query->m_bRewardType;
+			row.m_bTakeMethod		= query->m_bTakeMethod;
+			row.m_bTakeData			= query->m_bTakeData;
+			row.m_bCount			= query->m_bCount;
+			m_mapQLoadReward[query->m_dwQuestID].push_back(row);
+		}
+		query->Close();
+	}
+	UNDEFINE_QUERY()
+
+	m_mapQLoadTerm.clear();
+	DEFINE_QUERY( &m_db, CTBLQuestTermChartAll)
+	if(query->Open())
+	{
+		while(query->Fetch())
+		{
+			QLOADTERM row;
+			row.m_dwTermID			= query->m_dwTermID;
+			row.m_bTermType			= query->m_bTermType;
+			row.m_bCount			= query->m_bCount;
+			m_mapQLoadTerm[query->m_dwQuestID].push_back(row);
+		}
+		query->Close();
+	}
+	UNDEFINE_QUERY()
+
+	// Seed the tree with the root quests (parentID 0), then recurse from memory.
+	{
+		MAPQLOADCHILD::iterator itRoot = m_mapQLoadChild.find(0);
+		if(itRoot != m_mapQLoadChild.end())
+		{
+			std::vector<QLOADCHILD> & vRoot = itRoot->second;
+			for(DWORD i=0; i<vRoot.size(); i++)
+			{
+				LPQUESTTEMP pQUEST = new QUESTTEMP();
+
+				pQUEST->m_dwTriggerID	= vRoot[i].m_dwTriggerID;
+				pQUEST->m_dwParentID	= 0;
+				pQUEST->m_dwQuestID		= vRoot[i].m_dwQuestID;
+
+				pQUEST->m_bTriggerType	= vRoot[i].m_bTriggerType;
+				pQUEST->m_bForceRun		= vRoot[i].m_bForceRun;
+				pQUEST->m_bCountMax		= vRoot[i].m_bCountMax;
+				pQUEST->m_bType			= vRoot[i].m_bType;
+				pQUEST->m_bConditionCheck = vRoot[i].m_bConditionCheck;
+
+				m_vQUESTTEMP.push_back(pQUEST);
+				AddQuestTemp(pQUEST);
+			}
+		}
+	}
+
 	for( int i=0; i<INT(m_vQUESTTEMP.size()); i++)
 		LoadQuestTemp(m_vQUESTTEMP[i]);
+
+	// Quest graph is fully materialized; release the load-time staging maps.
+	m_mapQLoadChild.clear();
+	m_mapQLoadCond.clear();
+	m_mapQLoadReward.clear();
+	m_mapQLoadTerm.clear();
 
 	LOAD_STEP("CTBLSpawnPos");
 	DEFINE_QUERY(&m_db, CTBLSpawnPos);
@@ -3626,104 +3770,133 @@ DWORD CTMapSvrModule::LoadData()
 	}
 	UNDEFINE_QUERY();
 
+	// Bulk-load portal destinations once (was N+1: one CTBLDestinationChart query per portal).
+	std::map< WORD, std::vector<QDESTROW> > mapDest;
+	DEFINE_QUERY(&m_db, CTBLDestinationChartAll)
+	if(query->Open())
+	{
+		while(query->Fetch())
+		{
+			QDESTROW row;
+			row.m_wDestID = query->m_wDestID;
+			row.m_dwPrice = query->m_dwPrice;
+			row.m_bEnable = query->m_bEnable;
+			memcpy(row.m_bCondition, query->m_bCondition, sizeof(BYTE)*PORTALCONDITION_COUNT);
+			memcpy(row.m_dwConditionID, query->m_dwConditionID, sizeof(DWORD)*PORTALCONDITION_COUNT);
+			mapDest[query->m_wPortalID].push_back(row);
+		}
+		query->Close();
+	}
+	UNDEFINE_QUERY()
+
 	MAPTPORTAL::iterator itPt, itDest;
 	for(itPt=m_mapTPortal.begin(); itPt!=m_mapTPortal.end(); itPt++)
 	{
-		DEFINE_QUERY(&m_db, CTBLDestinationChart)
-		query->m_wPortalID = (*itPt).second->m_wPortalID;
-		if(query->Open())
+		std::map< WORD, std::vector<QDESTROW> >::iterator itDR = mapDest.find((*itPt).second->m_wPortalID);
+		if(itDR == mapDest.end())
+			continue;
+
+		std::vector<QDESTROW> & vRows = itDR->second;
+		for(DWORD r=0; r<vRows.size(); r++)
 		{
-			while(query->Fetch())
+			QDESTROW & row = vRows[r];
+
+			itDest = m_mapTPortal.find(row.m_wDestID);
+			if(itDest != m_mapTPortal.end())
 			{
-				itDest = m_mapTPortal.find(query->m_wDestID);
-				if(itDest != m_mapTPortal.end())
-				{
-					LPTDESTINATION pDes = new TDESTINATION();
-					pDes->m_wDestID = query->m_wDestID;					
-					pDes->m_dwPrice = query->m_dwPrice;
-					pDes->m_bEnable = query->m_bEnable;					
-					memcpy(pDes->m_bCondition, query->m_bCondition, sizeof(BYTE)*PORTALCONDITION_COUNT);
-					memcpy(pDes->m_dwConditionID, query->m_dwConditionID, sizeof(DWORD)*PORTALCONDITION_COUNT);
-					pDes->m_pPortal = (*itDest).second;
-					(*itPt).second->m_mapDestination.insert(MAPTDESTINATION::value_type(pDes->m_wDestID, pDes));
-				}
+				LPTDESTINATION pDes = new TDESTINATION();
+				pDes->m_wDestID = row.m_wDestID;
+				pDes->m_dwPrice = row.m_dwPrice;
+				pDes->m_bEnable = row.m_bEnable;
+				memcpy(pDes->m_bCondition, row.m_bCondition, sizeof(BYTE)*PORTALCONDITION_COUNT);
+				memcpy(pDes->m_dwConditionID, row.m_dwConditionID, sizeof(DWORD)*PORTALCONDITION_COUNT);
+				pDes->m_pPortal = (*itDest).second;
+				(*itPt).second->m_mapDestination.insert(MAPTDESTINATION::value_type(pDes->m_wDestID, pDes));
 			}
-			query->Close();
 		}
-		UNDEFINE_QUERY()
 	}
+
+	// Bulk-load NPC item/skill lists once (was N+1: one CTBLNpcItem query per NPC).
+	std::map< WORD, std::vector<DWORD> > mapNpcItem;
+	DEFINE_QUERY(&m_db, CTBLNpcItemAll)
+	if(query->Open())
+	{
+		while(query->Fetch())
+			mapNpcItem[query->m_wNpcID].push_back(query->m_dwItemID);
+		query->Close();
+	}
+	UNDEFINE_QUERY()
 
 	MAPTNPC::iterator itNpc;
 	for(itNpc=m_mapTNpc.begin(); itNpc!=m_mapTNpc.end(); itNpc++)
 	{
-		DEFINE_QUERY(&m_db, CTBLNpcItem)
-		query->m_wNpcID = (*itNpc).second->m_wID;
-		if(query->Open())
+		std::map< WORD, std::vector<DWORD> >::iterator itNI = mapNpcItem.find((*itNpc).second->m_wID);
+		if(itNI == mapNpcItem.end())
+			continue;
+
+		std::vector<DWORD> & vItems = itNI->second;
+		for(DWORD r=0; r<vItems.size(); r++)
 		{
-			while(query->Fetch())
+			DWORD dwItemID = vItems[r];
+			CTNpc * pNpc = (*itNpc).second;
+			switch(pNpc->m_bType)
 			{
-				CTNpc * pNpc = (*itNpc).second;
-				switch(pNpc->m_bType)
+			case TNPC_SKILL_RENT:
+			case TNPC_SKILL_MASTER:
 				{
-				case TNPC_SKILL_RENT:
-				case TNPC_SKILL_MASTER:
-					{
-						MAPTSKILLTEMP::iterator itSkillTemp = m_mapTSKILL.find((WORD)query->m_dwItemID);
-						if(itSkillTemp != m_mapTSKILL.end())
-							pNpc->m_mapSkill.insert(MAPTSKILLTEMP::value_type((WORD)query->m_dwItemID, (*itSkillTemp).second));
-					}
-					break;
-				case TNPC_PVPOINT:
-				case TNPC_ITEM:
-					{
-						MAPTITEMTEMP::iterator itItemTemp = m_mapTITEM.find((WORD)query->m_dwItemID);
-						if(itItemTemp != m_mapTITEM.end())
-							pNpc->m_mapItem.insert(MAPTITEMTEMP::value_type((WORD)query->m_dwItemID, (*itItemTemp).second));
-					}
-					break;
-				case TNPC_PORTAL:
-					{
-						MAPTPORTAL::iterator itPt = m_mapTPortal.find(WORD(query->m_dwItemID));
-						if(itPt != m_mapTPortal.end())
-							pNpc->m_pPortal = (*itPt).second;
-					}
-					break;
-				case TNPC_RETURN:
-					{
-						pNpc->m_wSpawnPosID = WORD(query->m_dwItemID);
-					}
-					break;
-				case TNPC_ARENA:
-					{
-						WORD wUnitID =  MAKEWORD( BYTE(INT(pNpc->m_fPosX) / UNIT_SIZE), BYTE(INT(pNpc->m_fPosZ) / UNIT_SIZE));
-						CTMap * pArenaMap = FindTMap(DEFAULT_CHANNEL, 0, pNpc->m_wMapID);
-						if(pArenaMap)
-						{
-							MAPWORD::iterator itUT = pArenaMap->m_mapTUNIT.find(wUnitID);
-							if(itUT != pArenaMap->m_mapTUNIT.end())
-							{
-								MAPARENA::iterator itArn = m_mapArena.find(WORD(query->m_dwItemID));
-								if(itArn != m_mapArena.end())
-									pNpc->m_pArena = itArn->second;
-							}
-						}
-					}
-					break;
-				case TNPC_MAGICITEM:
-					{
-						MAPTSTORAGEITEM::iterator itItemTemp = m_mapTQuestItem.find(query->m_dwItemID);
-						if(itItemTemp != m_mapTQuestItem.end())
-						{
-							CTItem* pMagicItem = (*itItemTemp).second;
-							pNpc->m_mapMagicItem.insert(MAPTSTORAGEITEM::value_type(query->m_dwItemID, pMagicItem));
-						}
-					}
-					break;
+					MAPTSKILLTEMP::iterator itSkillTemp = m_mapTSKILL.find((WORD)dwItemID);
+					if(itSkillTemp != m_mapTSKILL.end())
+						pNpc->m_mapSkill.insert(MAPTSKILLTEMP::value_type((WORD)dwItemID, (*itSkillTemp).second));
 				}
+				break;
+			case TNPC_PVPOINT:
+			case TNPC_ITEM:
+				{
+					MAPTITEMTEMP::iterator itItemTemp = m_mapTITEM.find((WORD)dwItemID);
+					if(itItemTemp != m_mapTITEM.end())
+						pNpc->m_mapItem.insert(MAPTITEMTEMP::value_type((WORD)dwItemID, (*itItemTemp).second));
+				}
+				break;
+			case TNPC_PORTAL:
+				{
+					MAPTPORTAL::iterator itPt = m_mapTPortal.find(WORD(dwItemID));
+					if(itPt != m_mapTPortal.end())
+						pNpc->m_pPortal = (*itPt).second;
+				}
+				break;
+			case TNPC_RETURN:
+				{
+					pNpc->m_wSpawnPosID = WORD(dwItemID);
+				}
+				break;
+			case TNPC_ARENA:
+				{
+					WORD wUnitID =  MAKEWORD( BYTE(INT(pNpc->m_fPosX) / UNIT_SIZE), BYTE(INT(pNpc->m_fPosZ) / UNIT_SIZE));
+					CTMap * pArenaMap = FindTMap(DEFAULT_CHANNEL, 0, pNpc->m_wMapID);
+					if(pArenaMap)
+					{
+						MAPWORD::iterator itUT = pArenaMap->m_mapTUNIT.find(wUnitID);
+						if(itUT != pArenaMap->m_mapTUNIT.end())
+						{
+							MAPARENA::iterator itArn = m_mapArena.find(WORD(dwItemID));
+							if(itArn != m_mapArena.end())
+								pNpc->m_pArena = itArn->second;
+						}
+					}
+				}
+				break;
+			case TNPC_MAGICITEM:
+				{
+					MAPTSTORAGEITEM::iterator itItemTemp = m_mapTQuestItem.find(dwItemID);
+					if(itItemTemp != m_mapTQuestItem.end())
+					{
+						CTItem* pMagicItem = (*itItemTemp).second;
+						pNpc->m_mapMagicItem.insert(MAPTSTORAGEITEM::value_type(dwItemID, pMagicItem));
+					}
+				}
+				break;
 			}
-			query->Close();
 		}
-		UNDEFINE_QUERY();
 	}
 
 	LOAD_STEP("CTBLMonsterShop");
@@ -4591,74 +4764,68 @@ void CTMapSvrModule::LoadBRData()
 
 void CTMapSvrModule::LoadQuestTemp( LPQUESTTEMP pQUEST)
 {
-	DEFINE_QUERY( &m_db, CTBLQuestChart)
-	query->m_dwParentID = pQUEST->m_dwQuestID;
+	// All four datasets were bulk-loaded into the m_mapQLoad* staging maps before the tree walk
+	// (see CTMapSvrModule::Load), so this is now pure in-memory lookup -- no per-node DB queries.
 
-	if(query->Open())
+	// Children (was: CTBLQuestChart WHERE dwParentID = pQUEST->m_dwQuestID)
+	MAPQLOADCHILD::iterator itChild = m_mapQLoadChild.find(pQUEST->m_dwQuestID);
+	if(itChild != m_mapQLoadChild.end())
 	{
-		while(query->Fetch())
+		std::vector<QLOADCHILD> & vChild = itChild->second;
+		for(DWORD i=0; i<vChild.size(); i++)
 		{
 			LPQUESTTEMP pCHILD = new QUESTTEMP();
 
-			pCHILD->m_dwTriggerID	= query->m_dwTriggerID;
-			pCHILD->m_dwParentID	= query->m_dwParentID;
-			pCHILD->m_dwQuestID		= query->m_dwQuestID;
+			pCHILD->m_dwTriggerID	= vChild[i].m_dwTriggerID;
+			pCHILD->m_dwParentID	= pQUEST->m_dwQuestID;
+			pCHILD->m_dwQuestID		= vChild[i].m_dwQuestID;
 
-			pCHILD->m_bTriggerType	= query->m_bTriggerType;
-			pCHILD->m_bForceRun		= query->m_bForceRun;
-			pCHILD->m_bCountMax		= query->m_bCountMax;
-			pCHILD->m_bType			= query->m_bType;
-			pCHILD->m_bConditionCheck = query->m_bConditionCheck;
+			pCHILD->m_bTriggerType	= vChild[i].m_bTriggerType;
+			pCHILD->m_bForceRun		= vChild[i].m_bForceRun;
+			pCHILD->m_bCountMax		= vChild[i].m_bCountMax;
+			pCHILD->m_bType			= vChild[i].m_bType;
+			pCHILD->m_bConditionCheck = vChild[i].m_bConditionCheck;
 
 			pQUEST->m_mapCHILD.insert( MAPQUESTTEMP::value_type( pCHILD->m_dwQuestID, pCHILD));
 			AddQuestTemp(pCHILD);
 		}
-
-		query->Close();
 	}
-	UNDEFINE_QUERY()
 
-	DEFINE_QUERY( &m_db, CTBLQuestConditionChart)
-	query->m_dwQuestID = pQUEST->m_dwQuestID;
-
-	if(query->Open())
+	// Conditions (was: CTBLQuestConditionChart WHERE dwQuestID = pQUEST->m_dwQuestID)
+	MAPQLOADCOND::iterator itCond = m_mapQLoadCond.find(pQUEST->m_dwQuestID);
+	if(itCond != m_mapQLoadCond.end())
 	{
-		while(query->Fetch())
+		std::vector<QLOADCOND> & vCond = itCond->second;
+		for(DWORD i=0; i<vCond.size(); i++)
 		{
 			LPQUESTCONDITION pCONDITION = new QUESTCONDITION();
 
-			pCONDITION->m_dwConditionID	= query->m_dwConditionID;
-			pCONDITION->m_bConditionType= query->m_bConditionType;
-			pCONDITION->m_bCount		= query->m_bCount;
+			pCONDITION->m_dwConditionID	= vCond[i].m_dwConditionID;
+			pCONDITION->m_bConditionType= vCond[i].m_bConditionType;
+			pCONDITION->m_bCount		= vCond[i].m_bCount;
 
 			pQUEST->m_vCondition.push_back(pCONDITION);
 		}
-
-		query->Close();
 	}
-	UNDEFINE_QUERY()
 
-	DEFINE_QUERY( &m_db, CTBLQuestRewardChart)
-	query->m_dwQuestID = pQUEST->m_dwQuestID;
-
-	if(query->Open())
+	// Rewards (was: CTBLQuestRewardChart WHERE dwQuestID = pQUEST->m_dwQuestID)
+	MAPQLOADREWARD::iterator itReward = m_mapQLoadReward.find(pQUEST->m_dwQuestID);
+	if(itReward != m_mapQLoadReward.end())
 	{
-		while(query->Fetch())
+		std::vector<QLOADREWARD> & vReward = itReward->second;
+		for(DWORD i=0; i<vReward.size(); i++)
 		{
 			LPQUESTREWARD pREWARD = new QUESTREWARD();
 
-			pREWARD->m_dwRewardID = query->m_dwRewardID;
-			pREWARD->m_bRewardType = query->m_bRewardType;
-			pREWARD->m_bTakeMethod = query->m_bTakeMethod;
-			pREWARD->m_bTakeData = query->m_bTakeData;
-			pREWARD->m_bCount = query->m_bCount;
+			pREWARD->m_dwRewardID = vReward[i].m_dwRewardID;
+			pREWARD->m_bRewardType = vReward[i].m_bRewardType;
+			pREWARD->m_bTakeMethod = vReward[i].m_bTakeMethod;
+			pREWARD->m_bTakeData = vReward[i].m_bTakeData;
+			pREWARD->m_bCount = vReward[i].m_bCount;
 
 			pQUEST->m_vReward.push_back(pREWARD);
 		}
-
-		query->Close();
 	}
-	UNDEFINE_QUERY()
 
 	for(DWORD i=0; i<pQUEST->m_vReward.size(); i++)
 	{
@@ -4672,18 +4839,18 @@ void CTMapSvrModule::LoadQuestTemp( LPQUESTTEMP pQUEST)
 		}
 	}
 
-	DEFINE_QUERY( &m_db, CTBLQuestTermChart)
-	query->m_dwQuestID = pQUEST->m_dwQuestID;
-
-	if(query->Open())
+	// Terms (was: CTBLQuestTermChart WHERE dwQuestID = pQUEST->m_dwQuestID)
+	MAPQLOADTERM::iterator itTerm = m_mapQLoadTerm.find(pQUEST->m_dwQuestID);
+	if(itTerm != m_mapQLoadTerm.end())
 	{
-		while(query->Fetch())
+		std::vector<QLOADTERM> & vTerm = itTerm->second;
+		for(DWORD i=0; i<vTerm.size(); i++)
 		{
 			LPQUESTTERM pTERM = new QUESTTERM();
 
-			pTERM->m_dwTermID = query->m_dwTermID;
-			pTERM->m_bTermType = query->m_bTermType;
-			pTERM->m_bCount = query->m_bCount;
+			pTERM->m_dwTermID = vTerm[i].m_dwTermID;
+			pTERM->m_bTermType = vTerm[i].m_bTermType;
+			pTERM->m_bCount = vTerm[i].m_bCount;
 
 			pQUEST->m_vTerm.push_back(pTERM);
 
@@ -4694,10 +4861,7 @@ void CTMapSvrModule::LoadQuestTemp( LPQUESTTEMP pQUEST)
 					pMon->m_bCheckPartyQuest = TRUE;
 			}
 		}
-
-		query->Close();
 	}
-	UNDEFINE_QUERY()
 /*
 	DEFINE_QUERY( &m_db, CTBLCustomTicksTable )
 	if(query->Open())
@@ -4868,16 +5032,16 @@ DWORD CTMapSvrModule::WorkThread()
 
 						break;
 
-						// ***** IOCP »ç¿ë¹ý Áß ¾Ë¾Æ³»±â Èûµç Ã¹¹øÂ° ±¸¹® (¼­¹öÃø ¼¼¼Ç Á¾·á) *****
+						// ***** IOCP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ë¾Æ³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¹ï¿½ï¿½Â° ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½) *****
 						//
-						// ¼­¹ö°¡ ¸ÕÀú closesocket()À» È£ÃâÇÏ¿© ¼¼¼ÇÀ» Á¾·áÇÑ °æ¿ìÀÌ¸ç
-						// WSARecv()°¡ È£ÃâµÈ »óÅÂ¿¡¼­¸¸ ÀÌ ÄÚµå·Î µé¾î¿À¸ç
-						// ¸ðµç ¿À¹ö·¦ ¿ÀÆÛ·¡ÀÌ¼ÇÀÌ Á¾·áµÈ »óÅÂÀÌ±â ¶§¹®¿¡
-						// ÀÌ ¼ÒÄÏ ÇÚµé°ú °ü·ÃµÈ µ¥ÀÌÅ¸´Â IOCPÅ¥¿¡ ³²¾ÆÀÖÁö ¾Ê´Ù.
-						// µû¶ó¼­ ÀÌ ½º·¹µå¿¡¼­´Â ÇØ´ç ¼¼¼Ç¿¡ °ü·ÃµÈ ÀÛ¾÷ ¸í·ÉÀ» ´õÀÌ»ó ¼öÇàÇÏÁö ¾Ê±â ¶§¹®¿¡
-						// ´Ù¸¥ ½º·¹µå°¡ Çã¶ôÇÑ´Ù¸é ÀÌ ±¸¹®¿¡¼­ ¼¼¼Ç Æ÷ÀÎÅÍ¸¦ »èÁ¦ÇØµµ ¹«¹æÇÏ´Ù.
-						// ¼¼¼ÇÀ» »èÁ¦ ÇÏ´Âµ¥ °¡Àå ÁÁÀº ÁöÁ¡ÀÌ¹Ç·Î ÀüÃ¼ ½Ã½ºÅÛ ¼³°è½Ã
-						// Á¤»óÀûÀÎ ¼¼¼Ç Á¾·á´Â ¼­¹öÃø¿¡¼­ ¸ÕÀú ¼¼¼ÇÀ» Á¾·á½ÃÅ°µµ·Ï ¼³°èÇÏ´Â °ÍÀÌ ¾ÈÀüÇÏ´Ù.
+						// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ closesocket()ï¿½ï¿½ È£ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½
+						// WSARecv()ï¿½ï¿½ È£ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Úµï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+						// ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Û·ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+						// ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Úµï¿½ï¿½ ï¿½ï¿½ï¿½Ãµï¿½ ï¿½ï¿½ï¿½ï¿½Å¸ï¿½ï¿½ IOCPÅ¥ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´ï¿½.
+						// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½å¿¡ï¿½ï¿½ï¿½ï¿½ ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½Ç¿ï¿½ ï¿½ï¿½ï¿½Ãµï¿½ ï¿½Û¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì»ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+						// ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½å°¡ ï¿½ï¿½ï¿½ï¿½Ñ´Ù¸ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.
+						// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ï´Âµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì¹Ç·ï¿½ ï¿½ï¿½Ã¼ ï¿½Ã½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
+						// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Å°ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.
 						break;
 					case TOV_SSN_SEND:
 						OnSendComplete(pSession, 0);
@@ -5162,16 +5326,16 @@ void CTMapSvrModule::ProcessSession( CTMapSession *pSession, DWORD dwIoBytes)
 
 	if(!pSession->Read(dwIoBytes))
 	{
-		// ***** IOCP »ç¿ë¹ý Áß ¾Ë¾Æ³»±â Èûµç µÎ¹øÂ° ±¸¹® (Å¬¶óÀÌ¾ðÆ®Ãø ¼¼¼Ç Á¾·á) *****
+		// ***** IOCP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ë¾Æ³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Î¹ï¿½Â° ï¿½ï¿½ï¿½ï¿½ (Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½) *****
 		//
-		// Å¬¶óÀÌ¾ðÆ®°¡ ¸ÕÀú closesocket()À» È£ÃâÇÏ¿© ¼¼¼ÇÀ» Á¾·áÇÑ °æ¿ìÀÌ¸ç
-		// WSARecv()°¡ È£ÃâµÈ »óÅÂ¿¡¼­¸¸ ÀÌ ÄÚµå·Î µé¾î¿À¸ç
-		// ¸ðµç ¿À¹ö·¦ ¿ÀÆÛ·¡ÀÌ¼ÇÀÌ Á¾·á µÇ¾ú´Ù°í º¼ ¼ö ¾ø´Ù.
-		// µû¶ó¼­ ÀÌÈÄ¿¡ ÀÌ ½º·¹µå¿¡¼­ ÀÌ ¼¼¼Ç°ú °ü·ÃµÈ ÀÛ¾÷¸í·ÉÀÌ ½ÇÇà µÉ ¼ö ÀÖÀ¸¹Ç·Î
-		// ¿©±â¼­ ¼¼¼Ç Æ÷ÀÎÅÍ¸¦ »èÁ¦ÇÏ¸é ¼­¹ö°¡ ´Ù¿îµÉ ¼ö ÀÖ´Ù.
-		// Receive¿Í °ü·ÃµÈ ¿À¹ö·¦ ¿ÀÆÛ·¹ÀÌ¼ÇÀº È®½ÇÈ÷ Á¾·á µÇ¾úÀ¸¹Ç·Î
-		// Send¿Í °ü·ÃµÈ ¿À¹ö·¦ ¿ÀÆÛ·¹ÀÌ¼ÇÀÌ Á¾·áµÇ¾ú´ÂÁö¸¦
-		// È®ÀÎÇÑ ÈÄ ´Ù¸¥ ½º·¹µåÀÇ ¼¼¼Ç »èÁ¦ ¼ö¶ô°úÁ¤À» °ÅÄ¡°í ¼¼¼ÇÀ» »èÁ¦ ÇØ¾ß ÇÑ´Ù.
+		// Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ closesocket()ï¿½ï¿½ È£ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½
+		// WSARecv()ï¿½ï¿½ È£ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Úµï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		// ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Û·ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ç¾ï¿½ï¿½Ù°ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ä¿ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½å¿¡ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Ç°ï¿½ ï¿½ï¿½ï¿½Ãµï¿½ ï¿½Û¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½
+		// ï¿½ï¿½ï¿½â¼­ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¿ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½.
+		// Receiveï¿½ï¿½ ï¿½ï¿½ï¿½Ãµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Û·ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½Ç·ï¿½
+		// Sendï¿½ï¿½ ï¿½ï¿½ï¿½Ãµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Û·ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		// È®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ø¾ï¿½ ï¿½Ñ´ï¿½.
 		if(pSession->m_bSessionType == SESSION_SERVER)
 			LogEvent("Process Read %d, %d\n", dwIoBytes, pSession->m_Recv.m_dwReadBytes);
 		OnInvalidSession(pSession);
@@ -5225,16 +5389,16 @@ void CTMapSvrModule::ProcessSession( CTMapSession *pSession, DWORD dwIoBytes)
 
 	if(!pSession->WaitForMessage())
 	{
-		// ***** IOCP »ç¿ë¹ý Áß ¾Ë¾Æ³»±â Èûµç ³×¹øÂ° ±¸¹® (ºñ Á¤»óÀûÀÎ ¼¼¼Ç Á¾·á) *****
+		// ***** IOCP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ë¾Æ³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½×¹ï¿½Â° ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½) *****
 		//
-		// ³×Æ®Ÿp ¿À·ù·Î ÀÎÇØ ¼¼¼ÇÀÌ ºñ Á¤»óÀûÀÎ »óÅÂ¿¡¼­ WSARecv()ÇÔ¼ö È£ÃâÀÌ ½ÇÆÐÇÑ °æ¿ìÀÌ¸ç
-		// WSARecv()°¡ È£ÃâµÈ »óÅÂ¿¡¼­¸¸ ÀÌ ÄÚµå·Î µé¾î¿À¸ç
-		// ¸ðµç ¿À¹ö·¦ ¿ÀÆÛ·¡ÀÌ¼ÇÀÌ Á¾·á µÇ¾ú´Ù°í º¼ ¼ö ¾ø´Ù.
-		// µû¶ó¼­ ÀÌÈÄ¿¡ ÀÌ ½º·¹µå¿¡¼­ ÀÌ ¼¼¼Ç°ú °ü·ÃµÈ ÀÛ¾÷¸í·ÉÀÌ ½ÇÇà µÉ ¼ö ÀÖÀ¸¹Ç·Î
-		// ¿©±â¼­ ¼¼¼Ç Æ÷ÀÎÅÍ¸¦ »èÁ¦ÇÏ¸é ¼­¹ö°¡ ´Ù¿îµÉ ¼ö ÀÖ´Ù.
-		// Receive¿Í °ü·ÃµÈ ¿À¹ö·¦ ¿ÀÆÛ·¹ÀÌ¼ÇÀº È®½ÇÈ÷ Á¾·á µÇ¾úÀ¸¹Ç·Î
-		// Send¿Í °ü·ÃµÈ ¿À¹ö·¦ ¿ÀÆÛ·¹ÀÌ¼ÇÀÌ Á¾·áµÇ¾ú´ÂÁö¸¦
-		// È®ÀÎÇÑ ÈÄ ´Ù¸¥ ½º·¹µåÀÇ ¼¼¼Ç »èÁ¦ ¼ö¶ô°úÁ¤À» °ÅÄ¡°í ¼¼¼ÇÀ» »èÁ¦ ÇØ¾ß ÇÑ´Ù.
+		// ï¿½ï¿½Æ®ï¿½p ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ WSARecv()ï¿½Ô¼ï¿½ È£ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½
+		// WSARecv()ï¿½ï¿½ È£ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Úµï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		// ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Û·ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ç¾ï¿½ï¿½Ù°ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ä¿ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½å¿¡ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Ç°ï¿½ ï¿½ï¿½ï¿½Ãµï¿½ ï¿½Û¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½
+		// ï¿½ï¿½ï¿½â¼­ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¿ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½.
+		// Receiveï¿½ï¿½ ï¿½ï¿½ï¿½Ãµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Û·ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½Ç·ï¿½
+		// Sendï¿½ï¿½ ï¿½ï¿½ï¿½Ãµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Û·ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		// È®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ø¾ï¿½ ï¿½Ñ´ï¿½.
 		if(pSession->m_bSessionType == SESSION_SERVER)
 			LogEvent("WaitForMessage %d, %d, %d, %d\n", pSession->m_sock, pSession->m_bValid, pSession->m_bCanRecv, WSAGetLastError());
 		OnInvalidSession(pSession);
@@ -5278,10 +5442,10 @@ DWORD CTMapSvrModule::OnReceive( LPPACKETBUF pBUF)
 		{
 			// Control Server Message
 			ON_RECEIVE(CT_SERVICEMONITOR_ACK)
-			ON_RECEIVE(CT_ANNOUNCEMENT_ACK) // Çö½Â·æ °øÁö»çÇ×
-			ON_RECEIVE(CT_USERKICKOUT_ACK) // Çö½Â·æ À¯Àú °­Á¦ÅðÀå
-			ON_RECEIVE(CT_USERMOVE_ACK) // Çö½Â·æ À¯Àú À§Ä¡ÀÌµ¿
-			ON_RECEIVE(CT_MONSPAWNFIND_ACK) // Çö½Â·æ ¸ó½ºÅÍ °ü¸®
+			ON_RECEIVE(CT_ANNOUNCEMENT_ACK) // ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			ON_RECEIVE(CT_USERKICKOUT_ACK) // ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			ON_RECEIVE(CT_USERMOVE_ACK) // ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½Ìµï¿½
+			ON_RECEIVE(CT_MONSPAWNFIND_ACK) // ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			ON_RECEIVE(CT_MONACTION_ACK)
 			ON_RECEIVE(CT_SERVICEDATACLEAR_ACK)
 			ON_RECEIVE(CT_CTRLSVR_REQ)
@@ -5373,7 +5537,7 @@ DWORD CTMapSvrModule::OnReceive( LPPACKETBUF pBUF)
 			ON_RECEIVE(DM_SAVECHARPOSITION_REQ)
 
 			//////////////////////////////////////////
-			//±æµå
+			//ï¿½ï¿½ï¿½
 			ON_RECEIVE(DM_GUILDCABINETPUTIN_REQ)
 			ON_RECEIVE(DM_GUILDCABINETTAKEOUT_REQ)
 			ON_RECEIVE(DM_GUILDCABINETROLLBACK_REQ)
@@ -5437,7 +5601,7 @@ DWORD CTMapSvrModule::OnReceive( LPPACKETBUF pBUF)
 			ON_RECEIVE(DM_CMGIFTLOG_REQ)
 
 			//////////////////////////////////////////
-			//±æµå
+			//ï¿½ï¿½ï¿½
 			ON_RECEIVE(DM_GUILDCABINETPUTIN_ACK)
 			ON_RECEIVE(DM_GUILDCABINETTAKEOUT_ACK)
 			//////////////////////////////////////////
@@ -5479,7 +5643,7 @@ DWORD CTMapSvrModule::OnReceive( LPPACKETBUF pBUF)
 			ON_RECEIVE(MW_RPSGAMECHANGE_REQ)
 
 			//////////////////////////////////////////////////////////////////////////
-			// ±æµå
+			// ï¿½ï¿½ï¿½
 			ON_RECEIVE(MW_GUILDESTABLISH_REQ)
 			ON_RECEIVE(MW_GUILDDISORGANIZATION_REQ)
 			ON_RECEIVE(MW_GUILDLEAVE_REQ)
@@ -5706,7 +5870,7 @@ DWORD CTMapSvrModule::OnReceive( LPPACKETBUF pBUF)
 	ON_RECEIVE(CS_QUESTENDTIMER_REQ)
 	ON_RECEIVE(CS_QUESTLIST_POSSIBLE_REQ)
 	/////////////////////////////////////////////////////////
-	// ±æµå
+	// ï¿½ï¿½ï¿½
 	ON_RECEIVE(CS_GUILDESTABLISH_REQ)
 	ON_RECEIVE(CS_GUILDDISORGANIZATION_REQ)
 	ON_RECEIVE(CS_GUILDINVITE_REQ)
@@ -6930,7 +7094,7 @@ BYTE CTMapSvrModule::SetMagicOpt(CTPlayer * pPlayer, CTItem * pItem, BYTE bOptTy
 		return 0;
 	}
 
-	// m_wValue ÃÖÁ¾¿É¼ÇºñÀ²
+	// m_wValue ï¿½ï¿½ï¿½ï¿½ï¿½É¼Çºï¿½ï¿½ï¿½
 	INT nBaseLevel = 0;
 	if(bMakeType == IMT_SCROLL)
 		nBaseLevel = INT(min(ITEMAGIC_BASELEVEL,pPlayer->m_bLevel)) - max(0, 34 - max(pItem->GetEquipLevel(), pItem->GetPowerLevel()));
@@ -7436,7 +7600,7 @@ CTRecallMon *pMon = pPlayer->FindRecallMon( dwID );
 	}
 
 	if(pPlayer->m_pMAP && pPlayer->m_bMain &&
-		!pMon->m_pMON->m_wID)//ºÐ½Å
+		!pMon->m_pMON->m_wID)//ï¿½Ð½ï¿½
 	{
 		VTMONSTER vMONS;
 		vMONS.clear();
@@ -8265,7 +8429,7 @@ void CTMapSvrModule::PartyChiefItemTake(CTPlayer * pChief, CTPlayer * pTarget, C
 	pTarget->SendCS_MONITEMLIST_ACK(MIL_SUCCESS, pMon->m_dwID, pMon->m_dwMoney, pInven, TRUE);
 }
 
-// ÀÌº¥Æ® º¯½Å¹°¾à
+// ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½Å¹ï¿½ï¿½ï¿½
 CTSkillTemp * CTMapSvrModule::RandTransSkill(CTSkillTemp * pTemp)
 {
 	LPTSKILLDATA pData = NULL;
@@ -11213,7 +11377,7 @@ BYTE CTMapSvrModule::SetTutorialCharBase(CTPlayer * pPlayer)
 			pSkill->m_pTSKILL = pTemp;
 			pSkill->m_bLevel = pTemp->m_bMaxLevel;
 
-			//½ºÅ³ ¹ö¸±¶§ m_vRemainSkill¿¡¼­ ÇØ´ç ½ºÅ³ ²À »¬°Í
+			//ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ m_vRemainSkillï¿½ï¿½ï¿½ï¿½ ï¿½Ø´ï¿½ ï¿½ï¿½Å³ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			pPlayer->m_mapTSKILL.insert(MAPTSKILL::value_type(pTemp->m_wID, pSkill));
 			pPlayer->RemainSkill( pSkill, 0);
 		}
@@ -12265,7 +12429,7 @@ void CTMapSvrModule::UpdateCSModule()
 	if(!m_bEnableNP)
 		return;
 
-	if(m_dwTick - m_dwNPCSModuleTick > NPROTECT_CS_UPDATETICK)	//	CS¸ðµâ ¾÷µ¥ÀÌÆ® ½Ã°£
+	if(m_dwTick - m_dwNPCSModuleTick > NPROTECT_CS_UPDATETICK)	//	CSï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½Ã°ï¿½
 	{
 		GGAuthUpdateTimer();
 		m_dwNPCSModuleTick = m_dwTick;

@@ -8,15 +8,15 @@
 #endif
 #define ON_RECEIVE(p)							case p : return On##p(pBUF);
 
-////////////////////// ¸Å¿ì¸Å¿ì Áß¿ä - ¼ÒÄÏ Á¾·á¿ä·É /////////////////////////////////////
+////////////////////// ï¿½Å¿ï¿½Å¿ï¿½ ï¿½ß¿ï¿½ - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ /////////////////////////////////////
 //
-// 1. ÀÚ±âÀÚ½ÅÀ» Á¾·á ÇÏ·Á¸é ÇÚµé·¯ÇÔ¼ö¿¡¼­ EC_SESSION_INVALIDCHAR¸¦ ¸®ÅÏÇÑ´Ù.
-//    (ÇÚµé·¯ ÇÔ¼öÀÇ ÆÄ¶ó¸ÞÅÍ·Î ³Ñ¾î¿Â ¼ÒÄÏ pBUF->m_pSESSIONÀÌ Á¾·á)
+// 1. ï¿½Ú±ï¿½ï¿½Ú½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½ï¿½ï¿½ ï¿½Úµé·¯ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½ EC_SESSION_INVALIDCHARï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+//    (ï¿½Úµé·¯ ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½Ä¶ï¿½ï¿½ï¿½Í·ï¿½ ï¿½Ñ¾ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ pBUF->m_pSESSIONï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
 //
-// 2. ´Ù¸¥ ¼ÒÄÏÀ» Á¾·á ÇÏ·Á¸é Á¾·á´ë»óÀ» ÆÄ¶ó¸ÞÅÍ·Î ÇÏ¿© CloseSession()À» È£ÃâÇÑ´Ù.
-//    (¿¹ : CloseSession(pTarget); pTargetÀÌ ½º½º·Î Á¾·áÇÏµµ·Ï À¯µµµÈ´Ù)
+// 2. ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ä¶ï¿½ï¿½ï¿½Í·ï¿½ ï¿½Ï¿ï¿½ CloseSession()ï¿½ï¿½ È£ï¿½ï¿½ï¿½Ñ´ï¿½.
+//    (ï¿½ï¿½ : CloseSession(pTarget); pTargetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½È´ï¿½)
 //
-// 3. ÀÌ ÀÌ¿ÜÀÇ ¹æ¹ýÀ¸·Î Àý´ë ¼ÒÄÏÀ» Á¾·áÇÏ¸é ¾ÈµÈ´Ù.
+// 3. ï¿½ï¿½ ï¿½Ì¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½ ï¿½ÈµÈ´ï¿½.
 //
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -91,6 +91,12 @@ public:
 	MAPMAPVQUESTTEMP	m_mapTRIGGER;				// Quest trigger index
 	MAPQUESTTEMP		m_mapQUESTTEMP;				// Quest search index
 	VQUESTTEMP			m_vQUESTTEMP;				// Root quest template data
+
+	MAPSVRTOPO			m_mapSvrTopo;				// Load-time staging: cell -> serverID topology
+	MAPQLOADCHILD		m_mapQLoadChild;			// Load-time staging: quest children by parentID
+	MAPQLOADCOND		m_mapQLoadCond;				// Load-time staging: quest conditions by questID
+	MAPQLOADREWARD		m_mapQLoadReward;			// Load-time staging: quest rewards by questID
+	MAPQLOADTERM		m_mapQLoadTerm;				// Load-time staging: quest terms by questID
 
 	MAPTCOMPBONUS       m_mapCompBonus;
 
@@ -292,10 +298,10 @@ protected:
 	void OnTimer( DWORD dwTick);
 	void AuctionTimeCheck();
 
-	void OnInvalidSession( CTMapSession *pSession);			// »ç¿ë ±ÝÁö
-	void OnCloseSession( CTMapSession *pSession);			// »ç¿ë ±ÝÁö
-	void ClosingSession( CTMapSession *pSession);			// »ç¿ë ±ÝÁö
-	void CloseSession( CTMapSession *pSession);				// ¼¼¼ÇÀ» Á¾·áÇÏ·Á¸é ÀÌ ÇÔ¼ö¸¦ È£Ãâ
+	void OnInvalidSession( CTMapSession *pSession);			// ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	void OnCloseSession( CTMapSession *pSession);			// ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	void ClosingSession( CTMapSession *pSession);			// ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	void CloseSession( CTMapSession *pSession);				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ È£ï¿½ï¿½
 
 	void SayToBATCH( LPPACKETBUF pBUF);
 	void SayToDB( LPPACKETBUF pBUF);
@@ -571,7 +577,7 @@ void SafeTeleport(CTPlayer *pPlayer,
 	BYTE IsMainCell(BYTE bChannel, WORD wMapID, FLOAT fPosX, FLOAT fPosZ);
 
 	////////////////////////////////////////////////
-	// Batch thread¿¡¼­¸¸ »ç¿ë°¡´É
+	// Batch threadï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ë°¡ï¿½ï¿½
 	CTPlayer *FindPlayer(
 		DWORD dwCharID,
 		DWORD dwKEY);
@@ -690,10 +696,10 @@ private:
 protected:
 	// Control Server Message
 	DWORD OnCT_SERVICEMONITOR_ACK(LPPACKETBUF pBUF);
-	DWORD OnCT_ANNOUNCEMENT_ACK(LPPACKETBUF pBUF); // Çö½Â·æ °øÁö»çÇ×
-	DWORD OnCT_USERKICKOUT_ACK(LPPACKETBUF pBUF); // Çö½Â·æ À¯Àú °­Á¦ÅðÀå
-	DWORD OnCT_USERMOVE_ACK(LPPACKETBUF pBUF); // Çö½Â·æ À¯Àú À§Ä¡ÀÌµ¿
-	DWORD OnCT_MONSPAWNFIND_ACK(LPPACKETBUF pBUF); // Çö½Â·æ ¸ó½ºÅÍ °ü¸®
+	DWORD OnCT_ANNOUNCEMENT_ACK(LPPACKETBUF pBUF); // ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	DWORD OnCT_USERKICKOUT_ACK(LPPACKETBUF pBUF); // ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	DWORD OnCT_USERMOVE_ACK(LPPACKETBUF pBUF); // ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½Ìµï¿½
+	DWORD OnCT_MONSPAWNFIND_ACK(LPPACKETBUF pBUF); // ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	DWORD OnCT_MONACTION_ACK(LPPACKETBUF pBUF);
 	DWORD OnCT_SERVICEDATACLEAR_ACK(LPPACKETBUF pBUF);
 	DWORD OnCT_CTRLSVR_REQ(LPPACKETBUF pBUF);
@@ -764,7 +770,7 @@ protected:
 	DWORD OnMW_RPSGAMECHANGE_REQ(LPPACKETBUF pBUF);
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////
-	// ±æµå
+	// ï¿½ï¿½ï¿½
 	DWORD OnMW_GUILDESTABLISH_REQ( LPPACKETBUF pBUF);
 	DWORD OnMW_GUILDDISORGANIZATION_REQ( LPPACKETBUF pBUF);
 	DWORD OnMW_GUILDINVITE_REQ( LPPACKETBUF pBUF);
@@ -1014,7 +1020,7 @@ protected:
 	DWORD OnDM_SAVECHARPOSITION_REQ(LPPACKETBUF pBUF);
 
 	////////////////////////////////////////////////////////////
-	// ±æµå
+	// ï¿½ï¿½ï¿½
 	DWORD OnDM_GUILDCABINETPUTIN_REQ(LPPACKETBUF pBUF);
 	DWORD OnDM_GUILDCABINETTAKEOUT_REQ(LPPACKETBUF pBUF);
 	DWORD OnDM_GUILDCABINETROLLBACK_REQ(LPPACKETBUF pBUF);
@@ -1073,7 +1079,7 @@ protected:
 	DWORD OnDM_CMGIFTLOG_REQ(LPPACKETBUF pBUF);
 
 	////////////////////////////////////////////////////////////
-	// ±æµå
+	// ï¿½ï¿½ï¿½
 	DWORD OnDM_GUILDCABINETPUTIN_ACK(LPPACKETBUF pBUF);
 	DWORD OnDM_GUILDCABINETTAKEOUT_ACK(LPPACKETBUF pBUF);
 	////////////////////////////////////////////////////////////
@@ -1123,7 +1129,7 @@ protected:
 	DWORD OnCS_QUESTENDTIMER_REQ( LPPACKETBUF pBUF);
 
 	///////////////////////////////////////////////////////////////////////////////
-	// ±æµå
+	// ï¿½ï¿½ï¿½
 	DWORD OnCS_GUILDESTABLISH_REQ( LPPACKETBUF pBUF);
 	DWORD OnCS_GUILDDISORGANIZATION_REQ( LPPACKETBUF pBUF);
 	DWORD OnCS_GUILDDUTY_REQ( LPPACKETBUF pBUF);
@@ -1742,7 +1748,7 @@ public:
 		DWORD dwKEY);
 
 	//////////////////////////////////////////////////////////////////////////////////
-	// ±æµå
+	// ï¿½ï¿½ï¿½
 	void SendMW_GUILDESTABLISH_ACK(
 		DWORD dwCharID,
 		DWORD dwKey,
@@ -2820,11 +2826,11 @@ public:
 #endif
 	HRESULT InitializeSecurity() throw()
 	{
-		// TODO : CoInitializeSecurity¸¦ È£ÃâÇÏ°í ¼­ºñ½º¿¡ 
-		// ¿Ã¹Ù¸¥ º¸¾È ¼³Á¤À»
-		// Àû¿ëÇÏ½Ê½Ã¿À. PKT ¼öÁØ ÀÎÁõ, 
-		// RPC_C_IMP_LEVEL_IDENTIFY °¡Àå ¼öÁØ ÀÎÁõ 
-		// ¹× NullÀÌ ¾Æ´Ñ ÀûÀýÇÑ º¸¾È ¼³¸íÀÚ µîÀ» Àû¿ëÇÏ¸é µË´Ï´Ù.
+		// TODO : CoInitializeSecurityï¿½ï¿½ È£ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ñ½º¿ï¿½ 
+		// ï¿½Ã¹Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		// ï¿½ï¿½ï¿½ï¿½ï¿½Ï½Ê½Ã¿ï¿½. PKT ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, 
+		// RPC_C_IMP_LEVEL_IDENTIFY ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
+		// ï¿½ï¿½ Nullï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½ ï¿½Ë´Ï´ï¿½.
 
 		return S_OK;
 	}

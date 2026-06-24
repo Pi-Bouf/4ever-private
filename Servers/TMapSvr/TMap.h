@@ -175,13 +175,15 @@ public:
 
 	void InitMap(
 		CSqlDatabase *pDB,
-		BYTE bServerID);
+		BYTE bServerID,
+		const MAPSVRTOPO *pTopo);
 
 	void InitExtCell( WORD wUnitID);
 	void InitCell(
 		CSqlDatabase *pDB,
 		BYTE bServerID,
-		WORD wUnitID);
+		WORD wUnitID,
+		const MAPSVRTOPO *pTopo);
 
 	WORD GetLocalBonus(BYTE bDefCountry, WORD wDPoint, WORD wCPoint);
 	void AddTNMTPlayer(LPTOURNAMENTPLAYER pPlayer);

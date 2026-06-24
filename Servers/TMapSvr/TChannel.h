@@ -28,7 +28,8 @@ public:
 	void DelMonSpawn( LPTMONSPAWN pSPAWN);
 	void InitChannel(
 		CSqlDatabase *pDB,
-		BYTE bServerID);
+		BYTE bServerID,
+		const MAPSVRTOPO *pTopo);
 
 	void AddMonSpawn(
 		LPTMONSPAWN pSPAWN,

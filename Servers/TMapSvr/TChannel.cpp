@@ -20,12 +20,13 @@ CTChannel::~CTChannel()
 }
 
 void CTChannel::InitChannel( CSqlDatabase *pDB,
-							 BYTE bServerID)
+							 BYTE bServerID,
+							 const MAPSVRTOPO *pTopo)
 {
 	MAPTMAP::iterator itMAP;
 
 	for( itMAP = m_mapTMAP.begin(); itMAP != m_mapTMAP.end(); itMAP++)
-		(*itMAP).second->InitMap( pDB, bServerID);
+		(*itMAP).second->InitMap( pDB, bServerID, pTopo);
 }
 
 void CTChannel::AddMonSpawn( LPTMONSPAWN pSPAWN,

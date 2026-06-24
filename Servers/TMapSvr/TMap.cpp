@@ -263,12 +263,13 @@ CTMap::~CTMap()
 }
 
 void CTMap::InitMap( CSqlDatabase *pDB,
-					 BYTE bServerID)
+					 BYTE bServerID,
+					 const MAPSVRTOPO *pTopo)
 {
 	MAPWORD::iterator itUNIT;
 
 	for( itUNIT = m_mapTUNIT.begin(); itUNIT != m_mapTUNIT.end(); itUNIT++)
-		InitCell( pDB, bServerID, (*itUNIT).second);
+		InitCell( pDB, bServerID, (*itUNIT).second, pTopo);
 
 	for( itUNIT = m_mapTUNIT.begin(); itUNIT != m_mapTUNIT.end(); itUNIT++)
 		InitExtCell((*itUNIT).second);
@@ -278,7 +279,8 @@ void CTMap::InitMap( CSqlDatabase *pDB,
 
 void CTMap::InitCell( CSqlDatabase *pDB,
 					  BYTE bServerID,
-					  WORD wUnitID)
+					  WORD wUnitID,
+					  const MAPSVRTOPO *pTopo)
 {
 	static int nCELL[UD_COUNT][2] = {
 		{ -1, -1},
@@ -304,32 +306,26 @@ void CTMap::InitCell( CSqlDatabase *pDB,
 		vEnable[i] = FALSE;
 	}
 
-	DEFINE_QUERY( pDB, CSPGetServerID)
+	// Was: CSPGetServerID (TGetServerID proc) called per direction/channel per cell. Now an in-memory
+	// lookup of the same TSVRCHART x TCHANNELCHART join (pTopo). A miss == proc RETURN 1 (skip update).
 	for(BYTE i=0; i<UD_COUNT; i++)
 	{
-		query->m_wUnitID = INT(bUnitX) + nCELL[i][0] < 0 || INT(bUnitY) + nCELL[i][1] < 0 ? wUnitID : MAKEWORD( BYTE(INT(bUnitX) + nCELL[i][0]), BYTE(INT(bUnitY) + nCELL[i][1]));
-		query->m_wMapID = m_wMapID;
+		WORD wNeighborUnit = INT(bUnitX) + nCELL[i][0] < 0 || INT(bUnitY) + nCELL[i][1] < 0 ? wUnitID : MAKEWORD( BYTE(INT(bUnitX) + nCELL[i][0]), BYTE(INT(bUnitY) + nCELL[i][1]));
 
 		for( int j=0; j<INT(m_vTCHANNEL.size()); j++)
 		{
-			query->m_bChannel = m_vTCHANNEL[j];
-
-			if( query->Call() && !query->m_nRET )
-				vServerID[i][m_vTCHANNEL[j]] = query->m_bServerID;
+			MAPSVRTOPO::const_iterator it = pTopo->find( MakeSvrTopoKey( m_wMapID, wNeighborUnit, m_vTCHANNEL[j]) );
+			if( it != pTopo->end() )
+				vServerID[i][m_vTCHANNEL[j]] = (*it).second;
 		}
 	}
 
-	query->m_wUnitID = wUnitID;
-	query->m_wMapID = m_wMapID;
-
 	for(INT i=0; i<INT(m_vTCHANNEL.size()); i++)
 	{
-		query->m_bChannel = m_vTCHANNEL[i];
-
-		if( query->Call() && !query->m_nRET )
-			vEnable[m_vTCHANNEL[i]] = query->m_bServerID == bServerID ? TRUE : FALSE;
+		MAPSVRTOPO::const_iterator it = pTopo->find( MakeSvrTopoKey( m_wMapID, wUnitID, m_vTCHANNEL[i]) );
+		if( it != pTopo->end() )
+			vEnable[m_vTCHANNEL[i]] = (*it).second == bServerID ? TRUE : FALSE;
 	}
-	UNDEFINE_QUERY()
 
 	WORD wCount = UNIT_SIZE / CELL_SIZE;
 	for(WORD i=0; i<wCount; i++)
@@ -992,7 +988,7 @@ void CTMap::EnterMAP( CTMonster *pMON)
 		if( pMON->m_bType == OT_RECALL)
 			((CTRecallMon *) pMON)->m_bMain = (*finder).second->IsMainCell(pMON->m_bChannel);
 		else if( pMON->m_bType == OT_COMPANION )
-			((CTCompanion *) pMON)->m_bMain = (*finder).second->IsMainCell(pMON->m_bChannel); //chápu
+			((CTCompanion *) pMON)->m_bMain = (*finder).second->IsMainCell(pMON->m_bChannel); //chï¿½pu
 
 		(*finder).second->AddMonster(pMON);
 
