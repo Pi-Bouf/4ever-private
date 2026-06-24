@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.7.11919.86 stable
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "4Story", "4Story.vcxproj", "{5ED5BC2A-CCA7-4CA4-8F66-92E60FDBFCB5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5ED5BC2A-CCA7-4CA4-8F66-92E60FDBFCB5}.Debug|x86.ActiveCfg = Debug|Win32
+		{5ED5BC2A-CCA7-4CA4-8F66-92E60FDBFCB5}.Debug|x86.Build.0 = Debug|Win32
+		{5ED5BC2A-CCA7-4CA4-8F66-92E60FDBFCB5}.Release|x86.ActiveCfg = Release|Win32
+		{5ED5BC2A-CCA7-4CA4-8F66-92E60FDBFCB5}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CE3B5664-FA57-448D-82A5-83C67218940C}
+	EndGlobalSection
+EndGlobal

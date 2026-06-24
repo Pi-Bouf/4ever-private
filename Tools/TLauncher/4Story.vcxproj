@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>18.0</VCProjectVersion>
+    <ProjectGuid>{5ED5BC2A-CCA7-4CA4-8F66-92E60FDBFCB5}</ProjectGuid>
+    <SccProjectName>SAK</SccProjectName>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccProvider>SAK</SccProvider>
+    <Keyword>MFCProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v145</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v145</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>18.0.11909.267</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>Debug\</OutDir>
+    <IntDir>Debug\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(IncludePath);..\..\Lib\3rdParty\DirectX9 (June 2010)\Include</IncludePath>
+    <LibraryPath>$(LibraryPath);..\..\Lib\3rdParty\DirectX9 (June 2010)\Lib\x86</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>Release\</OutDir>
+    <IntDir>Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(IncludePath);..\..\Lib\3rdParty\DirectX9 (June 2010)\Include</IncludePath>
+    <LibraryPath>$(LibraryPath);..\..\Lib\3rdParty\DirectX9 (June 2010)\Lib\x86</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\Lib\Own\TProtocol\Include;..\..\Lib\3rdParty\zlib\include;..\..\Lib\3rdParty\zlib\include\minizip;..\..\Lib\3rdParty\XTrap\client\Include;..\..\Lib\Own\TachyonControl;..\..\Lib\Own\Engine Lib\Engine Lib;..\..\Lib\Own\TComp\TComp;..\..\Lib\Own\TCML\TCML;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;ZLIB_WINAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>winmm.lib;shlwapi.lib;Ws2_32.lib;zlibstat.lib;XTrap4Launcher_mt.lib;d3d9.lib;d3dx9.lib;Engine Libd.lib;Psapi.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\Lib\3rdParty\zlib\lib\zlibstat;..\..\Lib\3rdParty\XTrap\client\Lib\x86;..\..\Lib\Own\Engine Lib\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0412</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\Lib\Own\TProtocol\Include;..\..\Lib\3rdParty\zlib\include;..\..\Lib\3rdParty\zlib\include\minizip;..\..\Lib\3rdParty\XTrap\client\Include;..\..\Lib\Own\TachyonControl;..\..\Lib\Own\Engine Lib\Engine Lib;..\..\Lib\Own\TComp\TComp;..\..\Lib\Own\TCML\TCML;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;ZLIB_WINAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>winmm.lib;shlwapi.lib;Ws2_32.lib;zlibstat.lib;XTrap4Launcher_mt.lib;d3d9.lib;d3dx9.lib;Engine Lib.lib;Psapi.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\Lib\3rdParty\zlib\lib\zlibstat;..\..\Lib\3rdParty\XTrap\client\Lib\x86;..\..\Lib\Own\Engine Lib\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0412</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="4Story.cpp" />
+    <ClCompile Include="4StoryDlg.cpp" />
+    <ClCompile Include="BitmapPickerCombo.cpp" />
+    <ClCompile Include="BitmapSlider.cpp" />
+    <ClCompile Include="GameSetting.cpp" />
+    <ClCompile Include="HoverButton.cpp" />
+    <ClCompile Include="HSession.cpp" />
+    <ClCompile Include="Packet.cpp" />
+    <ClCompile Include="PlaySetting.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="webbrowser2.cpp" />
+    <ClCompile Include="xSkinButton.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="4Story.h" />
+    <ClInclude Include="4StoryDlg.h" />
+    <ClInclude Include="BitmapPickerCombo.h" />
+    <ClInclude Include="BitmapSlider.h" />
+    <ClInclude Include="GameSetting.h" />
+    <ClInclude Include="HoverButton.h" />
+    <ClInclude Include="HSession.h" />
+    <ClInclude Include="memdc.h" />
+    <ClInclude Include="Packet.h" />
+    <ClInclude Include="PlaySetting.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="webbrowser2.h" />
+    <ClInclude Include="xSkinButton.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="4Story.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\4Story.rc2" />
+    <None Include="TClientMP.mpc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\bitmap2.bmp" />
+    <Image Include="res\bitmap4.bmp" />
+    <Image Include="res\bmp00001.bmp" />
+    <Image Include="res\Btn_Close_down.bmp" />
+    <Image Include="res\Btn_Close_Hover.bmp" />
+    <Image Include="res\Btn_Close_normal.bmp" />
+    <Image Include="res\checkbox_disabled_mouseover.bmp" />
+    <Image Include="res\checkbox_disabled_normal.bmp" />
+    <Image Include="res\checkbox_enabled_mouseover.bmp" />
+    <Image Include="res\Check_Down.bmp" />
+    <Image Include="res\Check_Down2.bmp" />
+    <Image Include="res\Check_Normal.bmp" />
+    <Image Include="res\Check_Normal2.bmp" />
+    <Image Include="res\close_hover.bmp" />
+    <Image Include="res\close_normal.bmp" />
+    <Image Include="res\close_push.bmp" />
+    <Image Include="res\end_button hover.bmp" />
+    <Image Include="res\end_button normal.bmp" />
+    <Image Include="res\end_button push.bmp" />
+    <Image Include="res\homepage_button hover.bmp" />
+    <Image Include="res\homepage_button normal.bmp" />
+    <Image Include="res\homepage_button push.bmp" />
+    <Image Include="res\icon1.ico" />
+    <Image Include="res\Icon_Check_Normal.bmp" />
+    <Image Include="res\option_button disable.bmp" />
+    <Image Include="res\option_button hover.bmp" />
+    <Image Include="res\option_button normal.bmp" />
+    <Image Include="res\option_button push.bmp" />
+    <Image Include="res\play_disable.bmp" />
+    <Image Include="res\play_hover.bmp" />
+    <Image Include="res\play_normal.bmp" />
+    <Image Include="res\play_push.bmp" />
+    <Image Include="res\Radio_down.bmp" />
+    <Image Include="res\Radio_normal.bmp" />
+    <Image Include="res\resolution.bmp" />
+    <Image Include="res\settings_disable.bmp" />
+    <Image Include="res\settings_hover.bmp" />
+    <Image Include="res\settings_normal.bmp" />
+    <Image Include="res\settings_push.bmp" />
+    <Image Include="res\sliderBar.bmp" />
+    <Image Include="res\sliderBG.bmp" />
+    <Image Include="res\sliderBG2.bmp" />
+    <Image Include="res\start_game_button disable.bmp" />
+    <Image Include="res\start_game_button hover.bmp" />
+    <Image Include="res\start_game_button normal.bmp" />
+    <Image Include="res\start_game_button push.bmp" />
+    <Image Include="res\Tabbtn_game.bmp" />
+    <Image Include="res\Tabbtn_Sys.bmp" />
+    <Image Include="res\Tab_Game.bmp" />
+    <Image Include="res\Tab_Sys.bmp" />
+    <Image Include="res\TClient.ico" />
+    <Image Include="res\updater_base.bmp" />
+    <Image Include="res\updater_base_new.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="res\4Story.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="4Story.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
