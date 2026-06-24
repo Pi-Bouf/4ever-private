@@ -1,4 +1,4 @@
-// CharMsg.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// CharMsg.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -9,7 +9,7 @@
 #include "HappyDoc.h"
 
 
-// CCharMsg ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CCharMsg ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CCharMsg, CDialog)
 CCharMsg::CCharMsg(CWnd* pParent /*=NULL*/)
@@ -32,7 +32,7 @@ BEGIN_MESSAGE_MAP(CCharMsg, CDialog)
 END_MESSAGE_MAP()
 
 
-// CCharMsg ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CCharMsg ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 void CCharMsg::OnBnClickedOk()
 {
@@ -45,7 +45,7 @@ void CCharMsg::OnBnClickedOk()
 	strName.Trim(_T(" "));
 	if(strName.IsEmpty() || strMsg.IsEmpty())
 	{
-		AfxMessageBox(_T("Enter again")); //´Ù½Ã ÀÔ·ÂÇØÁÖ¼¼¿ä
+		AfxMessageBox(_T("Enter again")); //ë‹¤ì‹œ ì…ë ¥í•´ì£¼ì„¸ìš”
 		SetDlgItemText(IDC_EDIT1, _T(""));
 		return;
 	}

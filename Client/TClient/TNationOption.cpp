@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "resource.h"
 #include "TNationOption.h"
 
@@ -184,7 +184,7 @@ void CTNationOption::SetNation( INT nNation )
 		CTNationOption::MODIFY_WORD_BREAK = TRUE;
 		CTNationOption::CAMERA_QUAKE = TRUE;
 		CTNationOption::USE_WEB_CASHSHOP = TRUE;
-		CTNationOption::INSTALL_GAMEGUARD = TRUE;	// °ÔÀÓ°¡µå ¼³Ä¡.
+		CTNationOption::INSTALL_GAMEGUARD = TRUE;	// ê²Œìž„ê°€ë“œ ì„¤ì¹˜.
 		TEdit::m_nCountryFlag = TEdit::COUNTRY_FLAG_RUSSIA;
 		CTNationOption::WAITING_REVIVAL_ITEM = TRUE;
 

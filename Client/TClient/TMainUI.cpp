@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 #include "TClientGame.h"
 #include "Resource.h"
 #include "TPetManageDlg.h"
@@ -113,8 +113,8 @@ CTMainUI::CTMainUI( TComponent *pParent, FRAMEDESC_SHAREDPTR pDesc, TCMLParser *
 	m_dwNotifyMailTick = 0;
 	m_vNotifyMailStart = m_vNotifyMailEnd = D3DXVECTOR2( -1000.0f, -1000.0f );
 
-	// Ã¤ÆÃ¹æ »ý¼º
-		// A?Aac »ýLs
+	// ì±„íŒ…ë°© ìƒì„±
+		// A?Aac ìƒLs
 	{
 		CPoint point;
 		FRAMEDESC_SHAREDPTR pGAUGE = pParser->FindFrameTemplate( ID_FRAME_CHATNEW );
@@ -311,7 +311,7 @@ CTMainUI::CTMainUI( TComponent *pParent, FRAMEDESC_SHAREDPTR pDesc, TCMLParser *
 	m_dwNotifyMailTick = 0;
 	m_vNotifyMailStart = m_vNotifyMailEnd = D3DXVECTOR2( -1000.0f, -1000.0f );
 
-	// Ã¤ÆÃ¹æ »ý¼º
+	// ì±„íŒ…ë°© ìƒì„±
 	{
 		CPoint point;
 		FRAMEDESC_SHAREDPTR pGAUGE = pParser->FindFrameTemplate( ID_FRAME_CHAT );
@@ -508,7 +508,7 @@ ITDetailInfoPtr CTMainUI::GetTInfoKey( const CPoint& point )
 			return pInfo;
 	}
 
-	// Ä³½¬¼¥ ¹öÆ° Ã¼Å©
+	// ìºì‰¬ìƒµ ë²„íŠ¼ ì²´í¬
 
 	if( m_pCashShopButton->HitTest(point) )
 	{
@@ -526,7 +526,7 @@ ITDetailInfoPtr CTMainUI::GetTInfoKey( const CPoint& point )
 		return pInfo;
 	}
 
-	// º¸°üÇÔ ¹öÆ° Ã¼Å©
+	// ë³´ê´€í•¨ ë²„íŠ¼ ì²´í¬
 	if( m_pCabinetButton->HitTest(point) )
 	{
 		CRect rc;
@@ -637,15 +637,15 @@ ITDetailInfoPtr CTMainUI::GetTInfoKey_MainBtn(const CPoint& point, INT nID)
 	};			
 
 	static const TKEY_SET MAINBTNKEYINFOS[TMAINBUTTON_COUNT] = {
-		TKEY_CHAR_INFO,				// Ä³¸¯ÅÍ Á¤º¸Ã¢ ¿­±â/´Ý±â
-		TKEY_SKILL_INFO,			// ½ºÅ³ Ã¢ ¿­±â/´Ý±â
-		TKEY_QUEST_INFO,			// Äù½ºÆ® Ã¢ ¿­±â/´Ý±â	
-		TKEY_TOGGLE_GUILD_UI,		// ±æµåÃ¢ ¿­±â/´Ý±â
-		TKEY_NONE,					// ½Ã½ºÅÛ ¸Þ´º ´ÜÃàÅ°´Â µû·Î ¾øÀ½(ESC)
-		TKEY_INVEN,				// °¡¹æ ¿­±â/´Ý±â
-		TKEY_PET_INFO,			// µ¿¹°°ü¸®Ã¢ ¿­±â/´Ý±â
-		TKEY_FAMERANK,			// ¸í¿¹ÀÇ Àü´ç
-		TKEY_HELP				// µµ¿ò¸»
+		TKEY_CHAR_INFO,				// ìºë¦­í„° ì •ë³´ì°½ ì—´ê¸°/ë‹«ê¸°
+		TKEY_SKILL_INFO,			// ìŠ¤í‚¬ ì°½ ì—´ê¸°/ë‹«ê¸°
+		TKEY_QUEST_INFO,			// í€˜ìŠ¤íŠ¸ ì°½ ì—´ê¸°/ë‹«ê¸°	
+		TKEY_TOGGLE_GUILD_UI,		// ê¸¸ë“œì°½ ì—´ê¸°/ë‹«ê¸°
+		TKEY_NONE,					// ì‹œìŠ¤í…œ ë©”ë‰´ ë‹¨ì¶•í‚¤ëŠ” ë”°ë¡œ ì—†ìŒ(ESC)
+		TKEY_INVEN,				// ê°€ë°© ì—´ê¸°/ë‹«ê¸°
+		TKEY_PET_INFO,			// ë™ë¬¼ê´€ë¦¬ì°½ ì—´ê¸°/ë‹«ê¸°
+		TKEY_FAMERANK,			// ëª…ì˜ˆì˜ ì „ë‹¹
+		TKEY_HELP				// ë„ì›€ë§
 	};
 
 	CTKeySetting *pKeySet = CTKeySetting::GetInstance();

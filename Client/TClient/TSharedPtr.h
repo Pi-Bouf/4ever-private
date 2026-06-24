@@ -1,25 +1,25 @@
-#pragma once
+ï»¿#pragma once
 
 // =====================================================================
 /**	@class		SharedPtr
-	@brief		ÂüÁ¶ Ä«¿îÆ® ±â´ÉÀÌ ÀÖ´Â °øÀ¯ Æ÷ÀÎÅÍ Å¬·¡½º
+	@brief		ì°¸ì¡° ì¹´ìš´íŠ¸ ê¸°ëŠ¥ì´ ìˆëŠ” ê³µìœ  í¬ì¸í„° í´ë˜ìŠ¤
 	
 */// ===================================================================
 template<class T> class SharedPtr
 {
 public:
-	/// if(ptr) °ú °°Àº °Ë»ç¸¦ °¡´ÉÇÏ°Ô ÇÏ±âÀ§ÇÔ
+	/// if(ptr) ê³¼ ê°™ì€ ê²€ì‚¬ë¥¼ ê°€ëŠ¥í•˜ê²Œ í•˜ê¸°ìœ„í•¨
 	class TestProxy{};
 
 	// ===================================================================
-	// ¸â¹ö º¯¼ö
+	// ë©¤ë²„ ë³€ìˆ˜
 	// ===================================================================
 protected:
 	T*				pRep;
 	unsigned int*	pUseCount;
 
 	// ===================================================================
-	// ¸â¹ö ÇÔ¼ö
+	// ë©¤ë²„ í•¨ìˆ˜
 	// ===================================================================
 public:
 	// ===================================================================
@@ -27,7 +27,7 @@ public:
 	inline T* operator->() const	{ return  get(); }
 	inline bool operator!() const	{ return !get(); }
 	// -------------------------------------------------------------------
-	/// if(ptr) °ú °°Àº °Ë»ç¸¦ °¡´ÉÇÏ°Ô ÇÏ±âÀ§ÇÔ
+	/// if(ptr) ê³¼ ê°™ì€ ê²€ì‚¬ë¥¼ ê°€ëŠ¥í•˜ê²Œ í•˜ê¸°ìœ„í•¨
 	operator TestProxy*() const
 	{
 		if(!(*this) || !get() ) 
@@ -37,47 +37,47 @@ public:
 		return(&testProxy);
 	}
 	// ===================================================================
-	/// °øÀ¯Æ÷ÀÎÅÍ°¡ °¡Áö°í ÀÖ´Â ´ı Æ÷ÀÎÅÍ¸¦ ¾ò´Â´Ù.
+	/// ê³µìœ í¬ì¸í„°ê°€ ê°€ì§€ê³  ìˆëŠ” ë¤ í¬ì¸í„°ë¥¼ ì–»ëŠ”ë‹¤.
 	virtual T* get() const					
 	{
 		return pRep; 
 	}
-	/// °øÀ¯Æ÷ÀÎÅÍ°¡ °¡Áö°í ÀÖ´Â ´ı Æ÷ÀÎÅÍ¸¦ static_cast ÈÄ ¾ò´Â´Ù.
+	/// ê³µìœ í¬ì¸í„°ê°€ ê°€ì§€ê³  ìˆëŠ” ë¤ í¬ì¸í„°ë¥¼ static_cast í›„ ì–»ëŠ”ë‹¤.
 	template <typename RET>	inline RET* staticGet() const					
 	{
 		return static_cast<RET*>(get()); 
 	}
-	/// °øÀ¯Æ÷ÀÎÅÍ°¡ °¡Áö°í ÀÖ´Â ´ı Æ÷ÀÎÅÍ¸¦ const_cast ÈÄ ¾ò´Â´Ù.
+	/// ê³µìœ í¬ì¸í„°ê°€ ê°€ì§€ê³  ìˆëŠ” ë¤ í¬ì¸í„°ë¥¼ const_cast í›„ ì–»ëŠ”ë‹¤.
 	template <typename RET>	inline RET* constGet() const					
 	{
 		return const_cast<RET*>(get()); 
 	}
-	/// °øÀ¯Æ÷ÀÎÅÍ°¡ °¡Áö°í ÀÖ´Â ´ı Æ÷ÀÎÅÍ¸¦ reinterpret_cast ÈÄ ¾ò´Â´Ù.
+	/// ê³µìœ í¬ì¸í„°ê°€ ê°€ì§€ê³  ìˆëŠ” ë¤ í¬ì¸í„°ë¥¼ reinterpret_cast í›„ ì–»ëŠ”ë‹¤.
 	template <typename RET>	inline RET* reinterpretGet() const					
 	{
 		return reinterpret_cast<RET*>(get()); 
 	}
 	// ===================================================================
-	/// ÀÌ °øÀ¯ Æ÷ÀÎÅÍ¸¦ static_cast ÇÑ °øÀ¯ Æ÷ÀÎÅÍ¸¦ ¾ò´Â´Ù.
+	/// ì´ ê³µìœ  í¬ì¸í„°ë¥¼ static_cast í•œ ê³µìœ  í¬ì¸í„°ë¥¼ ì–»ëŠ”ë‹¤.
 	template <typename RET>	inline SharedPtr<RET> staticCast() const
 	{
 		SharedPtr<RET> sptr(static_cast<RET*>(pRep), pUseCount);
 		return sptr;
 	}
-	/// ÀÌ °øÀ¯ Æ÷ÀÎÅÍ¸¦ const_cast ÇÑ °øÀ¯ Æ÷ÀÎÅÍ¸¦ ¾ò´Â´Ù.
+	/// ì´ ê³µìœ  í¬ì¸í„°ë¥¼ const_cast í•œ ê³µìœ  í¬ì¸í„°ë¥¼ ì–»ëŠ”ë‹¤.
 	template <typename RET>	inline SharedPtr<RET> constCast() const
 	{
 		SharedPtr<RET> sptr(const_cast<RET*>(pRep), pUseCount);
 		return sptr;
 	}
-	/// ÀÌ °øÀ¯ Æ÷ÀÎÅÍ¸¦ reinterpret_cast ÇÑ °øÀ¯ Æ÷ÀÎÅÍ¸¦ ¾ò´Â´Ù.
+	/// ì´ ê³µìœ  í¬ì¸í„°ë¥¼ reinterpret_cast í•œ ê³µìœ  í¬ì¸í„°ë¥¼ ì–»ëŠ”ë‹¤.
 	template <typename RET>	inline SharedPtr<RET> reinterpretCast() const
 	{
 		SharedPtr<RET> sptr(reinterpret_cast<RET*>(pRep), pUseCount);
 		return sptr;
 	}
 	// ===================================================================
-	/// ÀÌ °øÀ¯ Æ÷ÀÎÅÍÀÇ °¹¼ö°¡ ´Ü ÇÏ³ªÀÎÁö ¾Ë¾Æ¿Â´Ù.
+	/// ì´ ê³µìœ  í¬ì¸í„°ì˜ ê°¯ìˆ˜ê°€ ë‹¨ í•˜ë‚˜ì¸ì§€ ì•Œì•„ì˜¨ë‹¤.
 	inline bool unique() const				
 	{ 
 		bool res = false;
@@ -86,7 +86,7 @@ public:
 			
 		return res;
 	}
-	/// ÀÌ Æ÷ÀÎÅÍ°¡ °øÀ¯ÁßÀÎ °¹¼ö¸¦ ¾ò´Â´Ù.
+	/// ì´ í¬ì¸í„°ê°€ ê³µìœ ì¤‘ì¸ ê°¯ìˆ˜ë¥¼ ì–»ëŠ”ë‹¤.
 	inline unsigned int useCount() const	
 	{ 
 		unsigned int res = 0;
@@ -96,10 +96,10 @@ public:
 		return res;
 	}
 	// ===================================================================
-	/// ³Î Æ÷ÀÎÅÍÀÎ°¡?
+	/// ë„ í¬ì¸í„°ì¸ê°€?
 	inline bool isNull(void) const			
 	{ return static_cast<bool>(get()==NULL); }
-	/// ÀÌ Æ÷ÀÎÅÍ¸¦ ³Î·Î ¸¸µç´Ù.
+	/// ì´ í¬ì¸í„°ë¥¼ ë„ë¡œ ë§Œë“ ë‹¤.
 	inline void setNull(void) 
 	{ 
 		release();
@@ -108,7 +108,7 @@ public:
 		pUseCount = NULL;
 	}
 	// ===================================================================
-	// ºñ±³ ¿¬»êÀÚµé..
+	// ë¹„êµ ì—°ì‚°ìë“¤..
 	//
 	friend inline bool operator==(SharedPtr<T>& r,SharedPtr<T>& l)
 	{ return (r.get() == l.get()); }
@@ -129,7 +129,7 @@ public:
 	{ return (r.get() >= l.get()); }
 
 	// ===================================================================
-	// »ı¼º/¼Ò¸ê
+	// ìƒì„±/ì†Œë©¸
 	// ===================================================================
 protected:
 	virtual void release(void) 

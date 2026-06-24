@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+ï»¿#include "Stdafx.h"
 #include "TRentSkillDlg.h"
 
 // CTShopSlot
@@ -141,7 +141,7 @@ CTRentSkillDlg::CTRentSkillDlg( TComponent *pParent, FRAMEDESC_SHAREDPTR pDesc)
 
 
 	///////////////////////////////////////////////////////
-	// »ç¿ëºÒ°¡ ¸¶Å©¾ø¾Ú.
+	// ì‚¬ìš©ë¶ˆê°€ ë§ˆí¬ì—†ì•°.
 	TComponent* pCOMP = FindKid( ID_CTRLINST_MARK_SLOT );
 	if( pCOMP )
 	{

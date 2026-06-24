@@ -1,4 +1,4 @@
-// InstallBar.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// InstallBar.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -7,7 +7,7 @@
 #include ".\installbar.h"
 
 
-// CInstallBar ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CInstallBar ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CInstallBar, CDialogBar)
 CInstallBar::CInstallBar(CWnd* pParent /*=NULL*/)

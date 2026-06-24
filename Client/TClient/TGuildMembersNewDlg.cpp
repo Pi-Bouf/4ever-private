@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 #include "TFameRank.h"
 #include "TGuildMembersNewDlg.h"
 #include "TClientGame.h"
@@ -34,10 +34,10 @@ const CTGuildMembersNewDlg::PopupBtnInfo CTGuildMembersNewDlg::m_PopupBtnInfo[TG
 	{TSTR_GMP_VOLUNTEER_WOODLAND,	GM_GMP_VOLUNTEER_WOODLAND	},
 	{TSTR_GMP_VOLUNTEER_CANCEL,		GM_GMP_VOLUNTEER_CANCEL	},
 
-	{TSTR_GMP_TACTICS_RE_CONTRACT,	GM_GMP_TACTICS_RE_CONTRACT	}, ///< TGM_PBTN_TACTICS_RE_CONTRACT,			///< ¿ëº´ Àç°è¾à
-	{TSTR_GMP_TACTICS_KICK,			GM_GMP_TACTICS_KICK			}, ///< TGM_PBTN_TACTICS_KICK,						///< ¿ëº´ °è¾à ÆÄ±â
-	{TSTR_GMP_TACTICS_REWARD_POINT,	GM_GMP_TACTICS_REWARD_POINT	}, ///< TGM_PBTN_TACTICS_REWARD_POINT,			///< ¿ëº´ Æ÷»ó
-	{TSTR_GMP_TACTICS_SELF_KICK,		GM_GMP_TACTICS_SELF_KICK } //TGM_PBTN_TACTICS_SELF_KICK,					///< ¿ëº´ Å»Åð
+	{TSTR_GMP_TACTICS_RE_CONTRACT,	GM_GMP_TACTICS_RE_CONTRACT	}, ///< TGM_PBTN_TACTICS_RE_CONTRACT,			///< ìš©ë³‘ ìž¬ê³„ì•½
+	{TSTR_GMP_TACTICS_KICK,			GM_GMP_TACTICS_KICK			}, ///< TGM_PBTN_TACTICS_KICK,						///< ìš©ë³‘ ê³„ì•½ íŒŒê¸°
+	{TSTR_GMP_TACTICS_REWARD_POINT,	GM_GMP_TACTICS_REWARD_POINT	}, ///< TGM_PBTN_TACTICS_REWARD_POINT,			///< ìš©ë³‘ í¬ìƒ
+	{TSTR_GMP_TACTICS_SELF_KICK,		GM_GMP_TACTICS_SELF_KICK } //TGM_PBTN_TACTICS_SELF_KICK,					///< ìš©ë³‘ íƒˆí‡´
 };
 
 
@@ -423,7 +423,7 @@ void CTGuildMembersNewDlg::ShowPopup(const CPoint& pt)
 		case TGM_PBTN_VOLUNTEER_GEHBRA : bADD = ShowPopupCastle( TCASTLE_GEHBRA ); break;
 		case TGM_PBTN_VOLUNTEER_TYCON : bADD = ShowPopupCastle( TCASTLE_TYCON ); break;
 
-		//case TGM_PBTN_TACTICS_RE_CONTRACT: ///< ¿ëº´ Àç°è¾à
+		//case TGM_PBTN_TACTICS_RE_CONTRACT: ///< ìš©ë³‘ ìž¬ê³„ì•½
 		//	if( m_nLastSelType == RINFO_NAME )
 		//	{
 		//		if( pMainChar->m_bGuildDuty == GUILD_DUTY_CHIEF && pMainChar->m_dwTacticsID == 0 )
@@ -433,7 +433,7 @@ void CTGuildMembersNewDlg::ShowPopup(const CPoint& pt)
 		//	}
 		//	break;
 
-		//case TGM_PBTN_TACTICS_KICK: ///< ¿ëº´ °è¾à ÆÄ±â
+		//case TGM_PBTN_TACTICS_KICK: ///< ìš©ë³‘ ê³„ì•½ íŒŒê¸°
 		//	if( m_nLastSelType == RINFO_NAME )
 		//	{
 		//		if( pMainChar->m_bGuildDuty == GUILD_DUTY_CHIEF && pMainChar->m_dwTacticsID == 0 )
@@ -443,7 +443,7 @@ void CTGuildMembersNewDlg::ShowPopup(const CPoint& pt)
 		//	}
 		//	break;
 
-		/*case TGM_PBTN_TACTICS_REWARD_POINT: ///< ¿ëº´ Æ÷»ó
+		/*case TGM_PBTN_TACTICS_REWARD_POINT: ///< ìš©ë³‘ í¬ìƒ
 			if( m_nCurPage == TPVPM_TACTICS && m_nLastSelType == RINFO_NAME )
 			{
 				if( pMainChar->m_bGuildDuty == GUILD_DUTY_CHIEF && pMainChar->m_dwTacticsID == 0 )
@@ -632,7 +632,7 @@ int CTGuildMembersNewDlg::OnGM_GMP_DISORG_TACTICS()
 {
 	CancelPopup();
 
-	/// ¹Ì±¸Çö
+	/// ë¯¸êµ¬í˜„
 
 	return TERR_NONE;
 }

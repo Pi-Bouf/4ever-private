@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "Resource.h"
 #include "TClientGame.h"
 #include "TClientWnd.h"
@@ -162,7 +162,7 @@ CTNewQuestDlg::CTNewQuestDlg( TComponent* pParent, FRAMEDESC_SHAREDPTR pDesc, CT
 
 	m_pRefuse->m_strText = CTChart::LoadString( TSTR_CLOSE );
 
-	// Quest Tree ÃÊ±âÈ­
+	// Quest Tree ì´ˆê¸°í™”
 	m_pQLIST = static_cast<TList*>( FindKid(ID_CTRLINST_TREE) );
 	m_pQLIST->ApplyUserColor(TRUE);
 
@@ -892,7 +892,7 @@ void CTNewQuestDlg::ResetTQUEST( LPTQUEST pTQUEST)
 
 		if(!bCanPerf)
 		{
-			// ÇÒ¼ö¾ø´ÂÄù½ºÆ®
+			// í• ìˆ˜ì—†ëŠ”í€˜ìŠ¤íŠ¸
 			CString strCANNOTMSG;
 			strCANNOTMSG = CTChart::LoadString( TSTR_QUEST_CANNOTPERF);
 
@@ -900,7 +900,7 @@ void CTNewQuestDlg::ResetTQUEST( LPTQUEST pTQUEST)
 		}
 		else
 		{
-			// ¸ñÇ¥Á¤º¸
+			// ëª©í‘œì •ë³´
 			INT nTermLine = 0;
 			INT nNumber = 1;
 			for( BYTE i=0; i<INT(pTMISSION->m_vTTERM.size()); i++)
@@ -939,10 +939,10 @@ void CTNewQuestDlg::ResetTQUEST( LPTQUEST pTQUEST)
 				}
 			}
 
-			// ¿ä¾àÁ¤º¸
+			// ìš”ì•½ì •ë³´
 			SummaryMessage( pTMISSION->m_strSummaryMSG);
 
-			// ´ëÈ­³»¿ë
+			// ëŒ€í™”ë‚´ìš©
 			if(m_bPrintMSG)
 			{
 				CString strHeader = GetSpeakerString(m_strNPCTitle);
@@ -957,7 +957,7 @@ void CTNewQuestDlg::ResetTQUEST( LPTQUEST pTQUEST)
 
 			INT nRewardItemCount = 0;
 
-			// º¸»ó¸ñ·Ï
+			// ë³´ìƒëª©ë¡
 			 for(auto i=0; i<INT(pTMISSION->m_vTREWARD.size()); i++)
 			{
 				CString strREWARD;
@@ -1011,7 +1011,7 @@ void CTNewQuestDlg::ResetTQUEST( LPTQUEST pTQUEST)
 				case RT_GOLD	:
 					{
 						//strREWARD = CTClientGame::MakeMoneyStr(pTMISSION->m_vTREWARD[i]->m_dwID);
-						// º¸»ó¸ñ·ÏÀÌ ¾Æ´Ï¶ó µû·Î ³Ö¾îÁÖ´Âµ¥°¡ ÀÖ´Ù.
+						// ë³´ìƒëª©ë¡ì´ ì•„ë‹ˆë¼ ë”°ë¡œ ë„£ì–´ì£¼ëŠ”ë°ê°€ ìˆë‹¤.
 
 						DWORD dwMONEY[3] = { 0, 0, 0 };
 
@@ -1073,7 +1073,7 @@ void CTNewQuestDlg::ResetTQUEST( LPTQUEST pTQUEST)
 						nLine = m_pReward->AddString( strREWARD );
 					else
 					{
-						nLine = m_pReward->GetItemCount()-1; // ¸¶Áö¸· ¶óÀÎ
+						nLine = m_pReward->GetItemCount()-1; // ë§ˆì§€ë§‰ ë¼ì¸
 						nCol = 1;
 
 						m_pReward->SetItemString( nLine, nCol, (LPCTSTR)strREWARD );
@@ -1089,7 +1089,7 @@ void CTNewQuestDlg::ResetTQUEST( LPTQUEST pTQUEST)
 		m_pTSELREWARD = NULL;
 	}
 
-	if( m_bPrintMSG == FALSE ) // NPC´ëÈ­Ã¢ÀÌ¸é
+	if( m_bPrintMSG == FALSE ) // NPCëŒ€í™”ì°½ì´ë©´
 	{
 		if( m_strAnswerWhenNPCTalk.GetLength() )
 		{
@@ -1148,7 +1148,7 @@ void CTNewQuestDlg::SummaryMessage( CString strText)
 				strLINE = strMSG;
 			}
 
-			BYTE c = strText.GetAt(nPOS-1); // ¹«¾ù¿¡ ÀÇÇØ¼­ Tokenize´çÇß³ª.
+			BYTE c = strText.GetAt(nPOS-1); // ë¬´ì—‡ì— ì˜í•´ì„œ Tokenizeë‹¹í–ˆë‚˜.
 			if( c == ' ')
 			{
 				strLINE += ' ';
@@ -1341,7 +1341,7 @@ void CTNewQuestDlg::TextMessage(CString strTitle, CString strText)
 				strLINE = strMSG;
 			}
 
-			BYTE c = strText.GetAt(nPOS - 1); // ¹«¾ù¿¡ ÀÇÇØ¼­ Tokenize´çÇß³ª.
+			BYTE c = strText.GetAt(nPOS - 1); // ë¬´ì—‡ì— ì˜í•´ì„œ Tokenizeë‹¹í–ˆë‚˜.
 			if( c == ' ')
 			{
 				strLINE += ' ';

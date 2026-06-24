@@ -1,12 +1,12 @@
-#pragma once
-// CSerchInstallTree Æû ºäÀÔ´Ï´Ù.
+ï»¿#pragma once
+// CSerchInstallTree í¼ ë·°ì…ë‹ˆë‹¤.
 
 class CSerchInstallTree : public CFormView
 {
 	DECLARE_DYNCREATE(CSerchInstallTree)
 
 protected:
-	CSerchInstallTree();           // µ¿Àû ¸¸µé±â¿¡ »ç¿ëµÇ´Â protected »ı¼ºÀÚÀÔ´Ï´Ù.
+	CSerchInstallTree();           // ë™ì  ë§Œë“¤ê¸°ì— ì‚¬ìš©ë˜ëŠ” protected ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CSerchInstallTree();
 
 	void SetImageList();
@@ -27,7 +27,7 @@ private:
 
 	CImageList m_imageList;
 	CString         m_strFolder;
-	CString			m_strMyComputer; //³»ÄÄÇ»ÅÍ
+	CString			m_strMyComputer; //ë‚´ì»´í“¨í„°
 
 public:
 	HTREEITEM AddTreeItem(CTreeCtrl * pTreeCtrl, CString strPath);
@@ -62,7 +62,7 @@ public:
 #endif
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 public:

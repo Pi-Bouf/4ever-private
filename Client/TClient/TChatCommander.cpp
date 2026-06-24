@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+ï»¿#include "Stdafx.h"
 #include "TChatCommander.h"
 #include "TClientGame.h"
 #include "TClientWnd.h"
@@ -8,10 +8,10 @@
 // ====================================================================
 const DWORD CTChatCommander::CMD_STRING[] = 
 {
-	TSTR_CMD_CHAT_BAN,			///< Ã¤ÆÃ ¹ê
+	TSTR_CMD_CHAT_BAN,			///< ì±„íŒ… ë°´
 	TSTR_CMD_TELEPORT_POS,		///< Teleport Pos
 	TSTR_CMD_TELEPORT_TARGET,	///< Teleport Target
-	TSTR_CMD_GIFT,				///< GMÀÌ ¼±¹°ÁÖ±â.
+	TSTR_CMD_GIFT,				///< GMì´ ì„ ë¬¼ì£¼ê¸°.
 };
 // ====================================================================
 
@@ -126,11 +126,11 @@ void CTChatCommander::DoMessengerCommand(CmdEnum eCmd, const VECTORSTRING& vPARA
 	case CMD_OPERATOR_GIFT :
 		{
 			if( vPARAM.size() == 1 )
-			{	// ¾ÆÀÌµð¸¸ ¾µ °æ¿ì. ¼­¹ö¿¡¼­ ÀÚµ¿À¸·Î Ä³¸¯ÅÍ ·¹º§º°·Î ¼±¹°Àü´Þ.
+			{	// ì•„ì´ë””ë§Œ ì“¸ ê²½ìš°. ì„œë²„ì—ì„œ ìžë™ìœ¼ë¡œ ìºë¦­í„° ë ˆë²¨ë³„ë¡œ ì„ ë¬¼ì „ë‹¬.
 				pSESSION->SendCS_CMGIFT_REQ( vPARAM[0], 0 );
 			}
 			else if( vPARAM.size() == 2 )
-			{	// Gift ID¸¦ Á÷Á¢ÀÔ·Â.
+			{	// Gift IDë¥¼ ì§ì ‘ìž…ë ¥.
 				WORD wGiftID = (WORD)atoi( vPARAM[1] );
 				pSESSION->SendCS_CMGIFT_REQ( vPARAM[0], wGiftID );
 			}

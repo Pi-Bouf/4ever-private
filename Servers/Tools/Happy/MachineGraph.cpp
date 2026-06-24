@@ -1,4 +1,4 @@
-// MachineGraph.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// MachineGraph.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -46,7 +46,7 @@ BEGIN_MESSAGE_MAP(CMachineGraph, CFormView)
 END_MESSAGE_MAP()
 
 
-// CMachineGraph Áø´ÜÀÔ´Ï´Ù.
+// CMachineGraph ì§„ë‹¨ì…ë‹ˆë‹¤.
 
 #ifdef _DEBUG
 void CMachineGraph::AssertValid() const
@@ -61,7 +61,7 @@ void CMachineGraph::Dump(CDumpContext& dc) const
 #endif //_DEBUG
 
 
-// CMachineGraph ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CMachineGraph ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 void CMachineGraph::OnInitialUpdate()
 {
@@ -72,7 +72,7 @@ void CMachineGraph::OnSize(UINT nType, int cx, int cy)
 {
 	CFormView::OnSize(nType, cx, cy);
 
-	// TODO: ¿©±â¿¡ ¸Ş½ÃÁö Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ë©”ì‹œì§€ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	
 	GetClientRect(&m_rectBack);
 
@@ -107,7 +107,7 @@ void CMachineGraph::OnSize(UINT nType, int cx, int cy)
 
 BOOL CMachineGraph::OnEraseBkgnd(CDC* pDC)
 {
-	// TODO: ¿©±â¿¡ ¸Ş½ÃÁö Ã³¸®±â ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº»°ªÀ» È£ÃâÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ë©”ì‹œì§€ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€ ë°/ë˜ëŠ” ê¸°ë³¸ê°’ì„ í˜¸ì¶œí•©ë‹ˆë‹¤.
 
 	return CFormView::OnEraseBkgnd(pDC);
 }
@@ -115,8 +115,8 @@ BOOL CMachineGraph::OnEraseBkgnd(CDC* pDC)
 void CMachineGraph::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
-	// TODO: ¿©±â¿¡ ¸Ş½ÃÁö Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
-	// ±×¸®±â ¸Ş½ÃÁö¿¡ ´ëÇØ¼­´Â CFormView::OnPaint()À»(¸¦) È£ÃâÇÏÁö ¸¶½Ê½Ã¿À.
+	// TODO: ì—¬ê¸°ì— ë©”ì‹œì§€ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
+	// ê·¸ë¦¬ê¸° ë©”ì‹œì§€ì— ëŒ€í•´ì„œëŠ” CFormView::OnPaint()ì„(ë¥¼) í˜¸ì¶œí•˜ì§€ ë§ˆì‹­ì‹œì˜¤.
 
 	if(m_bFlag)
 	{

@@ -1,4 +1,4 @@
-//{{NO_DEPENDENCIES}}
+ï»¿//{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
 // Used by TMapSvr.rc
 //
@@ -6,7 +6,7 @@
 #define IDS_SERVICENAME					100
 #define IDR_TMAPSVR	101
 
-// »õ °³Ã¼¿¡ ´ëÇÑ ´ÙÀ½ ±âº»°ªÀÔ´Ï´Ù.
+// ìƒˆ ê°œì²´ì— ëŒ€í•œ ë‹¤ìŒ ê¸°ë³¸ê°’ì…ë‹ˆë‹¤.
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS

@@ -1,4 +1,4 @@
-// DlgUploadProgress.cpp : ���� �����Դϴ�.
+﻿// DlgUploadProgress.cpp : 구현 파일입니다.
 //
 
 #include "stdafx.h"
@@ -6,7 +6,7 @@
 #include "DlgUploadProgress.h"
 #include ".\dlguploadprogress.h"
 
-// CDlgUploadProgress ��ȭ �����Դϴ�.
+// CDlgUploadProgress 대화 상자입니다.
 
 IMPLEMENT_DYNAMIC(CDlgUploadProgress, CDialog)
 CDlgUploadProgress::CDlgUploadProgress(CWnd* pParent /*=NULL*/)
@@ -30,7 +30,7 @@ BEGIN_MESSAGE_MAP(CDlgUploadProgress, CDialog)
 END_MESSAGE_MAP()
 
 
-// CDlgUploadProgress �޽��� ó�����Դϴ�.
+// CDlgUploadProgress 메시지 처리기입니다.
 
 BOOL CDlgUploadProgress::OnInitDialog()
 {
@@ -42,9 +42,9 @@ BOOL CDlgUploadProgress::OnInitDialog()
 	strText.Format("%s(0/%d)",m_strFileName,m_dwFileSize);
 	pEdit->SetWindowText(strText);
 
-	// TODO:  ���⿡ �߰� �ʱ�ȭ �۾��� �߰��մϴ�.
+	// TODO:  여기에 추가 초기화 작업을 추가합니다.
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// ����: OCX �Ӽ� �������� FALSE�� ��ȯ�ؾ� �մϴ�.
+	// 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
 }
 void CDlgUploadProgress::SetPos(DWORD dwPos)
 {

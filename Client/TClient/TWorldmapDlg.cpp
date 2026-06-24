@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 #include "TClientGame.h"
 #include "Resource.h"
 #include "TClientChar.h"
@@ -1198,7 +1198,7 @@ void CTWorldmapDlg::RenderOBJ( DWORD dwTickCount)
 
 
 
-			// NPC¾ÆÀÌÄÜ À§Ä¡°¡ È­¸é °¡ÀåÀÚ¸®¿¡ °¡±îÀÌ ºÙÀ¸¸é ¹İ´ë¹æÇâÂÊÀ¸·Î ±ÛÀÚÁ¤·ÄÀ» ÇØ¼­ Àß º¸ÀÌ°Ô ÇØÁØ´Ù.
+			// NPCì•„ì´ì½˜ ìœ„ì¹˜ê°€ í™”ë©´ ê°€ì¥ìë¦¬ì— ê°€ê¹Œì´ ë¶™ìœ¼ë©´ ë°˜ëŒ€ë°©í–¥ìª½ìœ¼ë¡œ ê¸€ìì •ë ¬ì„ í•´ì„œ ì˜ ë³´ì´ê²Œ í•´ì¤€ë‹¤.
 			if( point.x < 80 )
 				m_pNPCNAME->SetTextAlign( ALIGN_RIGHT );
 			else if( point.x > m_pDevice->m_option.m_dwScreenX-80 )

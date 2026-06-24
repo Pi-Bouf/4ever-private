@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 #include "TClientGame.h"
 #include "Resource.h"
 #include "TTournamentMode.h"
@@ -2657,7 +2657,7 @@ void CTGaugePannel::CalcHotkeyTick()
 
 void CTGaugePannel::ShowHotkeyBase( BYTE bShow)
 {
-	bShow = TRUE; //ÀÓ½Ã Àç¼öÁ¤ÇØ¾ßÇÔ
+	bShow = TRUE; //ì„ì‹œ ì¬ìˆ˜ì •í•´ì•¼í•¨
 
 	if( m_bHotkeyBase != bShow )
 	{
@@ -2749,10 +2749,10 @@ void CTGaugePannel::ResetHotkeyUI()
 
 					if( !wCount || !pTITEM )
 					{
-						// 2009.11.27 ±Ç¼ºÇõ
-						// ÀÎº¥Åä¸®³»¿¡¼­ ¾ÆÀÌÅÛ ÀÌµ¿½Ã¿¡ 
-						// hotkey¿¡ µî·ÏµÇ¾ú´ø ¾ÆÀÌÅÛÀÌ hotkey slot¿¡¼­ »ç¶óÁö´Â °Í ¶§¹®¿¡
-						// bType°ú wID¸¦ °è¼Ó °¡Áö°íÀÖÀ½..
+						// 2009.11.27 ê¶Œì„±í˜
+						// ì¸ë²¤í† ë¦¬ë‚´ì—ì„œ ì•„ì´í…œ ì´ë™ì‹œì— 
+						// hotkeyì— ë“±ë¡ë˜ì—ˆë˜ ì•„ì´í…œì´ hotkey slotì—ì„œ ì‚¬ë¼ì§€ëŠ” ê²ƒ ë•Œë¬¸ì—
+						// bTypeê³¼ wIDë¥¼ ê³„ì† ê°€ì§€ê³ ìˆìŒ..
 //						m_vTHOTKEY[m_bHotkeyID[i]][j].m_bType = HOTKEY_NONE;
 //						m_vTHOTKEY[m_bHotkeyID[i]][j].m_wID = 0;
 
@@ -2892,7 +2892,7 @@ ITDetailInfoPtr CTGaugePannel::GetTInfoKey_Hotkey(const CPoint& point, INT nHotk
 
 	case HOTKEY_PET:
 		{
-			// ±¸Çö
+			// êµ¬í˜„
 		}
 		break;
 	}
@@ -3426,7 +3426,7 @@ void CTGaugePannel::SetNotifySiegeAlarm(BOOL bNotify)
 	CTDetailInfoDlg* pDetInfoDlg = static_cast<CTDetailInfoDlg*>( pGame->GetFrame(TFRAME_DETAIL_INFO) );
 	CTDetailInfoManager::m_dwInfoStaticTick = 6000;
 
-	// ÆË¾÷Ã¢ ºôµå
+	// íŒì—…ì°½ ë¹Œë“œ
 	ITDetailInfoPtr info = CTDetailInfoManager::NewDefTooltipInst(
 		CTChart::LoadString(TSTR_SIEGE_ALARM_TITLE),
 		CTChart::LoadString(TSTR_SIEGE_ALARM_MSG),

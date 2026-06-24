@@ -1,13 +1,13 @@
-#pragma once
+ï»¿#pragma once
 
 
 //! GodTower Class.
 /*!
-*	@brief	¼º¹°À» ²È¾Æ ¿µ¿ªÇ¥½ÃÇÑ´Ù..
-*			( ¼º¹°À» ÀÌ Å¸¿ö¿¡ Mount & Demount )
+*	@brief	ì„±ë¬¼ì„ ê½‚ì•„ ì˜ì—­í‘œì‹œí•œë‹¤..
+*			( ì„±ë¬¼ì„ ì´ íƒ€ì›Œì— Mount & Demount )
 *
 *	@date	2009/08/21
-*	@author	±Ç ¼ºÇõ
+*	@author	ê¶Œ ì„±í˜
 *
 */
 class CTGodTower : public CTClientMoveObj
@@ -59,7 +59,7 @@ public :	// VIRTUAL FUNCTION.
 
 public :	// INLINE FUNCTION.
 
-	/* ÇöÀç Á¡·ÉÁßÀÎ Å¸¿öÀÎ°¡..? */
+	/* í˜„ì¬ ì ë ¹ì¤‘ì¸ íƒ€ì›Œì¸ê°€..? */
 	BOOL						IsOccupation() const;
 	BOOL						IsValid() const;
 	BOOL						IsVisible() const;

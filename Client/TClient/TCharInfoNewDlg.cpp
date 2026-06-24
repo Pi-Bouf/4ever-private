@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 #include "TCharInfoNewDlg.h"
 #include "TClientGame.h"
 #include "Resource.h"
@@ -283,16 +283,16 @@ void CTCharNewDlg::ResetStatColor( CTClientChar *pCHAR)
 				LPTITEMATTR pTITEMATTR = CTChart::FindTITEMATTR( wAttrID );
 				if( pTITEMATTR )
 				{
-					if( pTITEMATTR->m_wMinAP || pTITEMATTR->m_wMaxAP  ) // ÃÖ¼Ò ¹°¸® °ø°Ý·Â, ÃÖ´ë ¹°¸® °ø°Ý·Â
+					if( pTITEMATTR->m_wMinAP || pTITEMATTR->m_wMaxAP  ) // ìµœì†Œ ë¬¼ë¦¬ ê³µê²©ë ¥, ìµœëŒ€ ë¬¼ë¦¬ ê³µê²©ë ¥
 						pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_PAP ] = TRUE;
 
-					if( pTITEMATTR->m_wDP ) // ¹°¸® ¹æ¾î·Â
+					if( pTITEMATTR->m_wDP ) // ë¬¼ë¦¬ ë°©ì–´ë ¥
 						pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_PDP ] = TRUE;
 
-					if( pTITEMATTR->m_wMinMAP || pTITEMATTR->m_wMaxMAP ) // ÃÖ¼Ò ¸¶¹ý °ø°Ý·Â, ÃÖ´ë ¸¶¹ý °ø°Ý·Â
+					if( pTITEMATTR->m_wMinMAP || pTITEMATTR->m_wMaxMAP ) // ìµœì†Œ ë§ˆë²• ê³µê²©ë ¥, ìµœëŒ€ ë§ˆë²• ê³µê²©ë ¥
 						pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_MAP ] = TRUE;
 
-					if( pTITEMATTR->m_wMDP ) // ¸¶¹ý ¹æ¾î·Â
+					if( pTITEMATTR->m_wMDP ) // ë§ˆë²• ë°©ì–´ë ¥
 						pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_MDP ] = TRUE;
 				}
 			}
@@ -308,24 +308,24 @@ void CTCharNewDlg::ResetStatColor( CTClientChar *pCHAR)
 
 				switch( bMagicID )
 				{
-				case 1: pCHAR->m_StatInfo.m_bColorSTAT[ TCHARSTAT_STR ] = TRUE; break; // Èû
-				case 2: pCHAR->m_StatInfo.m_bColorSTAT[ TCHARSTAT_DEX ] = TRUE; break; // ¹ÎÃ¸
-				case 3: pCHAR->m_StatInfo.m_bColorSTAT[ TCHARSTAT_CON ] = TRUE; break; // Ã¼·Â
-				case 4: pCHAR->m_StatInfo.m_bColorSTAT[ TCHARSTAT_INT ] = TRUE; break; // Áö´É
-				case 5: pCHAR->m_StatInfo.m_bColorSTAT[ TCHARSTAT_WIS ] = TRUE; break; // ÁöÇý
-				case 6: pCHAR->m_StatInfo.m_bColorSTAT[ TCHARSTAT_MEN ] = TRUE; break; // Á¤½Å
-				case 7: pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_PAP ] = TRUE; break; // ¹°¸® °ø°Ý·Â
-				case 8: pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_PDP ] = TRUE; break; // ¹°¸® ¹æ¾î·Â
-				case 9: pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_PSP ] = TRUE; break; // ¿ø°Å¸® °ø°Ý·Â
-				case 11: pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_PAL ] = TRUE; break; // ¹°¸® °ø°Ýµî±Þ
-				case 12: pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_PDL ] = TRUE; break; // ¹°¸® ¹æ¾îµî±Þ
-				case 13: pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_PCR ] = TRUE; break; // ¹°¸® Ä¡¸í È®·ü
-				case 17: pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_MAP ] = TRUE; break; // ¸¶¹ý °ø°Ý·Â
-				case 16: pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_MDP ] = TRUE; break; // ¸¶¹ý ¹æ¾î·Â
-				case 20: pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_STA ] = TRUE; break; //¸¶¹ý ½ÃÀü À¯ÁöÈ®·ü
-				case 86: pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_MAL ] = TRUE; break; // ¸¶¹ý °ø°Ýµî±Þ
-				case 87: pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_MDL ] = TRUE; break; // ¸¶¹ý ¹æ¾îµî±Þ
-				case 21: pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_MCR ] = TRUE; break; // ¸¶¹ý Ä¡¸í È®·ü
+				case 1: pCHAR->m_StatInfo.m_bColorSTAT[ TCHARSTAT_STR ] = TRUE; break; // íž˜
+				case 2: pCHAR->m_StatInfo.m_bColorSTAT[ TCHARSTAT_DEX ] = TRUE; break; // ë¯¼ì²©
+				case 3: pCHAR->m_StatInfo.m_bColorSTAT[ TCHARSTAT_CON ] = TRUE; break; // ì²´ë ¥
+				case 4: pCHAR->m_StatInfo.m_bColorSTAT[ TCHARSTAT_INT ] = TRUE; break; // ì§€ëŠ¥
+				case 5: pCHAR->m_StatInfo.m_bColorSTAT[ TCHARSTAT_WIS ] = TRUE; break; // ì§€í˜œ
+				case 6: pCHAR->m_StatInfo.m_bColorSTAT[ TCHARSTAT_MEN ] = TRUE; break; // ì •ì‹ 
+				case 7: pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_PAP ] = TRUE; break; // ë¬¼ë¦¬ ê³µê²©ë ¥
+				case 8: pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_PDP ] = TRUE; break; // ë¬¼ë¦¬ ë°©ì–´ë ¥
+				case 9: pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_PSP ] = TRUE; break; // ì›ê±°ë¦¬ ê³µê²©ë ¥
+				case 11: pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_PAL ] = TRUE; break; // ë¬¼ë¦¬ ê³µê²©ë“±ê¸‰
+				case 12: pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_PDL ] = TRUE; break; // ë¬¼ë¦¬ ë°©ì–´ë“±ê¸‰
+				case 13: pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_PCR ] = TRUE; break; // ë¬¼ë¦¬ ì¹˜ëª… í™•ë¥ 
+				case 17: pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_MAP ] = TRUE; break; // ë§ˆë²• ê³µê²©ë ¥
+				case 16: pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_MDP ] = TRUE; break; // ë§ˆë²• ë°©ì–´ë ¥
+				case 20: pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_STA ] = TRUE; break; //ë§ˆë²• ì‹œì „ ìœ ì§€í™•ë¥ 
+				case 86: pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_MAL ] = TRUE; break; // ë§ˆë²• ê³µê²©ë“±ê¸‰
+				case 87: pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_MDL ] = TRUE; break; // ë§ˆë²• ë°©ì–´ë“±ê¸‰
+				case 21: pCHAR->m_StatInfo.m_bColorBASIC[ TCHARBASIC_MCR ] = TRUE; break; // ë§ˆë²• ì¹˜ëª… í™•ë¥ 
 				}
 			}
 		}
@@ -439,7 +439,7 @@ HRESULT CTCharNewDlg::Render( DWORD dwTickCount)
 			dwRemainSecondChangeAID /= 1000;
 			if( dwRemainSecondChangeAID == 0 )
 			{
-				m_vTCHARADV[TCHARADV_AID_AVAILABLE]->m_strText = CTChart::LoadString( TSTR_NATIONALITY_AVAILABLE ); // (º¯°æ °¡´É)
+				m_vTCHARADV[TCHARADV_AID_AVAILABLE]->m_strText = CTChart::LoadString( TSTR_NATIONALITY_AVAILABLE ); // (ë³€ê²½ ê°€ëŠ¥)
 			}
 			else
 			{
@@ -451,10 +451,10 @@ HRESULT CTCharNewDlg::Render( DWORD dwTickCount)
 				
 				CTClientGame::GetSecondToRemainTime( dwRemainSecondChangeAID, &dwDay, &dwHour, &dwMin, &dwSec);
 				
-				if( dwDay != 0 ) strFMT = CTChart::Format(TSTR_NATIONALITY_WAIT_DAY_STAT, dwDay ); // (%dÀÏ ÀÌÈÄ º¯°æ °¡´É)
-				else if( dwHour != 0 ) strFMT = CTChart::Format(TSTR_NATIONALITY_WAIT_HOUR_STAT, dwHour );// (%d½Ã°£ ÀÌÈÄ º¯°æ °¡´É)
-				else if( dwMin != 0 ) strFMT = CTChart::Format(TSTR_NATIONALITY_WAIT_MIN_STAT, dwMin ); // (%dºÐ ÀÌÈÄ º¯°æ °¡´É)
-				else if( dwSec != 0 ) strFMT = CTChart::Format( TSTR_NATIONALITY_WAIT_SEC_STAT, dwSec ); //(%dÃÊ ÀÌÈÄ º¯°æ °¡´É)
+				if( dwDay != 0 ) strFMT = CTChart::Format(TSTR_NATIONALITY_WAIT_DAY_STAT, dwDay ); // (%dì¼ ì´í›„ ë³€ê²½ ê°€ëŠ¥)
+				else if( dwHour != 0 ) strFMT = CTChart::Format(TSTR_NATIONALITY_WAIT_HOUR_STAT, dwHour );// (%dì‹œê°„ ì´í›„ ë³€ê²½ ê°€ëŠ¥)
+				else if( dwMin != 0 ) strFMT = CTChart::Format(TSTR_NATIONALITY_WAIT_MIN_STAT, dwMin ); // (%dë¶„ ì´í›„ ë³€ê²½ ê°€ëŠ¥)
+				else if( dwSec != 0 ) strFMT = CTChart::Format( TSTR_NATIONALITY_WAIT_SEC_STAT, dwSec ); //(%dì´ˆ ì´í›„ ë³€ê²½ ê°€ëŠ¥)
 
 				m_vTCHARADV[TCHARADV_AID_AVAILABLE]->m_strText = strFMT;
 			}
@@ -606,27 +606,27 @@ ITDetailInfoPtr CTCharNewDlg::GetTInfoKey( const CPoint& point )
 	};
 
 	static const DWORD dwStatInfoID[TCHARSTAT_COUNT] = {
-		90001, //TCHARSTAT_STR Èû
-		90002, //TCHARSTAT_DEX ¹ÎÃ¸
-		90003, //TCHARSTAT_CON Ã¼·Â
-		90004, //TCHARSTAT_INT Áö´É
-		90005, //TCHARSTAT_WIS ÁöÇý
-		90006, //TCHARSTAT_MEN Á¤½Å
+		90001, //TCHARSTAT_STR íž˜
+		90002, //TCHARSTAT_DEX ë¯¼ì²©
+		90003, //TCHARSTAT_CON ì²´ë ¥
+		90004, //TCHARSTAT_INT ì§€ëŠ¥
+		90005, //TCHARSTAT_WIS ì§€í˜œ
+		90006, //TCHARSTAT_MEN ì •ì‹ 
 	};
 
 	static const DWORD dwBasicInfoID[TCHARBASIC_COUNT] = {
-		90007, //TCHARBASIC_PAP ¹°¸® °ø°Ý·Â
-		90008, //TCHARBASIC_PDP	 ¹°¸® ¹æ¾î·Â
-		90009, //TCHARBASIC_PSP ¹°¸® ¿ø°Å¸® °ø°Ý·Â
-		90010, //TCHARBASIC_PAL	 ¹°¸® °ø°Ýµî±Þ
-		90011, //TCHARBASIC_PDL	 ¹°¸® ¹æ¾îµî±Þ
-		90012, //TCHARBASIC_PCR	 ¹°¸® Ä¡¸íÈ®·ü
-		90013, //TCHARBASIC_MAP ¸¶¹ý °ø°Ý·Â
-		90014, //TCHARBASIC_MDP ¸¶¹ý ¹æ¾î·Â
-		90015, //TCHARBASIC_STA ¸¶¹ý ½ÃÀü À¯ÁöÈ®·ü
-		90016, //TCHARBASIC_MAL ¸¶¹ý °ø°Ýµî±Þ
-		90017, //TCHARBASIC_MDL ¸¶¹ý ¹æ¾îµî±Þ
-		90018, //TCHARBASIC_MCR ¸¶¹ý Ä¡¸íÈ®·ü
+		90007, //TCHARBASIC_PAP ë¬¼ë¦¬ ê³µê²©ë ¥
+		90008, //TCHARBASIC_PDP	 ë¬¼ë¦¬ ë°©ì–´ë ¥
+		90009, //TCHARBASIC_PSP ë¬¼ë¦¬ ì›ê±°ë¦¬ ê³µê²©ë ¥
+		90010, //TCHARBASIC_PAL	 ë¬¼ë¦¬ ê³µê²©ë“±ê¸‰
+		90011, //TCHARBASIC_PDL	 ë¬¼ë¦¬ ë°©ì–´ë“±ê¸‰
+		90012, //TCHARBASIC_PCR	 ë¬¼ë¦¬ ì¹˜ëª…í™•ë¥ 
+		90013, //TCHARBASIC_MAP ë§ˆë²• ê³µê²©ë ¥
+		90014, //TCHARBASIC_MDP ë§ˆë²• ë°©ì–´ë ¥
+		90015, //TCHARBASIC_STA ë§ˆë²• ì‹œì „ ìœ ì§€í™•ë¥ 
+		90016, //TCHARBASIC_MAL ë§ˆë²• ê³µê²©ë“±ê¸‰
+		90017, //TCHARBASIC_MDL ë§ˆë²• ë°©ì–´ë“±ê¸‰
+		90018, //TCHARBASIC_MCR ë§ˆë²• ì¹˜ëª…í™•ë¥ 
 	};
 
 	ITDetailInfoPtr pInfo;
@@ -865,7 +865,7 @@ void CTCharNewDlg::ResetSubInven( BYTE bInvenID, WORD wImageID, BYTE bEnable)
 
 void CTCharNewDlg::ResetVisible()
 {
-	// ÀçÁ¤¸® ÇÊ¿ä
+	// ìž¬ì •ë¦¬ í•„ìš”
 	BOOL m_bInvenSlot = TRUE;
 	BYTE nLastInven = 0;
 }

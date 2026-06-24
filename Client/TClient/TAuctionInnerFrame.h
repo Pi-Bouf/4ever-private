@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 
 //!	Auction InnerFrame Class.
@@ -16,9 +16,9 @@ public :	// Virtual Function.
 	virtual ~CTAuctionInnerFrame();
 
 	virtual void			RequestInfo();
-	/*! ÇöÀç ÆäÀÌÁö¸¦ À¯ÁöÇÏ¸é¼­ ¾ÆÀÌÅÛ¸®½ºÆ®¸¦ ¾÷µ¥ÀÌÆ®¿äÃ». */
+	/*! í˜„ì¬ í˜ì´ì§€ë¥¼ ìœ ì§€í•˜ë©´ì„œ ì•„ì´í…œë¦¬ìŠ¤íŠ¸ë¥¼ ì—…ë°ì´íŠ¸ìš”ì²­. */
 	virtual void			RequestUpdatePage();
-	/*! ¿¡µğÆ® ÄÄÆ÷³ÍÆ® Æ÷Ä¿½º°ü¸®. */
+	/*! ì—ë””íŠ¸ ì»´í¬ë„ŒíŠ¸ í¬ì»¤ìŠ¤ê´€ë¦¬. */
 	virtual void			UpdateEditable( CPoint pt );
 
 public :	// Member Function.

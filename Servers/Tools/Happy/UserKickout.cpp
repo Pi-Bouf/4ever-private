@@ -1,6 +1,6 @@
-// Çö½Â·æ UserKickout.cpp
+ï»¿// í˜„ìŠ¹ë£¡ UserKickout.cpp
 
-// UserKickout.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+// UserKickout.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -11,7 +11,7 @@
 #include "HappyDoc.h"
 
 
-// CUserKickout ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CUserKickout ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CUserKickout, CDialog)
 CUserKickout::CUserKickout(CWnd* pParent /*=NULL*/)
@@ -35,11 +35,11 @@ BEGIN_MESSAGE_MAP(CUserKickout, CDialog)
 END_MESSAGE_MAP()
 
 
-// CUserKickout ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CUserKickout ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 void CUserKickout::OnBnClickedOk()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -61,6 +61,6 @@ void CUserKickout::OnBnClickedOk()
 
 void CUserKickout::OnBnClickedCancel()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	OnCancel();
 }

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "TClientNICEventSink.h"
 #include "TClientWnd.h"
 
@@ -74,7 +74,7 @@ BOOL CTClientNICEventSink::UpdateService()
 	static int sStatus = -1;
 	GetCurrentStatus();
 
-	if( sStatus != m_nStatus )	// »óÅÂ°¡ º¯ÇÔ.
+	if( sStatus != m_nStatus )	// ìƒíƒœê°€ ë³€í•¨.
 	{
 		switch( m_nStatus )
 		{
@@ -107,7 +107,7 @@ void CTClientNICEventSink::OnMediaDisconnect( IWbemClassObject* pObj )
 {
 	if( m_pMainWnd )
 	{
-		// °ÔÀÓ¿¡ Á¢¼ÓÁß ÀÏ¶§¸¸ Ã³¸®.
+		// ê²Œìž„ì— ì ‘ì†ì¤‘ ì¼ë•Œë§Œ ì²˜ë¦¬.
 		if( m_pMainWnd->GetMainFrame() == &m_pMainWnd->m_MainGame )
 		{
 			m_pMainWnd->m_bNetCableDisconnected = TRUE;

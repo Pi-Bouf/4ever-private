@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <math.h>
 
@@ -79,7 +79,7 @@
 #define PCBANG_PET							102
 #define PREMIUM1_PET						101
 #define PREMIUM2_PET						103
-#define PCBANG_PETNAME						_T("PC��")
+#define PCBANG_PETNAME						_T("PC방")
 
 #define PCBANG_DROPMAGICPROB				300
 
@@ -421,43 +421,43 @@ typedef enum DUEL_TYPE
 
 typedef enum CHAR_ABILITY
 {
-	ABILITY_STR = 0,	//��
-	ABILITY_DEX,		//��ø
-	ABILITY_CON,		//ü��
-	ABILITY_INT,		//����
-	ABILITY_WIS,		//����
-	ABILITY_MEN,		//����
-	ABILITY_MAXAP,		//�ִ�ٰŸ����ݷ�
-	ABILITY_MAXLAP,		//�ִ���Ÿ����ݷ�
-	ABILITY_MINAP,		//�ּұٰŸ����ݷ�
-	ABILITY_MINLAP,		//�ּҿ��Ÿ����ݷ�
-	ABILITY_MAXMAP,		//�ִ븶�����ݷ�
-	ABILITY_MINMAP,		//�ּҸ������ݷ�
-	ABILITY_MAXHP,		//�ִ������
-	ABILITY_MAXMP,		//�ִ����ŷ�
-	ABILITY_PDP,		//��������
-	ABILITY_MDP,		//��������
-	ABILITY_AL,			//���ݵ��
-	ABILITY_DL,			//�����
-	ABILITY_MAL,		//�������ݵ��
-	ABILITY_MDL,		//���������
-	ABILITY_PCR,		//�ٰŸ�ġ��Ȯ��
-	ABILITY_MCR,		//����ġ��Ȯ��
-	ABILITY_CMP,		//��������Ȯ��
-	ABILITY_SDR,		//���й��Ȯ��
-	ABILITY_SMDR,		//�������й��Ȯ��
-	ABILITY_SDP,		//���й���
-	ABILITY_SMDP,		//�������й���
-	ABILITY_MCS,		//�����ӵ�
-	ABILITY_HPR,		//������ȸ����
-	ABILITY_MPR,		//���ŷ�ȸ����
-	ABILITY_AVP,		//ȸ��Ȯ��
-	ABILITY_ATKSPEED_S,	//�ٰŸ����ݼӵ�
-	ABILITY_ATKSPEED_L,	//���Ÿ����ݼӵ�
-	ABILITY_ATKSPEED_SR,//�ٰŸ����ݼӵ�����
-	ABILITY_ATKSPEED_LR,//���Ÿ����ݼӵ�����
-	ABILITY_ATKSPEED_MR,//�������ݼӵ�����,
-	ABILITY_AFTERMATH	//��Ȱ������
+	ABILITY_STR = 0,	//힘
+	ABILITY_DEX,		//민첩
+	ABILITY_CON,		//체력
+	ABILITY_INT,		//지능
+	ABILITY_WIS,		//지혜
+	ABILITY_MEN,		//정신
+	ABILITY_MAXAP,		//최대근거리공격력
+	ABILITY_MAXLAP,		//최대원거리공격력
+	ABILITY_MINAP,		//최소근거리공격력
+	ABILITY_MINLAP,		//최소원거리공격력
+	ABILITY_MAXMAP,		//최대마법공격력
+	ABILITY_MINMAP,		//최소마법공격력
+	ABILITY_MAXHP,		//최대생명력
+	ABILITY_MAXMP,		//최대정신력
+	ABILITY_PDP,		//물리방어력
+	ABILITY_MDP,		//마법방어력
+	ABILITY_AL,			//공격등급
+	ABILITY_DL,			//방어등급
+	ABILITY_MAL,		//마법공격등급
+	ABILITY_MDL,		//마법방어등급
+	ABILITY_PCR,		//근거리치명확률
+	ABILITY_MCR,		//마법치명확률
+	ABILITY_CMP,		//시전유지확률
+	ABILITY_SDR,		//방패방어확률
+	ABILITY_SMDR,		//마법방패방어확률
+	ABILITY_SDP,		//방패방어력
+	ABILITY_SMDP,		//마법방패방어력
+	ABILITY_MCS,		//시전속도
+	ABILITY_HPR,		//생명력회복률
+	ABILITY_MPR,		//정신력회복률
+	ABILITY_AVP,		//회피확률
+	ABILITY_ATKSPEED_S,	//근거리공격속도
+	ABILITY_ATKSPEED_L,	//원거리공격속도
+	ABILITY_ATKSPEED_SR,//근거리공격속도비율
+	ABILITY_ATKSPEED_LR,//원거리공격속도비율
+	ABILITY_ATKSPEED_MR,//마법공격속도비율,
+	ABILITY_AFTERMATH	//부활후유증
 } *LPCHAR_ABILITY;
 
 typedef enum DISCOUNTCONDITION_TYPE 
@@ -1820,7 +1820,7 @@ struct tagTITEM
 	BYTE m_bCanWrap;
 	DWORD m_dwCode;
 	BYTE m_bCanColor;
-	BYTE m_bConsumable;	//	�Ҹ�Ÿ��
+	BYTE m_bConsumable;	//	소모타입
 };
 
 
@@ -1943,7 +1943,7 @@ struct tagTDURINGITEM
 
 struct tagTMAGIC
 {
-	WORD m_wValue; // �����ɼǺ���
+	WORD m_wValue; // 최종옵션비율
 	LPTITEMMAGIC m_pMagic;
 };
 
@@ -2436,27 +2436,27 @@ struct tagLOTTERY
 struct tagEVENTINFO
 {
 	DWORD	m_dwIndex;
-    BYTE	m_bID;			// �̺�Ʈ ����
-	CString m_strTitle;		// �̺�Ʈ �̸�
-	BYTE	m_bGroupID;		// ���� �׷�
+    BYTE	m_bID;			// 이벤트 종류
+	CString m_strTitle;		// 이벤트 이름
+	BYTE	m_bGroupID;		// 서버 그룹
 	BYTE	m_bSvrType;
 	BYTE	m_bSvrID;		// 0 : ALL 
-	__time64_t m_dStartDate;// ���۳�¥�ð�
-	__time64_t m_dEndDate;	// ���ᳯ¥�ð�
-	WORD	m_wValue;		// �̺�Ʈ��
-	WORD	m_wMapID;		// 0xFF:ALL �ʾ��̵�
+	__time64_t m_dStartDate;// 시작날짜시간
+	__time64_t m_dEndDate;	// 종료날짜시간
+	WORD	m_wValue;		// 이벤트값
+	WORD	m_wMapID;		// 0xFF:ALL 맵아이디
 	DWORD	m_dwStartAlarm; 
 	DWORD	m_dwEndAlarm;
 	BYTE	m_bStartAlarm;
 	BYTE	m_bEndAlarm;
 	CString m_strStartMsg;
 	CString m_strEndMsg;
-	BYTE	m_bState;		// �̺�Ʈ ����
+	BYTE	m_bState;		// 이벤트 상태
 	BYTE	m_bPartTime;
 	VTCASHITEMSALE m_vCashItem;
 	MONEVENT m_stMONEVENT;	
 	VMONREGEN m_vMONREGEN;
-	VLOTTERY m_vLOTTERY;	// ��ǰ������
+	VLOTTERY m_vLOTTERY;	// 경품아이템
 	CString m_strLotMsg;
 
 	void Reset()
@@ -2675,7 +2675,7 @@ struct tagTAUCTION
 struct tagTAUCTIONINTEREST
 {	
 	DWORD m_dwAuctionID;
-	BYTE m_bStatus; // 0: ����� 1:���� 2:����
+	BYTE m_bStatus; // 0: 경매중 1:낙찰 2:유찰
 	TAUCTION m_TAuction;
 };
 

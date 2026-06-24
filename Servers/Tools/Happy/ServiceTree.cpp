@@ -1,4 +1,4 @@
-// ServiceTree.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// ServiceTree.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -41,7 +41,7 @@ BEGIN_MESSAGE_MAP(CServiceTree, CFormView)
 END_MESSAGE_MAP()
 
 
-// CServiceTree Áø´ÜÀÔ´Ï´Ù.
+// CServiceTree ì§„ë‹¨ì…ë‹ˆë‹¤.
 
 #ifdef _DEBUG
 void CServiceTree::AssertValid() const
@@ -56,13 +56,13 @@ void CServiceTree::Dump(CDumpContext& dc) const
 #endif //_DEBUG
 
 
-// CServiceTree ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CServiceTree ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 void CServiceTree::OnSize(UINT nType, int cx, int cy)
 {
 	CFormView::OnSize(nType, cx, cy);
 
-	// TODO: ¿©±â¿¡ ¸Ş½ÃÁö Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ë©”ì‹œì§€ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	if (GetSafeHwnd())
 	{
 		CRect rect;
@@ -73,7 +73,7 @@ void CServiceTree::OnSize(UINT nType, int cx, int cy)
 			ShowWindow(SW_SHOW);
 		}
 	}
-	GetClientRect(&treeRect); // Çö½Â·æ Graph
+	GetClientRect(&treeRect); // í˜„ìŠ¹ë£¡ Graph
 }
 
 HTREEITEM CServiceTree::FindService(DWORD dwID, HTREEITEM hStart)
@@ -167,7 +167,7 @@ void CServiceTree::UpdateServiceTree(DWORD dwID)
 void CServiceTree::OnInitialUpdate()
 {
 	CFormView::OnInitialUpdate();
-	// TODO: ¿©±â¿¡ Æ¯¼öÈ­µÈ ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº» Å¬·¡½º¸¦ È£ÃâÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— íŠ¹ìˆ˜í™”ëœ ì½”ë“œë¥¼ ì¶”ê°€ ë°/ë˜ëŠ” ê¸°ë³¸ í´ë˜ìŠ¤ë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
 
 	m_bIsGroup = FALSE;
 }
@@ -247,7 +247,7 @@ void CServiceTree::InsertInitData()
 	}
 
 	///////////////////////////////////////////////
-	// Çö½Â·æ Graph
+	// í˜„ìŠ¹ë£¡ Graph
 	m_hDragItem = NULL;
 	m_DragFlag = 0;	
 	m_Cursor = LoadCursor(0, IDC_ARROW);
@@ -282,7 +282,7 @@ void CServiceTree::OnDestroy()
 	CImageList * pList = m_treeCtrl.GetImageList(TVSIL_NORMAL);
 	if(pList)
 		delete pList;
-	// TODO: ¿©±â¿¡ ¸Ş½ÃÁö Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ë©”ì‹œì§€ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 }
 
 void CServiceTree::OnTvnSelchangedTreeService(NMHDR *pNMHDR, LRESULT *pResult)
@@ -347,7 +347,7 @@ void CServiceTree::OnTvnSelchangedTreeService(NMHDR *pNMHDR, LRESULT *pResult)
 	pList->UpdateServiceList(0);
 }
 //////////////////////////////////////////////////////////////////////////
-// Çö½Â·æ Graph Æ®¸®¾ÆÀÌÅÛ¿¡¼­ ¼­¹ö¸¦ µå·¡±× ÇØ¼­ ±×·¡ÇÁ¿¡ Ãß°¡
+// í˜„ìŠ¹ë£¡ Graph íŠ¸ë¦¬ì•„ì´í…œì—ì„œ ì„œë²„ë¥¼ ë“œë˜ê·¸ í•´ì„œ ê·¸ë˜í”„ì— ì¶”ê°€
 void CServiceTree::OnTvnBegindragTreeService(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	CMainFrame * pFrm = (CMainFrame *)AfxGetMainWnd();
@@ -357,9 +357,9 @@ void CServiceTree::OnTvnBegindragTreeService(NMHDR *pNMHDR, LRESULT *pResult)
 	{
 		LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
 		
-		m_hDragItem = pNMTreeView->itemNew.hItem; // ÇöÀç ¼±ÅÃµÈ ¾ÆÀÌÅÛ ÇÚµéÀ» ±â¾ï
+		m_hDragItem = pNMTreeView->itemNew.hItem; // í˜„ì¬ ì„ íƒëœ ì•„ì´í…œ í•¸ë“¤ì„ ê¸°ì–µ
 
-		if( m_treeCtrl.GetParentItem(m_hDragItem) == NULL ) // ¿ùµå µå·¡±×½Ã ¸®ÅÏ
+		if( m_treeCtrl.GetParentItem(m_hDragItem) == NULL ) // ì›”ë“œ ë“œë˜ê·¸ì‹œ ë¦¬í„´
 			return;
 
 		m_DragFlag = 1;	
@@ -375,7 +375,7 @@ void CServiceTree::OnLButtonUp(UINT nFlags, CPoint point)
 {	
 	if( m_DragFlag )
 	{
-        ReleaseCapture(); // ¸¶¿ì½º ¸Ş½ÃÁö Ä¸ÃÄ ±â´ÉÀ» Á¦°ÅÇÑ´Ù.
+        ReleaseCapture(); // ë§ˆìš°ìŠ¤ ë©”ì‹œì§€ ìº¡ì³ ê¸°ëŠ¥ì„ ì œê±°í•œë‹¤.
 		m_Cursor = LoadCursor(0, IDC_ARROW);
 		m_DragFlag = 0;
 		m_hDragItem = NULL;
@@ -396,29 +396,29 @@ void CServiceTree::OnMouseMove(UINT nFlags, CPoint point)
 	if(m_DragFlag)
 	{		
 		if(point.x > treeRect.right)
-			ReleaseCapture(); // ¸¶¿ì½º ¸Ş½ÃÁö Ä¸ÃÄ ±â´ÉÀ» Á¦°ÅÇÑ´Ù.		
+			ReleaseCapture(); // ë§ˆìš°ìŠ¤ ë©”ì‹œì§€ ìº¡ì³ ê¸°ëŠ¥ì„ ì œê±°í•œë‹¤.		
 	}
 
 	CFormView::OnMouseMove(nFlags, point);
 }
 //////////////////////////////////////////////////////////////////////////
 
-// ¸Ê¼­¹ö¸¦ ¼±ÅÃ ÇÑ ÈÄ¿¡ ¸¶¿ì½º ¿À¸¥ÂÊ Å¬¸¯ÇßÀ» ¶§ ¸Ş´º ¶ç¿ì±â
+// ë§µì„œë²„ë¥¼ ì„ íƒ í•œ í›„ì— ë§ˆìš°ìŠ¤ ì˜¤ë¥¸ìª½ í´ë¦­í–ˆì„ ë•Œ ë©”ë‰´ ë„ìš°ê¸°
 void CServiceTree::OnContextMenu(CWnd* pWnd, CPoint point)
 {
-	// TODO: ¿©±â¿¡ ¸Ş½ÃÁö Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ë©”ì‹œì§€ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 
 	HTREEITEM hSelectedItem = m_treeCtrl.GetSelectedItem();
 
-	// ¿ùµå¼­¹ö ¾ÆÀÌÄÜÀ» ¼±ÅÃÇßÀ» °æ¿ì ¸®ÅÏ
+	// ì›”ë“œì„œë²„ ì•„ì´ì½˜ì„ ì„ íƒí–ˆì„ ê²½ìš° ë¦¬í„´
 	if( !hSelectedItem || m_bIsGroup )
 		return;
 
-	// ¼±ÅÃÇÑ ¾ÆÀÌÅÛÀÌ ºÎ¸ğ°¡ ¾øÀ»°æ¿ì(Áï Áö±¸¸ğ¾çÀÇ ¾ÆÀÌÅÛÀ» ¼±ÅÃÇßÀ» °æ¿ì) ¸®ÅÏ
+	// ì„ íƒí•œ ì•„ì´í…œì´ ë¶€ëª¨ê°€ ì—†ì„ê²½ìš°(ì¦‰ ì§€êµ¬ëª¨ì–‘ì˜ ì•„ì´í…œì„ ì„ íƒí–ˆì„ ê²½ìš°) ë¦¬í„´
 	if( !m_treeCtrl.GetParentItem(hSelectedItem) )
 		return;
 
-	// ¸Ê ¼­¹ö ¾ÆÀÌÄÜÀ» ¼±ÅÃÇÑ ÈÄ¿¡ ¼±ÅÃµÈ ¸Ê ¼­¹ö ¾ÆÀÌÄÜ ¿µ¿ª ¾È¿¡¼­ ¿ìÅ¬¸¯ Çß´ÂÁö Ã¼Å©
+	// ë§µ ì„œë²„ ì•„ì´ì½˜ì„ ì„ íƒí•œ í›„ì— ì„ íƒëœ ë§µ ì„œë²„ ì•„ì´ì½˜ ì˜ì—­ ì•ˆì—ì„œ ìš°í´ë¦­ í–ˆëŠ”ì§€ ì²´í¬
 	CPoint  p;
 	GetCursorPos(&p);
 	::ScreenToClient(m_treeCtrl.m_hWnd, &p);
@@ -427,7 +427,7 @@ void CServiceTree::OnContextMenu(CWnd* pWnd, CPoint point)
 	if( hHitItem != hSelectedItem )
 		return;
 
-	// ¸Ê¼­¹ö°¡ ÇöÀç ÄÁÆ®·Ñ°¡´ÉÇÑÁö(³ì»ö or ³ë¶õ»öÀÎÁö) Ã¼Å©
+	// ë§µì„œë²„ê°€ í˜„ì¬ ì»¨íŠ¸ë¡¤ê°€ëŠ¥í•œì§€(ë…¹ìƒ‰ or ë…¸ë€ìƒ‰ì¸ì§€) ì²´í¬
 	int nImg,nSelectedImg;
 	nImg = nSelectedImg = 0;
 	m_treeCtrl.GetItemImage(hSelectedItem,nImg,nSelectedImg);
@@ -437,7 +437,7 @@ void CServiceTree::OnContextMenu(CWnd* pWnd, CPoint point)
 	m_dwSelectedMapSvrID = (DWORD)m_treeCtrl.GetItemData(hSelectedItem);
 
 
-	// ¸Ş´º »ı¼º
+	// ë©”ë‰´ ìƒì„±
 	CMenu menu;
 	menu.CreatePopupMenu();
 
@@ -450,15 +450,15 @@ void CServiceTree::OnContextMenu(CWnd* pWnd, CPoint point)
 
 }
 
-// ÆË¾÷¸Ş´º¿¡¼­ [ReConnect] ¸¦ ¼±ÅÃÇßÀ» ¶§ ½ÇÇàµÇ´Â ÇÔ¼ö
-// CTabCtrlHappy::OnCommand() ÇÔ¼ö¿¡¼­ ÀÌ ÇÔ¼ö¸¦ È£ÃâÇÑ´Ù.
+// íŒì—…ë©”ë‰´ì—ì„œ [ReConnect] ë¥¼ ì„ íƒí–ˆì„ ë•Œ ì‹¤í–‰ë˜ëŠ” í•¨ìˆ˜
+// CTabCtrlHappy::OnCommand() í•¨ìˆ˜ì—ì„œ ì´ í•¨ìˆ˜ë¥¼ í˜¸ì¶œí•œë‹¤.
 void CServiceTree::MapSvrConnect()
 {	
 	CHappyDoc * pDoc = (CHappyDoc *)GetDocument();
 	pDoc->SendCT_RECONNECT_REQ(m_dwSelectedMapSvrID);
 }
 
-// ÆË¾÷¸Ş´º¿¡¼­ [DisConnect] ¸¦ ¼±ÅÃÇßÀ» ¶§ ½ÇÇàµÇ´Â ÇÔ¼ö
+// íŒì—…ë©”ë‰´ì—ì„œ [DisConnect] ë¥¼ ì„ íƒí–ˆì„ ë•Œ ì‹¤í–‰ë˜ëŠ” í•¨ìˆ˜
 void CServiceTree::MapSvrDisConnect()
 {
 	CHappyDoc* pDoc = (CHappyDoc*)GetDocument();

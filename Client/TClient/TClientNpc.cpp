@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "TClientGame.h"
 #include "TClientWnd.h"
 
@@ -240,7 +240,7 @@ void CTClientNpc::InitTNPC( CD3DDevice *pDevice,
 		if( fp )
 		{
 			fseek(fp, 0, SEEK_END);
-			fprintf(fp,"NPC Object ID - 0x%.8X¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.\n", m_pTNPC->m_dwOBJ);
+			fprintf(fp,"NPC Object ID - 0x%.8Xë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.\n", m_pTNPC->m_dwOBJ);
 			fclose(fp);
 		}		
 		return;

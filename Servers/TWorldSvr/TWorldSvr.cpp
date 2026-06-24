@@ -1,4 +1,4 @@
-// TWorldSvr.cpp : WinMainÀÇ ±¸ÇöÀÔ´Ï´Ù.
+ï»¿// TWorldSvr.cpp : WinMainì˜ êµ¬í˜„ì…ë‹ˆë‹¤.
 
 #include "stdafx.h"
 #include "TWorldSvr.h"
@@ -697,8 +697,8 @@ void CTWorldSvrModule::OnCloseSession( CTWorldSession *pSession)
 
 void CTWorldSvrModule::ClosingSession( CTWorldSession *pSession)
 {
-	// pSession¿¡ ´ëÇÑ ÆĞÅ¶Ã³¸®°¡ ¿Ï·áµÇ´Â ½ÃÁ¡À» ¾Ë¸²
-	// pSession¿¡ ´ëÇÑ ¿À¹ö·¦ ¿ÀÆÛ·¡ÀÌ¼ÇÀÌ ¿Ï·áµÈ °ÍÀ» È®ÀÎÈÄ È£Ãâ ÇÏ¿©¾ß ÇÔ.
+	// pSessionì— ëŒ€í•œ íŒ¨í‚·ì²˜ë¦¬ê°€ ì™„ë£Œë˜ëŠ” ì‹œì ì„ ì•Œë¦¼
+	// pSessionì— ëŒ€í•œ ì˜¤ë²„ë© ì˜¤í¼ë˜ì´ì…˜ì´ ì™„ë£Œëœ ê²ƒì„ í™•ì¸í›„ í˜¸ì¶œ í•˜ì—¬ì•¼ í•¨.
 	EnterCriticalSection(&m_csBATCH);
 	MAPTSERVER::iterator finder = m_mapSESSION.find((DWORD_PTR) pSession);
 
@@ -1990,16 +1990,16 @@ DWORD CTWorldSvrModule::WorkThread()
 					case TOV_SSN_RECV	:
 						OnInvalidSession(pSession);
 						break;
-						// ***** IOCP »ç¿ë¹ı Áß ¾Ë¾Æ³»±â Èûµç Ã¹¹øÂ° ±¸¹® (¼­¹öÃø ¼¼¼Ç Á¾·á) *****
+						// ***** IOCP ì‚¬ìš©ë²• ì¤‘ ì•Œì•„ë‚´ê¸° í˜ë“  ì²«ë²ˆì§¸ êµ¬ë¬¸ (ì„œë²„ì¸¡ ì„¸ì…˜ ì¢…ë£Œ) *****
 						//
-						// ¼­¹ö°¡ ¸ÕÀú closesocket()À» È£ÃâÇÏ¿© ¼¼¼ÇÀ» Á¾·áÇÑ °æ¿ìÀÌ¸ç
-						// WSARecv()°¡ È£ÃâµÈ »óÅÂ¿¡¼­¸¸ ÀÌ ÄÚµå·Î µé¾î¿À¸ç
-						// ¸ğµç ¿À¹ö·¦ ¿ÀÆÛ·¡ÀÌ¼ÇÀÌ Á¾·áµÈ »óÅÂÀÌ±â ¶§¹®¿¡
-						// ÀÌ ¼ÒÄÏ ÇÚµé°ú °ü·ÃµÈ µ¥ÀÌÅ¸´Â IOCPÅ¥¿¡ ³²¾ÆÀÖÁö ¾Ê´Ù.
-						// µû¶ó¼­ ÀÌ ½º·¹µå¿¡¼­´Â ÇØ´ç ¼¼¼Ç¿¡ °ü·ÃµÈ ÀÛ¾÷ ¸í·ÉÀ» ´õÀÌ»ó ¼öÇàÇÏÁö ¾Ê±â ¶§¹®¿¡
-						// ´Ù¸¥ ½º·¹µå°¡ Çã¶ôÇÑ´Ù¸é ÀÌ ±¸¹®¿¡¼­ ¼¼¼Ç Æ÷ÀÎÅÍ¸¦ »èÁ¦ÇØµµ ¹«¹æÇÏ´Ù.
-						// ¼¼¼ÇÀ» »èÁ¦ ÇÏ´Âµ¥ °¡Àå ÁÁÀº ÁöÁ¡ÀÌ¹Ç·Î ÀüÃ¼ ½Ã½ºÅÛ ¼³°è½Ã
-						// Á¤»óÀûÀÎ ¼¼¼Ç Á¾·á´Â ¼­¹öÃø¿¡¼­ ¸ÕÀú ¼¼¼ÇÀ» Á¾·á½ÃÅ°µµ·Ï ¼³°èÇÏ´Â °ÍÀÌ ¾ÈÀüÇÏ´Ù.
+						// ì„œë²„ê°€ ë¨¼ì € closesocket()ì„ í˜¸ì¶œí•˜ì—¬ ì„¸ì…˜ì„ ì¢…ë£Œí•œ ê²½ìš°ì´ë©°
+						// WSARecv()ê°€ í˜¸ì¶œëœ ìƒíƒœì—ì„œë§Œ ì´ ì½”ë“œë¡œ ë“¤ì–´ì˜¤ë©°
+						// ëª¨ë“  ì˜¤ë²„ë© ì˜¤í¼ë˜ì´ì…˜ì´ ì¢…ë£Œëœ ìƒíƒœì´ê¸° ë•Œë¬¸ì—
+						// ì´ ì†Œì¼“ í•¸ë“¤ê³¼ ê´€ë ¨ëœ ë°ì´íƒ€ëŠ” IOCPíì— ë‚¨ì•„ìˆì§€ ì•Šë‹¤.
+						// ë”°ë¼ì„œ ì´ ìŠ¤ë ˆë“œì—ì„œëŠ” í•´ë‹¹ ì„¸ì…˜ì— ê´€ë ¨ëœ ì‘ì—… ëª…ë ¹ì„ ë”ì´ìƒ ìˆ˜í–‰í•˜ì§€ ì•Šê¸° ë•Œë¬¸ì—
+						// ë‹¤ë¥¸ ìŠ¤ë ˆë“œê°€ í—ˆë½í•œë‹¤ë©´ ì´ êµ¬ë¬¸ì—ì„œ ì„¸ì…˜ í¬ì¸í„°ë¥¼ ì‚­ì œí•´ë„ ë¬´ë°©í•˜ë‹¤.
+						// ì„¸ì…˜ì„ ì‚­ì œ í•˜ëŠ”ë° ê°€ì¥ ì¢‹ì€ ì§€ì ì´ë¯€ë¡œ ì „ì²´ ì‹œìŠ¤í…œ ì„¤ê³„ì‹œ
+						// ì •ìƒì ì¸ ì„¸ì…˜ ì¢…ë£ŒëŠ” ì„œë²„ì¸¡ì—ì„œ ë¨¼ì € ì„¸ì…˜ì„ ì¢…ë£Œì‹œí‚¤ë„ë¡ ì„¤ê³„í•˜ëŠ” ê²ƒì´ ì•ˆì „í•˜ë‹¤.
 					case TOV_SSN_SEND:
 						OnSendComplete(pSession, 0);
 						break;
@@ -2187,16 +2187,16 @@ void CTWorldSvrModule::ProcessSession( CTWorldSession *pSession, DWORD dwIoBytes
 
 	if(!pSession->Read(dwIoBytes))
 	{
-		// ***** IOCP »ç¿ë¹ı Áß ¾Ë¾Æ³»±â Èûµç µÎ¹øÂ° ±¸¹® (Å¬¶óÀÌ¾ğÆ®Ãø ¼¼¼Ç Á¾·á) *****
+		// ***** IOCP ì‚¬ìš©ë²• ì¤‘ ì•Œì•„ë‚´ê¸° í˜ë“  ë‘ë²ˆì§¸ êµ¬ë¬¸ (í´ë¼ì´ì–¸íŠ¸ì¸¡ ì„¸ì…˜ ì¢…ë£Œ) *****
 		//
-		// Å¬¶óÀÌ¾ğÆ®°¡ ¸ÕÀú closesocket()À» È£ÃâÇÏ¿© ¼¼¼ÇÀ» Á¾·áÇÑ °æ¿ìÀÌ¸ç
-		// WSARecv()°¡ È£ÃâµÈ »óÅÂ¿¡¼­¸¸ ÀÌ ÄÚµå·Î µé¾î¿À¸ç
-		// ¸ğµç ¿À¹ö·¦ ¿ÀÆÛ·¡ÀÌ¼ÇÀÌ Á¾·á µÇ¾ú´Ù°í º¼ ¼ö ¾ø´Ù.
-		// µû¶ó¼­ ÀÌÈÄ¿¡ ÀÌ ½º·¹µå¿¡¼­ ÀÌ ¼¼¼Ç°ú °ü·ÃµÈ ÀÛ¾÷¸í·ÉÀÌ ½ÇÇà µÉ ¼ö ÀÖÀ¸¹Ç·Î
-		// ¿©±â¼­ ¼¼¼Ç Æ÷ÀÎÅÍ¸¦ »èÁ¦ÇÏ¸é ¼­¹ö°¡ ´Ù¿îµÉ ¼ö ÀÖ´Ù.
-		// Receive¿Í °ü·ÃµÈ ¿À¹ö·¦ ¿ÀÆÛ·¹ÀÌ¼ÇÀº È®½ÇÈ÷ Á¾·á µÇ¾úÀ¸¹Ç·Î
-		// Send¿Í °ü·ÃµÈ ¿À¹ö·¦ ¿ÀÆÛ·¹ÀÌ¼ÇÀÌ Á¾·áµÇ¾ú´ÂÁö¸¦
-		// È®ÀÎÇÑ ÈÄ ´Ù¸¥ ½º·¹µåÀÇ ¼¼¼Ç »èÁ¦ ¼ö¶ô°úÁ¤À» °ÅÄ¡°í ¼¼¼ÇÀ» »èÁ¦ ÇØ¾ß ÇÑ´Ù.
+		// í´ë¼ì´ì–¸íŠ¸ê°€ ë¨¼ì € closesocket()ì„ í˜¸ì¶œí•˜ì—¬ ì„¸ì…˜ì„ ì¢…ë£Œí•œ ê²½ìš°ì´ë©°
+		// WSARecv()ê°€ í˜¸ì¶œëœ ìƒíƒœì—ì„œë§Œ ì´ ì½”ë“œë¡œ ë“¤ì–´ì˜¤ë©°
+		// ëª¨ë“  ì˜¤ë²„ë© ì˜¤í¼ë˜ì´ì…˜ì´ ì¢…ë£Œ ë˜ì—ˆë‹¤ê³  ë³¼ ìˆ˜ ì—†ë‹¤.
+		// ë”°ë¼ì„œ ì´í›„ì— ì´ ìŠ¤ë ˆë“œì—ì„œ ì´ ì„¸ì…˜ê³¼ ê´€ë ¨ëœ ì‘ì—…ëª…ë ¹ì´ ì‹¤í–‰ ë  ìˆ˜ ìˆìœ¼ë¯€ë¡œ
+		// ì—¬ê¸°ì„œ ì„¸ì…˜ í¬ì¸í„°ë¥¼ ì‚­ì œí•˜ë©´ ì„œë²„ê°€ ë‹¤ìš´ë  ìˆ˜ ìˆë‹¤.
+		// Receiveì™€ ê´€ë ¨ëœ ì˜¤ë²„ë© ì˜¤í¼ë ˆì´ì…˜ì€ í™•ì‹¤íˆ ì¢…ë£Œ ë˜ì—ˆìœ¼ë¯€ë¡œ
+		// Sendì™€ ê´€ë ¨ëœ ì˜¤ë²„ë© ì˜¤í¼ë ˆì´ì…˜ì´ ì¢…ë£Œë˜ì—ˆëŠ”ì§€ë¥¼
+		// í™•ì¸í•œ í›„ ë‹¤ë¥¸ ìŠ¤ë ˆë“œì˜ ì„¸ì…˜ ì‚­ì œ ìˆ˜ë½ê³¼ì •ì„ ê±°ì¹˜ê³  ì„¸ì…˜ì„ ì‚­ì œ í•´ì•¼ í•œë‹¤.
 		OnInvalidSession(pSession);
 		return;
 	}
@@ -2236,39 +2236,39 @@ void CTWorldSvrModule::ProcessSession( CTWorldSession *pSession, DWORD dwIoBytes
 				}
 			}
 			break;
-			// ***** IOCP »ç¿ë¹ı Áß ¾Ë¾Æ³»±â Èûµç ¼¼¹øÂ° ±¸¹® (ºñ Á¤»óÀûÀÎ ¼¼¼Ç Á¾·á) *****
+			// ***** IOCP ì‚¬ìš©ë²• ì¤‘ ì•Œì•„ë‚´ê¸° í˜ë“  ì„¸ë²ˆì§¸ êµ¬ë¬¸ (ë¹„ ì •ìƒì ì¸ ì„¸ì…˜ ì¢…ë£Œ) *****
 			//
-			// Å¬¶óÀÌ¾ğÆ®°¡ ÆĞÅ¶À» º¯Á¶ÇØ¼­ º¸³½´Ù°Å³ª ³×Æ®Ÿp ¿À·ù·Î ÀÎÇØ ¼¼¼ÇÀÌ ºñ Á¤»óÀûÀÎ »óÅÂ°¡ µÈ °æ¿ìÀÌ¸ç
-			// WSARecv()°¡ È£ÃâµÈ »óÅÂ¿¡¼­¸¸ ÀÌ ÄÚµå·Î µé¾î¿À¸ç
-			// ¸ğµç ¿À¹ö·¦ ¿ÀÆÛ·¡ÀÌ¼ÇÀÌ Á¾·á µÇ¾ú´Ù°í º¼ ¼ö ¾ø´Ù.
-			// µû¶ó¼­ ÀÌÈÄ¿¡ ÀÌ ½º·¹µå¿¡¼­ ÀÌ ¼¼¼Ç°ú °ü·ÃµÈ ÀÛ¾÷¸í·ÉÀÌ ½ÇÇà µÉ ¼ö ÀÖÀ¸¹Ç·Î
-			// ¿©±â¼­ ¼¼¼Ç Æ÷ÀÎÅÍ¸¦ »èÁ¦ÇÏ¸é ¼­¹ö°¡ ´Ù¿îµÉ ¼ö ÀÖ´Ù.
-			// Receive¿Í °ü·ÃµÈ ¿À¹ö·¦ ¿ÀÆÛ·¹ÀÌ¼ÇÀº È®½ÇÈ÷ Á¾·á µÇ¾úÀ¸¹Ç·Î
-			// Send¿Í °ü·ÃµÈ ¿À¹ö·¦ ¿ÀÆÛ·¹ÀÌ¼ÇÀÌ Á¾·áµÇ¾ú´ÂÁö¸¦
-			// È®ÀÎÇÑ ÈÄ ´Ù¸¥ ½º·¹µåÀÇ ¼¼¼Ç »èÁ¦ ¼ö¶ô°úÁ¤À» °ÅÄ¡°í ¼¼¼ÇÀ» »èÁ¦ ÇØ¾ß ÇÑ´Ù.
+			// í´ë¼ì´ì–¸íŠ¸ê°€ íŒ¨í‚·ì„ ë³€ì¡°í•´ì„œ ë³´ë‚¸ë‹¤ê±°ë‚˜ ë„¤íŠ¸ì›¤ ì˜¤ë¥˜ë¡œ ì¸í•´ ì„¸ì…˜ì´ ë¹„ ì •ìƒì ì¸ ìƒíƒœê°€ ëœ ê²½ìš°ì´ë©°
+			// WSARecv()ê°€ í˜¸ì¶œëœ ìƒíƒœì—ì„œë§Œ ì´ ì½”ë“œë¡œ ë“¤ì–´ì˜¤ë©°
+			// ëª¨ë“  ì˜¤ë²„ë© ì˜¤í¼ë˜ì´ì…˜ì´ ì¢…ë£Œ ë˜ì—ˆë‹¤ê³  ë³¼ ìˆ˜ ì—†ë‹¤.
+			// ë”°ë¼ì„œ ì´í›„ì— ì´ ìŠ¤ë ˆë“œì—ì„œ ì´ ì„¸ì…˜ê³¼ ê´€ë ¨ëœ ì‘ì—…ëª…ë ¹ì´ ì‹¤í–‰ ë  ìˆ˜ ìˆìœ¼ë¯€ë¡œ
+			// ì—¬ê¸°ì„œ ì„¸ì…˜ í¬ì¸í„°ë¥¼ ì‚­ì œí•˜ë©´ ì„œë²„ê°€ ë‹¤ìš´ë  ìˆ˜ ìˆë‹¤.
+			// Receiveì™€ ê´€ë ¨ëœ ì˜¤ë²„ë© ì˜¤í¼ë ˆì´ì…˜ì€ í™•ì‹¤íˆ ì¢…ë£Œ ë˜ì—ˆìœ¼ë¯€ë¡œ
+			// Sendì™€ ê´€ë ¨ëœ ì˜¤ë²„ë© ì˜¤í¼ë ˆì´ì…˜ì´ ì¢…ë£Œë˜ì—ˆëŠ”ì§€ë¥¼
+			// í™•ì¸í•œ í›„ ë‹¤ë¥¸ ìŠ¤ë ˆë“œì˜ ì„¸ì…˜ ì‚­ì œ ìˆ˜ë½ê³¼ì •ì„ ê±°ì¹˜ê³  ì„¸ì…˜ì„ ì‚­ì œ í•´ì•¼ í•œë‹¤.
 			//
-			// *** ±ÇÀåÇÏÁö ¾Ê´Â Æí¹ı ***
-			// È¤½Ã³ª ¿©±â¼­ closesocket()À» È£Ãâ ÇÏ¿©
-			// ¼­¹öÃø ¼¼¼ÇÁ¾·á ÇÁ·Î¼¼½º·Î µé¾î°¡·Á´Â ½Ãµµ´Â ÇÏÁö ¾Ê´Â °ÍÀÌ ÁÁ´Ù.
-			// closesocket()À» È£ÃâÇØµµ WSARecv()°¡ È£ÃâµÇÁö ¾ÊÀº »óÅÂÀÌ±â ¶§¹®¿¡
-			// ¼­¹öÃø ¼¼¼ÇÁ¾·á ÇÁ·Î¼¼½º·Î µé¾î°¡Áö ¸øÇÑ´Ù. ¸¸¾à WSARecv()¸¦ ¸ÕÀú
-			// È£ÃâÇÏ°í ¹Ù·Î closesocket()À» È£ÃâÇÏ¸é ÇÁ·Î¼¼½º·ÎÀÇ ÁøÀÔÀº °¡´É ÇÒ ¼öµµ ÀÖÀ¸³ª
-			// ºñ Á¤»óÀûÀÎ ¼¼¼ÇÀ» ´ë»óÀ¸·Î ±×·± ¾×¼ÇÀ» ÇÏ´Â °ÍÀº À§ÇèÇÏ´Ù.
+			// *** ê¶Œì¥í•˜ì§€ ì•ŠëŠ” í¸ë²• ***
+			// í˜¹ì‹œë‚˜ ì—¬ê¸°ì„œ closesocket()ì„ í˜¸ì¶œ í•˜ì—¬
+			// ì„œë²„ì¸¡ ì„¸ì…˜ì¢…ë£Œ í”„ë¡œì„¸ìŠ¤ë¡œ ë“¤ì–´ê°€ë ¤ëŠ” ì‹œë„ëŠ” í•˜ì§€ ì•ŠëŠ” ê²ƒì´ ì¢‹ë‹¤.
+			// closesocket()ì„ í˜¸ì¶œí•´ë„ WSARecv()ê°€ í˜¸ì¶œë˜ì§€ ì•Šì€ ìƒíƒœì´ê¸° ë•Œë¬¸ì—
+			// ì„œë²„ì¸¡ ì„¸ì…˜ì¢…ë£Œ í”„ë¡œì„¸ìŠ¤ë¡œ ë“¤ì–´ê°€ì§€ ëª»í•œë‹¤. ë§Œì•½ WSARecv()ë¥¼ ë¨¼ì €
+			// í˜¸ì¶œí•˜ê³  ë°”ë¡œ closesocket()ì„ í˜¸ì¶œí•˜ë©´ í”„ë¡œì„¸ìŠ¤ë¡œì˜ ì§„ì…ì€ ê°€ëŠ¥ í•  ìˆ˜ë„ ìˆìœ¼ë‚˜
+			// ë¹„ ì •ìƒì ì¸ ì„¸ì…˜ì„ ëŒ€ìƒìœ¼ë¡œ ê·¸ëŸ° ì•¡ì…˜ì„ í•˜ëŠ” ê²ƒì€ ìœ„í—˜í•˜ë‹¤.
 		}
 	}
 
 	if(!pSession->WaitForMessage())
 	{
-		// ***** IOCP »ç¿ë¹ı Áß ¾Ë¾Æ³»±â Èûµç ³×¹øÂ° ±¸¹® (ºñ Á¤»óÀûÀÎ ¼¼¼Ç Á¾·á) *****
+		// ***** IOCP ì‚¬ìš©ë²• ì¤‘ ì•Œì•„ë‚´ê¸° í˜ë“  ë„¤ë²ˆì§¸ êµ¬ë¬¸ (ë¹„ ì •ìƒì ì¸ ì„¸ì…˜ ì¢…ë£Œ) *****
 		//
-		// ³×Æ®Ÿp ¿À·ù·Î ÀÎÇØ ¼¼¼ÇÀÌ ºñ Á¤»óÀûÀÎ »óÅÂ¿¡¼­ WSARecv()ÇÔ¼ö È£ÃâÀÌ ½ÇÆĞÇÑ °æ¿ìÀÌ¸ç
-		// WSARecv()°¡ È£ÃâµÈ »óÅÂ¿¡¼­¸¸ ÀÌ ÄÚµå·Î µé¾î¿À¸ç
-		// ¸ğµç ¿À¹ö·¦ ¿ÀÆÛ·¡ÀÌ¼ÇÀÌ Á¾·á µÇ¾ú´Ù°í º¼ ¼ö ¾ø´Ù.
-		// µû¶ó¼­ ÀÌÈÄ¿¡ ÀÌ ½º·¹µå¿¡¼­ ÀÌ ¼¼¼Ç°ú °ü·ÃµÈ ÀÛ¾÷¸í·ÉÀÌ ½ÇÇà µÉ ¼ö ÀÖÀ¸¹Ç·Î
-		// ¿©±â¼­ ¼¼¼Ç Æ÷ÀÎÅÍ¸¦ »èÁ¦ÇÏ¸é ¼­¹ö°¡ ´Ù¿îµÉ ¼ö ÀÖ´Ù.
-		// Receive¿Í °ü·ÃµÈ ¿À¹ö·¦ ¿ÀÆÛ·¹ÀÌ¼ÇÀº È®½ÇÈ÷ Á¾·á µÇ¾úÀ¸¹Ç·Î
-		// Send¿Í °ü·ÃµÈ ¿À¹ö·¦ ¿ÀÆÛ·¹ÀÌ¼ÇÀÌ Á¾·áµÇ¾ú´ÂÁö¸¦
-		// È®ÀÎÇÑ ÈÄ ´Ù¸¥ ½º·¹µåÀÇ ¼¼¼Ç »èÁ¦ ¼ö¶ô°úÁ¤À» °ÅÄ¡°í ¼¼¼ÇÀ» »èÁ¦ ÇØ¾ß ÇÑ´Ù.
+		// ë„¤íŠ¸ì›¤ ì˜¤ë¥˜ë¡œ ì¸í•´ ì„¸ì…˜ì´ ë¹„ ì •ìƒì ì¸ ìƒíƒœì—ì„œ WSARecv()í•¨ìˆ˜ í˜¸ì¶œì´ ì‹¤íŒ¨í•œ ê²½ìš°ì´ë©°
+		// WSARecv()ê°€ í˜¸ì¶œëœ ìƒíƒœì—ì„œë§Œ ì´ ì½”ë“œë¡œ ë“¤ì–´ì˜¤ë©°
+		// ëª¨ë“  ì˜¤ë²„ë© ì˜¤í¼ë˜ì´ì…˜ì´ ì¢…ë£Œ ë˜ì—ˆë‹¤ê³  ë³¼ ìˆ˜ ì—†ë‹¤.
+		// ë”°ë¼ì„œ ì´í›„ì— ì´ ìŠ¤ë ˆë“œì—ì„œ ì´ ì„¸ì…˜ê³¼ ê´€ë ¨ëœ ì‘ì—…ëª…ë ¹ì´ ì‹¤í–‰ ë  ìˆ˜ ìˆìœ¼ë¯€ë¡œ
+		// ì—¬ê¸°ì„œ ì„¸ì…˜ í¬ì¸í„°ë¥¼ ì‚­ì œí•˜ë©´ ì„œë²„ê°€ ë‹¤ìš´ë  ìˆ˜ ìˆë‹¤.
+		// Receiveì™€ ê´€ë ¨ëœ ì˜¤ë²„ë© ì˜¤í¼ë ˆì´ì…˜ì€ í™•ì‹¤íˆ ì¢…ë£Œ ë˜ì—ˆìœ¼ë¯€ë¡œ
+		// Sendì™€ ê´€ë ¨ëœ ì˜¤ë²„ë© ì˜¤í¼ë ˆì´ì…˜ì´ ì¢…ë£Œë˜ì—ˆëŠ”ì§€ë¥¼
+		// í™•ì¸í•œ í›„ ë‹¤ë¥¸ ìŠ¤ë ˆë“œì˜ ì„¸ì…˜ ì‚­ì œ ìˆ˜ë½ê³¼ì •ì„ ê±°ì¹˜ê³  ì„¸ì…˜ì„ ì‚­ì œ í•´ì•¼ í•œë‹¤.
 		OnInvalidSession(pSession);
 	}
 }
@@ -2353,7 +2353,7 @@ DWORD CTWorldSvrModule::OnReceive( LPPACKETBUF pBUF)
 	ON_RECEIVE(MW_PARTYMANSTAT_ACK)
 	ON_RECEIVE(MW_LEVELUP_ACK)
 	//////////////////////////////////////////////////////////////
-	// ±æµå
+	// ê¸¸ë“œ
 	ON_RECEIVE(MW_GUILDESTABLISH_ACK)
 	ON_RECEIVE(MW_GUILDDISORGANIZATION_ACK)
 	ON_RECEIVE(MW_GUILDINVITE_ACK)
@@ -2503,7 +2503,7 @@ DWORD CTWorldSvrModule::OnReceive( LPPACKETBUF pBUF)
 	ON_RECEIVE(MW_UPDATEGUILDCOOLDOWN_ACK)
 	// DB message handler
 	////////////////////////////////////////////////////
-	// ±æµå
+	// ê¸¸ë“œ
 	ON_RECEIVE(DM_GUILDUPDATE_REQ)
 	ON_RECEIVE(DM_GUILDESTABLISH_REQ)
 	ON_RECEIVE(DM_GUILDESTABLISH_ACK)
@@ -3716,9 +3716,9 @@ void CTWorldSvrModule::OnBeginTeleport( LPTCHARACTER pTCHAR, LPPACKETBUF pBUF)
 
 	if( !pSERVER || !pMAIN )
 	{
-		// ÅÚ·¹Æ÷Æ®¸¦ ÀÇ·ÚÇÑ ¸Ê ¼­¹ö°¡ ºñÈ°¼º µÇ¾ú°Å³ª ¸ŞÀÎ¼­¹ö°¡ ¾ø°Å³ª °ø½ÄÀûÀ¸·Î ¹èÆ÷µÈ Å¬¶óÀÌ¾ğÆ®·ÎºÎÅÍÀÇ ¿¬°áÀÌ ¾Æ´Ï°Å³ª
-		// ÇØÅ·À¸·Î ÀÇ½ÉµÇ´Â ¿¬°á·ÎºÎÅÍÀÇ ÅÚ·¹Æ÷Æ® ¿äÃ»
-		// Å¬¶óÀÌ¾ğÆ®ÀÇ ¿¬°áÀ» Á¾·á
+		// í…”ë ˆí¬íŠ¸ë¥¼ ì˜ë¢°í•œ ë§µ ì„œë²„ê°€ ë¹„í™œì„± ë˜ì—ˆê±°ë‚˜ ë©”ì¸ì„œë²„ê°€ ì—†ê±°ë‚˜ ê³µì‹ì ìœ¼ë¡œ ë°°í¬ëœ í´ë¼ì´ì–¸íŠ¸ë¡œë¶€í„°ì˜ ì—°ê²°ì´ ì•„ë‹ˆê±°ë‚˜
+		// í•´í‚¹ìœ¼ë¡œ ì˜ì‹¬ë˜ëŠ” ì—°ê²°ë¡œë¶€í„°ì˜ í…”ë ˆí¬íŠ¸ ìš”ì²­
+		// í´ë¼ì´ì–¸íŠ¸ì˜ ì—°ê²°ì„ ì¢…ë£Œ
 		CTBowSystem::Log("No Server > ServerID");
 		CloseChar(pTCHAR);
 		return;
@@ -3726,7 +3726,7 @@ void CTWorldSvrModule::OnBeginTeleport( LPTCHARACTER pTCHAR, LPPACKETBUF pBUF)
 
 	if( pSERVER != pMAIN )
 	{
-		// ÇöÀçÀÇ ¸ŞÀÎ¼­¹ö·ÎºÎÅÍ ¿äÃ»¹ŞÀº ¿¬°á°ü¸® ÇÁ·Î¼¼½º°¡ ¾Æ´Ï¹Ç·Î Ãë¼ÒÇÏ°í ´ÙÀ½ ¿¬°á°ü¸® ÇÁ·Î¼¼½º¸¦ ½ÇÇà
+		// í˜„ì¬ì˜ ë©”ì¸ì„œë²„ë¡œë¶€í„° ìš”ì²­ë°›ì€ ì—°ê²°ê´€ë¦¬ í”„ë¡œì„¸ìŠ¤ê°€ ì•„ë‹ˆë¯€ë¡œ ì·¨ì†Œí•˜ê³  ë‹¤ìŒ ì—°ê²°ê´€ë¦¬ í”„ë¡œì„¸ìŠ¤ë¥¼ ì‹¤í–‰
 		PopConCess(pTCHAR);
 		return;
 	}
@@ -3736,7 +3736,7 @@ void CTWorldSvrModule::OnBeginTeleport( LPTCHARACTER pTCHAR, LPPACKETBUF pBUF)
 	DWORD dwKEY;
 	BYTE bSameChannel;
 	WORD wMapID = pTCHAR->m_wMapID;
-	// Ä³¸¯ÅÍ ¿ÀºêÁ§Æ®¸¦ ÅÚ·¹Æ÷Æ®ÇÏ·Á´Â ¸ñÀûÁö·Î ÀÌµ¿½ÃÅ´
+	// ìºë¦­í„° ì˜¤ë¸Œì íŠ¸ë¥¼ í…”ë ˆí¬íŠ¸í•˜ë ¤ëŠ” ëª©ì ì§€ë¡œ ì´ë™ì‹œí‚´
 	pBUF->m_packet
 		>> dwCharID
 		>> dwKEY
@@ -3750,8 +3750,8 @@ void CTWorldSvrModule::OnBeginTeleport( LPTCHARACTER pTCHAR, LPPACKETBUF pBUF)
 	if(m_pRelay)
 		m_pRelay->SendRW_CHANGEMAP_ACK(dwCharID, pTCHAR->m_wMapID, MAKEWORD( BYTE(INT(pTCHAR->m_fPosX) / UNIT_SIZE), BYTE(INT(pTCHAR->m_fPosZ) / UNIT_SIZE)));
 
-	// À¯È¿ÇÑ ¿¬°á¿¡ ÅÚ·¹Æ÷Æ®½ÃÀÛÀ» ¾Ë¸²
-	// ÀÌ¶§ ¸Ê ¼­¹ö¿¡¼­´Â Ä³¸¯ÅÍ¸¦ ¸Ê¿¡¼­ Á¦¿Ü ½ÃÅ² ÈÄ ÁöÁ¤µÈ ¸ŞÀÎ¼­¹ö´Â ¸ñÀûÁöÀÇ ¼­¹ö ID¸¦ ¹İÈ¯ÇÑ´Ù
+	// ìœ íš¨í•œ ì—°ê²°ì— í…”ë ˆí¬íŠ¸ì‹œì‘ì„ ì•Œë¦¼
+	// ì´ë•Œ ë§µ ì„œë²„ì—ì„œëŠ” ìºë¦­í„°ë¥¼ ë§µì—ì„œ ì œì™¸ ì‹œí‚¨ í›„ ì§€ì •ëœ ë©”ì¸ì„œë²„ëŠ” ëª©ì ì§€ì˜ ì„œë²„ IDë¥¼ ë°˜í™˜í•œë‹¤
 	for( itCON = pTCHAR->m_mapTCHARCON.begin(); itCON != pTCHAR->m_mapTCHARCON.end(); itCON++)
 		if((*itCON).second->m_bValid)
 		{
@@ -3778,16 +3778,16 @@ void CTWorldSvrModule::OnCheckConnect( LPTCHARACTER pTCHAR, LPPACKETBUF pBUF)
 
 	if( !pSERVER || !pMAIN )
 	{
-		// ÇÊ¿äÇÑ ¿¬°áÈ®ÀÎÀ» ÀÇ·ÚÇÑ ¸Ê ¼­¹ö°¡ ºñÈ°¼º µÇ¾ú°Å³ª ¸ŞÀÎ¼­¹ö°¡ ¾ø°Å³ª °ø½ÄÀûÀ¸·Î ¹èÆ÷µÈ Å¬¶óÀÌ¾ğÆ®·ÎºÎÅÍÀÇ ¿¬°áÀÌ ¾Æ´Ï°Å³ª
-		// ÇØÅ·À¸·Î ÀÇ½ÉµÇ´Â ¿¬°á·ÎºÎÅÍÀÇ ¸ŞÀÎ¼­¹ö º¯°æ ¿äÃ»
-		// Å¬¶óÀÌ¾ğÆ®ÀÇ ¿¬°áÀ» Á¾·á
+		// í•„ìš”í•œ ì—°ê²°í™•ì¸ì„ ì˜ë¢°í•œ ë§µ ì„œë²„ê°€ ë¹„í™œì„± ë˜ì—ˆê±°ë‚˜ ë©”ì¸ì„œë²„ê°€ ì—†ê±°ë‚˜ ê³µì‹ì ìœ¼ë¡œ ë°°í¬ëœ í´ë¼ì´ì–¸íŠ¸ë¡œë¶€í„°ì˜ ì—°ê²°ì´ ì•„ë‹ˆê±°ë‚˜
+		// í•´í‚¹ìœ¼ë¡œ ì˜ì‹¬ë˜ëŠ” ì—°ê²°ë¡œë¶€í„°ì˜ ë©”ì¸ì„œë²„ ë³€ê²½ ìš”ì²­
+		// í´ë¼ì´ì–¸íŠ¸ì˜ ì—°ê²°ì„ ì¢…ë£Œ
 		CloseChar(pTCHAR);
 		return;
 	}
 
 	if( pSERVER != pMAIN )
 	{
-		// ÇöÀçÀÇ ¸ŞÀÎ¼­¹ö·ÎºÎÅÍ ¿äÃ»¹ŞÀº ¿¬°á°ü¸® ÇÁ·Î¼¼½º°¡ ¾Æ´Ï¹Ç·Î Ãë¼ÒÇÏ°í ´ÙÀ½ ¿¬°á°ü¸® ÇÁ·Î¼¼½º¸¦ ½ÇÇà
+		// í˜„ì¬ì˜ ë©”ì¸ì„œë²„ë¡œë¶€í„° ìš”ì²­ë°›ì€ ì—°ê²°ê´€ë¦¬ í”„ë¡œì„¸ìŠ¤ê°€ ì•„ë‹ˆë¯€ë¡œ ì·¨ì†Œí•˜ê³  ë‹¤ìŒ ì—°ê²°ê´€ë¦¬ í”„ë¡œì„¸ìŠ¤ë¥¼ ì‹¤í–‰
 		PopConCess(pTCHAR);
 		return;
 	}
@@ -3797,7 +3797,7 @@ void CTWorldSvrModule::OnCheckConnect( LPTCHARACTER pTCHAR, LPPACKETBUF pBUF)
 	BYTE bCount;
 	WORD wMapID = pTCHAR->m_wMapID;
 
-	// Ä³¸¯ÅÍ À§Ä¡Á¤º¸¸¦ ¾÷µ¥ÀÌÆ®
+	// ìºë¦­í„° ìœ„ì¹˜ì •ë³´ë¥¼ ì—…ë°ì´íŠ¸
 	pBUF->m_packet
 		>> dwCharID
 		>> dwKEY
@@ -3813,7 +3813,7 @@ void CTWorldSvrModule::OnCheckConnect( LPTCHARACTER pTCHAR, LPPACKETBUF pBUF)
 
 	if(!bCount)
 	{
-		// Ã¼Å©ÇØ¾ß ÇÒ ¿¬°áÀÌ ¾øÀ¸¸é ¸ŞÀÎ¼­¹ö¸¸ Ã¼Å©
+		// ì²´í¬í•´ì•¼ í•  ì—°ê²°ì´ ì—†ìœ¼ë©´ ë©”ì¸ì„œë²„ë§Œ ì²´í¬
 		CheckMainCON(pTCHAR);
 		return;
 	}
@@ -3821,7 +3821,7 @@ void CTWorldSvrModule::OnCheckConnect( LPTCHARACTER pTCHAR, LPPACKETBUF pBUF)
 	MAPBYTE mapCON;
 	mapCON.clear();
 
-	// ÇÊ¿äÇÑ ¿¬°á¸ñ·Ï ±¸¼º
+	// í•„ìš”í•œ ì—°ê²°ëª©ë¡ êµ¬ì„±
 	for( BYTE i=0; i<bCount; i++)
 	{
 		BYTE bServerID;
@@ -3832,7 +3832,7 @@ void CTWorldSvrModule::OnCheckConnect( LPTCHARACTER pTCHAR, LPPACKETBUF pBUF)
 		mapCON.insert( MAPBYTE::value_type( bServerID, bServerID));
 	}
 
-	// ÇÊ¿ä¾ø´Â ¿¬°áµéÀ» Á¾·á´ë±â ¹öÆÛ·Î ÀÌµ¿
+	// í•„ìš”ì—†ëŠ” ì—°ê²°ë“¤ì„ ì¢…ë£ŒëŒ€ê¸° ë²„í¼ë¡œ ì´ë™
 	MAPTCHARCON::iterator itCON = pTCHAR->m_mapTCHARCON.begin();
 	while(itCON != pTCHAR->m_mapTCHARCON.end())
 	{
@@ -3850,7 +3850,7 @@ void CTWorldSvrModule::OnCheckConnect( LPTCHARACTER pTCHAR, LPPACKETBUF pBUF)
 		itCON = itNEXT;
 	}
 
-	// »õ·Ó°Ô ¿¬°áµÇ¾î¾ß ÇÏ´Â ¿¬°á¸ñ·Ï ±¸¼º
+	// ìƒˆë¡­ê²Œ ì—°ê²°ë˜ì–´ì•¼ í•˜ëŠ” ì—°ê²°ëª©ë¡ êµ¬ì„±
 	MAPBYTE::iterator itID = mapCON.begin();
 	while(itID != mapCON.end())
 	{
@@ -3865,8 +3865,8 @@ void CTWorldSvrModule::OnCheckConnect( LPTCHARACTER pTCHAR, LPPACKETBUF pBUF)
 
 	if(!mapCON.empty())
 	{
-		// »õ·Ó°Ô ¿¬°áµÇ¾î¾ß ÇÏ´Â ¿¬°áÀÌ ÀÖÀ¸¸é ¸ŞÀÎ¼­¹ö·Î ÇØ´ç ¿¬°áÀÇ Á¢¼ÓÁ¤º¸(IP, Æ÷Æ® µî)¸¦ ¿äÃ»
-		// ÀÌ ¶§ ¸Ê ¼­¹ö´Â MW_ROUTE_ACK¸¦ ÀÌ¿ëÇÏ¿© Á¢¼ÓÁ¤º¸¸¦ ¹İÈ¯ÇÏ¿© Ãß°¡ ¿¬°á°ü¸® ÇÁ·Î¼¼½º ½ÇÇà
+		// ìƒˆë¡­ê²Œ ì—°ê²°ë˜ì–´ì•¼ í•˜ëŠ” ì—°ê²°ì´ ìˆìœ¼ë©´ ë©”ì¸ì„œë²„ë¡œ í•´ë‹¹ ì—°ê²°ì˜ ì ‘ì†ì •ë³´(IP, í¬íŠ¸ ë“±)ë¥¼ ìš”ì²­
+		// ì´ ë•Œ ë§µ ì„œë²„ëŠ” MW_ROUTE_ACKë¥¼ ì´ìš©í•˜ì—¬ ì ‘ì†ì •ë³´ë¥¼ ë°˜í™˜í•˜ì—¬ ì¶”ê°€ ì—°ê²°ê´€ë¦¬ í”„ë¡œì„¸ìŠ¤ ì‹¤í–‰
 		CPacket *pMSG = new CPacket();
 
 		pMSG->SetID(MW_ROUTELIST_REQ)
@@ -3881,7 +3881,7 @@ void CTWorldSvrModule::OnCheckConnect( LPTCHARACTER pTCHAR, LPPACKETBUF pBUF)
 	}
 	else
 	{
-		// »õ·Ó°Ô ¿¬°áµÇ¾î¾ß ÇÏ´Â ¿¬°áÀÌ ¾øÀ¸¸é Áï½Ã ¸ŞÀÎ¼­¹ö Ã¼Å©
+		// ìƒˆë¡­ê²Œ ì—°ê²°ë˜ì–´ì•¼ í•˜ëŠ” ì—°ê²°ì´ ì—†ìœ¼ë©´ ì¦‰ì‹œ ë©”ì¸ì„œë²„ ì²´í¬
 		CheckMainCON(pTCHAR);
 	}
 
@@ -4230,7 +4230,7 @@ void CTWorldSvrModule::CheckSoulmateEnd(LPTCHARACTER pTCHAR, LPTSOULMATE pTSOUL)
 
 	BYTE bLevel = pTSOUL->m_bLevel;
 
-	// ·¹º§ºñ±³
+	// ë ˆë²¨ë¹„êµ
 	if(abs(pTCHAR->m_bLevel - bLevel) > SOULMATE_LEVEL)
 		SendDM_SOULMATEEND_REQ(pTCHAR->m_dwCharID, pTCHAR->m_dwKEY, (DWORD)m_timeCurrent);
 }
@@ -7056,29 +7056,29 @@ void CTWorldSvrModule::LotteryItem(VLOTTERY& pLot, BYTE bMap, CString& szMsg, CS
 	vector<LOTPACKET> vLot;
 	vector<LPTCHARACTER> vLotChar;
 
-	//	¼±ÅÃÇÑ ¸ÊÀÌÀÖ´Â°¡?
+	//	ì„ íƒí•œ ë§µì´ìˆëŠ”ê°€?
 	if(bMap)
 	{
-		////	¸Ê¿¡ ¸Â´Â Ä³¸¯ÅÍ ¸ñ·Ï ¸¸µé±â
+		////	ë§µì— ë§ëŠ” ìºë¦­í„° ëª©ë¡ ë§Œë“¤ê¸°
 		MAPTCHARACTER::iterator Mit;
 		for(Mit = m_mapTCHAR.begin(); Mit != m_mapTCHAR.end(); Mit++)
 		{
-			//	¸Ê ID Ã¼Å©
+			//	ë§µ ID ì²´í¬
 			if( CheckMapID(bMap, Mit->second->m_wMapID) )
 				vLotChar.push_back(Mit->second);
 		}
 
-		////	ÃßÃ·!
+		////	ì¶”ì²¨!
 		for(DWORD i = 0; i < pLot.size(); i++)
 		{
 			LOTPACKET sTempLot;
 			sTempLot.m_pLot = &pLot[i];
 
-			//	ÁöÁ¤µÈ ÃßÃ·ÀÚ ¼ö¸¸Å­ »Ì±â!
+			//	ì§€ì •ëœ ì¶”ì²¨ì ìˆ˜ë§Œí¼ ë½‘ê¸°!
 			int nWinner = pLot[i].m_wWinner;
 			for(int j = 0; j < nWinner; j++)
 			{
-				//	ÃßÃ· ´ë»óÀÌ ¾øÀ¸¸é ³¡.
+				//	ì¶”ì²¨ ëŒ€ìƒì´ ì—†ìœ¼ë©´ ë.
 				if(vLotChar.size() <= 0)
 				{
 					if(sTempLot.m_pChar.size() > 0)
@@ -7097,17 +7097,17 @@ void CTWorldSvrModule::LotteryItem(VLOTTERY& pLot, BYTE bMap, CString& szMsg, CS
 				vector<LPTCHARACTER>::iterator PostIt = vLotChar.begin();
 
 				PostIt+= dwRand;
-				//	´çÃ· ¸ŞÀÏ º¸³»±â				
+				//	ë‹¹ì²¨ ë©”ì¼ ë³´ë‚´ê¸°				
 				SendPost(WPT_LOTITEM, (*PostIt)->m_dwCharID, (*PostIt)->m_strNAME, strTitle, strMessage, pLot[i].m_wItemID, pLot[i].m_bNum);
 				sTempLot.m_pChar.push_back(*PostIt);
 
-				//	Áßº¹ ´çÃ·À» ¸·±âÀ§ÇØ ¸®½ºÆ®¿¡¼­ Á¦°Å.
+				//	ì¤‘ë³µ ë‹¹ì²¨ì„ ë§‰ê¸°ìœ„í•´ ë¦¬ìŠ¤íŠ¸ì—ì„œ ì œê±°.
 				vLotChar.erase(PostIt);
 			}
 			if(sTempLot.m_pChar.size() > 0)
 				vLot.push_back(sTempLot);
 
-			//	ÃßÃ· ´ë»óÀÌ ¾øÀ¸¸é ³¡.
+			//	ì¶”ì²¨ ëŒ€ìƒì´ ì—†ìœ¼ë©´ ë.
 			if(vLotChar.size() <= 0)
 			{
 				if(vLot.size() <= 0)
@@ -7121,8 +7121,8 @@ void CTWorldSvrModule::LotteryItem(VLOTTERY& pLot, BYTE bMap, CString& szMsg, CS
 	}
 	else
 	{
-		////	¸Ê ÀüÃ¼¿¡¼­ ÃßÃ·
-		//	´çÃ·ÀÚ ID ¸®½ºÆ®, ´çÃ·ÀÚ¼ö
+		////	ë§µ ì „ì²´ì—ì„œ ì¶”ì²¨
+		//	ë‹¹ì²¨ì ID ë¦¬ìŠ¤íŠ¸, ë‹¹ì²¨ììˆ˜
 		DWORD nWinnerCount = 0;
 
 		for(DWORD i = 0; i < pLot.size(); i++)
@@ -7130,11 +7130,11 @@ void CTWorldSvrModule::LotteryItem(VLOTTERY& pLot, BYTE bMap, CString& szMsg, CS
 			LOTPACKET sTempLot;
 			sTempLot.m_pLot = &pLot[i];
 
-			//	ÁöÁ¤µÈ ÃßÃ·ÀÚ ¼ö¸¸Å­ »Ì±â!
+			//	ì§€ì •ëœ ì¶”ì²¨ì ìˆ˜ë§Œí¼ ë½‘ê¸°!
 			int nWinner = pLot[i].m_wWinner;
 			for(int j = 0; j < nWinner; j++)
 			{
-				//	ÃßÃ· ´ë»óÀÌ ¾øÀ¸¸é ³¡.
+				//	ì¶”ì²¨ ëŒ€ìƒì´ ì—†ìœ¼ë©´ ë.
 				if(m_mapTCHAR.size() <= nWinnerCount)
 				{
 					if(sTempLot.m_pChar.size() > 0)
@@ -7148,7 +7148,7 @@ void CTWorldSvrModule::LotteryItem(VLOTTERY& pLot, BYTE bMap, CString& szMsg, CS
 					return ;
 				}
 
-				//	ÃßÃ·!
+				//	ì¶”ì²¨!
 				MAPTCHARACTER::iterator PostIt = m_mapTCHAR.begin();
 				DWORD dwRand =  TRand((DWORD)m_mapTCHAR.size());
 
@@ -7159,7 +7159,7 @@ void CTWorldSvrModule::LotteryItem(VLOTTERY& pLot, BYTE bMap, CString& szMsg, CS
 						return ;
 				}
 
-				//	Áßº¹ ´çÃ· Á¶»ç
+				//	ì¤‘ë³µ ë‹¹ì²¨ ì¡°ì‚¬
 				BYTE bRet = FALSE;
 				for(DWORD k = 0; k < nWinnerCount; k++)
 				{
@@ -7171,13 +7171,13 @@ void CTWorldSvrModule::LotteryItem(VLOTTERY& pLot, BYTE bMap, CString& szMsg, CS
 					}
 				}
 
-				//	Áßº¹µÇÁö ¾Ê¾Ò´Ù¸é
+				//	ì¤‘ë³µë˜ì§€ ì•Šì•˜ë‹¤ë©´
 				if(!bRet)
 				{
-					//	´çÃ· ¸ŞÀÏ º¸³»±â
+					//	ë‹¹ì²¨ ë©”ì¼ ë³´ë‚´ê¸°
 					SendPost(WPT_LOTITEM, PostIt->second->m_dwCharID, PostIt->second->m_strNAME, strTitle, strMessage, pLot[i].m_wItemID, pLot[i].m_bNum);
 					
-					//	Áßº¹ ´çÃ·À» ¸·±âÀ§ÇØ ´çÃ·ÀÚ ¸®½ºÆ®¿¡ Ãß°¡
+					//	ì¤‘ë³µ ë‹¹ì²¨ì„ ë§‰ê¸°ìœ„í•´ ë‹¹ì²¨ì ë¦¬ìŠ¤íŠ¸ì— ì¶”ê°€
 					vLotChar.push_back(PostIt->second);
 					sTempLot.m_pChar.push_back(PostIt->second);
 					nWinnerCount++;
@@ -7186,7 +7186,7 @@ void CTWorldSvrModule::LotteryItem(VLOTTERY& pLot, BYTE bMap, CString& szMsg, CS
 			if(sTempLot.m_pChar.size() > 0)
 				vLot.push_back(sTempLot);
 
-			//	ÃßÃ· ´ë»óÀÌ ¾øÀ¸¸é ³¡.
+			//	ì¶”ì²¨ ëŒ€ìƒì´ ì—†ìœ¼ë©´ ë.
 			if(m_mapTCHAR.size() <= nWinnerCount)
 			{
 				if(vLot.size() <= 0)
@@ -7214,7 +7214,7 @@ void CTWorldSvrModule::GiftTime(LPEVENTINFO pEvent)//LPLOTTERY pLot, CString& sz
 	BYTE bMinLevel = HIBYTE(pEvent->m_wValue);
 	BYTE bMaxLevel = LOBYTE(pEvent->m_wValue);
 
-	//	¸ŞÀÏ º¸³»±â
+	//	ë©”ì¼ ë³´ë‚´ê¸°
 	for (MAPTCHARACTER::iterator it = m_mapTCHAR.begin(); it != m_mapTCHAR.end(); it++)
 	{
 		LPTCHARACTER pPlayer = it->second;
@@ -7707,7 +7707,7 @@ void CTWorldSvrModule::CalcGuildRanking()
 	}
 }
 
-//	ÀÌº¥Æ® ³¯Â¥ ¸¸µå´Â ÇÔ¼ö
+//	ì´ë²¤íŠ¸ ë‚ ì§œ ë§Œë“œëŠ” í•¨ìˆ˜
 __int64 CTWorldSvrModule::GetNextEventTime(BYTE bWeek, BYTE bHour, BYTE bMin)
 {
 	if(!bWeek || 7 < bWeek || 24 < bHour || 60 < bMin)
@@ -7745,7 +7745,7 @@ void CTWorldSvrModule::CheckEventQuarter()
 
 		CTime CurTime(m_timeCurrent);
 		CTime EvnetTime = CTime(itTime->first);
-		CTime NoticeTime = EvnetTime - CTimeSpan(0,0,5,0);	//	½ÃÀÛ 5ºĞÀü
+		CTime NoticeTime = EvnetTime - CTimeSpan(0,0,5,0);	//	ì‹œì‘ 5ë¶„ì „
 
 		
 	INT nCH = CurTime.GetHour();
@@ -7762,14 +7762,14 @@ void CTWorldSvrModule::CheckEventQuarter()
 	INT bCurDay2 = NoticeTime.GetDay();
 	INT bCurMonth2 = NoticeTime.GetMonth();
 
-		//	º¸»óÀº ¾ø°í °øÁö¸¸ ÀÖ´Â°æ¿ì
+		//	ë³´ìƒì€ ì—†ê³  ê³µì§€ë§Œ ìˆëŠ”ê²½ìš°
 		if(pQT->m_strPresent.IsEmpty())
 			NoticeTime = EvnetTime;
 
 		if(!pQT->m_bNotice && CurTime.GetTime() >= NoticeTime.GetTime()
 			&& !pQT->m_strAnnounce.IsEmpty())
 		{
-			//	°øÁö ¶ç¿ì±â.
+			//	ê³µì§€ ë„ìš°ê¸°.
 			LPPACKETBUF pMSG = new PACKETBUF();
 			pMSG->m_packet.SetID(SM_EVENTQUARTERNOTIFY_REQ)
 				<< pQT->m_strAnnounce;
@@ -7782,7 +7782,7 @@ void CTWorldSvrModule::CheckEventQuarter()
 		{			
 			if(!pQT->m_strPresent.IsEmpty())
 			{
-				//	´çÃ·ÀÚ °øÁö, ¼±¹°¹ß¼Û
+				//	ë‹¹ì²¨ì ê³µì§€, ì„ ë¬¼ë°œì†¡
 				LPPACKETBUF pMSG = new PACKETBUF();
 				pMSG->m_packet.SetID(SM_EVENTQUARTER_REQ)
 					<< pQT->m_bDay

@@ -1,4 +1,4 @@
-// ServiceList.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// ServiceList.cpp : êµ¬í˜„ íŒŒì¼ìž…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -30,7 +30,7 @@ BEGIN_MESSAGE_MAP(CServiceList, CFormView)
 END_MESSAGE_MAP()
 
 
-// CServiceList Áø´ÜÀÔ´Ï´Ù.
+// CServiceList ì§„ë‹¨ìž…ë‹ˆë‹¤.
 
 #ifdef _DEBUG
 void CServiceList::AssertValid() const
@@ -45,13 +45,13 @@ void CServiceList::Dump(CDumpContext& dc) const
 #endif //_DEBUG
 
 
-// CServiceList ¸Þ½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CServiceList ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ìž…ë‹ˆë‹¤.
 
 void CServiceList::OnSize(UINT nType, int cx, int cy)
 {
 	CFormView::OnSize(nType, cx, cy);
 
-	// TODO: ¿©±â¿¡ ¸Þ½ÃÁö Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ë©”ì‹œì§€ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	if (GetSafeHwnd())
 	{
 		CRect rect;
@@ -66,7 +66,7 @@ void CServiceList::UpdateServiceList(DWORD dwID)
     CHappyDoc * pDoc = (CHappyDoc *)GetDocument();	
 	if(!pDoc) return;
 
-	if(dwID == 0) m_listCtrl.DeleteAllItems(); // 06/4/14 Çö½Â·æ List Data Update¸¦ À§ÇØ ¼öÁ¤
+	if(dwID == 0) m_listCtrl.DeleteAllItems(); // 06/4/14 í˜„ìŠ¹ë£¡ List Data Updateë¥¼ ìœ„í•´ ìˆ˜ì •
 	int listCnt = -1;
 	int listTotalCnt = m_listCtrl.GetItemCount();
 
@@ -75,7 +75,7 @@ void CServiceList::UpdateServiceList(DWORD dwID)
 	{		
 		for(it=pDoc->m_mapService.begin(); it!=pDoc->m_mapService.end(); it++)
 		{
-			if(dwID) // 06/4/14 Çö½Â·æ List Data Update¸¦ À§ÇØ ¼öÁ¤
+			if(dwID) // 06/4/14 í˜„ìŠ¹ë£¡ List Data Updateë¥¼ ìœ„í•´ ìˆ˜ì •
 				AddItemDataUpdate((*it).second, ++listCnt); 
 			else
 				AddItemData((*it).second);
@@ -96,7 +96,7 @@ void CServiceList::UpdateServiceList(DWORD dwID)
 				pSvs->m_pSvrType->m_bType == SVRTYPE(pDoc->m_dwSelectedService) &&
 				pSvs->m_pGroup->m_bID == SVRGROUP(pDoc->m_dwSelectedService))
 			{
-				if(dwID) // 06/4/14 Çö½Â·æ List Data Update¸¦ À§ÇØ ¼öÁ¤
+				if(dwID) // 06/4/14 í˜„ìŠ¹ë£¡ List Data Updateë¥¼ ìœ„í•´ ìˆ˜ì •
 					AddItemDataUpdate(pSvs, ++listCnt); 
 				else
 					AddItemData(pSvs); 				
@@ -107,7 +107,7 @@ void CServiceList::UpdateServiceList(DWORD dwID)
 			if( pSvs->m_pSvrType->m_bType == SVRTYPE(pDoc->m_dwSelectedService) &&
 				pSvs->m_pGroup->m_bID == SVRGROUP(pDoc->m_dwSelectedService))
 			{
-				if(dwID) // 06/4/14 Çö½Â·æ List Data Update¸¦ À§ÇØ ¼öÁ¤
+				if(dwID) // 06/4/14 í˜„ìŠ¹ë£¡ List Data Updateë¥¼ ìœ„í•´ ìˆ˜ì •
 					AddItemDataUpdate(pSvs, ++listCnt); 
 				else
 					AddItemData(pSvs); 				
@@ -117,14 +117,14 @@ void CServiceList::UpdateServiceList(DWORD dwID)
 		{
 			if(pSvs->m_pGroup->m_bID == SVRGROUP(pDoc->m_dwSelectedService))
 			{
-				if(dwID) // 06/4/14 Çö½Â·æ List Data Update¸¦ À§ÇØ ¼öÁ¤
+				if(dwID) // 06/4/14 í˜„ìŠ¹ë£¡ List Data Updateë¥¼ ìœ„í•´ ìˆ˜ì •
 					AddItemDataUpdate(pSvs, ++listCnt); 
 				else
 					AddItemData(pSvs); 				
 			}				
 		}
 	}
-	if( listCnt < listTotalCnt-1 ) // 06/4/14 Çö½Â·æ List Data Update¸¦ À§ÇØ ¼öÁ¤
+	if( listCnt < listTotalCnt-1 ) // 06/4/14 í˜„ìŠ¹ë£¡ List Data Updateë¥¼ ìœ„í•´ ìˆ˜ì •
 	{
 		for(int i = listCnt; i < listTotalCnt-1; i++)
 			m_listCtrl.DeleteItem(listCnt+1);
@@ -154,7 +154,7 @@ void CServiceList::AddItemData(LPHAPPYSERVICE pService)
 		case 6: itoa(pService->m_dwStopCount, szText, 10); break;
 		case 7:
 			{
-				// 06/04/11 Çö½Â·æ ½Ã°£ µðÆúÆ® 0-0-0 0:0
+				// 06/04/11 í˜„ìŠ¹ë£¡ ì‹œê°„ ë””í´íŠ¸ 0-0-0 0:0
 				if(pService->m_nStopTime)
 				{
 					CTime t(pService->m_nStopTime);
@@ -168,7 +168,7 @@ void CServiceList::AddItemData(LPHAPPYSERVICE pService)
 			}
 		case 8:
 			{
-				// 06/04/11 Çö½Â·æ ½Ã°£ µðÆúÆ® 0-0-0 0:0
+				// 06/04/11 í˜„ìŠ¹ë£¡ ì‹œê°„ ë””í´íŠ¸ 0-0-0 0:0
 				if(pService->m_nPickTime)
 				{
                     CTime t(pService->m_nPickTime);
@@ -187,7 +187,7 @@ void CServiceList::AddItemData(LPHAPPYSERVICE pService)
 		else m_listCtrl.SetItem(&item);
 	}
 }
-// 06/4/14 Çö½Â·æ List Data Update
+// 06/4/14 í˜„ìŠ¹ë£¡ List Data Update
 void CServiceList::AddItemDataUpdate(LPHAPPYSERVICE pService, int listCnt)
 {		
 	if(listCnt+1 > m_listCtrl.GetItemCount()) 
@@ -211,7 +211,7 @@ void CServiceList::AddItemDataUpdate(LPHAPPYSERVICE pService, int listCnt)
 		case 6: itoa(pService->m_dwStopCount, szText, 10); break;
 		case 7:
 			{
-				// 06/04/11 Çö½Â·æ ½Ã°£ µðÆúÆ® 0-0-0 0:0
+				// 06/04/11 í˜„ìŠ¹ë£¡ ì‹œê°„ ë””í´íŠ¸ 0-0-0 0:0
 				if(pService->m_nStopTime)
 				{
 					CTime t(pService->m_nStopTime);
@@ -225,7 +225,7 @@ void CServiceList::AddItemDataUpdate(LPHAPPYSERVICE pService, int listCnt)
 			}
 		case 8:
 			{
-				// 06/04/11 Çö½Â·æ ½Ã°£ µðÆúÆ® 0-0-0 0:0
+				// 06/04/11 í˜„ìŠ¹ë£¡ ì‹œê°„ ë””í´íŠ¸ 0-0-0 0:0
 				if(pService->m_nPickTime)
 				{
                     CTime t(pService->m_nPickTime);

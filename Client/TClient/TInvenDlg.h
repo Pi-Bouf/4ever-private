@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 
 class CTInvenDlg : public CTClientUIBase
@@ -10,7 +10,7 @@ public:
 	TFRAMEOFFSET* m_pSubInvenPos;
 	CTClientInven *m_pTINVEN;
 	TComponent* m_pEXTPERIOD;
-	DWORD m_EXTINVENPERIOD_Button; // ±â°£¿¬Àå ¹öÆ° ¾ÆÀÌµğ
+	DWORD m_EXTINVENPERIOD_Button; // ê¸°ê°„ì—°ì¥ ë²„íŠ¼ ì•„ì´ë””
 	BOOL m_bCharInfo;
 
 public:

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 
 enum TBID_RESULT
@@ -11,7 +11,7 @@ enum TBID_RESULT
 };
 
 
-//! °æ¸ÅÀÔÂûÁøÇà ¸Ş¼¼Áö¹Ú½º.
+//! ê²½ë§¤ì…ì°°ì§„í–‰ ë©”ì„¸ì§€ë°•ìŠ¤.
 class CTAuctionBidOnMsgBox : public CTClientUIBase
 {
 private :	// Member Data.
@@ -34,7 +34,7 @@ public :	// Member Function.
 	CTAuctionBidOnMsgBox*	GetInstance();
 	void					UpdateByMoney();
 	void					UpdateByComp();
-	/* ¸Ş¼¼Áö ¹Ú½º¿¡¼­ ÀÔÂû ¹öÆ°À» ´­·¶À»¶§ */
+	/* ë©”ì„¸ì§€ ë°•ìŠ¤ì—ì„œ ì…ì°° ë²„íŠ¼ì„ ëˆŒë €ì„ë•Œ */
 	TBID_RESULT				BidOn( INT64 ldwPlayerMoney, FLOAT fIncrement );
 	/* */
 	TEdit*					GetCurEdit();

@@ -1,9 +1,9 @@
-#pragma once
+ï»¿#pragma once
 
 #define HP_RECEIVE(x)			case x: On##x(pPacket); break;
 typedef queue<CPacket *>		QPACKET, *LPQPACKET;
 
-// CHSession ¸í·É ´ë»óÀÔ´Ï´Ù.
+// CHSession ëª…ë ¹ ëŒ€ìƒì…ë‹ˆë‹¤.
 class CHappyDoc;
 
 class CHSession : public CAsyncSocket

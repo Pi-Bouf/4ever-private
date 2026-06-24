@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  *	LogPacket.h
  *
  */
@@ -225,14 +225,14 @@ enum LOG_FORMAT
 #define LOGMAP_PVPOINTGAINGUILD		LOG_BASEMAP		+ 0x0152
 #define LOGMAP_PVPOINTUSEGUILD		LOG_BASEMAP		+ 0x0153
 
-#define LOGMAP_AUCTIONREG			LOG_BASEMAP		+ 0x0154 //µî·Ï
-#define LOGMAP_AUCTIONREGCANCEL		LOG_BASEMAP		+ 0x0155 //µî·ÏÃë¼Ò
-#define LOGMAP_AUCTIONBID			LOG_BASEMAP		+ 0x0156 //ÀÔÂû
-#define LOGMAP_AUCTIONBIDSUCCESS	LOG_BASEMAP		+ 0x0157 //³«Âû
-#define LOGMAP_AUCTIONBIDFAIL		LOG_BASEMAP		+ 0x0158 //À¯Âû
-#define LOGMAP_AUCTIONBIDDROP		LOG_BASEMAP		+ 0x0159 //ÀÔÂûÅ»¶ô
-#define LOGMAP_AUCTIONBUYDIRECT		LOG_BASEMAP		+ 0x015A //Áï±¸
-#define LOGMAP_AUCTIONSUCCESSMONEY	LOG_BASEMAP		+ 0x015B //³«Âû°¡°Ý(¼ö¼ö·áÁ¦¿Ü)
+#define LOGMAP_AUCTIONREG			LOG_BASEMAP		+ 0x0154 //ë“±ë¡
+#define LOGMAP_AUCTIONREGCANCEL		LOG_BASEMAP		+ 0x0155 //ë“±ë¡ì·¨ì†Œ
+#define LOGMAP_AUCTIONBID			LOG_BASEMAP		+ 0x0156 //ìž…ì°°
+#define LOGMAP_AUCTIONBIDSUCCESS	LOG_BASEMAP		+ 0x0157 //ë‚™ì°°
+#define LOGMAP_AUCTIONBIDFAIL		LOG_BASEMAP		+ 0x0158 //ìœ ì°°
+#define LOGMAP_AUCTIONBIDDROP		LOG_BASEMAP		+ 0x0159 //ìž…ì°°íƒˆë½
+#define LOGMAP_AUCTIONBUYDIRECT		LOG_BASEMAP		+ 0x015A //ì¦‰êµ¬
+#define LOGMAP_AUCTIONSUCCESSMONEY	LOG_BASEMAP		+ 0x015B //ë‚™ì°°ê°€ê²©(ìˆ˜ìˆ˜ë£Œì œì™¸)
 
 
 //
@@ -324,24 +324,24 @@ typedef struct
 typedef struct
 {
 	__int64	dlID;					//	Unique Number
-	BYTE	bInven;					//	ÀÎº¥ À§Ä¡
-	BYTE	bItemID;				//	ÀÎº¥ ¹øÈ£
+	BYTE	bInven;					//	ì¸ë²¤ ìœ„ì¹˜
+	BYTE	bItemID;				//	ì¸ë²¤ ë²ˆí˜¸
 
-	WORD	wItemID;				//	¾ÆÀÌÅÛ INDEX
-	TCHAR	szItemName[50];			//	¾ÆÀÌÅÛ ¸í
+	WORD	wItemID;				//	ì•„ì´í…œ INDEX
+	TCHAR	szItemName[50];			//	ì•„ì´í…œ ëª…
 
-	BYTE	bLevel;					//	¾÷±×·¹ÀÌµå·¹º§
+	BYTE	bLevel;					//	ì—…ê·¸ë ˆì´ë“œë ˆë²¨
 	BYTE	bCount;				
 	
-	BYTE	bGLevel;				//	ºÀÀÎ ¾ÆÀÌÅÛ È®ÀÎ¿ë
-	DWORD	dwDuraMax;				//	ÃÖ´ë ³»±¸µµ
-	DWORD	dwDuraCur;				//	ÇöÀç ³»±¸µµ
+	BYTE	bGLevel;				//	ë´‰ì¸ ì•„ì´í…œ í™•ì¸ìš©
+	DWORD	dwDuraMax;				//	ìµœëŒ€ ë‚´êµ¬ë„
+	DWORD	dwDuraCur;				//	í˜„ìž¬ ë‚´êµ¬ë„
 	
-	BYTE	bRefineCur;				//	Á¦·Â È½¼ö
+	BYTE	bRefineCur;				//	ì œë ¥ íšŸìˆ˜
 
-	BYTE	bGradeEffect;			//	¾ÆÀÌÅÛ °­È­ ¼Ó¼º
+	BYTE	bGradeEffect;			//	ì•„ì´í…œ ê°•í™” ì†ì„±
 
-	BYTE	bMagic[1];				//	¼Ó¼º
+	BYTE	bMagic[1];				//	ì†ì„±
 	WORD	wValue[1];
     DWORD	dwTime[1];
 

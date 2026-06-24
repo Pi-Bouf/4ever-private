@@ -1,20 +1,20 @@
-// Çö½Â·æ ServiceGraph.h
+ï»¿// í˜„ìŠ¹ë£¡ ServiceGraph.h
 
 #pragma once
 #include "afxwin.h"
 #include "afxcmn.h"
 
-#define MAX_ADD_SERVICE 20 // ÃÖ´ë Ãß°¡ °¡´É ¼­ºñ½º °¹¼ö
-#define MAX_COL 6 // ÃÖ´ë ¸®½ºÆ® ÄÃ·³ ¼ö
+#define MAX_ADD_SERVICE 20 // ìµœëŒ€ ì¶”ê°€ ê°€ëŠ¥ ì„œë¹„ìŠ¤ ê°¯ìˆ˜
+#define MAX_COL 6 // ìµœëŒ€ ë¦¬ìŠ¤íŠ¸ ì»¬ëŸ¼ ìˆ˜
 
-// CServiceGraph Æû ºäÀÔ´Ï´Ù.
+// CServiceGraph í¼ ë·°ì…ë‹ˆë‹¤.
 
 class CServiceGraph : public CFormView
 {
 	DECLARE_DYNCREATE(CServiceGraph)
 
 protected:
-	CServiceGraph();           // µ¿Àû ¸¸µé±â¿¡ »ç¿ëµÇ´Â protected »ı¼ºÀÚÀÔ´Ï´Ù.
+	CServiceGraph();           // ë™ì  ë§Œë“¤ê¸°ì— ì‚¬ìš©ë˜ëŠ” protected ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CServiceGraph();
 
 public:
@@ -25,12 +25,12 @@ public:
 #endif
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 
 public:
-	CDC MemDC; // ´õºí ¹öÆÛ¸µ
+	CDC MemDC; // ë”ë¸” ë²„í¼ë§
 	CBitmap *pOldBitmap, MemBitmap;
 	BOOL m_bFlag;
 	CPen lineColor[20];

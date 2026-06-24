@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 class CTGuildSummaryNewDlg: public ITInnerFrame
 {
 public:
@@ -7,21 +7,21 @@ public:
 public:
 	enum InfoEnum
 	{
-		INFO_GNAME,							///< ±æµå¸í
-		INFO_GDATE,							///< ±æµå °³¼³ ÀÏ
-		INFO_GMASTER,						///< ±æµåÀå
-		INFO_GMASTER_PEER,					///< ±æµåÀå ÀÛÀ§
-		INFO_GSUBMASTER1,					///< ºÎ ±æµåÀå
-		INFO_GSUBMASTER2,					///< ºÎ ±æµåÀå
-		INFO_GMBCNT,						///< ±æµå¿øÀÇ ¼ö
-		INFO_GLEV,							///< ±æµå ·¹º§
-		INFO_GEXP,							///< ±æµå °æÇèÄ¡
-		INFO_MYDUTY,						///< ³ªÀÇ Á÷À§
-		INFO_MYPEER,						///< ³ªÀÇ ÀÛÀ§
-		INFO_GMONEY_RUNE,					///< ±æµå ÀÚ±Ý
-		INFO_GMONEY_LUNA,					///< ±æµå ÀÚ±Ý
-		INFO_GMONEY_CRON,					///< ±æµå ÀÚ±Ý
-		INFO_NOTIFY,						///< ±æµå °øÁö»çÇ×
+		INFO_GNAME,							///< ê¸¸ë“œëª…
+		INFO_GDATE,							///< ê¸¸ë“œ ê°œì„¤ ì¼
+		INFO_GMASTER,						///< ê¸¸ë“œìž¥
+		INFO_GMASTER_PEER,					///< ê¸¸ë“œìž¥ ìž‘ìœ„
+		INFO_GSUBMASTER1,					///< ë¶€ ê¸¸ë“œìž¥
+		INFO_GSUBMASTER2,					///< ë¶€ ê¸¸ë“œìž¥
+		INFO_GMBCNT,						///< ê¸¸ë“œì›ì˜ ìˆ˜
+		INFO_GLEV,							///< ê¸¸ë“œ ë ˆë²¨
+		INFO_GEXP,							///< ê¸¸ë“œ ê²½í—˜ì¹˜
+		INFO_MYDUTY,						///< ë‚˜ì˜ ì§ìœ„
+		INFO_MYPEER,						///< ë‚˜ì˜ ìž‘ìœ„
+		INFO_GMONEY_RUNE,					///< ê¸¸ë“œ ìžê¸ˆ
+		INFO_GMONEY_LUNA,					///< ê¸¸ë“œ ìžê¸ˆ
+		INFO_GMONEY_CRON,					///< ê¸¸ë“œ ìžê¸ˆ
+		INFO_NOTIFY,						///< ê¸¸ë“œ ê³µì§€ì‚¬í•­
 		INFO_GUILD_RANK,
 		INFO_GUILD_POINT,
 		INFO_GUILD_USEABLE_POINT,
@@ -36,19 +36,19 @@ public:
 
 	enum COLUMN
 	{
-		COL_TITLE,			///< °øÁö Á¦¸ñ
-		COL_DATE,			///< °øÁö ÀÛ¼ºÀÏ
-		COL_SELECTION,		///< °øÁö ÀüÃ¼ ¼±ÅÃ
-		COL_DELETE,			///< °øÁö »èÁ¦ ¹öÆ°
+		COL_TITLE,			///< ê³µì§€ ì œëª©
+		COL_DATE,			///< ê³µì§€ ìž‘ì„±ì¼
+		COL_SELECTION,		///< ê³µì§€ ì „ì²´ ì„ íƒ
+		COL_DELETE,			///< ê³µì§€ ì‚­ì œ ë²„íŠ¼
 		COL_COUNT
 	};
 
 	enum MODE
 	{
-		MODE_NORMAL,		///< ÀÏ¹Ý ¸ðµå (°øÁö¸¦ º¸´Â°Í¸¸ °¡´ÉÇÔ)
-		MODE_MASTER,		///< ±æµåÀå ¸ðµå (°øÁö ¼öÁ¤ °¡´É)
-		MODE_NEW,			///< »õ°øÁö ÀÛ¼º
-		MODE_EDIT,			///< °øÁö ¼öÁ¤
+		MODE_NORMAL,		///< ì¼ë°˜ ëª¨ë“œ (ê³µì§€ë¥¼ ë³´ëŠ”ê²ƒë§Œ ê°€ëŠ¥í•¨)
+		MODE_MASTER,		///< ê¸¸ë“œìž¥ ëª¨ë“œ (ê³µì§€ ìˆ˜ì • ê°€ëŠ¥)
+		MODE_NEW,			///< ìƒˆê³µì§€ ìž‘ì„±
+		MODE_EDIT,			///< ê³µì§€ ìˆ˜ì •
 		MODE_COUNT
 	};
 
@@ -87,34 +87,34 @@ protected:
 	//
 
 public:
-	/// °øÁö ¸ñ·ÏÀ» ÃÖ½ÅÀÇ Á¤º¸·Î °»½ÅÇÑ´Ù.
+	/// ê³µì§€ ëª©ë¡ì„ ìµœì‹ ì˜ ì •ë³´ë¡œ ê°±ì‹ í•œë‹¤.
 	void UpdateInfo();
 
-	/// ÇöÀç ¼³Á¤À» ±âº» ¸ðµå·Î ÃÊ±âÈ­ ÇÑ´Ù. ±âº» ¸ðµå´Â ±æµåÀå ¿©ºÎ¿¡ µû¶ó ´Ù¸£°Ô °áÁ¤µÈ´Ù.
+	/// í˜„ìž¬ ì„¤ì •ì„ ê¸°ë³¸ ëª¨ë“œë¡œ ì´ˆê¸°í™” í•œë‹¤. ê¸°ë³¸ ëª¨ë“œëŠ” ê¸¸ë“œìž¥ ì—¬ë¶€ì— ë”°ë¼ ë‹¤ë¥´ê²Œ ê²°ì •ëœë‹¤.
 	void ResetMode();
-	/// ¸ðµå¿¡ µû¶ó ÄÄÆ÷³ÍÆ®¸¦ ´Ù½Ã °»½ÅÇÑ´Ù.
+	/// ëª¨ë“œì— ë”°ë¼ ì»´í¬ë„ŒíŠ¸ë¥¼ ë‹¤ì‹œ ê°±ì‹ í•œë‹¤.
 	void UpdateCompByMode();
 
-	/// »õ°øÁö ÀÛ¼ºÀ» ½ÃÀÛÇÑ´Ù.
+	/// ìƒˆê³µì§€ ìž‘ì„±ì„ ì‹œìž‘í•œë‹¤.
 	void StartNew();
-	/// »õ°øÁö ÀÛ¼ºÀ» ³¡³½´Ù.
+	/// ìƒˆê³µì§€ ìž‘ì„±ì„ ëë‚¸ë‹¤.
 	void EndNew(BOOL bOK);
 
-	/// °øÁö ¼öÁ¤À» ½ÃÀÛÇÑ´Ù.
+	/// ê³µì§€ ìˆ˜ì •ì„ ì‹œìž‘í•œë‹¤.
 	void StartModify();
-	/// °øÁö ¼öÁ¤À» ³¡³½´Ù.
+	/// ê³µì§€ ìˆ˜ì •ì„ ëë‚¸ë‹¤.
 	void EndModify(BOOL bOK);
 
-	/// °øÁö¸¦ Á¦°ÅÇÑ´Ù.
+	/// ê³µì§€ë¥¼ ì œê±°í•œë‹¤.
 	void Delete();
 
-	/// ÆíÁý ¸ðµåÀÎÁö ¿©ºÎ¸¦ ¾ò´Â´Ù.
+	/// íŽ¸ì§‘ ëª¨ë“œì¸ì§€ ì—¬ë¶€ë¥¼ ì–»ëŠ”ë‹¤.
 	BOOL IsEditMode();
-	/// ÇöÀç Æ÷Ä¿½ºµÈ ¿¡µðÆ® ÄÜÆ®·ÑÀ» ¾ò´Â´Ù.
+	/// í˜„ìž¬ í¬ì»¤ìŠ¤ëœ ì—ë””íŠ¸ ì½˜íŠ¸ë¡¤ì„ ì–»ëŠ”ë‹¤.
 	TEdit* GetCurEdit();
 
 protected:
-	/// ÇöÀç ¼±ÅÃµÈ °øÁö»çÇ×À» ¹Ý¿µÇÑ´Ù.
+	/// í˜„ìž¬ ì„ íƒëœ ê³µì§€ì‚¬í•­ì„ ë°˜ì˜í•œë‹¤.
 	void UpdateByListSel();
 
 public:

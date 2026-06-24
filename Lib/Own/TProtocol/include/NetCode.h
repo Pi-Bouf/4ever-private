@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #define TSTART_D_PORTAL_ID					((WORD) 15001)
 #define TSTART_C_PORTAL_ID					((WORD) 15002)
@@ -61,11 +61,11 @@
 #define MAX_PET_COUNT			((BYTE) 1000)
 #define MAX_COMPANION_COUNT     ((BYTE) 5)
 
-#define GUILD_LEAVE_DURATION	((DWORD)0) //5ÀÏ
-#define GUILD_DIS_DURATION		((DWORD)0) //10ÀÏ
-#define GUILD_EXTINC_DURATION	((DWORD)86400*7) //7ÀÏ
+#define GUILD_LEAVE_DURATION	((DWORD)0) //5ì¼
+#define GUILD_DIS_DURATION		((DWORD)0) //10ì¼
+#define GUILD_EXTINC_DURATION	((DWORD)86400*7) //7ì¼
 
-#define SOULMATE_SILENCE_DURATION	((DWORD)86400) //1ÀÏ
+#define SOULMATE_SILENCE_DURATION	((DWORD)86400) //1ì¼
 
 #define GUILD_MEMBER_MAX			((BYTE) 30)
 #define GUILD_ESTABLISH_LEVEL		((BYTE) 20)
@@ -76,9 +76,9 @@
 #define MAX_GUILD_CONTRIBUTION		((__int64) (MONEY_MULTIPLY * MONEY_MULTIPLY))
 #define MIN_GUILD_CONTRIBUTION		((__int64) (MONEY_MULTIPLY))
 
-#define PET_LIVE_DURATION	((DWORD)86400*7) //7ÀÏ
+#define PET_LIVE_DURATION	((DWORD)86400*7) //7ì¼
 
-#define POST_DURATION		(86400*3)		//3ÀÏ
+#define POST_DURATION		(86400*3)		//3ì¼
 #define DAY_ONE				(86400)
 #define HOUR_ONE			(3600)
 #define WEEK_ONE			(604800)
@@ -107,9 +107,9 @@
 #define NAME_NULL							_T("")
 #define NAME_MASK							_T("^.^;;")
 
-#define DUEL_TIME			(60*5)					// 5ºÐ
-#define DUEL_STANDBY_TIME	(10)					// 10ÃÊ
-#define DUEL_AREAOUT_TIME	10						// 8ÃÊ
+#define DUEL_TIME			(60*5)					// 5ë¶„
+#define DUEL_STANDBY_TIME	(10)					// 10ì´ˆ
+#define DUEL_AREAOUT_TIME	10						// 8ì´ˆ
 #define DUEL_AREARANGE		60.0f
 
 #define	PCBANG_NONE			((BYTE)0)
@@ -198,8 +198,8 @@ typedef enum GAMBLE_RESULT
 	GAMBLE_SUCCESS = 0,
 	GAMBLE_INVALIDITEM,
 	GAMBEL_NEEDMONEY,
-	GAMBLE_FAIL,					//ÁÖ¼ú½ÇÆÐ
-	GAMBLE_REPFAIL,					//Ä¡È¯½ÇÆÐ
+	GAMBLE_FAIL,					//ì£¼ìˆ ì‹¤íŒ¨
+	GAMBLE_REPFAIL,					//ì¹˜í™˜ì‹¤íŒ¨
 	GAMBLE_FULLINVEN,
 	GAMBLE_INVALIDPOS
 } *LPGAMBLE_RESULT;
@@ -219,9 +219,9 @@ typedef enum CASHSHOP_RESULT
 
 typedef enum ASK_RESULT
 {
-	ASK_YES = 0,	// ½Â³«
-	ASK_NO,			// °ÅÀý
-	ASK_BUSY		// ´Ù¸¥¿ë¹«Áß
+	ASK_YES = 0,	// ìŠ¹ë‚™
+	ASK_NO,			// ê±°ì ˆ
+	ASK_BUSY		// ë‹¤ë¥¸ìš©ë¬´ì¤‘
 } * LPASK_RESULT;
 
 typedef enum SMS_RESULT
@@ -240,7 +240,7 @@ typedef enum DUEL_RESULT
 {
 	DUEL_SUCCESS = 0,
 	DUEL_REFUSE, 
-	DUEL_BUSY, // ´Ù¸¥¿ë¹«Áß
+	DUEL_BUSY, // ë‹¤ë¥¸ìš©ë¬´ì¤‘
 	DUEL_FAIL
 };
 
@@ -380,7 +380,7 @@ typedef enum TSKILL_RESULT
 	SKILL_NOTARGET,
 	SKILL_NOTMOVESKILL,
 	SKILL_ACTIONLOCK,
-	SKILL_NEEDITEM, // ½ºÅ³ÃÊ±âÈ­
+	SKILL_NEEDITEM, // ìŠ¤í‚¬ì´ˆê¸°í™”
 	SKILL_HAVECHILD,
 	SKILL_NOTINIT,
 	SKILL_CANNOTSEE,
@@ -391,9 +391,9 @@ typedef enum TPARTY_RESULT
 {
 	PARTY_AGREE = 0,
 	PARTY_DENY,
-	PARTY_BUSY, // ´Ù¸¥¿ë¹«Áß
-	PARTY_NOUSER,	// ÀÚ½ÅÀÌ ÃÊ´ë¸¦ ÇßÀ»¶§.
-	PARTY_NOREQUSER,	// ÃÊ´ë¸¦ ¹Þ¾ÒÀ»¶§.
+	PARTY_BUSY, // ë‹¤ë¥¸ìš©ë¬´ì¤‘
+	PARTY_NOUSER,	// ìžì‹ ì´ ì´ˆëŒ€ë¥¼ í–ˆì„ë•Œ.
+	PARTY_NOREQUSER,	// ì´ˆëŒ€ë¥¼ ë°›ì•˜ì„ë•Œ.
 	PARTY_WAITERS,
 	PARTY_ALREADY,
 	PARTY_FULL,
@@ -419,7 +419,7 @@ typedef enum TITEMUSE_RESULT
 	IU_TARGETDENY,
 	IU_OVERLAPPREMIUM,
 	IU_OVERLAPEXPBONUS,
-	IU_WRAPPING, //¹ÐºÀµÇ¾î ÀÖÀº ¾ÆÀÌÅÛÀº »ç¿ëÇÒ ¼ö ¾øÀ½. 0319
+	IU_WRAPPING, //ë°€ë´‰ë˜ì–´ ìžˆì€ ì•„ì´í…œì€ ì‚¬ìš©í•  ìˆ˜ ì—†ìŒ. 0319
 	IU_ARENA
 } *LPTITEMUSE_RESULT;
 //	Quest result
@@ -435,7 +435,7 @@ typedef enum TGUILD_RESULT
 {
 	GUILD_SUCCESS = 0,
 	GUILD_JOIN_DENY,
-	GUILD_JOIN_BUSY, // ´Ù¸¥¿ë¹«Áß
+	GUILD_JOIN_BUSY, // ë‹¤ë¥¸ìš©ë¬´ì¤‘
 	GUILD_FAIL,
 	GUILD_ALREADYGUILDNAME,
 	GUILD_NOTCHIEF,
@@ -535,7 +535,7 @@ typedef enum FRIEND_RESULT
 {
 	FRIEND_SUCCESS = 0,
 	FRIEND_REFUSE,
-	FRINED_BUSY, // ´Ù¸¥¿ë¹«Áß
+	FRINED_BUSY, // ë‹¤ë¥¸ìš©ë¬´ì¤‘
 	FRIEND_NOTFOUND,
 	FRIEND_ALREADY,
 	FRIEND_MAX
@@ -583,10 +583,10 @@ typedef enum ITEMUPGRADE_RESULT
 	ITEMUPGRADE_SUCCESS_MAGICCLEAR,
 	ITEMUPGRADE_SUCCESS_WRAP,
 	ITEMUPGRADE_SUCCESS_ELD,
-	ITEMUPGRADE_WRAPPING,	//¹ÐºÀÇÒ ¼ö ¾ø´Â ¾ÆÀÌÅÛ 0319
-	ITEMUPGRADE_MAXELD,		//´õÀÌ»ó Âø¿ë·¹º§À» ´Ù¿îÇÒ ¼ö ¾øÀ½	0319
-	ITEMUPGRADE_NOREFINE,	//Á¦·ÃµÇ¾î ÀÖÁö ¾ÊÀ½
-	ITEMUPGRADE_NOGRADEEFFECT,	//°­È­ ÀÌÆåÆ® ¾øÀ½
+	ITEMUPGRADE_WRAPPING,	//ë°€ë´‰í•  ìˆ˜ ì—†ëŠ” ì•„ì´í…œ 0319
+	ITEMUPGRADE_MAXELD,		//ë”ì´ìƒ ì°©ìš©ë ˆë²¨ì„ ë‹¤ìš´í•  ìˆ˜ ì—†ìŒ	0319
+	ITEMUPGRADE_NOREFINE,	//ì œë ¨ë˜ì–´ ìžˆì§€ ì•ŠìŒ
+	ITEMUPGRADE_NOGRADEEFFECT,	//ê°•í™” ì´íŽ™íŠ¸ ì—†ìŒ
 	ITEMUPGRADE_SUCCESS_CLEARREFINE,
 	ITEMUPGRADE_SUCCESS_CHANGEEFFECT,
 	ITEMUPGRADE_SAMECOLOR,			//090922
@@ -605,7 +605,7 @@ typedef enum CORPS_RESULT
 {
 	CORPS_SUCCESS = 0,
 	CORPS_DENY,
-	CORPS_BUSY, // ´Ù¸¥¿ë¹«Áß
+	CORPS_BUSY, // ë‹¤ë¥¸ìš©ë¬´ì¤‘
 	CORPS_NO_PARTY,
 	CORPS_NOT_COMMANDER,
 	CORPS_WRONG_TARGET,
@@ -678,7 +678,7 @@ typedef enum DEALITEM_RESULT
 {
 	DEALITEM_SUCCESS,
 	DEALITEM_DENY,
-	DEALITEM_BUSY, // ´Ù¸¥¿ë¹«Áß
+	DEALITEM_BUSY, // ë‹¤ë¥¸ìš©ë¬´ì¤‘
 	DEALITEM_NOTARGET,
 	DEALITEM_DEALING,
 	DEALITEM_CANCEL,
@@ -756,11 +756,11 @@ typedef enum CHANGECHARBASE_RESULT
 	CCB_DUPLICATE,
 	CCB_NOITEM,
 	CCB_TIME,
-	CCB_PARTY,	//ÆÄÆ¼±¸¼ºÁß¿¡´Â ÇÒ¼ö¾øÀ½
-	CCB_TACTICS,//¿ëº´Áö¿ø»óÅÂ¿¡¼­´Â ÇÒ¼ö¾øÀ½
-	CCB_GUILD,	//±æµå°¡ÀÔÁß¿¡´Â ÇÒ ¼ö ¾øÀ½
+	CCB_PARTY,	//íŒŒí‹°êµ¬ì„±ì¤‘ì—ëŠ” í• ìˆ˜ì—†ìŒ
+	CCB_TACTICS,//ìš©ë³‘ì§€ì›ìƒíƒœì—ì„œëŠ” í• ìˆ˜ì—†ìŒ
+	CCB_GUILD,	//ê¸¸ë“œê°€ìž…ì¤‘ì—ëŠ” í•  ìˆ˜ ì—†ìŒ
 	CCB_BALANCE,//
-	CCB_LEVEL,	//·¹º§ ¹Ì´Þ
+	CCB_LEVEL,	//ë ˆë²¨ ë¯¸ë‹¬
 	CCB_FAIL
 };
 
@@ -774,14 +774,14 @@ typedef enum STOPTHECLOCK_RESULT
 typedef enum HEROSELECT_RESULT
 {
 	HSR_SUCCESS = 0,
-	HSR_INTERNAL,		// Äõ¸® ½ÇÇà ½ÇÆÐ
-	HSR_INVALIDCHAR,	// Á¸ÀçÇÏÁö ¾Ê´Â Ä³¸¯ÅÍ
-	HSR_INVALIDZONE,	// Á¸ÀçÇÏÁö ¾Ê´Â Áö¿ª
-	HSR_SAMENAME,		// ¿µ¿õ Áßº¹ ÁöÁ¤
-	HSR_NOAUTHORITY,	// ±ÇÇÑ ¾øÀ½
-	HSR_BATTLETIME,		// ÀüÀï ½Ã°£
-	HSR_HEROEXIST,		// ¿µ¿õÀÌ ÀÌ¹Ì ÁöÁ¤µÇ¾úÀ½
-	HSR_NULLNAME		// ¿µ¿õ ¹«È¿È­ ¾øÀ½.
+	HSR_INTERNAL,		// ì¿¼ë¦¬ ì‹¤í–‰ ì‹¤íŒ¨
+	HSR_INVALIDCHAR,	// ì¡´ìž¬í•˜ì§€ ì•ŠëŠ” ìºë¦­í„°
+	HSR_INVALIDZONE,	// ì¡´ìž¬í•˜ì§€ ì•ŠëŠ” ì§€ì—­
+	HSR_SAMENAME,		// ì˜ì›… ì¤‘ë³µ ì§€ì •
+	HSR_NOAUTHORITY,	// ê¶Œí•œ ì—†ìŒ
+	HSR_BATTLETIME,		// ì „ìŸ ì‹œê°„
+	HSR_HEROEXIST,		// ì˜ì›…ì´ ì´ë¯¸ ì§€ì •ë˜ì—ˆìŒ
+	HSR_NULLNAME		// ì˜ì›… ë¬´íš¨í™” ì—†ìŒ.
 };
 	
 typedef enum GUILDPOINTREWARD_RESULT
@@ -804,11 +804,11 @@ typedef enum MONSTERBUY_RESULT
 
 typedef enum ITEMCHANGE_RESULT	//0319
 {
-	ITEMCHANGE_SUCCESS = 0,		//¼º°ø
-	ITEMCHANGE_FAIL,			//½ÇÆÐ
-	ITEMCHANGE_INVALID,			//À¯È¿ÇÏÁö¾ÊÀº ¾ÆÀÌÅÛ
-	ITEMCHANGE_STATUS,			//¾ÆÀÌÅÛÀ» »ç¿ëÇÒ ¼ö ¾ø´Â »óÅÂ
-	ITEMCHANGE_FULL				//°¡¹æ ²ËÂü
+	ITEMCHANGE_SUCCESS = 0,		//ì„±ê³µ
+	ITEMCHANGE_FAIL,			//ì‹¤íŒ¨
+	ITEMCHANGE_INVALID,			//ìœ íš¨í•˜ì§€ì•Šì€ ì•„ì´í…œ
+	ITEMCHANGE_STATUS,			//ì•„ì´í…œì„ ì‚¬ìš©í•  ìˆ˜ ì—†ëŠ” ìƒíƒœ
+	ITEMCHANGE_FULL				//ê°€ë°© ê½‰ì°¸
 };
 
 typedef enum WASTEREFINE_RESULT
@@ -830,15 +830,15 @@ typedef enum CHATBAN_RESULT
 typedef enum TOURNAMENT_RESULT
 {
 	TOURNAMENT_SUCCESS = 0,
-	TOURNAMENT_DISQUALIFY,		//1Å¬·¡½º ÀÚ°Ý¹Ì´Þ
-	TOURNAMENT_TIMEOUT,			//ÁøÇà½Ã°£ ¾Æ´Ô
-	TOURNAMENT_ALREADYREG,		//ÀÌ¹Ì µî·ÏµÇ¾îÀÖ½À´Ï´Ù.
-	TOURNAMENT_NOTFOUND,		//´ë»óÀ» Ã£À» ¼ö ¾ø½À´Ï´Ù.
-	TOURNAMENT_FULL,			//Á¤¿øÀ» ÃÊ°úÇß½À´Ï´Ù.
-	TOURNAMENT_CLASS,			//Áö¿øÇÒ ¼ö ¾ø´Â Á÷¾÷ÀÔ´Ï´Ù.
-	TOURNAMENT_MONEY,			//µ·ÀÌ ºÎÁ·ÇÕ´Ï´Ù.
-	TOURNAMENT_ITEM,			//ÇÊ¿ä¾ÆÀÌÅÛ(Çã°¡¼­) ºÎÁ·.
-	TOURNAMENT_LEVEL,			//Çã¿ë ·¹º§À» ÃÊ°úÇÏ¿´½À´Ï´Ù.
+	TOURNAMENT_DISQUALIFY,		//1í´ëž˜ìŠ¤ ìžê²©ë¯¸ë‹¬
+	TOURNAMENT_TIMEOUT,			//ì§„í–‰ì‹œê°„ ì•„ë‹˜
+	TOURNAMENT_ALREADYREG,		//ì´ë¯¸ ë“±ë¡ë˜ì–´ìžˆìŠµë‹ˆë‹¤.
+	TOURNAMENT_NOTFOUND,		//ëŒ€ìƒì„ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.
+	TOURNAMENT_FULL,			//ì •ì›ì„ ì´ˆê³¼í–ˆìŠµë‹ˆë‹¤.
+	TOURNAMENT_CLASS,			//ì§€ì›í•  ìˆ˜ ì—†ëŠ” ì§ì—…ìž…ë‹ˆë‹¤.
+	TOURNAMENT_MONEY,			//ëˆì´ ë¶€ì¡±í•©ë‹ˆë‹¤.
+	TOURNAMENT_ITEM,			//í•„ìš”ì•„ì´í…œ(í—ˆê°€ì„œ) ë¶€ì¡±.
+	TOURNAMENT_LEVEL,			//í—ˆìš© ë ˆë²¨ì„ ì´ˆê³¼í•˜ì˜€ìŠµë‹ˆë‹¤.
 	TOURNAMENT_FAIL
 };
 
@@ -853,22 +853,22 @@ typedef enum RPSGAME_RESULT
 typedef enum MEETING_RESULT
 {
 	MTR_SUCCESS = 0,
-	MTR_DENY, //ÃÊ´ë °ÅÀý
-	MTR_BUSY, //ÀÀ´ä ºÒ°¡
-	MTR_NOTARGET, //´ë»ó¾øÀ½
-	MTR_NOTCHIEF, //±ÇÇÑ¾øÀ½
-	MTR_INROOM //ÀÔÀåÁß
+	MTR_DENY, //ì´ˆëŒ€ ê±°ì ˆ
+	MTR_BUSY, //ì‘ë‹µ ë¶ˆê°€
+	MTR_NOTARGET, //ëŒ€ìƒì—†ìŒ
+	MTR_NOTCHIEF, //ê¶Œí•œì—†ìŒ
+	MTR_INROOM //ìž…ìž¥ì¤‘
 };
 
 typedef enum ARENA_RESULT
 {
 	ARENA_SUCCESS = 0,
 	ARENA_FAIL,
-	ARENA_MONEY,//µ·¾ø´Ù
-	ARENA_FULL,//ÁøÇàÁß...ÀÚ¸®¾ø´Ù
-	ARENA_CHIEF,//ÆÄÆ¼Àå¸¸ ½ÅÃ»°¡´É
-	ARENA_MAXPARTY,//ÀÔÀå ÃÖ´ëÀÎ¿ø ÃÊ°ú
-	ARENA_MINPARTY,//ÀÔÀå ÃÖ¼ÒÀÎ¿ø ¹Ì´Þ
+	ARENA_MONEY,//ëˆì—†ë‹¤
+	ARENA_FULL,//ì§„í–‰ì¤‘...ìžë¦¬ì—†ë‹¤
+	ARENA_CHIEF,//íŒŒí‹°ìž¥ë§Œ ì‹ ì²­ê°€ëŠ¥
+	ARENA_MAXPARTY,//ìž…ìž¥ ìµœëŒ€ì¸ì› ì´ˆê³¼
+	ARENA_MINPARTY,//ìž…ìž¥ ìµœì†Œì¸ì› ë¯¸ë‹¬
 	ARENA_CHANNEL
 };
 
@@ -1158,7 +1158,7 @@ typedef enum TITEM_TYPE
 	IT_MONEY,
 	IT_INVEN,
 	IT_PET,
-	IT_GAMBLE,	// °×ºíÅ¸ÀÔ
+	IT_GAMBLE,	// ê²œë¸”íƒ€ìž…
 	IT_REFINE,
 	IT_PACKAGE,
 	IT_CRAFT,
@@ -1217,12 +1217,12 @@ typedef enum TITEM_KIND
 	IK_SKILL,
 	IK_SMSGUILD,
 	IK_SMSPERSON,
-	IK_SKILLONEINIT, // ½ºÅ³ÃÊ±âÈ­
+	IK_SKILLONEINIT, // ìŠ¤í‚¬ì´ˆê¸°í™”
 	IK_SKILLALLINIT,
-	IK_MEMBERRECALL, // ÆÄÆ¼¿ø¼ÒÈ¯¾ÆÀÌÅÆ
-	IK_MOVETOCHAR,	// ´ë»ó Ä³¸¯ÅÍ·Î ÀÌµ¿
-	IK_GOLDPREMIUM,	// °ñµåÇÁ¸®¹Ì¾ö(pc¹æ)
-	IK_REVIVAL, //Áï½Ã ºÎÈ°
+	IK_MEMBERRECALL, // íŒŒí‹°ì›ì†Œí™˜ì•„ì´íƒ¬
+	IK_MOVETOCHAR,	// ëŒ€ìƒ ìºë¦­í„°ë¡œ ì´ë™
+	IK_GOLDPREMIUM,	// ê³¨ë“œí”„ë¦¬ë¯¸ì—„(pcë°©)
+	IK_REVIVAL, //ì¦‰ì‹œ ë¶€í™œ
 	IK_MAXHP,
 	IK_MAXMP,
 	IK_RETURN,
@@ -1234,10 +1234,10 @@ typedef enum TITEM_KIND
 	IK_MAIL,
 	IK_MONEY,
 	IK_GOLDPREMIUM2,
-	IK_CATALYZER, // Á¦·Ã ÃË¸ÅÁ¦
-	IK_ILLUSIONBACK, // È¯¿µÀÇ ¹°¾à Àç·á°¡¹æ
-	IK_NPCCALL, // NPC »ç¿ë±Ç
-	IK_EXPBONUS, //»ç³É º¸³Ê½º °æÇèÄ¡ È¹µæ
+	IK_CATALYZER, // ì œë ¨ ì´‰ë§¤ì œ
+	IK_ILLUSIONBACK, // í™˜ì˜ì˜ ë¬¼ì•½ ìž¬ë£Œê°€ë°©
+	IK_NPCCALL, // NPC ì‚¬ìš©ê¶Œ
+	IK_EXPBONUS, //ì‚¬ëƒ¥ ë³´ë„ˆìŠ¤ ê²½í—˜ì¹˜ íšë“
 	IK_G_57,
 	IK_G_58,
 	IK_G_59,
@@ -1259,14 +1259,14 @@ typedef enum TITEM_KIND
 	IK_G_75,
 	IK_G_76,
 	IK_CLEARMAGIC,
-	IK_CHANGE,	//°¡Â÷
-	IK_WRAP,	//¹Ð³³
-	IK_ELD,		//Âø¿ë·¹º§´Ù¿î
-	IK_GAINEXP, //°æÇèÄ¡È¹µæ
-	IK_CLEARREFINE,//Á¦·ÃÃÊ±âÈ­
-	IK_CHGGRADEEFFECT,//°­È­ÀÌÆåÆ®º¯°æ
-	IK_WASTEREFINE,//Æó±âµÈÁ¦·ÃÃË¸ÅÁ¦
-	IK_COLOR,		//»ö»óº¯°æ //090922
+	IK_CHANGE,	//ê°€ì°¨
+	IK_WRAP,	//ë°€ë‚©
+	IK_ELD,		//ì°©ìš©ë ˆë²¨ë‹¤ìš´
+	IK_GAINEXP, //ê²½í—˜ì¹˜íšë“
+	IK_CLEARREFINE,//ì œë ¨ì´ˆê¸°í™”
+	IK_CHGGRADEEFFECT,//ê°•í™”ì´íŽ™íŠ¸ë³€ê²½
+	IK_WASTEREFINE,//íê¸°ëœì œë ¨ì´‰ë§¤ì œ
+	IK_COLOR,		//ìƒ‰ìƒë³€ê²½ //090922
 	IK_CASH,
 	IK_CREDITS,
 	IK_COSTUME_HAT,
@@ -1302,159 +1302,159 @@ typedef enum TITEM_KIND
 typedef enum FORMULA_TYPE
 {
 	FTYPE_NONE = 0,
-	FTYPE_PAP,				// ¹°¸®°ø°Ý·Â
-	FTYPE_PW,				// »ç¿ë¾ÈÇÔ
-	FTYPE_LAP,				// ¿ø°Å¸®°ø°Ý·Â
-	FTYPE_NAS,				// ¹°¸®°ø°Ý¼Óµµ
-	FTYPE_AL,				// °ø°Ýµî±Þ
-	FTYPE_DL,				// ¹æ¾îµî±Þ
-	FTYPE_PCR,				// ¹°¸®Ä¡¸íÈ®·ü
-	FTYPE_HP,				// »ý¸í·Â
-	FTYPE_HPR,				// »ý¸í·Â È¸º¹À²
-	FTYPE_PR,				// »ç¿ë¾ÈÇÔ
-	FTYPE_PCMR,				// »ç¿ë¾ÈÇÔ
-	FTYPE_PDP,				// ¹°¸®¹æ¾î·Â
-	FTYPE_MAP,				// ¸¶¹ý°ø°Ý·Â
-	FTYPE_CP,				// »ç¿ë¾ÈÇÔ
-	FTYPE_MLAP,				// »ç¿ë¾ÈÇÔ
-	FTYPE_MNAS,				// ¸¶¹ý°ø°Ý¼Óµµ
-	FTYPE_MSP,				// ½ÃÀüÀ¯ÁöÈ®·ü
-	FTYPE_MCR,				// ¸¶¹ýÄ¡¸íÈ®·ü
-	FTYPE_MP,				// Á¤½Å·Â
-	FTYPE_MPR,				// Á¤½Å·ÂÈ¸º¹À²
-	FTYPE_ITEMPOWER,		// ¾ÆÀÌÅÛ ¼º´Éºñ
-	FTYPE_WEAPONPOWER,		// ¹«±â ¼º´Éºñ
-	FTYPE_MDP,				// ¸¶¹ý¹æ¾î·Â
-	FTYPE_MCS,				// ¸¶¹ý½ÃÀü¼Óµµ
-	FTYPE_MAT,				// »ç¿ë¾ÈÇÔ
-	FTYPE_PSC,				// »ç¿ë¾ÈÇÔ
-	FTYPE_MSC,				// »ç¿ë¾ÈÇÔ
-	FTYPE_MAL,				// ¸¶¹ý°ø°Ýµî±Þ
-	FTYPE_MDL,				// ¸¶¹ý¹æ¾îµî±Þ
-	FTYPE_PAR,				// ¹°¸®°ø°Ý¼º°ø·ü
-	FTYPE_MAR,				// ¸¶¹ý°ø°Ý¼º°ø·ü
-	FTYPE_PCD,				// ¹°¸®Ä¡¸íÇÇÇØ
-	FTYPE_MCD,				// ¸¶¹ýÄ¡¸íÇÇÇØ
-	FTYPE_1ST,				// 1Â÷ ¼Ó¼º
+	FTYPE_PAP,				// ë¬¼ë¦¬ê³µê²©ë ¥
+	FTYPE_PW,				// ì‚¬ìš©ì•ˆí•¨
+	FTYPE_LAP,				// ì›ê±°ë¦¬ê³µê²©ë ¥
+	FTYPE_NAS,				// ë¬¼ë¦¬ê³µê²©ì†ë„
+	FTYPE_AL,				// ê³µê²©ë“±ê¸‰
+	FTYPE_DL,				// ë°©ì–´ë“±ê¸‰
+	FTYPE_PCR,				// ë¬¼ë¦¬ì¹˜ëª…í™•ë¥ 
+	FTYPE_HP,				// ìƒëª…ë ¥
+	FTYPE_HPR,				// ìƒëª…ë ¥ íšŒë³µìœ¨
+	FTYPE_PR,				// ì‚¬ìš©ì•ˆí•¨
+	FTYPE_PCMR,				// ì‚¬ìš©ì•ˆí•¨
+	FTYPE_PDP,				// ë¬¼ë¦¬ë°©ì–´ë ¥
+	FTYPE_MAP,				// ë§ˆë²•ê³µê²©ë ¥
+	FTYPE_CP,				// ì‚¬ìš©ì•ˆí•¨
+	FTYPE_MLAP,				// ì‚¬ìš©ì•ˆí•¨
+	FTYPE_MNAS,				// ë§ˆë²•ê³µê²©ì†ë„
+	FTYPE_MSP,				// ì‹œì „ìœ ì§€í™•ë¥ 
+	FTYPE_MCR,				// ë§ˆë²•ì¹˜ëª…í™•ë¥ 
+	FTYPE_MP,				// ì •ì‹ ë ¥
+	FTYPE_MPR,				// ì •ì‹ ë ¥íšŒë³µìœ¨
+	FTYPE_ITEMPOWER,		// ì•„ì´í…œ ì„±ëŠ¥ë¹„
+	FTYPE_WEAPONPOWER,		// ë¬´ê¸° ì„±ëŠ¥ë¹„
+	FTYPE_MDP,				// ë§ˆë²•ë°©ì–´ë ¥
+	FTYPE_MCS,				// ë§ˆë²•ì‹œì „ì†ë„
+	FTYPE_MAT,				// ì‚¬ìš©ì•ˆí•¨
+	FTYPE_PSC,				// ì‚¬ìš©ì•ˆí•¨
+	FTYPE_MSC,				// ì‚¬ìš©ì•ˆí•¨
+	FTYPE_MAL,				// ë§ˆë²•ê³µê²©ë“±ê¸‰
+	FTYPE_MDL,				// ë§ˆë²•ë°©ì–´ë“±ê¸‰
+	FTYPE_PAR,				// ë¬¼ë¦¬ê³µê²©ì„±ê³µë¥ 
+	FTYPE_MAR,				// ë§ˆë²•ê³µê²©ì„±ê³µë¥ 
+	FTYPE_PCD,				// ë¬¼ë¦¬ì¹˜ëª…í”¼í•´
+	FTYPE_MCD,				// ë§ˆë²•ì¹˜ëª…í”¼í•´
+	FTYPE_1ST,				// 1ì°¨ ì†ì„±
 	FTYPE_COUNT
 };
 
 typedef enum MAGIC_TYPE
 {
 	MTYPE_NONE,
-	MTYPE_STR,		//Èû
-	MTYPE_DEX,		//¹ÎÃ¸
-	MTYPE_CON,		//Ã¼·Â
-	MTYPE_INT,		//Áö´É
-	MTYPE_WIS,		//ÁöÇý
-	MTYPE_MEN,		//Á¤½Å
-	MTYPE_PAP,		//¹°¸®°ø°Ý·Â
-	MTYPE_PDP,		//¹°¸®¹æ¾î·Â
-	MTYPE_LAP,		//¿ø°Å¸®°ø°Ý·Â
-	MTYPE_NAS,		//ÀÏ¹Ý°ø°Ý¼Óµµ
-	MTYPE_AL,		//°ø°Ýµî±Þ
-	MTYPE_DL,		//¹æ¾îµî±Þ
-	MTYPE_CR,		//Ä¡¸íÈ®·ü
-	MTYPE_HP,		//»ý¸í·Â
-	MTYPE_PR,		//¹°¸®ÀúÇ×
-	MTYPE_MDP,		//¸¶¹ý¹æ¾î·Â
-	MTYPE_MAP,		//¸¶¹ý°ø°Ý·Â
-	MTYPE_CP,		//ÀúÁÖ¼º°ø·ü
-	MTYPE_MCS,		//¸¶¹ý½ÃÀü¼Óµµ
-	MTYPE_CMP,		//½ÃÀüÀ¯ÁöÈ®·ü
-	MTYPE_MCR,		//¸¶¹ýÄ¡¸íÈ®·ü
-	MTYPE_MP,		//Á¤½Å·Â
-	MTYPE_MR,		//¸¶¹ý»óÅÂÀúÇ×
-	MTYPE_FR,		//È­¿°ÀúÇ×
-	MTYPE_IR,		//³Ã±âÀúÇ×
-	MTYPE_ER,		//Àü±âÀúÇ×
-	MTYPE_SR,		//½Å¼ºÀúÇ×
-	MTYPE_DR,		//¾ÏÈæÀúÇ×
-	MTYPE_OR,		//µ¶ÀúÇ×
+	MTYPE_STR,		//íž˜
+	MTYPE_DEX,		//ë¯¼ì²©
+	MTYPE_CON,		//ì²´ë ¥
+	MTYPE_INT,		//ì§€ëŠ¥
+	MTYPE_WIS,		//ì§€í˜œ
+	MTYPE_MEN,		//ì •ì‹ 
+	MTYPE_PAP,		//ë¬¼ë¦¬ê³µê²©ë ¥
+	MTYPE_PDP,		//ë¬¼ë¦¬ë°©ì–´ë ¥
+	MTYPE_LAP,		//ì›ê±°ë¦¬ê³µê²©ë ¥
+	MTYPE_NAS,		//ì¼ë°˜ê³µê²©ì†ë„
+	MTYPE_AL,		//ê³µê²©ë“±ê¸‰
+	MTYPE_DL,		//ë°©ì–´ë“±ê¸‰
+	MTYPE_CR,		//ì¹˜ëª…í™•ë¥ 
+	MTYPE_HP,		//ìƒëª…ë ¥
+	MTYPE_PR,		//ë¬¼ë¦¬ì €í•­
+	MTYPE_MDP,		//ë§ˆë²•ë°©ì–´ë ¥
+	MTYPE_MAP,		//ë§ˆë²•ê³µê²©ë ¥
+	MTYPE_CP,		//ì €ì£¼ì„±ê³µë¥ 
+	MTYPE_MCS,		//ë§ˆë²•ì‹œì „ì†ë„
+	MTYPE_CMP,		//ì‹œì „ìœ ì§€í™•ë¥ 
+	MTYPE_MCR,		//ë§ˆë²•ì¹˜ëª…í™•ë¥ 
+	MTYPE_MP,		//ì •ì‹ ë ¥
+	MTYPE_MR,		//ë§ˆë²•ìƒíƒœì €í•­
+	MTYPE_FR,		//í™”ì—¼ì €í•­
+	MTYPE_IR,		//ëƒ‰ê¸°ì €í•­
+	MTYPE_ER,		//ì „ê¸°ì €í•­
+	MTYPE_SR,		//ì‹ ì„±ì €í•­
+	MTYPE_DR,		//ì•”í‘ì €í•­
+	MTYPE_OR,		//ë…ì €í•­
 	MTYPE_DAMAGE,	//Damage
-	MTYPE_AVP,		//È¸ÇÇÈ®·ü
-	MTYPE_HPR,		//HPÈ¸º¹·ü
-	MTYPE_MPR,		//MPÈ¸º¹·ü
-	MTYPE_SDR,		//¹æÆÐ¹æ¾îÈ®·ü
-	MTYPE_AA,		//ÀÚµ¿°ø°Ý
-	MTYPE_EFC,		//µ¿½Ã¹ß»ç°¹¼ö
-	MTYPE_LAA,		//¿ø°Å¸®ÀÚµ¿°ø°Ý
-	MTYPE_HI,		//»ý¸í·ÂÈí¼ö
-	MTYPE_RMC,		//¼ÒÈ¯°³Ã¼¼ö
-	MTYPE_MI,		//Á¤½Å·ÂÈí¼ö
-	MTYPE_PCMR,		//¹°¸®Ä¡¸íÃÖ´ë
-	MTYPE_MCMR,		//¸¶¹ýÄ¡¸íÃÖ´ë
-	MTYPE_NAP,		//¹«¼Ó¼º°ø°Ý·Â
-	MTYPE_FAP,		//È­¿°°ø°Ý·Â
-	MTYPE_IAP,		//³Ã±â°ø°Ý·Â
-	MTYPE_EAP,		//Àü±â°ø°Ý·Â
-	MTYPE_SAP,		//½Å¼º°ø°Ý·Â
-	MTYPE_DAP,		//¾ÏÈæ°ø°Ý·Â
-	MTYPE_RLD,		//¿ä±¸·¹º§°¨¼Ò
-	MTYPE_MHP,		//ÃÖ´ë HP
-	MTYPE_MMP,		//ÃÖ´ë MP
-	MTYPE_MPAP,		//¸¶¹ý±Ù°Å¸®°ø°Ý·Â
-	MTYPE_MLAP,		//¸¶¹ý¿ø°Å¸®°ø°Ý·Â
-	MTYPE_PAS,		//±Ù°Å¸®°ø¼Ó
-	MTYPE_LAS,		//¿ø°Å¸®°ø¼Ó
-	MTYPE_MPAS,		//¸¶¹ý±Ù°Å¸®°ø¼Ó
-	MTYPE_MLAS,		//¸¶¹ý¿ø°Å¸®°ø¼Ó
-	MTYPE_SPDPOW,	//¹æÆÐ¹°¸®¹æ¾î·Â
-	MTYPE_SMDPOW,	//¹æÆÐ¸¶¹ý¹æ¾î·Â
-	MTYPE_SMDR,		//¹æÆÐ¸¶¹ý¹æ¾îÈ®·ü
-	MTYPE_PMINAP,	//¹°¸®ÃÖ¼Ò°ø·Â·Â
-	MTYPE_PMAXAP,	//¹°¸®ÃÖ´ë°ø°Ý·Â
-	MTYPE_LMINAP,	//¿ø°Å¸®ÃÖ¼Ò°ø°Ý·Â
-	MTYPE_LMAXAP,	//¿ø°Å¸®ÃÖ´ë°ø°Ý·Â
-	MTYPE_MPMINAP,	//¸¶¹ýÃÖ¼Ò°ø°Ý·Â
-	MTYPE_MPMAXAP,	//¸¶¹ýÃÖ´ë°ø°Ý·Â
-	MTYPE_MLMINAP,	//¸¶¹ý¿ø°Å¸®ÃÖ¼Ò°ø°Ý·Â
-	MTYPE_MLMAXAP,	//¸¶¹ý¿ø°Å¸®ÃÖ´ë°ø°Ý·Â
-	MTYPE_LEPERAL,	//·¹º§´ç°ø°Ýµî±Þ
-	MTYPE_LEPERDL,	//·¹º§´ç¹æ¾îµî±Þ
-	MTYPE_LEPERPMINAP,//·¹º§´çÃÖ¼Ò°ø°Ý·Â
-	MTYPE_LEPERPMAXAP,//·¹º§´çÃÖ´ë°ø°Ý·Â
-	MTYPE_LEPERMMINAP,//·¹º§´çÃÖ¼Ò¸¶¹ý°ø°Ý·Â
-	MTYPE_LEPERMMAXAP,//·¹º§´çÃÖ´ë¸¶¹ý°ø°Ý·Â
-	MTYPE_LEPERPDP,	//·¹º§´ç¹æ¾î·Â
-	MTYPE_LEPERMDP,	//·¹º§´ç¸¶¹ý¹æ¾î·Â
-	MTYPE_LEPERMHP,	//·¹º§´ç»ý¸í·Â
-	MTYPE_LEPERMMP,	//·¹º§´çÁ¤½Å·Â
-	MTYPE_LEPERLV,	//·¹º§´ç¼º´É·¹º§
-	MTYPE_DEPDA,	//¹°¸®ÇÇÇØ°¨¼Ò
-	MTYPE_DEMDA,	//¸¶¹ýÇÇÇØ°¨¼Ò
-	MTYPE_ALLREG,	//ÀüÃ¼ÀúÇ×
-	MTYPE_MITEMR,	//¸ÅÁ÷¾ÆÀÌÅÛµå¶øÈ®·ü
-	MTYPE_DESKILL,	//¸ÂÀ»¶§ ½ºÅ³¹ßµ¿
-	MTYPE_ATSKILL,	//¶§¸±¶§ ½ºÅ³¹ßµ¿
-	MTYPE_MAL,		//¸¶¹ý°ø°Ý·¹º§
-	MTYPE_MDL,		//¸¶¹ý¹æ¾î·¹º§
-	MTYPE_MDAMAGE,	//¸¶¹ýµ¥¹ÌÁö
-	MTYPE_R_DGDEC,	//%Value È®·ü·Î µ¥¹ÌÁö °¨¼Ò
-	MTYPE_R_DGMIR,	//%Value È®·ü·Î µ¥¹ÌÁö ¹Ý»ç
-	MTYPE_R_RMON,	//%Value È®·ü·Î ¸ó½ºÅÍ ¼ÒÈ¯
-	MTYPE_R_HIDE,	//%Value È®·ü·Î Àº½Å
-	MTYPE_R_GETHP,	//%Value È®·ü·Î »ý¸í·Â Èí¼ö
-	MTYPE_R_GETMP,	//%Value È®·ü·Î Á¤½Å·Â Èí¼ö
-	MTYPE_R_MGADD,	//%Value È®·ü·Î 300% Ãß°¡ µ¥¹ÌÁö
-	MTYPE_R_BLOCK,	//%Value È®·ü·Î ±âÀý
-	MTYPE_R_HYPNOSIS,//%Value È®·ü·Î ÃÖ¸é
-	MTYPE_R_RUNAWAY,//%Value È®·ü·Î µµ¸Á
-	MTYPE_R_FLASH,	//%Value È®·ü·Î ¼¶±¤
-	MTYPE_R_DARK,	//%Value È®·ü·Î ¾ÏÈæ
-	MTYPE_R_REMOVE,	//%Value È®·ü·Î Áö¼ÓÈ¿°ú Á¦°Å
-	MTYPE_R_SILENCE,//%Value È®·ü·Î ±â¼úºÀ¼â
-	MTYPE_R_DISDEFEND,//%Value È®·ü·Î  ¹æ¾î±¸ ÇØÁ¦
-	MTYPE_R_DISWEAPON,//%Value È®·ü·Î ¹«ÀåÇØÁ¦
-	MTYPE_R_MOVESPEED,//%Value È®·ü·Î ÀÌµ¿¼Óµµ °¨¼Ò
-	MTYPE_R_TRANS,	//%Value È®·ü·Î º¯½Å
-	MTYPE_R_DAP,	//%Value È®·ü·Î °ø°Ý·Â °¨¼Ò
-	MTYPE_R_DDP,	//%Value È®·ü·Î ¹æ¾î·Â °¨¼Ò
-	MTYPE_R_BLOOD,	//%Value È®·ü·Î ÃâÇ÷
-	MTYPE_R_MAS,	//%Value È®·ü·Î ¸¶¹ý°ø¼Ó °¨¼Ò
-	MTYPE_EQLEVEL,	// Âø¿ë ·¹º§
-	MTYPE_REPCOST,	// ¼ö¸® ºñ¿ë
-	MTYPE_AFTERMATH,// ºÎÈ°ÈÄÀ¯Áõ
+	MTYPE_AVP,		//íšŒí”¼í™•ë¥ 
+	MTYPE_HPR,		//HPíšŒë³µë¥ 
+	MTYPE_MPR,		//MPíšŒë³µë¥ 
+	MTYPE_SDR,		//ë°©íŒ¨ë°©ì–´í™•ë¥ 
+	MTYPE_AA,		//ìžë™ê³µê²©
+	MTYPE_EFC,		//ë™ì‹œë°œì‚¬ê°¯ìˆ˜
+	MTYPE_LAA,		//ì›ê±°ë¦¬ìžë™ê³µê²©
+	MTYPE_HI,		//ìƒëª…ë ¥í¡ìˆ˜
+	MTYPE_RMC,		//ì†Œí™˜ê°œì²´ìˆ˜
+	MTYPE_MI,		//ì •ì‹ ë ¥í¡ìˆ˜
+	MTYPE_PCMR,		//ë¬¼ë¦¬ì¹˜ëª…ìµœëŒ€
+	MTYPE_MCMR,		//ë§ˆë²•ì¹˜ëª…ìµœëŒ€
+	MTYPE_NAP,		//ë¬´ì†ì„±ê³µê²©ë ¥
+	MTYPE_FAP,		//í™”ì—¼ê³µê²©ë ¥
+	MTYPE_IAP,		//ëƒ‰ê¸°ê³µê²©ë ¥
+	MTYPE_EAP,		//ì „ê¸°ê³µê²©ë ¥
+	MTYPE_SAP,		//ì‹ ì„±ê³µê²©ë ¥
+	MTYPE_DAP,		//ì•”í‘ê³µê²©ë ¥
+	MTYPE_RLD,		//ìš”êµ¬ë ˆë²¨ê°ì†Œ
+	MTYPE_MHP,		//ìµœëŒ€ HP
+	MTYPE_MMP,		//ìµœëŒ€ MP
+	MTYPE_MPAP,		//ë§ˆë²•ê·¼ê±°ë¦¬ê³µê²©ë ¥
+	MTYPE_MLAP,		//ë§ˆë²•ì›ê±°ë¦¬ê³µê²©ë ¥
+	MTYPE_PAS,		//ê·¼ê±°ë¦¬ê³µì†
+	MTYPE_LAS,		//ì›ê±°ë¦¬ê³µì†
+	MTYPE_MPAS,		//ë§ˆë²•ê·¼ê±°ë¦¬ê³µì†
+	MTYPE_MLAS,		//ë§ˆë²•ì›ê±°ë¦¬ê³µì†
+	MTYPE_SPDPOW,	//ë°©íŒ¨ë¬¼ë¦¬ë°©ì–´ë ¥
+	MTYPE_SMDPOW,	//ë°©íŒ¨ë§ˆë²•ë°©ì–´ë ¥
+	MTYPE_SMDR,		//ë°©íŒ¨ë§ˆë²•ë°©ì–´í™•ë¥ 
+	MTYPE_PMINAP,	//ë¬¼ë¦¬ìµœì†Œê³µë ¥ë ¥
+	MTYPE_PMAXAP,	//ë¬¼ë¦¬ìµœëŒ€ê³µê²©ë ¥
+	MTYPE_LMINAP,	//ì›ê±°ë¦¬ìµœì†Œê³µê²©ë ¥
+	MTYPE_LMAXAP,	//ì›ê±°ë¦¬ìµœëŒ€ê³µê²©ë ¥
+	MTYPE_MPMINAP,	//ë§ˆë²•ìµœì†Œê³µê²©ë ¥
+	MTYPE_MPMAXAP,	//ë§ˆë²•ìµœëŒ€ê³µê²©ë ¥
+	MTYPE_MLMINAP,	//ë§ˆë²•ì›ê±°ë¦¬ìµœì†Œê³µê²©ë ¥
+	MTYPE_MLMAXAP,	//ë§ˆë²•ì›ê±°ë¦¬ìµœëŒ€ê³µê²©ë ¥
+	MTYPE_LEPERAL,	//ë ˆë²¨ë‹¹ê³µê²©ë“±ê¸‰
+	MTYPE_LEPERDL,	//ë ˆë²¨ë‹¹ë°©ì–´ë“±ê¸‰
+	MTYPE_LEPERPMINAP,//ë ˆë²¨ë‹¹ìµœì†Œê³µê²©ë ¥
+	MTYPE_LEPERPMAXAP,//ë ˆë²¨ë‹¹ìµœëŒ€ê³µê²©ë ¥
+	MTYPE_LEPERMMINAP,//ë ˆë²¨ë‹¹ìµœì†Œë§ˆë²•ê³µê²©ë ¥
+	MTYPE_LEPERMMAXAP,//ë ˆë²¨ë‹¹ìµœëŒ€ë§ˆë²•ê³µê²©ë ¥
+	MTYPE_LEPERPDP,	//ë ˆë²¨ë‹¹ë°©ì–´ë ¥
+	MTYPE_LEPERMDP,	//ë ˆë²¨ë‹¹ë§ˆë²•ë°©ì–´ë ¥
+	MTYPE_LEPERMHP,	//ë ˆë²¨ë‹¹ìƒëª…ë ¥
+	MTYPE_LEPERMMP,	//ë ˆë²¨ë‹¹ì •ì‹ ë ¥
+	MTYPE_LEPERLV,	//ë ˆë²¨ë‹¹ì„±ëŠ¥ë ˆë²¨
+	MTYPE_DEPDA,	//ë¬¼ë¦¬í”¼í•´ê°ì†Œ
+	MTYPE_DEMDA,	//ë§ˆë²•í”¼í•´ê°ì†Œ
+	MTYPE_ALLREG,	//ì „ì²´ì €í•­
+	MTYPE_MITEMR,	//ë§¤ì§ì•„ì´í…œë“œëží™•ë¥ 
+	MTYPE_DESKILL,	//ë§žì„ë•Œ ìŠ¤í‚¬ë°œë™
+	MTYPE_ATSKILL,	//ë•Œë¦´ë•Œ ìŠ¤í‚¬ë°œë™
+	MTYPE_MAL,		//ë§ˆë²•ê³µê²©ë ˆë²¨
+	MTYPE_MDL,		//ë§ˆë²•ë°©ì–´ë ˆë²¨
+	MTYPE_MDAMAGE,	//ë§ˆë²•ë°ë¯¸ì§€
+	MTYPE_R_DGDEC,	//%Value í™•ë¥ ë¡œ ë°ë¯¸ì§€ ê°ì†Œ
+	MTYPE_R_DGMIR,	//%Value í™•ë¥ ë¡œ ë°ë¯¸ì§€ ë°˜ì‚¬
+	MTYPE_R_RMON,	//%Value í™•ë¥ ë¡œ ëª¬ìŠ¤í„° ì†Œí™˜
+	MTYPE_R_HIDE,	//%Value í™•ë¥ ë¡œ ì€ì‹ 
+	MTYPE_R_GETHP,	//%Value í™•ë¥ ë¡œ ìƒëª…ë ¥ í¡ìˆ˜
+	MTYPE_R_GETMP,	//%Value í™•ë¥ ë¡œ ì •ì‹ ë ¥ í¡ìˆ˜
+	MTYPE_R_MGADD,	//%Value í™•ë¥ ë¡œ 300% ì¶”ê°€ ë°ë¯¸ì§€
+	MTYPE_R_BLOCK,	//%Value í™•ë¥ ë¡œ ê¸°ì ˆ
+	MTYPE_R_HYPNOSIS,//%Value í™•ë¥ ë¡œ ìµœë©´
+	MTYPE_R_RUNAWAY,//%Value í™•ë¥ ë¡œ ë„ë§
+	MTYPE_R_FLASH,	//%Value í™•ë¥ ë¡œ ì„¬ê´‘
+	MTYPE_R_DARK,	//%Value í™•ë¥ ë¡œ ì•”í‘
+	MTYPE_R_REMOVE,	//%Value í™•ë¥ ë¡œ ì§€ì†íš¨ê³¼ ì œê±°
+	MTYPE_R_SILENCE,//%Value í™•ë¥ ë¡œ ê¸°ìˆ ë´‰ì‡„
+	MTYPE_R_DISDEFEND,//%Value í™•ë¥ ë¡œ  ë°©ì–´êµ¬ í•´ì œ
+	MTYPE_R_DISWEAPON,//%Value í™•ë¥ ë¡œ ë¬´ìž¥í•´ì œ
+	MTYPE_R_MOVESPEED,//%Value í™•ë¥ ë¡œ ì´ë™ì†ë„ ê°ì†Œ
+	MTYPE_R_TRANS,	//%Value í™•ë¥ ë¡œ ë³€ì‹ 
+	MTYPE_R_DAP,	//%Value í™•ë¥ ë¡œ ê³µê²©ë ¥ ê°ì†Œ
+	MTYPE_R_DDP,	//%Value í™•ë¥ ë¡œ ë°©ì–´ë ¥ ê°ì†Œ
+	MTYPE_R_BLOOD,	//%Value í™•ë¥ ë¡œ ì¶œí˜ˆ
+	MTYPE_R_MAS,	//%Value í™•ë¥ ë¡œ ë§ˆë²•ê³µì† ê°ì†Œ
+	MTYPE_EQLEVEL,	// ì°©ìš© ë ˆë²¨
+	MTYPE_REPCOST,	// ìˆ˜ë¦¬ ë¹„ìš©
+	MTYPE_AFTERMATH,// ë¶€í™œí›„ìœ ì¦
 	MTYPE_COUNT
 } *LPMAGIC_TYPE;
 
@@ -1475,10 +1475,10 @@ typedef enum TNPC_TYPE
 	TNPC_TOURNAMENT_GATE_KEEPER,
 	TNPC_CASTLE,
 	TNPC_RETURN,
-	TNPC_DIVINER,	//Á¡¼ú°¡(¼Ò¿ï¸ÞÀÌÆ®)
-	TNPC_GAMBLE,	//°×ºí
-	TNPC_REPAIR,	//¼ö¸®
-	TNPC_REFINE,	//Á¦·Ã
+	TNPC_DIVINER,	//ì ìˆ ê°€(ì†Œìš¸ë©”ì´íŠ¸)
+	TNPC_GAMBLE,	//ê²œë¸”
+	TNPC_REPAIR,	//ìˆ˜ë¦¬
+	TNPC_REFINE,	//ì œë ¨
 	TNPC_SKILL_RENT,
 	TNPC_CRAFT,
 	TNPC_PVPOINT,
@@ -1667,12 +1667,12 @@ typedef enum SDT_MINE_TYPE
 
 typedef enum SDT_TRANS_TYPE
 {
-	SDT_TRANS_CROW = 1,			// ±î¸¶±Í
-	SDT_TRANS_CHIPMUNK,			// ´Ù¶÷Áã
-	SDT_TRANS_RANDOM,			// ·£´ýº¯½Å
-	SDT_TRANS_DISGUISE_D,		// º¯Àå µåÇÁ°Ö
-	SDT_TRANS_DISGUISE_C,		// º¯Àå Å©¶ô½Ã¿Â
-	SDT_TRANS_DISGUISE_B		// º¯Àå ºê·Î¾î
+	SDT_TRANS_CROW = 1,			// ê¹Œë§ˆê·€
+	SDT_TRANS_CHIPMUNK,			// ë‹¤ëžŒì¥
+	SDT_TRANS_RANDOM,			// ëžœë¤ë³€ì‹ 
+	SDT_TRANS_DISGUISE_D,		// ë³€ìž¥ ë“œí”„ê²”
+	SDT_TRANS_DISGUISE_C,		// ë³€ìž¥ í¬ë½ì‹œì˜¨
+	SDT_TRANS_DISGUISE_B		// ë³€ìž¥ ë¸Œë¡œì–´
 } *LPSDT_TRANS_TYPE;
 
 typedef enum SDT_ITEM_TYPE
@@ -1704,7 +1704,7 @@ typedef enum SDT_STATUS_TYPE
 	SDT_STATUS_MAGICMIRROR,
 	SDT_STATUS_EXCEPTMAGIC,
 	SDT_STATUS_SUMMONEYE,
-	SDT_STATUS_DISTRIBUTE,	//ÇÇÇØºÐ»ê
+	SDT_STATUS_DISTRIBUTE,	//í”¼í•´ë¶„ì‚°
 	SDT_STATUS_SEEKRANGE,
 	SDT_STATUS_ATKRANGE,
 	SDT_STATUS_MOVESPEED,
@@ -1726,34 +1726,34 @@ typedef enum SDT_STATUS_TYPE
 	SDT_STATUS_EXCEPTPHYSIC,
 	SDT_STATUS_CLARITY,
 	SDT_STATUS_PCBANG,
-	SDT_STATUS_ITEMUPGRADE,		// °­È­È®·ü 200%
+	SDT_STATUS_ITEMUPGRADE,		// ê°•í™”í™•ë¥  200%
 	SDT_STATUS_DISGUISE,
 	SDT_STATUS_PREMIUM,
 	SDT_STATUS_DARK,
 	SDT_STATUS_STANDHIDE,
 	SDT_STATUS_DISDEFEND,
 	SDT_STATUS_STOPRECOVER,
-	SDT_STATUS_DIE,			//½ÃÀüÀÚ»ç¸Á
-	SDT_STATUS_HPMPCHANGE,	//HP,MP ±³È¯
-	SDT_STATUS_HPTOMP,		//HP¸¦ MP·Î
-	SDT_STATUS_NOTSELECT,	//¼±ÅÃºÒ°¡
-	SDT_STATUS_HYPNOSIS,	//ÃÖ¸é
-	SDT_STATUS_HIDEDETECT,	//¸Åº¹°¨Áö
-	SDT_STATUS_MASK,		//º¹¸é
-	SDT_STATUS_RETURNPOS,	//±ÍÈ¯
-	SDT_STATUS_DURATIONPROB, //¼ö¸®ºñ¿ë Áõ°¡/°¨¼Ò ºñÀ² 
-	SDT_STATUS_REFINEPROB,   //Á¦·Ã ¼º°øÈ®·ü Áõ°¡/°¨¼Ò
-	SDT_STATUS_TRANSPROB,    //¿É¼ÇÀüÀÌ È®·ü Áõ°¡/°¨¼Ò
-	SDT_STATUS_MAGICPROB,    //Á¦ÀÛ ¼º°øÈ®·ü Áõ°¡/°¨¼Ò
-	SDT_STATUS_RANDOM,		//·£´ý ¹öÇÁ
-	SDT_STATUS_ITEMDROP,	//¸ó½ºÅÍ ¾ÆÀÌÅÛ µå¶ø·ü
-	SDT_STATUS_QUESTEXP,	//Äù½ºÆ®°æÇèÄ¡
-	SDT_STATUS_ITEMGUARD,	//¾ÆÀÌÅÛº¸È£
-	SDT_STATUS_PRICEUP,		//ÆÇ¸Å±Ý¾×
-	SDT_STATUS_DOUBLEHEAD,	//¸Ó¸®Å©±âÁõ°¡ //090922
-	SDT_STATUS_AUTOEXP,		//ÀÚµ¿ °æÇèÄ¡ Áõ°¡
-	SDT_STATUS_MAGICDROP,	//¸ÅÁ÷µå¶ø·ü Áõ°¡
-	SDT_STATUS_GAINEXP,		//°æÇèÄ¡ Áõ°¡
+	SDT_STATUS_DIE,			//ì‹œì „ìžì‚¬ë§
+	SDT_STATUS_HPMPCHANGE,	//HP,MP êµí™˜
+	SDT_STATUS_HPTOMP,		//HPë¥¼ MPë¡œ
+	SDT_STATUS_NOTSELECT,	//ì„ íƒë¶ˆê°€
+	SDT_STATUS_HYPNOSIS,	//ìµœë©´
+	SDT_STATUS_HIDEDETECT,	//ë§¤ë³µê°ì§€
+	SDT_STATUS_MASK,		//ë³µë©´
+	SDT_STATUS_RETURNPOS,	//ê·€í™˜
+	SDT_STATUS_DURATIONPROB, //ìˆ˜ë¦¬ë¹„ìš© ì¦ê°€/ê°ì†Œ ë¹„ìœ¨ 
+	SDT_STATUS_REFINEPROB,   //ì œë ¨ ì„±ê³µí™•ë¥  ì¦ê°€/ê°ì†Œ
+	SDT_STATUS_TRANSPROB,    //ì˜µì…˜ì „ì´ í™•ë¥  ì¦ê°€/ê°ì†Œ
+	SDT_STATUS_MAGICPROB,    //ì œìž‘ ì„±ê³µí™•ë¥  ì¦ê°€/ê°ì†Œ
+	SDT_STATUS_RANDOM,		//ëžœë¤ ë²„í”„
+	SDT_STATUS_ITEMDROP,	//ëª¬ìŠ¤í„° ì•„ì´í…œ ë“œëžë¥ 
+	SDT_STATUS_QUESTEXP,	//í€˜ìŠ¤íŠ¸ê²½í—˜ì¹˜
+	SDT_STATUS_ITEMGUARD,	//ì•„ì´í…œë³´í˜¸
+	SDT_STATUS_PRICEUP,		//íŒë§¤ê¸ˆì•¡
+	SDT_STATUS_DOUBLEHEAD,	//ë¨¸ë¦¬í¬ê¸°ì¦ê°€ //090922
+	SDT_STATUS_AUTOEXP,		//ìžë™ ê²½í—˜ì¹˜ ì¦ê°€
+	SDT_STATUS_MAGICDROP,	//ë§¤ì§ë“œëžë¥  ì¦ê°€
+	SDT_STATUS_GAINEXP,		//ê²½í—˜ì¹˜ ì¦ê°€
 	SDT_STATUS_CUTELBOW,
 	SDT_STATUS_GMHIDE,
 	SDT_STATUS_NONE0,
@@ -1790,16 +1790,16 @@ typedef enum SKILL_DATA_ATTR
 	SATT_NONE,
 	SATT_PHYSIC,
 	SATT_LONG,
-	SATT_MAGICNO,	//¹«¼Ó¼º
-	SATT_MAGICSR,	//½Å¼º
-	SATT_MAGICDR,	//¾ÏÈæ
-	SATT_MAGICER,	//Àü±â
-	SATT_MAGICFR,	//È­¿°
-	SATT_MAGICPR,	//µ¶
-	SATT_MAGICIR,	//³Ã±â
-	SATT_WOUND,		//»óÃ³
-	SATT_DISEASE,	//Áúº´
-	SATT_SPECIAL	//Æ¯¼ö
+	SATT_MAGICNO,	//ë¬´ì†ì„±
+	SATT_MAGICSR,	//ì‹ ì„±
+	SATT_MAGICDR,	//ì•”í‘
+	SATT_MAGICER,	//ì „ê¸°
+	SATT_MAGICFR,	//í™”ì—¼
+	SATT_MAGICPR,	//ë…
+	SATT_MAGICIR,	//ëƒ‰ê¸°
+	SATT_WOUND,		//ìƒì²˜
+	SATT_DISEASE,	//ì§ˆë³‘
+	SATT_SPECIAL	//íŠ¹ìˆ˜
 } *LPSKILL_DATA_ATTR;
 
 typedef enum SKILL_EXEC_RECALL
@@ -1879,8 +1879,8 @@ typedef enum QUEST_CONDITION_TYPE
 	QCT_BEFOREQUESTCOMPLETE,
 	QCT_MAINTAINSKILL,
 	QCT_SWITCH,
-	QCT_COUNTMAX,	//¼­¹ö ÄÁµð¼Ç
-	QCT_NOPARENT	//¼­¹ö ÄÁµð¼Ç
+	QCT_COUNTMAX,	//ì„œë²„ ì»¨ë””ì…˜
+	QCT_NOPARENT	//ì„œë²„ ì»¨ë””ì…˜
 } *LPQUEST_CONDITION_TYPE;
 
 
@@ -1986,17 +1986,17 @@ typedef enum GUILD_DUTY
 typedef enum GUILD_PEERAGE
 {
 	GUILD_PEER_NONE = 0,
-	GUILD_PEER_BARON,		// ³²ÀÛ
-	GUILD_PEER_VISCOUNT,	// ÀÚÀÛ
-	GUILD_PEER_COUNT,		// ¹éÀÛ
-	GUILD_PEER_MARQUIS,		// ÈÄÀÛ
-	GUILD_PEER_DUKE			// °øÀÛ
+	GUILD_PEER_BARON,		// ë‚¨ìž‘
+	GUILD_PEER_VISCOUNT,	// ìžìž‘
+	GUILD_PEER_COUNT,		// ë°±ìž‘
+	GUILD_PEER_MARQUIS,		// í›„ìž‘
+	GUILD_PEER_DUKE			// ê³µìž‘
 } *LPGUILD_PEERAGE;
 
 typedef enum GUILD_MEMBER_TYPE
 {
-	GUILD_TYPE_MEMBER = 0,	// ±æ¿ø
-	GUILD_TYPE_TACTICS		// ¿ëº´
+	GUILD_TYPE_MEMBER = 0,	// ê¸¸ì›
+	GUILD_TYPE_TACTICS		// ìš©ë³‘
 } *LPGUILD_MEMBER_TYPE;
 
 typedef enum GUILD_RELATION
@@ -2132,10 +2132,10 @@ typedef enum TSKILLTARGET_TYPE
 	TSKILLTARGET_MONSTER,
 	TSKILLTARGET_ENEMYRECALL,
 	TSKILLTARGET_ALLIANCEEXCEPTME,
-	TSKILLTARGET_PARTYEXCEPTME,		//³ª¸¦Á¦¿ÜÇÑ ÆÄÆ¼¿ø
-	TSKILLTARGET_MAINRECALL,		//¸ÞÀÎ¼ÒÈ¯¼ö
-	TSKILLTARGET_LOWLEVELMON,		//½ÃÀüÀÚÀÇ ·¹º§º¸´Ù ÀÛ°Å³ª °°Àº ¸ó½ºÅÍ
-	TSKILLTARGET_LOWLEVELMONDEAD,	//½ÃÀüÀÚÀÇ ·¹º§º¸´Ù ÀÛ°Å³ª °°Àº ¸ó½ºÅÍÀÇ ½ÃÃ¼
+	TSKILLTARGET_PARTYEXCEPTME,		//ë‚˜ë¥¼ì œì™¸í•œ íŒŒí‹°ì›
+	TSKILLTARGET_MAINRECALL,		//ë©”ì¸ì†Œí™˜ìˆ˜
+	TSKILLTARGET_LOWLEVELMON,		//ì‹œì „ìžì˜ ë ˆë²¨ë³´ë‹¤ ìž‘ê±°ë‚˜ ê°™ì€ ëª¬ìŠ¤í„°
+	TSKILLTARGET_LOWLEVELMONDEAD,	//ì‹œì „ìžì˜ ë ˆë²¨ë³´ë‹¤ ìž‘ê±°ë‚˜ ê°™ì€ ëª¬ìŠ¤í„°ì˜ ì‹œì²´
 	TSKILLTARGET_MOUNT,
 	TSKILLTARGET_DEADMAINCHAR,
 	TSKILLTARGET_ORB,
@@ -2201,28 +2201,28 @@ typedef enum POST_RETURN_TYPE
 
 typedef enum PET_KIND
 {
-	PETKIND_NONE = 0,	//¾øÀ½
-	PETKIND_ONE,		//1ÀÎÅ¾½Â
-	PETKIND_TWO,		//2ÀÎÅ¾½Â
-	PETKIND_POST,		//¿ìÆí
-	PETKIND_TELE,		//¸¶À»±â¾ï/±ÍÈ¯
-	PETKIND_ITEM,		//¾ÆÀÌÅÆÀÚµ¿¼öÁý
-	PETKIND_INVEN,		//°¡¹æ
-	PETKIND_EXP			//°æÇèÄ¡Áõ°¡
+	PETKIND_NONE = 0,	//ì—†ìŒ
+	PETKIND_ONE,		//1ì¸íƒ‘ìŠ¹
+	PETKIND_TWO,		//2ì¸íƒ‘ìŠ¹
+	PETKIND_POST,		//ìš°íŽ¸
+	PETKIND_TELE,		//ë§ˆì„ê¸°ì–µ/ê·€í™˜
+	PETKIND_ITEM,		//ì•„ì´íƒ¬ìžë™ìˆ˜ì§‘
+	PETKIND_INVEN,		//ê°€ë°©
+	PETKIND_EXP			//ê²½í—˜ì¹˜ì¦ê°€
 } * LPPET_KIND;
 
 typedef enum PET_CONDITION
 {
-	PETCON_NONE = 0,	//¾øÀ½
-	PETCON_LEVEL,		//·¹º§Á¦ÇÑ
+	PETCON_NONE = 0,	//ì—†ìŒ
+	PETCON_LEVEL,		//ë ˆë²¨ì œí•œ
 	PETCON_PCBANG
 } * LPPET_CONDITION;
 
 typedef enum PET_ACTION
 {
-	PETACTION_NONE = 0,	// ¾øÀ½
-	PETACTION_RIDING,	// Å¾½Â
-	PETACTION_DISMOUNT	// ³»¸®±â
+	PETACTION_NONE = 0,	// ì—†ìŒ
+	PETACTION_RIDING,	// íƒ‘ìŠ¹
+	PETACTION_DISMOUNT	// ë‚´ë¦¬ê¸°
 } * LPPET_ACTION;
 
 typedef enum TELEPORTITEM_TYPE
@@ -2277,40 +2277,40 @@ typedef enum THEROSELECT_TYPE
 typedef enum TSYSMSG_TYPE
 {
 	SM_NONE = 0,
-	SM_BATTLE_NORMAL,		//_T("Á¡·ÉÀü Áö¿ªÀÌ ÀÏ¹Ý»óÅÂ·Î ÀüÈ¯µÇ¾ú½À´Ï´Ù.")
-	SM_BATTLE_START,		//_T("Áö¿ª Á¡·ÉÀüÀÌ ½ÃÀÛµÇ¾ú½À´Ï´Ù.")
-	SM_BATTLE_START_ALARM,	//DWORD _T("Áö¿ª Á¡·ÉÀüÀÌ %d(ºÐ/ÃÊ)ÈÄ ½ÃÀÛµË´Ï´Ù.")
-	SM_BATTLE_END_ALARM,	//DWORD _T("Áö¿ª Á¡·ÉÀüÀÌ %d(ºÐ/ÃÊ)ÈÄ Á¾·áµË´Ï´Ù.")
-	SM_BATTLE_PEACE,		//_T("Áö¿ª Á¡·ÉÀüÀÌ Á¾·áµÇ¾î ÆòÈ­»óÅÂ·Î ÀüÈ¯µÇ¾ú½À´Ï´Ù. ÀÌ Áö¿ª¿¡¼­´Â 5ºÐ°£ ÀüÅõ¸¦ ÇÒ ¼ö ¾ø½À´Ï´Ù.")
-	SM_BATTLE_OPENGATE,		//_T("ÇöÀç Áö¿ªÀÇ ¼º¹®ÀÌ ¿­·È½À´Ï´Ù.")
-	SM_BATTLE_BOSSDIE,		//_T("ÇöÀç Áö¿ªÀÇ ¼öÈ£½ÅÀÌ ÀâÇô Á¡·É±¹°¡°¡ º¯°æµÇ¾ú½À´Ï´Ù.")
-	SM_DUAL_WIN,			//STRING, STRING _T("[%s]´ÔÀÌ [%s]´Ô°úÀÇ °áÅõ¿¡¼­ ½Â¸®ÇÏ¿´½À´Ï´Ù.")
-	SM_EVENT_QUARTER,		//BYTE BYTE STRING BYTE _T("%d:%d Å¸ÀÓ Çà¿î±ÇÀ» ÃßÃ·ÇÏ°Ú½À´Ï´Ù. ÀÌ¹ø Å¸ÀÓ ¼±¹°Àº [%s]ÀÔ´Ï´Ù.\nµÎ±¸µÎ±¸µÎ±¸~~\nÃàÇÏÇÕ´Ï´Ù!! Çà¿î¹øÈ£ [%d]¹øÀÌ ´çÃ· µÇ¼Ì½À´Ï´Ù. ¼±¹°Àº Àá½ÃÈÄ ÆíÁö¸¦ ÅëÇØ ÀÚµ¿ ¹ß¼Û µË´Ï´Ù.")
-	SM_CHAT_BAN,			//DWORD _T("´ç½ÅÀº %d(ºÐ/ÃÊ)°£ Ã¤ÆÃÀÌ ±ÝÁöµÇ¾ú½À´Ï´Ù.")
-	SM_CASTLE_NORMAL,		//°ø¼ºÀü Áö¿ªÀÌ ÀÏ¹Ý»óÅÂ·Î ÀüÈ¯µÇ¾ú½À´Ï´Ù.
-	SM_CASTLE_START,		//°ø¼ºÀüÀÌ ½ÃÀÛµÇ¾ú½À´Ï´Ù.
-	SM_CASTLE_START_ALARM,	//DWORD °ø¼ºÀüÀÌ %d(ºÐ/ÃÊ)ÈÄ ½ÃÀÛµË´Ï´Ù.
-	SM_CASTLE_END_ALARM,	//DWORD °ø¼ºÀüÀÌ %d(ºÐ/ÃÊ)ÈÄ Á¾·áµË´Ï´Ù.
-	SM_CASTLE_PEACE,		//°ø¼ºÀüÀÌ Á¾·áµÇ¾î ÆòÈ­»óÅÂ·Î ÀüÈ¯µÇ¾ú½À´Ï´Ù. ÀÌ Áö¿ª¿¡¼­´Â 5ºÐ°£ ÀüÅõ¸¦ ÇÒ ¼ö ¾ø½À´Ï´Ù.
-	SM_CASTLE_END,			//%s ¼º¹° ÀïÅ»Àü¿¡¼­ %s±æµå°¡ ½Â¸®ÇÏ¿´½À´Ï´Ù.
-	SM_ITEM_EXPIRE,			//[¾ÆÀÌÅÛ]ÀÌ %d(ºÐ)ÈÄ »ç¿ë±â°£ÀÌ ¸¸·áµÇ¾î »ç¶óÁý´Ï´Ù.
-	SM_TOURNAMENT_STEP,		//Åä³Ê¸ÕÆ®ÀÇ xxx(ÀÌ)°¡ ½ÃÀÛ(Á¾·á) µÇ¾ú½À´Ï´Ù.
-	SM_TOURNAMENT_COUNTDOWN, // 30ÃÊºÎÅÍ
-	SM_MISSION_NORMAL,		//%d (Â¦¼ö, È¦¼ö) ¹Ì¼ÇÁö¿ªÀÇ ÀüÀïÀÌ Á¾·áµÇ¾ú½À´Ï´Ù.
-	SM_MISSION_START,		//%d (Â¦¼ö, È¦¼ö) ¹Ì¼ÇÁö¿ªÀÇ ÀüÀïÀÌ ½ÃÀÛµÇ¾ú½À´Ï´Ù.
-	SM_MISSION_BOSSDIE,		//%s ¹Ì¼ÇÁö¿ªÀ» %d ±¹°¡°¡ Á¡·ÉÇß½À´Ï´Ù.
-	SM_MISSION_START_ALARM, //%d (Â¦.È¦) ¹Ì¼ÇÀüÀïÀÌ %d(ºÐ/ÃÊ)ÈÄ ½ÃÀÛµË´Ï´Ù.
-	SM_MISSION_END_ALARM,	//%d (Â¦.È¦) ¹Ì¼ÇÀüÀïÀÌ %d(ºÐ/ÃÊ)ÈÄ Á¾·áµË´Ï´Ù.
-	SM_MISSION_PEACE,		//%d (Â¦¼ö, È¦¼ö) ¹Ì¼ÇÁö¿ªÀÇ ÀüÀïÀÌ Á¾·áµÇ¾ú½À´Ï´Ù.
-	SM_MISSION_TIMEOUT,		//%s ¹Ì¼ÇÁö¿ªÀ» Á¡·ÉÇÑ ±¹°¡°¡ ¾ø¾î ¸ó½ºÅÍ Áö¿ªÀ¸·Î ÀüÈ¯µÇ¾ú½À´Ï´Ù. 
-	SM_EVENT_LOTTERY,		// ÃßÃ· ÀÌº¥Æ® ¸Þ½ÃÁö << SM_EVENT_LOTTERY << strÅ¸ÀÌÆ² << w¾ÆÀÌÅÛÁ¾·ù¼ö << w¾ÆÀÌÅÛID << b¾ÆÀÌÅÛ¼ö << w´çÃ·À¯Àú¼ö << strÀ¯Àú³×ÀÓ1,2,3,,,,,(À¯Àú¼ö¸¸Å­)
+	SM_BATTLE_NORMAL,		//_T("ì ë ¹ì „ ì§€ì—­ì´ ì¼ë°˜ìƒíƒœë¡œ ì „í™˜ë˜ì—ˆìŠµë‹ˆë‹¤.")
+	SM_BATTLE_START,		//_T("ì§€ì—­ ì ë ¹ì „ì´ ì‹œìž‘ë˜ì—ˆìŠµë‹ˆë‹¤.")
+	SM_BATTLE_START_ALARM,	//DWORD _T("ì§€ì—­ ì ë ¹ì „ì´ %d(ë¶„/ì´ˆ)í›„ ì‹œìž‘ë©ë‹ˆë‹¤.")
+	SM_BATTLE_END_ALARM,	//DWORD _T("ì§€ì—­ ì ë ¹ì „ì´ %d(ë¶„/ì´ˆ)í›„ ì¢…ë£Œë©ë‹ˆë‹¤.")
+	SM_BATTLE_PEACE,		//_T("ì§€ì—­ ì ë ¹ì „ì´ ì¢…ë£Œë˜ì–´ í‰í™”ìƒíƒœë¡œ ì „í™˜ë˜ì—ˆìŠµë‹ˆë‹¤. ì´ ì§€ì—­ì—ì„œëŠ” 5ë¶„ê°„ ì „íˆ¬ë¥¼ í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.")
+	SM_BATTLE_OPENGATE,		//_T("í˜„ìž¬ ì§€ì—­ì˜ ì„±ë¬¸ì´ ì—´ë ¸ìŠµë‹ˆë‹¤.")
+	SM_BATTLE_BOSSDIE,		//_T("í˜„ìž¬ ì§€ì—­ì˜ ìˆ˜í˜¸ì‹ ì´ ìž¡í˜€ ì ë ¹êµ­ê°€ê°€ ë³€ê²½ë˜ì—ˆìŠµë‹ˆë‹¤.")
+	SM_DUAL_WIN,			//STRING, STRING _T("[%s]ë‹˜ì´ [%s]ë‹˜ê³¼ì˜ ê²°íˆ¬ì—ì„œ ìŠ¹ë¦¬í•˜ì˜€ìŠµë‹ˆë‹¤.")
+	SM_EVENT_QUARTER,		//BYTE BYTE STRING BYTE _T("%d:%d íƒ€ìž„ í–‰ìš´ê¶Œì„ ì¶”ì²¨í•˜ê² ìŠµë‹ˆë‹¤. ì´ë²ˆ íƒ€ìž„ ì„ ë¬¼ì€ [%s]ìž…ë‹ˆë‹¤.\në‘êµ¬ë‘êµ¬ë‘êµ¬~~\nì¶•í•˜í•©ë‹ˆë‹¤!! í–‰ìš´ë²ˆí˜¸ [%d]ë²ˆì´ ë‹¹ì²¨ ë˜ì…¨ìŠµë‹ˆë‹¤. ì„ ë¬¼ì€ ìž ì‹œí›„ íŽ¸ì§€ë¥¼ í†µí•´ ìžë™ ë°œì†¡ ë©ë‹ˆë‹¤.")
+	SM_CHAT_BAN,			//DWORD _T("ë‹¹ì‹ ì€ %d(ë¶„/ì´ˆ)ê°„ ì±„íŒ…ì´ ê¸ˆì§€ë˜ì—ˆìŠµë‹ˆë‹¤.")
+	SM_CASTLE_NORMAL,		//ê³µì„±ì „ ì§€ì—­ì´ ì¼ë°˜ìƒíƒœë¡œ ì „í™˜ë˜ì—ˆìŠµë‹ˆë‹¤.
+	SM_CASTLE_START,		//ê³µì„±ì „ì´ ì‹œìž‘ë˜ì—ˆìŠµë‹ˆë‹¤.
+	SM_CASTLE_START_ALARM,	//DWORD ê³µì„±ì „ì´ %d(ë¶„/ì´ˆ)í›„ ì‹œìž‘ë©ë‹ˆë‹¤.
+	SM_CASTLE_END_ALARM,	//DWORD ê³µì„±ì „ì´ %d(ë¶„/ì´ˆ)í›„ ì¢…ë£Œë©ë‹ˆë‹¤.
+	SM_CASTLE_PEACE,		//ê³µì„±ì „ì´ ì¢…ë£Œë˜ì–´ í‰í™”ìƒíƒœë¡œ ì „í™˜ë˜ì—ˆìŠµë‹ˆë‹¤. ì´ ì§€ì—­ì—ì„œëŠ” 5ë¶„ê°„ ì „íˆ¬ë¥¼ í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.
+	SM_CASTLE_END,			//%s ì„±ë¬¼ ìŸíƒˆì „ì—ì„œ %sê¸¸ë“œê°€ ìŠ¹ë¦¬í•˜ì˜€ìŠµë‹ˆë‹¤.
+	SM_ITEM_EXPIRE,			//[ì•„ì´í…œ]ì´ %d(ë¶„)í›„ ì‚¬ìš©ê¸°ê°„ì´ ë§Œë£Œë˜ì–´ ì‚¬ë¼ì§‘ë‹ˆë‹¤.
+	SM_TOURNAMENT_STEP,		//í† ë„ˆë¨¼íŠ¸ì˜ xxx(ì´)ê°€ ì‹œìž‘(ì¢…ë£Œ) ë˜ì—ˆìŠµë‹ˆë‹¤.
+	SM_TOURNAMENT_COUNTDOWN, // 30ì´ˆë¶€í„°
+	SM_MISSION_NORMAL,		//%d (ì§ìˆ˜, í™€ìˆ˜) ë¯¸ì…˜ì§€ì—­ì˜ ì „ìŸì´ ì¢…ë£Œë˜ì—ˆìŠµë‹ˆë‹¤.
+	SM_MISSION_START,		//%d (ì§ìˆ˜, í™€ìˆ˜) ë¯¸ì…˜ì§€ì—­ì˜ ì „ìŸì´ ì‹œìž‘ë˜ì—ˆìŠµë‹ˆë‹¤.
+	SM_MISSION_BOSSDIE,		//%s ë¯¸ì…˜ì§€ì—­ì„ %d êµ­ê°€ê°€ ì ë ¹í–ˆìŠµë‹ˆë‹¤.
+	SM_MISSION_START_ALARM, //%d (ì§.í™€) ë¯¸ì…˜ì „ìŸì´ %d(ë¶„/ì´ˆ)í›„ ì‹œìž‘ë©ë‹ˆë‹¤.
+	SM_MISSION_END_ALARM,	//%d (ì§.í™€) ë¯¸ì…˜ì „ìŸì´ %d(ë¶„/ì´ˆ)í›„ ì¢…ë£Œë©ë‹ˆë‹¤.
+	SM_MISSION_PEACE,		//%d (ì§ìˆ˜, í™€ìˆ˜) ë¯¸ì…˜ì§€ì—­ì˜ ì „ìŸì´ ì¢…ë£Œë˜ì—ˆìŠµë‹ˆë‹¤.
+	SM_MISSION_TIMEOUT,		//%s ë¯¸ì…˜ì§€ì—­ì„ ì ë ¹í•œ êµ­ê°€ê°€ ì—†ì–´ ëª¬ìŠ¤í„° ì§€ì—­ìœ¼ë¡œ ì „í™˜ë˜ì—ˆìŠµë‹ˆë‹¤. 
+	SM_EVENT_LOTTERY,		// ì¶”ì²¨ ì´ë²¤íŠ¸ ë©”ì‹œì§€ << SM_EVENT_LOTTERY << stríƒ€ì´í‹€ << wì•„ì´í…œì¢…ë¥˜ìˆ˜ << wì•„ì´í…œID << bì•„ì´í…œìˆ˜ << wë‹¹ì²¨ìœ ì €ìˆ˜ << strìœ ì €ë„¤ìž„1,2,3,,,,,(ìœ ì €ìˆ˜ë§Œí¼)
 	SM_ARENA_COUNTDOWN,
-	SM_SKYGARDEN_NORMAL,	//Ãµ°øÀü Áö¿ªÀÌ ÀÏ¹Ý»óÅÂ·Î ÀüÈ¯µÇ¾ú½À´Ï´Ù.
-	SM_SKYGARDEN_START,		//Ãµ°øÀüÀÌ ½ÃÀÛµÇ¾ú½À´Ï´Ù.
-	SM_SKYGARDEN_START_ALARM,	//DWORD Ãµ°øÀüÀÌ %d(ºÐ/ÃÊ)ÈÄ ½ÃÀÛµË´Ï´Ù.
-	SM_SKYGARDEN_END_ALARM,	//DWORD Ãµ°øÀüÀÌ %d(ºÐ/ÃÊ)ÈÄ Á¾·áµË´Ï´Ù.
-	SM_SKYGARDEN_PEACE,		//Ãµ°øÀüÀÌ Á¾·áµÇ¾î ÆòÈ­»óÅÂ·Î ÀüÈ¯µÇ¾ú½À´Ï´Ù. ÀÌ Áö¿ª¿¡¼­´Â ÀüÅõ¸¦ ÇÒ ¼ö ¾ø½À´Ï´Ù.
-	SM_SKYGARDEN_END,			//Ãµ°øÀü¿¡¼­ %d ±¹°¡°¡ ½Â¸®ÇÏ¿´½À´Ï´Ù.
+	SM_SKYGARDEN_NORMAL,	//ì²œê³µì „ ì§€ì—­ì´ ì¼ë°˜ìƒíƒœë¡œ ì „í™˜ë˜ì—ˆìŠµë‹ˆë‹¤.
+	SM_SKYGARDEN_START,		//ì²œê³µì „ì´ ì‹œìž‘ë˜ì—ˆìŠµë‹ˆë‹¤.
+	SM_SKYGARDEN_START_ALARM,	//DWORD ì²œê³µì „ì´ %d(ë¶„/ì´ˆ)í›„ ì‹œìž‘ë©ë‹ˆë‹¤.
+	SM_SKYGARDEN_END_ALARM,	//DWORD ì²œê³µì „ì´ %d(ë¶„/ì´ˆ)í›„ ì¢…ë£Œë©ë‹ˆë‹¤.
+	SM_SKYGARDEN_PEACE,		//ì²œê³µì „ì´ ì¢…ë£Œë˜ì–´ í‰í™”ìƒíƒœë¡œ ì „í™˜ë˜ì—ˆìŠµë‹ˆë‹¤. ì´ ì§€ì—­ì—ì„œëŠ” ì „íˆ¬ë¥¼ í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.
+	SM_SKYGARDEN_END,			//ì²œê³µì „ì—ì„œ %d êµ­ê°€ê°€ ìŠ¹ë¦¬í•˜ì˜€ìŠµë‹ˆë‹¤.
 };
 
 typedef enum TITEMGRADEEFFECT_TYPE
@@ -2415,8 +2415,8 @@ typedef enum TPROTECTED_TYPE
 
 typedef enum ITEMEXTENDEDVALUE_TYPE
 {
-	IEV_ELD = 0,	//Âø¿ë·¹º§´Ù¿î°ª
-	IEV_WRAP,		//¹Ð³³ ¿©ºÎ
+	IEV_ELD = 0,	//ì°©ìš©ë ˆë²¨ë‹¤ìš´ê°’
+	IEV_WRAP,		//ë°€ë‚© ì—¬ë¶€
 	IEV_COLOR,
 	IEV_GUILD,
 	IEV_COMPANION,
@@ -2426,21 +2426,21 @@ typedef enum ITEMEXTENDEDVALUE_TYPE
  
 typedef enum EVENT_TYPE
 {
-	EVENT_EXPADD = 1,		// °æÇèÄ¡ Áõ°¡
-	EVENT_CASHSALE,			// Ä³½¬¾ÆÀÌÅÛ ÇÒÀÎ
-	EVENT_ITEMDROP,			// ¾ÆÀÌÅÛ µå·Ó·ü Çâ»ó
-	EVENT_ITEMMAGICDROP,	// ¸ÅÁ÷ ¾ÆÀÌÅÛ µå·Ó·ü Çâ»ó
-	EVENT_REFINE,			// Á¦·Ã È®·ü Çâ»ó
-	EVENT_TRANS,			// ¸ÅÁ÷ ÀüÀÌ È®·ü Çâ»ó
-	EVENT_ITEMUPGRADE,		// ¾ÆÀÌÅÛ ¾÷±×·¹ÀÌµå È®·ü Çâ»ó
-	EVENT_MAGICUPGRADE,		// Á¦ÀÛ È®·ü Çâ»ó
-	EVENT_RAREMAGICUPGRADE, // Èñ±Í Á¦ÀÛ È®·ü Çâ»ó
-	EVENT_GAMBLEOPTION,		// ºÀÀÎ ÇØÁ¦ È®·ü Çâ»ó
-	EVENT_MONEYDROP,		// Money Drop ¾ç 
-	EVENT_MONSPAWN,			// ¸ó½ºÅÍ ½ºÆù
-	EVENT_MONREGEN,			// ¸ó½ºÅÍ ¸®Á¨
-	EVENT_LOTTERY,			// ¾ÆÀÌÅÛ ÃßÃ·		
-	EVENT_GIFTTIME,			// Æ¯Á¤½Ã°£ Á¢¼ÓÀÚ ¾ÆÀÌÅÛ ¹èÆ÷
+	EVENT_EXPADD = 1,		// ê²½í—˜ì¹˜ ì¦ê°€
+	EVENT_CASHSALE,			// ìºì‰¬ì•„ì´í…œ í• ì¸
+	EVENT_ITEMDROP,			// ì•„ì´í…œ ë“œë¡­ë¥  í–¥ìƒ
+	EVENT_ITEMMAGICDROP,	// ë§¤ì§ ì•„ì´í…œ ë“œë¡­ë¥  í–¥ìƒ
+	EVENT_REFINE,			// ì œë ¨ í™•ë¥  í–¥ìƒ
+	EVENT_TRANS,			// ë§¤ì§ ì „ì´ í™•ë¥  í–¥ìƒ
+	EVENT_ITEMUPGRADE,		// ì•„ì´í…œ ì—…ê·¸ë ˆì´ë“œ í™•ë¥  í–¥ìƒ
+	EVENT_MAGICUPGRADE,		// ì œìž‘ í™•ë¥  í–¥ìƒ
+	EVENT_RAREMAGICUPGRADE, // í¬ê·€ ì œìž‘ í™•ë¥  í–¥ìƒ
+	EVENT_GAMBLEOPTION,		// ë´‰ì¸ í•´ì œ í™•ë¥  í–¥ìƒ
+	EVENT_MONEYDROP,		// Money Drop ì–‘ 
+	EVENT_MONSPAWN,			// ëª¬ìŠ¤í„° ìŠ¤í°
+	EVENT_MONREGEN,			// ëª¬ìŠ¤í„° ë¦¬ì  
+	EVENT_LOTTERY,			// ì•„ì´í…œ ì¶”ì²¨		
+	EVENT_GIFTTIME,			// íŠ¹ì •ì‹œê°„ ì ‘ì†ìž ì•„ì´í…œ ë°°í¬
 	EVENT_COUNT
 } *LPEVENT_TYPE;
 
@@ -2451,10 +2451,10 @@ typedef enum AUCTIONREG_RESULT
 	AR_FAIL,
 	AR_NPCNOTFOUND,
 	AR_INVALIDCHAR,	
-	AR_INVALIDPRICE, // Áï±¸ < ½ÃÀÛ°¡
+	AR_INVALIDPRICE, // ì¦‰êµ¬ < ì‹œìž‘ê°€
 	AR_INVALIDSTARTPRICE,
-	AR_ITEMNOTFOUND, //¾ÆÀÌÅÛ ¾øÀ½
-	AR_INVALIDITEM,	 //°æ¸Å ºÒ°¡´É ¾ÆÀÌÅÛ
+	AR_ITEMNOTFOUND, //ì•„ì´í…œ ì—†ìŒ
+	AR_INVALIDITEM,	 //ê²½ë§¤ ë¶ˆê°€ëŠ¥ ì•„ì´í…œ
 	AR_INVALIDAUCTION,
 	AR_NEEDMONEY,
 	AR_MAXPOST,

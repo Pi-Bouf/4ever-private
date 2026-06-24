@@ -1,6 +1,6 @@
-// Çö½Â·æ Announce.cpp
+ï»¿// í˜„ìŠ¹ë£¡ Announce.cpp
 
-// Announce.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+// Announce.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -10,7 +10,7 @@
 #include "MainFrm.h"
 #include "HappyDoc.h"
 
-// CAnnounce ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CAnnounce ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CAnnounce, CDialog)
 CAnnounce::CAnnounce(CWnd* pParent /*=NULL*/)
@@ -41,7 +41,7 @@ BEGIN_MESSAGE_MAP(CAnnounce, CDialog)
 END_MESSAGE_MAP()
 
 
-// CAnnounce ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CAnnounce ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 BOOL CAnnounce::OnInitDialog()
 {
@@ -53,7 +53,7 @@ BOOL CAnnounce::OnInitDialog()
 	m_bTimer = 0;
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// ¿¹¿Ü: OCX ¼Ó¼º ÆäÀÌÁö´Â FALSE¸¦ ¹İÈ¯ÇØ¾ß ÇÕ´Ï´Ù.
+	// ì˜ˆì™¸: OCX ì†ì„± í˜ì´ì§€ëŠ” FALSEë¥¼ ë°˜í™˜í•´ì•¼ í•©ë‹ˆë‹¤.
 }
 
 void CAnnounce::SetWorld()
@@ -70,7 +70,7 @@ void CAnnounce::SetWorld()
 	while(m_comboWorld.GetCount())
 		m_comboWorld.DeleteString(0);
 
-	m_comboWorld.AddString(_T("Total"));//ÀüÃ¼
+	m_comboWorld.AddString(_T("Total"));//ì „ì²´
 	MAPGROUP::iterator itG;
 	for(itG=pDoc->m_mapGroup.begin(); itG!=pDoc->m_mapGroup.end(); itG++)
 		if( (*itG).second->m_bID != 0 )
@@ -121,7 +121,7 @@ void CAnnounce::OnBnClickedOk()
 		DWORD dwTimer = m_bTimer ? m_dwTimerMin*1000 : m_dwTimerMin*60000;
 		if(dwTimer > 3600000)
 		{
-			AfxMessageBox(_T("Control to less than 60 mins"));//60ºĞÀÌ³»·Î Á¶ÀıÇØ ÁÖ¼¼¿ä
+			AfxMessageBox(_T("Control to less than 60 mins"));//60ë¶„ì´ë‚´ë¡œ ì¡°ì ˆí•´ ì£¼ì„¸ìš”
 			return;
 		}
 
@@ -143,10 +143,10 @@ void CAnnounce::OnBnClickedOk()
 
 void CAnnounce::OnBnClickedCancel()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	if(GetDlgItem(IDC_BUTTON_TIMEREND)->IsWindowEnabled())
 	{
-		AfxMessageBox(_T("Close the timer"));//Timer¸¦ Á¾·áÇÏ¼¼¿ä
+		AfxMessageBox(_T("Close the timer"));//Timerë¥¼ ì¢…ë£Œí•˜ì„¸ìš”
 		return;
 	}
 	m_checkTimer.SetCheck(FALSE);
@@ -190,7 +190,7 @@ void CAnnounce::OnTimer(UINT nIDEvent)
 
 void CAnnounce::OnBnClickedButtonTimerend()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	KillTimer(1);
 	GetDlgItem(IDC_EDIT1)->EnableWindow();
 	GetDlgItem(IDC_CHECK1)->EnableWindow();
@@ -203,7 +203,7 @@ void CAnnounce::OnBnClickedButtonTimerend()
 
 void CAnnounce::OnBnClickedButtonTimer()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	if(!m_bTimer)
 		SetDlgItemText(IDC_BUTTON_TIMER, _T("Sec"));
 	else

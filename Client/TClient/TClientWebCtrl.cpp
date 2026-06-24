@@ -1,4 +1,4 @@
-// TClientWebCtrl.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// TClientWebCtrl.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -111,7 +111,7 @@ BYTE CTClientWebCtrl::Navigate( CString strURL,
 	return TRUE;
 }
 
-// CTClientWebCtrl ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CTClientWebCtrl ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 BOOL CTClientWebCtrl::Create()
 {

@@ -1,4 +1,4 @@
-// PreVersion.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// PreVersion.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -9,7 +9,7 @@
 #include "HappyDoc.h"
 
 
-// CPreVersion ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CPreVersion ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CPreVersion, CDialog)
 CPreVersion::CPreVersion(CWnd* pParent /*=NULL*/)
@@ -41,7 +41,7 @@ BEGIN_MESSAGE_MAP(CPreVersion, CDialog)
 END_MESSAGE_MAP()
 
 
-// CPreVersion ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CPreVersion ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 void CPreVersion::Init()
 {
@@ -70,7 +70,7 @@ void CPreVersion::InitList()
 	while(m_lcPreVersion.GetColumns())
         m_lcPreVersion.DeleteColumn(0);
 
-	//	¸®½ºÆ® ÄÁÆ®·Ñ ÃÊ±âÈ­
+	//	ë¦¬ìŠ¤íŠ¸ ì»¨íŠ¸ë¡¤ ì´ˆê¸°í™”
 	LV_COLUMN lvColumn;
 	memset(&lvColumn, 0, sizeof(LV_COLUMN));
 	lvColumn.mask		=  LVCF_SUBITEM | LVCF_TEXT;

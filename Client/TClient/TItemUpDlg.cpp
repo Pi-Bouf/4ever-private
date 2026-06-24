@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "TItemUpDlg.h"
 #include "Resource.h"
 #include "TClientGame.h"
@@ -166,7 +166,7 @@ BOOL CTItemUpDlg::CheckItem(CTClientItem* pTargetItem, CTClientItem* pScrollItem
 		}
 		break;
 
-	case IK_CLEARREFINE: //Á¦·ÃÃÊ±âÈ­
+	case IK_CLEARREFINE: //ì œë ¨ì´ˆê¸°í™”
 		{
 			if( pTargetItem->GetRefineCurrent() > 0 )
 				return TRUE;
@@ -178,7 +178,7 @@ BOOL CTItemUpDlg::CheckItem(CTClientItem* pTargetItem, CTClientItem* pScrollItem
 		}
 		break;
 
-	case IK_CHGGRADEEFFECT: //°­È­ÀÌÆåÆ®º¯°æ
+	case IK_CHGGRADEEFFECT: //ê°•í™”ì´í™íŠ¸ë³€ê²½
 		{
 			if( (17 <= pTargetItem->GetGrade() && pTargetItem->GetGrade() <= 24) || (pTargetItem->GetTITEM()->m_bType == 17 && pTargetItem->GetTITEM()->m_bKind != 90))
 				return TRUE;
@@ -300,8 +300,8 @@ BOOL CTItemUpDlg::CanUpgrade( LPTITEM pScrollItemTemp, LPTITEM pTargetItemTemp )
 	return TRUE;
 	case IK_CLEARMAGIC:
 	case IK_ELD:
-	case IK_CLEARREFINE: //Á¦·ÃÃÊ±âÈ­
-	case IK_CHGGRADEEFFECT: //°­È­ÀÌÆåÆ®º¯°æ
+	case IK_CLEARREFINE: //ì œë ¨ì´ˆê¸°í™”
+	case IK_CHGGRADEEFFECT: //ê°•í™”ì´í™íŠ¸ë³€ê²½
 		return TRUE;
 
 	case IK_COLOR:

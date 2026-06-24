@@ -1,4 +1,4 @@
-// DlgPatchProgress.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// DlgPatchProgress.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -9,7 +9,7 @@
 #include "HappyDoc.h"
 
 
-// CDlgPatchProgress ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CDlgPatchProgress ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CDlgPatchProgress, CDialog)
 CDlgPatchProgress::CDlgPatchProgress(CWnd* pParent /*=NULL*/)
@@ -45,18 +45,18 @@ void CDlgPatchProgress::SetStatus(BYTE bStatus)
 	CString strStatus;
 	switch(bStatus)
 	{
-	case 0: 				strStatus = _T("The patch has been successfully completed"); break; //"ÆĞÄ¡°¡ ¼º°øÀûÀ¸·Î ¿Ï·á µÇ¾ú½À´Ï´Ù."
-	case 1: 				strStatus = _T("Zipping the files..."); break; //ÆÄÀÏ ¾ĞÃà Áß..
-	case 2: 				strStatus = _T("Uploading the files..."); break; //ÆÄÀÏ ¾÷·Îµå Áß...
-	case 3: 				strStatus = _T("The error occurred during the patch"); break; //ÆĞÄ¡Áß ¿¡·¯°¡ ¹ß»ıÇß½À´Ï´Ù.
-	case _FTP_CONNECT:		strStatus = _T("Connecting to a FTP server "); break;//FTP¼­¹ö¿¡ Á¢¼ÓÁßÀÔ´Ï´Ù.....
-	case _ERR_TEMPDIR:		strStatus = _T("Creating a temporary directory error occurred"); break; //ÀÓ½Ã µğ·ºÅä¸® »ı¼ºÁß ¿¡·¯°¡ ¹ß»ıÇß½À´Ï´Ù.
-	case _ERR_CURRENTDIR:	strStatus = _T("During set the current directory the error occurred"); break; //ÇöÁ¦ µğ·ºÅä¸® ¼³Á¤Áß ¿¡·¯°¡ ¹ß»ıÇß½À´Ï´Ù.
-	case _ERR_ZIP:			strStatus = _T("Generating a Zip file error occurred"); break; //Zip ÆÄÀÏ »ı¼ºÁß ¿¡·¯°¡ ¹ß»ıÇß½À´Ï´Ù.
-	case _ERR_EMPTY:		strStatus = _T("IP/PORT/ACCOUNT/PASSWORD is empty"); break; //IP/PORT/ACCOUNT/PASSWORD°¡ ºñ¾îÀÖ½À´Ï´Ù.
-	case _ERR_ADDRORACCOUNT:strStatus = _T("Reconfirm the IP/PORT/ACCOUNT/PASSWORD "); break; //IP/PORT/ACCOUNT/PASSWORD¸¦ ÀçÈ®ÀÎ ÇØÁÖ½Ê½Ã¿ä.
-	case _ERR_THREADFAIL:	strStatus = _T("Failed to create a thread"); break; //Thread »ı¼ºÀ» ½ÇÆĞ ÇÏ¿´½À´Ï´Ù.
-	case _ERR_DBWRITE:		strStatus = _T("The error has occurred during the Update DB"); break; //DB¿¡ UpdateÁß ¿¡·¯°¡ ¹ß»ıÇß½À´Ï´Ù.
+	case 0: 				strStatus = _T("The patch has been successfully completed"); break; //"íŒ¨ì¹˜ê°€ ì„±ê³µì ìœ¼ë¡œ ì™„ë£Œ ë˜ì—ˆìŠµë‹ˆë‹¤."
+	case 1: 				strStatus = _T("Zipping the files..."); break; //íŒŒì¼ ì••ì¶• ì¤‘..
+	case 2: 				strStatus = _T("Uploading the files..."); break; //íŒŒì¼ ì—…ë¡œë“œ ì¤‘...
+	case 3: 				strStatus = _T("The error occurred during the patch"); break; //íŒ¨ì¹˜ì¤‘ ì—ëŸ¬ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.
+	case _FTP_CONNECT:		strStatus = _T("Connecting to a FTP server "); break;//FTPì„œë²„ì— ì ‘ì†ì¤‘ì…ë‹ˆë‹¤.....
+	case _ERR_TEMPDIR:		strStatus = _T("Creating a temporary directory error occurred"); break; //ì„ì‹œ ë””ë ‰í† ë¦¬ ìƒì„±ì¤‘ ì—ëŸ¬ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.
+	case _ERR_CURRENTDIR:	strStatus = _T("During set the current directory the error occurred"); break; //í˜„ì œ ë””ë ‰í† ë¦¬ ì„¤ì •ì¤‘ ì—ëŸ¬ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.
+	case _ERR_ZIP:			strStatus = _T("Generating a Zip file error occurred"); break; //Zip íŒŒì¼ ìƒì„±ì¤‘ ì—ëŸ¬ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.
+	case _ERR_EMPTY:		strStatus = _T("IP/PORT/ACCOUNT/PASSWORD is empty"); break; //IP/PORT/ACCOUNT/PASSWORDê°€ ë¹„ì–´ìˆìŠµë‹ˆë‹¤.
+	case _ERR_ADDRORACCOUNT:strStatus = _T("Reconfirm the IP/PORT/ACCOUNT/PASSWORD "); break; //IP/PORT/ACCOUNT/PASSWORDë¥¼ ì¬í™•ì¸ í•´ì£¼ì‹­ì‹œìš”.
+	case _ERR_THREADFAIL:	strStatus = _T("Failed to create a thread"); break; //Thread ìƒì„±ì„ ì‹¤íŒ¨ í•˜ì˜€ìŠµë‹ˆë‹¤.
+	case _ERR_DBWRITE:		strStatus = _T("The error has occurred during the Update DB"); break; //DBì— Updateì¤‘ ì—ëŸ¬ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.
 	}
 	m_bStatus = bStatus;
 	pEdit->SetWindowText(strStatus);
@@ -66,7 +66,7 @@ BEGIN_MESSAGE_MAP(CDlgPatchProgress, CDialog)
 END_MESSAGE_MAP()
 
 
-// CDlgPatchProgress ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CDlgPatchProgress ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 BOOL CDlgPatchProgress::OnInitDialog()
 {
@@ -76,7 +76,7 @@ BOOL CDlgPatchProgress::OnInitDialog()
 	m_progress.SetPos(0);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// ¿¹¿Ü: OCX ¼Ó¼º ÆäÀÌÁö´Â FALSE¸¦ ¹İÈ¯ÇØ¾ß ÇÕ´Ï´Ù.
+	// ì˜ˆì™¸: OCX ì†ì„± í˜ì´ì§€ëŠ” FALSEë¥¼ ë°˜í™˜í•´ì•¼ í•©ë‹ˆë‹¤.
 }
 
 void CDlgPatchProgress::OnCancel()
@@ -89,7 +89,7 @@ void CDlgPatchProgress::OnCancel()
 		if(!pDoc)
 			return;
 	}
-	// TODO: ¿©±â¿¡ Æ¯¼öÈ­µÈ ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº» Å¬·¡½º¸¦ È£ÃâÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— íŠ¹ìˆ˜í™”ëœ ì½”ë“œë¥¼ ì¶”ê°€ ë°/ë˜ëŠ” ê¸°ë³¸ í´ë˜ìŠ¤ë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
 	if(m_bStatus == 0 ||
 		m_bStatus == 3 ||
 		m_bStatus ==_ERR_TEMPDIR ||		

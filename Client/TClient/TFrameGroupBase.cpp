@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+ï»¿#include "Stdafx.h"
 #include "TFrameGroupBase.h"
 #include "TCharInfoNewDlg.h"
 
@@ -35,7 +35,7 @@ UINT CTFrameGroupBase::AddFrame(ITInnerFrame* pFrame, DWORD dwTabID, const CStri
 	frminf.m_strBlankMsg = strBlankMsg;
 	
 	frminf.m_pTabCtrl = static_cast<TButton*>( FindKid(dwTabID) );
-	//ASSERT(frminf.m_pTabCtrl && "ÁÖ¾îÁø ÅÇÀº ÀÌ ÇÁ·¹ÀÓÀÇ ÀÚ½ÄÀÌ ¾Æ´Õ´Ï´Ù.");
+	//ASSERT(frminf.m_pTabCtrl && "ì£¼ì–´ì§„ íƒ­ì€ ì´ í”„ë ˆìž„ì˜ ìžì‹ì´ ì•„ë‹™ë‹ˆë‹¤.");
 	
 	frminf.m_pTabCtrl->SetStyle( frminf.m_pTabCtrl->GetStyle() | TBS_STATE_BUTTON );
 	frminf.m_pFrameCtrl->m_id = GetUniqueID();

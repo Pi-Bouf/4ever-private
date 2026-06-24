@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 class CTTextLinker
 {
@@ -15,19 +15,19 @@ protected:
 	CTTextLinkData*	m_pTextLinkDataPool;
 
 public:
-	/// »õ·Î¿î ÅØ½ºÆ® ¸µÅ© µ¥ÀÌÅ¸ ÀÎ½ºÅÏ½º¸¦ ¾ò´Â´Ù.
+	/// ìƒˆë¡œìš´ í…ìŠ¤íŠ¸ ë§í¬ ë°ì´íƒ€ ì¸ìŠ¤í„´ìŠ¤ë¥¼ ì–»ëŠ”ë‹¤.
 	DWORD NewTextLinkData(CTTextLinkData** pOut);
-	/// ÁÖ¾îÁø ¾ÆÀÌµğÀÇ ÅØ½ºÆ® ¸µÅ© µ¥ÀÌÅ¸¸¦ ¾ò´Â´Ù.
+	/// ì£¼ì–´ì§„ ì•„ì´ë””ì˜ í…ìŠ¤íŠ¸ ë§í¬ ë°ì´íƒ€ë¥¼ ì–»ëŠ”ë‹¤.
 	CTTextLinkData* GetTextLinkData(DWORD nPos) const;
 
 public:
 
-	/// ÁÖ¾îÁø Çü½ÄÀÇ ¹®ÀÚ¿­ Æ÷¸Ë¿¡ ¸ÂÃß¾î ¸µÅ© ÅØ½ºÆ®¸¦ ³×Æ®¿öÅ© Àü¼Û °¡´ÉÇÑ ÇüÅÂ·Î ¸¸µç´Ù.
+	/// ì£¼ì–´ì§„ í˜•ì‹ì˜ ë¬¸ìì—´ í¬ë§·ì— ë§ì¶”ì–´ ë§í¬ í…ìŠ¤íŠ¸ë¥¼ ë„¤íŠ¸ì›Œí¬ ì „ì†¡ ê°€ëŠ¥í•œ í˜•íƒœë¡œ ë§Œë“ ë‹¤.
 	CString MakeItemNetText(const CString& strFormat, const VDWORD& vItemID);
 
 	CString BuildNetString( const CString& strHeader, const CString& strBody);
 	CString AppendNetString( const CString& strMSG1, const CString& strMSG2);
-	/// ÁÖ¾îÁø ¹®ÀÚ¿­À» °³Çà¹®ÀÚ ´ÜÀ§·Î ³ª´«´Ù.
+	/// ì£¼ì–´ì§„ ë¬¸ìì—´ì„ ê°œí–‰ë¬¸ì ë‹¨ìœ„ë¡œ ë‚˜ëˆˆë‹¤.
 	CString SplitTextByCrLf(const CString& strMSG, const CString& strTOK, INT& nPos, BOOL bTrimCrLf=TRUE);
 
 protected:

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #ifdef USE_APEX
 #include <ApexClient.h>
@@ -244,33 +244,33 @@ protected:
 	CString m_strDuelTargetName;
 	DWORD m_dwDuelTargetID;
 
-	BYTE m_bSkillInitInven;							// ½ºÅ³ ÃÊ±âÈ­ ¾ÆÀÌÅÛÀÇ ÀÎº¥ ¾ÆÀÌµð
-	BYTE m_bSkillInitSlot;							// ½ºÅ³ ÃÊ±âÈ­ ¾ÆÀÌÅÛÀÇ ½½·Ô ¾ÆÀÌµð
+	BYTE m_bSkillInitInven;							// ìŠ¤í‚¬ ì´ˆê¸°í™” ì•„ì´í…œì˜ ì¸ë²¤ ì•„ì´ë””
+	BYTE m_bSkillInitSlot;							// ìŠ¤í‚¬ ì´ˆê¸°í™” ì•„ì´í…œì˜ ìŠ¬ë¡¯ ì•„ì´ë””
 	
-	BYTE m_bPortalItemInven;						// Æ÷Å» ¾ÆÀÌÅÛ ÀÎº¥ ¾ÆÀÌµð
-	BYTE m_bPortalItemSlot;							// Æ÷Å» ¾ÆÀÌÅÛ ½½·Ô ¾ÆÀÌµð
+	BYTE m_bPortalItemInven;						// í¬íƒˆ ì•„ì´í…œ ì¸ë²¤ ì•„ì´ë””
+	BYTE m_bPortalItemSlot;							// í¬íƒˆ ì•„ì´í…œ ìŠ¬ë¡¯ ì•„ì´ë””
 
-	CString m_bPartyRecallName;						// ÆÄÆ¼ ¼ÒÈ¯ ÃÊ´ëÀÚÀÇ ÀÌ¸§ ¸±·¹ÀÌ
-	BYTE m_bPartyRecallAnsInven;					// ÆÄÆ¼ ¼ÒÈ¯ ¾ÆÀÌÅÛ ÀÎº¥ ¾ÆÀÌµð ¸±·¹ÀÌ
-	BYTE m_bPartyRecallAnsSlot;						// ÆÄÆ¼ ¼ÒÈ¯ ¾ÆÀÌÅÛ ½½·Ô ¾ÆÀÌµð ¸±·¹ÀÌ
+	CString m_bPartyRecallName;						// íŒŒí‹° ì†Œí™˜ ì´ˆëŒ€ìžì˜ ì´ë¦„ ë¦´ë ˆì´
+	BYTE m_bPartyRecallAnsInven;					// íŒŒí‹° ì†Œí™˜ ì•„ì´í…œ ì¸ë²¤ ì•„ì´ë”” ë¦´ë ˆì´
+	BYTE m_bPartyRecallAnsSlot;						// íŒŒí‹° ì†Œí™˜ ì•„ì´í…œ ìŠ¬ë¡¯ ì•„ì´ë”” ë¦´ë ˆì´
 
-	BYTE m_bDurationRepType;						// ³»±¸µµ ¼ö¸® Å¸ÀÔ(0:ÀÏ¹Ý¼ö¸®, 1:Àåºñ¼ö¸® 2:ÀüºÎ¼ö¸®)
-	BYTE m_bDurationRepInven;						// ³»±¸µµ ¼ö¸® ´ë»ó ÀÎº¥ ¾ÆÀÌµð
-	BYTE m_bDurationRepSlot;						// ³»±¸µµ ¼ö¸® ´ë»ó ½½·Ô ¾ÆÀÌµð
-	BYTE m_bRefineInven;							// Àç·Ã ´ë»ó ÀÎº¥ ¾ÆÀÌµð
-	BYTE m_bRefineSlot;								// Àç·Ã ´ë»ó ½½·Ô ¾ÆÀÌµð
+	BYTE m_bDurationRepType;						// ë‚´êµ¬ë„ ìˆ˜ë¦¬ íƒ€ìž…(0:ì¼ë°˜ìˆ˜ë¦¬, 1:ìž¥ë¹„ìˆ˜ë¦¬ 2:ì „ë¶€ìˆ˜ë¦¬)
+	BYTE m_bDurationRepInven;						// ë‚´êµ¬ë„ ìˆ˜ë¦¬ ëŒ€ìƒ ì¸ë²¤ ì•„ì´ë””
+	BYTE m_bDurationRepSlot;						// ë‚´êµ¬ë„ ìˆ˜ë¦¬ ëŒ€ìƒ ìŠ¬ë¡¯ ì•„ì´ë””
+	BYTE m_bRefineInven;							// ìž¬ë ¨ ëŒ€ìƒ ì¸ë²¤ ì•„ì´ë””
+	BYTE m_bRefineSlot;								// ìž¬ë ¨ ëŒ€ìƒ ìŠ¬ë¡¯ ì•„ì´ë””
 
-	BYTE m_bLuckyID;								// Çà¿î¹øÈ£(ÀÌº¥Æ®¿ë)
+	BYTE m_bLuckyID;								// í–‰ìš´ë²ˆí˜¸(ì´ë²¤íŠ¸ìš©)
 	CString m_strHelpMsg;								
 
 	LPTSKILL m_pSelectSkill;
 
 	DWORD m_dwSoulRegion;
-	DWORD m_dwSoulID;								// ¼Ò¿ï¸ÞÀÌÆ® ÄÉ¸¯ÅÍ¾ÆÀÌµð
-	CString m_strSoulName;							// ¼Ò¿ï¸ÞÀÌÆ® ÄÉ¸¯ÅÍÀÌ¸§
+	DWORD m_dwSoulID;								// ì†Œìš¸ë©”ì´íŠ¸ ì¼€ë¦­í„°ì•„ì´ë””
+	CString m_strSoulName;							// ì†Œìš¸ë©”ì´íŠ¸ ì¼€ë¦­í„°ì´ë¦„
 	CString m_strSoulRelay;
 
-	BYTE m_bInvenDraging;							// ÀÎº¥À» µå·¡±× ÁßÀÎÁö ¿©ºÎ
+	BYTE m_bInvenDraging;							// ì¸ë²¤ì„ ë“œëž˜ê·¸ ì¤‘ì¸ì§€ ì—¬ë¶€
 	BYTE m_bDrawOBJ;
 
 	int m_nTotalDrawCount;
@@ -571,8 +571,8 @@ public:
 
 	BYTE m_bItemLevelRevision;
 #ifdef USE_GG
-	BYTE			m_bNPServerID;	// °ÔÀÓ°¡µå.
-	GG_AUTH_DATA	m_NPAuthData;	// °ÔÀÓ°¡µå.
+	BYTE			m_bNPServerID;	// ê²Œìž„ê°€ë“œ.
+	GG_AUTH_DATA	m_NPAuthData;	// ê²Œìž„ê°€ë“œ.
 #endif
 	DWORD m_dwRemainTickVerifyMaintain;
 	DWORD m_dwMountTick;
@@ -2933,7 +2933,7 @@ public:
 	int OnCS_CHATBAN_ACK( CTachyonSession *pSession, CPacket *pPacket );
 	int OnCS_CMGIFT_ACK( CTachyonSession *pSession, CPacket *pPacket );
 
-	// nProtect. °ÔÀÓ°¡µå.
+	// nProtect. ê²Œìž„ê°€ë“œ.
 	int OnCS_NPROTECT_ACK( CTachyonSession *pSession, CPacket *pPacket );
 
 #ifdef ADD_TOURNAMENT
@@ -3111,8 +3111,8 @@ public:
 
 public:
 	MAPTSTRING m_mapTSPAWN;
-	BOOL m_bEditTSPAWN; // µðÆúÆ®:FALSE
-	BOOL m_bMonRoaming;	// µðÆúÆ®:TRUE
+	BOOL m_bEditTSPAWN; // ë””í´íŠ¸:FALSE
+	BOOL m_bMonRoaming;	// ë””í´íŠ¸:TRUE
 
 	
 #endif

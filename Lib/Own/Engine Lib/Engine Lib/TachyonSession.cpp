@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 
 INT64 g_4skey[KEY_COUNT] = {
 	0x5193817ae183acee,
@@ -9,7 +9,7 @@ INT64 g_4skey[KEY_COUNT] = {
 	0x0139aecea89541a2,
 	0x6b97253c5fbb8b06 };
 
-CString g_strSecretKey = "A5$$8AFS13A1::-11#!..'§19716AC&§/D1;;1#";
+CString g_strSecretKey = "A5$$8AFS13A1::-11#!..'\xA7" "19716AC&\xA7" "/D1;;1#";
 
 MAPSESSION CTachyonSession::m_mapSESSION;
 

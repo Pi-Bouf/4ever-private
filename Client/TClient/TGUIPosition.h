@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 class CTGUIPosition
 {
@@ -7,23 +7,23 @@ public:
 	static CTGUIPosition	m_ClientInitPos[TFRAME_COUNT];
 
 protected:
-	/// À§Ä¡ Å¸ÀÔ
+	/// ìœ„ì¹˜ íƒ€ìž…
 	TGUI_POS_TYPE	m_eType;
 	
-	/// XÃà ±âÁØ À§Ä¡
+	/// Xì¶• ê¸°ì¤€ ìœ„ì¹˜
 	TGUI_XBASE		m_eBaseX;
-	/// YÃà ±âÁØ À§Ä¡
+	/// Yì¶• ê¸°ì¤€ ìœ„ì¹˜
 	TGUI_YBASE		m_eBaseY;
 
 	/**
-		m_eType ¿¡ µû¶ó ´Ù¸¥ ÀÇ¹Ì¸¦ Áö´Ñ´Ù.
+		m_eType ì— ë”°ë¼ ë‹¤ë¥¸ ì˜ë¯¸ë¥¼ ì§€ë‹Œë‹¤.
 
-		TGUI_POS_ABSOLUTE		: (int)		ÁÂÇ¥°ª
-		TGUI_POS_RELATIVE		: (float)	È­¸é ºñÀ² °ª (0 ~ 1)
-		TGUI_POS_EXTEND			: »ç¿ëÇÏÁö	¾ÊÀ½.
+		TGUI_POS_ABSOLUTE		: (int)		ì¢Œí‘œê°’
+		TGUI_POS_RELATIVE		: (float)	í™”ë©´ ë¹„ìœ¨ ê°’ (0 ~ 1)
+		TGUI_POS_EXTEND			: ì‚¬ìš©í•˜ì§€	ì•ŠìŒ.
 		TGUI_POS_CENTER			:
 		TGUI_POS_LEFT_CENTER	:
-		TGUI_POS_RIGHT_CENTER	: (float)	±âÁØÀ§Ä¡·Î ºÎÅÍÀÇ ¿ÀÇÁ¼Â. ºñÀ²°ª. (-1 ~ 1)
+		TGUI_POS_RIGHT_CENTER	: (float)	ê¸°ì¤€ìœ„ì¹˜ë¡œ ë¶€í„°ì˜ ì˜¤í”„ì…‹. ë¹„ìœ¨ê°’. (-1 ~ 1)
 	*/
 	LPVOID			m_pParamX, m_pParamY;
 

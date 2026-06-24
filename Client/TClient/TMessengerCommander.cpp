@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+ï»¿#include "Stdafx.h"
 #include "TMessengerCommander.h"
 #include "TClientGame.h"
 #include "TClientWnd.h"
@@ -14,14 +14,14 @@ INT tempMCNT = 0;
 // ====================================================================
 const DWORD CTMessengerCommander::CMD_STRING[] = 
 {
-	TSTR_CMD_MSG_ADD_FRIEND,			///< Ä£±¸ µî·Ï
-	TSTR_CMD_MSG_DEL_FRIEND,			///< Ä£±¸ Á¦°Å
-	TSTR_CMD_MSG_MAKE_GROUP,			///< Ä£±¸ ±×·ì »ý¼º
-	TSTR_CMD_MSG_DEL_GROUP,			///< Ä£±¸ ±×·ì Á¦°Å
-	TSTR_CMD_MSG_CHANGE_GROUP,		///< Ä£±¸ ±×·ìÀ» º¯°æÇÑ´Ù.
-	TSTR_CMD_MSG_NAME_GROUP,			///< Ä£±¸ ±×·ì ÀÌ¸§À» º¯°æÇÑ´Ù.
-	TSTR_CMD_MSG_ADD_BLOCK,			///< À¯Àú¸¦ Â÷´Ü¸ñ·Ï¿¡ µî·ÏÇÑ´Ù.
-	TSTR_CMD_MSG_DEL_BLOCK,			///< À¯Àú¸¦ Â÷´Ü¸ñ·Ï¿¡¼­ Á¦°ÅÇÑ´Ù.
+	TSTR_CMD_MSG_ADD_FRIEND,			///< ì¹œêµ¬ ë“±ë¡
+	TSTR_CMD_MSG_DEL_FRIEND,			///< ì¹œêµ¬ ì œê±°
+	TSTR_CMD_MSG_MAKE_GROUP,			///< ì¹œêµ¬ ê·¸ë£¹ ìƒì„±
+	TSTR_CMD_MSG_DEL_GROUP,			///< ì¹œêµ¬ ê·¸ë£¹ ì œê±°
+	TSTR_CMD_MSG_CHANGE_GROUP,		///< ì¹œêµ¬ ê·¸ë£¹ì„ ë³€ê²½í•œë‹¤.
+	TSTR_CMD_MSG_NAME_GROUP,			///< ì¹œêµ¬ ê·¸ë£¹ ì´ë¦„ì„ ë³€ê²½í•œë‹¤.
+	TSTR_CMD_MSG_ADD_BLOCK,			///< ìœ ì €ë¥¼ ì°¨ë‹¨ëª©ë¡ì— ë“±ë¡í•œë‹¤.
+	TSTR_CMD_MSG_DEL_BLOCK,			///< ìœ ì €ë¥¼ ì°¨ë‹¨ëª©ë¡ì—ì„œ ì œê±°í•œë‹¤.
 };
 // ====================================================================
 
@@ -839,7 +839,7 @@ void CTMessengerCommander::DoChatOut(CTMessengerChat* pChat)
 	
 	CTMessengerBase* pMsgBase = pGame->GetMessengerBase();
 
-	// ¸Þ½ÅÀú
+	// ë©”ì‹ ì €
 	/*CTMsgChatMemberList* pList = pMsgBase->GetMsgChatMemberList();
 	INT nIdx = pList->FindByChat(pChat);
 	if( nIdx != T_INVALID )

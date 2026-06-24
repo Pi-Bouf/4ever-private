@@ -1,4 +1,4 @@
-// InstallList.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// InstallList.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -31,7 +31,7 @@ BEGIN_MESSAGE_MAP(CInstallList, CFormView)
 END_MESSAGE_MAP()
 
 
-// CInstallList Áø´ÜÀÔ´Ï´Ù.
+// CInstallList ì§„ë‹¨ì…ë‹ˆë‹¤.
 
 #ifdef _DEBUG
 void CInstallList::AssertValid() const
@@ -46,7 +46,7 @@ void CInstallList::Dump(CDumpContext& dc) const
 #endif //_DEBUG
 
 
-// CInstallList ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CInstallList ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 void CInstallList::OnSize(UINT nType, int cx, int cy)
 {
 	CFormView::OnSize(nType, cx, cy);

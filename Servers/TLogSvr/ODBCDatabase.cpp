@@ -1,4 +1,4 @@
-
+ï»¿
 #include "StdAfx.h"
 #include "ODBCDatabase.h"
 
@@ -27,7 +27,7 @@ BOOL CODBCDatabase::IsConnected()
 {
 	LONG lConnection = SQL_CD_TRUE;
 
-	//supported by odbc 3.5 ÀÌ ÇÔ¼ö´Â Å×½ºÆ®°¡ ÇÊ¿äÇÔ
+	//supported by odbc 3.5 ì´ í•¨ìˆ˜ëŠ” í…ŒìŠ¤íŠ¸ê°€ í•„ìš”í•¨
 	SQLRETURN ret = SQLGetConnectAttr(m_hDbc, SQL_ATTR_CONNECTION_DEAD, (SQLPOINTER)&lConnection, sizeof(lConnection), 0);
 	
 	if(ret == SQL_SUCCESS || ret ==SQL_SUCCESS_WITH_INFO)
@@ -548,7 +548,7 @@ void CODBCRecordset::Close()
 }
 
 //
-//	¹öÆÛÀÇ BLOB µ¥ÀÌÅÍ¸¦ ÀúÀåÇÑ´Ù. szSQLÀº ÇÏ³ªÀÇ BLOB µ¥ÀÌÅÍ¸¦ ÀúÀåÇÏ´Â UPDATE, INSERT SQL¹®ÀÌ¾î¾ß ÇÑ´Ù.
+//	ë²„í¼ì˜ BLOB ë°ì´í„°ë¥¼ ì €ìž¥í•œë‹¤. szSQLì€ í•˜ë‚˜ì˜ BLOB ë°ì´í„°ë¥¼ ì €ìž¥í•˜ëŠ” UPDATE, INSERT SQLë¬¸ì´ì–´ì•¼ í•œë‹¤.
 //
 BOOL CODBCRecordset::WriteBlob(LPCTSTR szSQL, LPVOID pBlob, int size)
 {

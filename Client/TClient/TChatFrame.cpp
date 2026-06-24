@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+ï»¿#include "Stdafx.h"
 #include "TClientGame.h"
 #include "TMiniPopupDlg.h"
 #include "TClient.h"
@@ -66,21 +66,21 @@ const DWORD		CTChatFrame::CHAT_FLAG_STRINGS[TCHAT_FLAG_COUNT] =
 };
 const DWORD		CTChatFrame::DEFAULT_CHAT_FLAGS[] = 
 {
-	TCHAT_FLAG_ALL_CHAT,						// ÀüÃ¼	
-	TCHAT_FLAG_PARTY,					// ÀÏÇà
-	TCHAT_FLAG_GUILD_TACTICS,					// ±æµå
-	TCHAT_FLAG_FORCE,					// Àü´ë
-	TCHAT_FLAG_WHISPER,				// ±Ó¸»
-	TCHAT_FLAG_INFO						// °á°ú
+	TCHAT_FLAG_ALL_CHAT,						// ì „ì²´	
+	TCHAT_FLAG_PARTY,					// ì¼í–‰
+	TCHAT_FLAG_GUILD_TACTICS,					// ê¸¸ë“œ
+	TCHAT_FLAG_FORCE,					// ì „ëŒ€
+	TCHAT_FLAG_WHISPER,				// ê·“ë§
+	TCHAT_FLAG_INFO						// ê²°ê³¼
 };
 const BYTE		CTChatFrame::CHAT_SHOW_NEWMSG[] = 
 {
-	FALSE,								// ÀüÃ¼
-	TRUE,								// ±Ó¸»
-	TRUE,								// ÀÏÇà
-	TRUE,								// ±æµå
-	TRUE,								// Àü´ë
-	FALSE,								// °á°ú
+	FALSE,								// ì „ì²´
+	TRUE,								// ê·“ë§
+	TRUE,								// ì¼í–‰
+	TRUE,								// ê¸¸ë“œ
+	TRUE,								// ì „ëŒ€
+	FALSE,								// ê²°ê³¼
 };
 const INT		CTChatFrame::POPUP_TO_LIST[] =
 {
@@ -114,12 +114,12 @@ CTChatFrame::CTChatFrame(TComponent *pParent, FRAMEDESC_SHAREDPTR pDesc, CTClien
 	
 	static const DWORD dwTabTitle[] = 
 	{
-		TSTR_CHAT_TAB_ALL,				// ÀüÃ¼				
-		TSTR_CHAT_TAB_PARTY,				// ÀÏÇà
-		TSTR_CHAT_TAB_GUILD,				// ±æµå
-		TSTR_CHAT_TAB_FORCE,				// Àü´ë
-		TSTR_CHAT_TAB_WHISPER,			// ±Ó¸»
-		TSTR_CHAT_TAB_RESULT,			// °á°ú
+		TSTR_CHAT_TAB_ALL,				// ì „ì²´				
+		TSTR_CHAT_TAB_PARTY,				// ì¼í–‰
+		TSTR_CHAT_TAB_GUILD,				// ê¸¸ë“œ
+		TSTR_CHAT_TAB_FORCE,				// ì „ëŒ€
+		TSTR_CHAT_TAB_WHISPER,			// ê·“ë§
+		TSTR_CHAT_TAB_RESULT,			// ê²°ê³¼
 	};
 
 	static const DWORD dwChatTab[] = 
@@ -1427,7 +1427,7 @@ void CTChatFrame::AddWhisperList( CString strWhisperTarget )
 		if( (*it) == strWhisperTarget )
 		{
 			m_queLatestWhisper.erase( it );
-			m_queLatestWhisper.push_back( strWhisperTarget ); // °¡Àå ÃÖ±Ù¿¡ »ç¿ëÇÑ ¾Ö´Â °è¼Ó »ì¾Æ³²À» ¼ö ÀÖ°Ô ¸Ç µÚ·Î ³Ö¾îÁØ´Ù.
+			m_queLatestWhisper.push_back( strWhisperTarget ); // ê°€ìž¥ ìµœê·¼ì— ì‚¬ìš©í•œ ì• ëŠ” ê³„ì† ì‚´ì•„ë‚¨ì„ ìˆ˜ ìžˆê²Œ ë§¨ ë’¤ë¡œ ë„£ì–´ì¤€ë‹¤.
 			bFindDuplicate = TRUE;
 			break;
 		}
@@ -2137,7 +2137,7 @@ void CTChatFrame::ShowComponent(BOOL bVisible)
 	if( !m_bChatEditON )
 		ResetChatMsg(FALSE);
 
-	// Ã¤ÆÃÃ¢ ¾Æ·¡ ¹è°æ¿¡ ±ò¸®´Â ¹Ù´Â Ç×»ó Ãâ·ÂµÇ¾ß ÇÑ´Ù.
+	// ì±„íŒ…ì°½ ì•„ëž˜ ë°°ê²½ì— ê¹”ë¦¬ëŠ” ë°”ëŠ” í•­ìƒ ì¶œë ¥ë˜ì•¼ í•œë‹¤.
 
 		m_pChatTabBack->ShowComponent(TRUE);	
 
@@ -2800,23 +2800,23 @@ const DWORD		CTChatFrame::CHAT_FLAG_STRINGS[TCHAT_FLAG_COUNT] =
 };
 const DWORD		CTChatFrame::DEFAULT_CHAT_FLAGS[] = 
 {
-	TCHAT_FLAG_ALL_CHAT,						// ÀüÃ¼
-	TCHAT_FLAG_ALL_CHAT_WITH_INFO,		// ÀÏ¹Ý
-	TCHAT_FLAG_WHISPER,				// ±Ó¸»
-	TCHAT_FLAG_PARTY,					// ÀÏÇà
-	TCHAT_FLAG_GUILD_TACTICS,					// ±æµå
-	TCHAT_FLAG_FORCE,					// Àü´ë
-	TCHAT_FLAG_INFO						// °á°ú
+	TCHAT_FLAG_ALL_CHAT,						// ì „ì²´
+	TCHAT_FLAG_ALL_CHAT_WITH_INFO,		// ì¼ë°˜
+	TCHAT_FLAG_WHISPER,				// ê·“ë§
+	TCHAT_FLAG_PARTY,					// ì¼í–‰
+	TCHAT_FLAG_GUILD_TACTICS,					// ê¸¸ë“œ
+	TCHAT_FLAG_FORCE,					// ì „ëŒ€
+	TCHAT_FLAG_INFO						// ê²°ê³¼
 };
 const BYTE		CTChatFrame::CHAT_SHOW_NEWMSG[] = 
 {
-	FALSE,								// ÀüÃ¼
-	FALSE,								// ÀÏ¹Ý
-	TRUE,								// ±Ó¸»
-	TRUE,								// ÀÏÇà
-	TRUE,								// ±æµå
-	TRUE,								// Àü´ë
-	FALSE,								// °á°ú
+	FALSE,								// ì „ì²´
+	FALSE,								// ì¼ë°˜
+	TRUE,								// ê·“ë§
+	TRUE,								// ì¼í–‰
+	TRUE,								// ê¸¸ë“œ
+	TRUE,								// ì „ëŒ€
+	FALSE,								// ê²°ê³¼
 };
 const INT		CTChatFrame::POPUP_TO_LIST[] =
 {
@@ -2848,13 +2848,13 @@ CTChatFrame::CTChatFrame(TComponent *pParent, FRAMEDESC_SHAREDPTR pDesc, CTClien
 {
 	static const DWORD dwTabTitle[] = 
 	{
-		TSTR_CHAT_TAB_ALL,				// ÀüÃ¼
-		TSTR_CHAT_TAB_NORMAL,			// ÀÏ¹Ý
-		TSTR_CHAT_TAB_WHISPER,			// ±Ó¸»
-		TSTR_CHAT_TAB_PARTY,				// ÀÏÇà
-		TSTR_CHAT_TAB_GUILD,				// ±æµå
-		TSTR_CHAT_TAB_FORCE,				// Àü´ë
-		TSTR_CHAT_TAB_RESULT,			// °á°ú
+		TSTR_CHAT_TAB_ALL,				// ì „ì²´
+		TSTR_CHAT_TAB_NORMAL,			// ì¼ë°˜
+		TSTR_CHAT_TAB_WHISPER,			// ê·“ë§
+		TSTR_CHAT_TAB_PARTY,				// ì¼í–‰
+		TSTR_CHAT_TAB_GUILD,				// ê¸¸ë“œ
+		TSTR_CHAT_TAB_FORCE,				// ì „ëŒ€
+		TSTR_CHAT_TAB_RESULT,			// ê²°ê³¼
 	};
 
 	static const DWORD dwChatTab[] = 
@@ -3886,7 +3886,7 @@ void CTChatFrame::AddWhisperList( CString strWhisperTarget )
 		if( (*it) == strWhisperTarget )
 		{
 			m_queLatestWhisper.erase( it );
-			m_queLatestWhisper.push_back( strWhisperTarget ); // °¡Àå ÃÖ±Ù¿¡ »ç¿ëÇÑ ¾Ö´Â °è¼Ó »ì¾Æ³²À» ¼ö ÀÖ°Ô ¸Ç µÚ·Î ³Ö¾îÁØ´Ù.
+			m_queLatestWhisper.push_back( strWhisperTarget ); // ê°€ìž¥ ìµœê·¼ì— ì‚¬ìš©í•œ ì• ëŠ” ê³„ì† ì‚´ì•„ë‚¨ì„ ìˆ˜ ìžˆê²Œ ë§¨ ë’¤ë¡œ ë„£ì–´ì¤€ë‹¤.
 			bFindDuplicate = TRUE;
 			break;
 		}
@@ -4566,7 +4566,7 @@ void CTChatFrame::ShowComponent(BOOL bVisible)
 	if( !m_bChatEditON )
 		ResetChatMsg(FALSE);
 
-	// Ã¤ÆÃÃ¢ ¾Æ·¡ ¹è°æ¿¡ ±ò¸®´Â ¹Ù´Â Ç×»ó Ãâ·ÂµÇ¾ß ÇÑ´Ù.
+	// ì±„íŒ…ì°½ ì•„ëž˜ ë°°ê²½ì— ê¹”ë¦¬ëŠ” ë°”ëŠ” í•­ìƒ ì¶œë ¥ë˜ì•¼ í•œë‹¤.
 	m_pChatTabBack->ShowComponent(TRUE);	
 
 //#ifdef DEBUG

@@ -1,19 +1,19 @@
-#pragma once
+ï»¿#pragma once
 
 class CTMessengerCommander
 {
 public:
-	/// ¸í·É ¿­°Å
+	/// ëª…ë ¹ ì—´ê±°
 	enum CmdEnum
 	{
-		CMD_MSG_ADD_FRIEND,			///< Ä£±¸ µî·Ï
-		CMD_MSG_DEL_FRIEND,			///< Ä£±¸ Á¦°Å
-		CMD_MSG_MAKE_GROUP,			///< Ä£±¸ ±×·ì »ý¼º
-		CMD_MSG_DEL_GROUP,			///< Ä£±¸ ±×·ì Á¦°Å
-		CMD_MSG_CHANGE_GROUP,		///< Ä£±¸ ±×·ìÀ» º¯°æÇÑ´Ù.
-		CMD_MSG_NAME_GROUP,			///< Ä£±¸ ±×·ì ÀÌ¸§À» º¯°æÇÑ´Ù.
-		CMD_MSG_ADD_BLOCK,			///< À¯Àú¸¦ Â÷´Ü¸ñ·Ï¿¡ µî·ÏÇÑ´Ù.
-		CMD_MSG_DEL_BLOCK,			///< À¯Àú¸¦ Â÷´Ü¸ñ·Ï¿¡¼­ Á¦°ÅÇÑ´Ù.
+		CMD_MSG_ADD_FRIEND,			///< ì¹œêµ¬ ë“±ë¡
+		CMD_MSG_DEL_FRIEND,			///< ì¹œêµ¬ ì œê±°
+		CMD_MSG_MAKE_GROUP,			///< ì¹œêµ¬ ê·¸ë£¹ ìƒì„±
+		CMD_MSG_DEL_GROUP,			///< ì¹œêµ¬ ê·¸ë£¹ ì œê±°
+		CMD_MSG_CHANGE_GROUP,		///< ì¹œêµ¬ ê·¸ë£¹ì„ ë³€ê²½í•œë‹¤.
+		CMD_MSG_NAME_GROUP,			///< ì¹œêµ¬ ê·¸ë£¹ ì´ë¦„ì„ ë³€ê²½í•œë‹¤.
+		CMD_MSG_ADD_BLOCK,			///< ìœ ì €ë¥¼ ì°¨ë‹¨ëª©ë¡ì— ë“±ë¡í•œë‹¤.
+		CMD_MSG_DEL_BLOCK,			///< ìœ ì €ë¥¼ ì°¨ë‹¨ëª©ë¡ì—ì„œ ì œê±°í•œë‹¤.
 		CMD_MSG_COUNT
 	};
 
@@ -45,20 +45,20 @@ protected:
 	CString m_strReqTarget;
 
 public:
-	/// ¸Þ½ÅÀú Ä¿¸Çµå ÀÎ½ºÅÏ½º¸¦ ¾ò´Â´Ù.
+	/// ë©”ì‹ ì € ì»¤ë§¨ë“œ ì¸ìŠ¤í„´ìŠ¤ë¥¼ ì–»ëŠ”ë‹¤.
 	static CTMessengerCommander* GetInstance();
 
-	/// Ã¤ÆÃ ¸Þ½ÃÁö¿¡ ÀÇÇÑ ¸Þ½ÅÀú ¸í·É ÀÌº¥Æ®¸¦ Ã³¸®ÇÑ´Ù.
+	/// ì±„íŒ… ë©”ì‹œì§€ì— ì˜í•œ ë©”ì‹ ì € ëª…ë ¹ ì´ë²¤íŠ¸ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	static CString OnMessengerCmdByChatMsg(const CString& strCMD, const VECTORSTRING& vPARAM, DWORD dwUSER);
-	/// Ã¤ÆÃ ¸Þ½ÃÁö Ä¿¸Çµå¸¦ µî·ÏÇÑ´Ù.
+	/// ì±„íŒ… ë©”ì‹œì§€ ì»¤ë§¨ë“œë¥¼ ë“±ë¡í•œë‹¤.
 	static void RegChatCmds();
 
 public:
-	/// ¸Þ½ÅÀú °ü·Ã ¸í·ÉÀ» ³»¸°´Ù.
+	/// ë©”ì‹ ì € ê´€ë ¨ ëª…ë ¹ì„ ë‚´ë¦°ë‹¤.
 	void DoMessengerCommand(CmdEnum eCmd, const CString& strParam1="", const CString& strParam2="");
 
 public:
-	/// Ä£±¸ ¸ñ·ÏÀ» ¹Þ´Â´Ù.
+	/// ì¹œêµ¬ ëª©ë¡ì„ ë°›ëŠ”ë‹¤.
 	void OnFriendlist(
 		BYTE bGroupCount,
 		FriendGroup* pGroups,
@@ -66,65 +66,65 @@ public:
 		FriendMember* pFriends,
 		TMAPLINKGROUPMEMBER& );
 
-	/// Ä£±¸ µî·ÏÀ» ¿äÃ»ÇÑ´Ù.
+	/// ì¹œêµ¬ ë“±ë¡ì„ ìš”ì²­í•œë‹¤.
 	void DoAddFriend(const CString& strFriend);
-	/// Ä£±¸ µî·Ï ¿äÃ»¿¡ ´ëÇÑ ÀÀ´äÀ» ¹Þ¾Æ Ã³¸®ÇÑ´Ù.
+	/// ì¹œêµ¬ ë“±ë¡ ìš”ì²­ì— ëŒ€í•œ ì‘ë‹µì„ ë°›ì•„ ì²˜ë¦¬í•œë‹¤.
 	void OnFriendInvite(const CString& strInviter);
-	/// Ä£±¸ ¿äÃ»¿¡ ´ëÇÑ ´äÀ» º¸³½´Ù.
+	/// ì¹œêµ¬ ìš”ì²­ì— ëŒ€í•œ ë‹µì„ ë³´ë‚¸ë‹¤.
 	void DoFriendInviteAnswer(BYTE bReply);
-	/// Ä£±¸ µî·Ï ¿äÃ»À» Ã³¸®ÇÑ´Ù.
+	/// ì¹œêµ¬ ë“±ë¡ ìš”ì²­ì„ ì²˜ë¦¬í•œë‹¤.
 	void OnAddFriend(BYTE bResult, FriendMember* pFriend);
 
-	/// Ä£±¸ Á¦°Å¸¦ ¿äÃ»ÇÑ´Ù.
+	/// ì¹œêµ¬ ì œê±°ë¥¼ ìš”ì²­í•œë‹¤.
 	void DoEraseFriend(DWORD dwCharID);
-	/// Ä£±¸ Á¦°Å ¿äÃ»À» Ã³¸®ÇÑ´Ù.
+	/// ì¹œêµ¬ ì œê±° ìš”ì²­ì„ ì²˜ë¦¬í•œë‹¤.
 	void OnEraseFriend(DWORD dwCharID);
 
-	/// Ä£±¸ÀÇ Á¢¼Ó ¿©ºÎ¸¦ Ã³¸®ÇÑ´Ù.
+	/// ì¹œêµ¬ì˜ ì ‘ì† ì—¬ë¶€ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	void OnConnectFriend(BYTE bResult, const CString& strName, DWORD dwRegion);
-	/// Ä£±¸ÀÇ Áö¿ª º¯°æÀ» Ã³¸®ÇÑ´Ù.
+	/// ì¹œêµ¬ì˜ ì§€ì—­ ë³€ê²½ì„ ì²˜ë¦¬í•œë‹¤.
 	void OnChangeFriendRegion(const CString& strName, DWORD dwRegion);
 
-	/// Ä£±¸ ±×·ì »ý¼ºÀ» ¿äÃ»ÇÑ´Ù.
+	/// ì¹œêµ¬ ê·¸ë£¹ ìƒì„±ì„ ìš”ì²­í•œë‹¤.
 	void DoMakeFriendGroup(const CString& strName);
-	/// Ä£±¸ ±×·ì »ý¼º¿¡ ´ëÇÑ ¿äÃ»À» Ã³¸®ÇÑ´Ù.
+	/// ì¹œêµ¬ ê·¸ë£¹ ìƒì„±ì— ëŒ€í•œ ìš”ì²­ì„ ì²˜ë¦¬í•œë‹¤.
 	void OnMakeFriendGroup(BYTE bResult, BYTE bGroupID, const CString& strName);
 
-	/// Ä£±¸ ±×·ì Á¦°Å¸¦ ¿äÃ»ÇÑ´Ù.
+	/// ì¹œêµ¬ ê·¸ë£¹ ì œê±°ë¥¼ ìš”ì²­í•œë‹¤.
 	void DoEraseFriendGroup(BYTE bGroupID);
-	/// Ä£±¸ ±×·ì Á¦°Å¿¡ ´ëÇÑ ¿äÃ»À» Ã³¸®ÇÑ´Ù.
+	/// ì¹œêµ¬ ê·¸ë£¹ ì œê±°ì— ëŒ€í•œ ìš”ì²­ì„ ì²˜ë¦¬í•œë‹¤.
 	void OnEraseFriendGroup(BYTE bResult, BYTE bGroupID);
 
-	/// Ä£±¸ ±×·ì º¯°æÀ» ¿äÃ»ÇÑ´Ù.
+	/// ì¹œêµ¬ ê·¸ë£¹ ë³€ê²½ì„ ìš”ì²­í•œë‹¤.
 	void DoChangeFriendGroup(DWORD dwCharID, BYTE bWantedGroup);
-	/// Ä£±¸ ±×·ì º¯°æ¿¡ ´ëÇÑ ¿äÃ»À» Ã³¸®ÇÑ´Ù.
+	/// ì¹œêµ¬ ê·¸ë£¹ ë³€ê²½ì— ëŒ€í•œ ìš”ì²­ì„ ì²˜ë¦¬í•œë‹¤.
 	void OnChangeFriendGroup(BYTE bResult, BYTE bGroup, DWORD dwCharID);
 
-	/// Ä£±¸ ±×·ì¸í º¯°æÀ» ¿äÃ»ÇÑ´Ù.
+	/// ì¹œêµ¬ ê·¸ë£¹ëª… ë³€ê²½ì„ ìš”ì²­í•œë‹¤.
 	void DoFriendGroupName(BYTE bGroup, const CString& strName);
-	/// Ä£±¸ ±×·ì¸í º¯°æ¿¡ ´ëÇÑ ¿äÃ»À» Ã³¸®ÇÑ´Ù.
+	/// ì¹œêµ¬ ê·¸ë£¹ëª… ë³€ê²½ì— ëŒ€í•œ ìš”ì²­ì„ ì²˜ë¦¬í•œë‹¤.
 	void OnFriendGroupName(BYTE bResult, BYTE bGroup, const CString& strName);
 
-	/// ±×·ì ÀüÃ¼¿¡ ´ëÇÑ ÃÊ´ë¸¦ ¿äÃ»ÇÑ´Ù.
+	/// ê·¸ë£¹ ì „ì²´ì— ëŒ€í•œ ì´ˆëŒ€ë¥¼ ìš”ì²­í•œë‹¤.
 	void DoInviteChatGroup(DWORD dwTMS, BYTE bGroup);
-	/// Å¸°ÙÀÇ ÃÊ´ë¸¦ ¿äÃ»ÇÑ´Ù.
+	/// íƒ€ê²Ÿì˜ ì´ˆëŒ€ë¥¼ ìš”ì²­í•œë‹¤.
 	void DoInviteChatTarget(DWORD dwTMS, const VECTORDWORD& vTARGET);
-	/// Ã¤ÆÃ ÃÊ´ë¿¡ ´ëÇÑ ¿äÃ»À» Ã³¸®ÇÑ´Ù.
+	/// ì±„íŒ… ì´ˆëŒ€ì— ëŒ€í•œ ìš”ì²­ì„ ì²˜ë¦¬í•œë‹¤.
 	void OnInviteChatTarget(DWORD dwTMS, const CString& strInviter, LPMCTARGET_ARRAY pTargets);
 
-	/// ¸Þ½ÅÀú Ã¤Æ® ¸Þ½ÃÁö¸¦ º¸³½´Ù.
+	/// ë©”ì‹ ì € ì±„íŠ¸ ë©”ì‹œì§€ë¥¼ ë³´ë‚¸ë‹¤.
 	void DoChat(DWORD dwTMS, const CString& strMessage);
-	/// ¸Þ½ÅÀú Ã¤Æ® ¸Þ½ÃÁö¸¦ ¼ö½ÅÇÑ´Ù.
+	/// ë©”ì‹ ì € ì±„íŠ¸ ë©”ì‹œì§€ë¥¼ ìˆ˜ì‹ í•œë‹¤.
 	void OnChat(DWORD dwTMS, const CString& strSender, const CString& strMessage);
 
-	/// ¸Þ½ÅÀú Ã¤Æ® Á¾·á¸¦ ¿äÃ»ÇÑ´Ù.
+	/// ë©”ì‹ ì € ì±„íŠ¸ ì¢…ë£Œë¥¼ ìš”ì²­í•œë‹¤.
 	void DoChatOut(CTMessengerChat* pChat);
-	/// ¸Þ½ÅÀú Ã¤Æ® Á¾·á¸¦ Ã³¸®ÇÑ´Ù.
+	/// ë©”ì‹ ì € ì±„íŠ¸ ì¢…ë£Œë¥¼ ì²˜ë¦¬í•œë‹¤.
 	void OnChatOut(DWORD dwTMS, const CString& strTarget);
 
-	/// ÁÖ¾îÁø À¯Àú¸¦ Â÷´ÜÇÑ´Ù.
+	/// ì£¼ì–´ì§„ ìœ ì €ë¥¼ ì°¨ë‹¨í•œë‹¤.
 	void DoAddBlock(const CString& strTarget);
-	/// ÁÖ¾îÁø À¯ÀúÀÇ Â÷´ÜÀ» ÇØÁ¦ÇÑ´Ù.
+	/// ì£¼ì–´ì§„ ìœ ì €ì˜ ì°¨ë‹¨ì„ í•´ì œí•œë‹¤.
 	void DoDeleteBlock(const CString& strTarget);
 
 protected:

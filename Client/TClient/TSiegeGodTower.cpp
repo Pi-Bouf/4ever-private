@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "TSiegeGodTower.h"
 
 CTGodTower::MAP_RESOURCE_TOWER CTGodTower::m_mapResTower;
@@ -34,7 +34,7 @@ CTGodTower::~CTGodTower()
 LPOBJECT	CTGodTower::FindObject( DWORD dwObjID, CTachyonRes* pResource )
 {
 	MAP_TOWER_ITOR itor = m_mapResTower.find( dwObjID );
-	if( itor != m_mapResTower.end() )	//!< ÀÌ¹Ì ÇÑ¹øÃ£¾Ò´ø ¿ÀºêÁ§Æ®¸é..
+	if( itor != m_mapResTower.end() )	//!< ì´ë¯¸ í•œë²ˆì°¾ì•˜ë˜ ì˜¤ë¸Œì íŠ¸ë©´..
 	{
 		return (*itor).second;
 	}

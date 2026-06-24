@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 #include "TNormalCabinetDlg.h"
 #include "TClientGame.h"
 #include "Resource.h"
@@ -54,8 +54,8 @@ void CTGuildCabinetDlg::SetupComponent()
 
 	m_nMaxItemSlot	= MAX_ITEM_SLOT;
 	m_nMaxItemCol	= MAX_ITEM_COLUMN;
-	m_nMaxCabCnt	= 1; // ±æµå º¸°üÇÔÀº ÇÏ³ªÀÓ!!
-	m_nMaxStorage	= 0; // ±æµå ·¹º§¿¡ µû¶ó °áÁ¤! ¾ÆÁ÷ Á¤ÇØ ÁöÁö ¾Ê¾ÒÀ½!
+	m_nMaxCabCnt	= 1; // ê¸¸ë“œ ë³´ê´€í•¨ì€ í•˜ë‚˜ì„!!
+	m_nMaxStorage	= 0; // ê¸¸ë“œ ë ˆë²¨ì— ë”°ë¼ ê²°ì •! ì•„ì§ ì •í•´ ì§€ì§€ ì•Šì•˜ìŒ!
 
 	m_pSelectTxt= NULL;
 	m_pCostTxt	= NULL;

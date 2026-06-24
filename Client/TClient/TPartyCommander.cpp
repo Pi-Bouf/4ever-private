@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+ï»¿#include "Stdafx.h"
 #include "TPartyCommander.h"
 #include "Resource.h"
 #include "TClientGame.h"
@@ -8,11 +8,11 @@
 // ====================================================================
 const DWORD CTPartyCommander::CMD_STRING[CTPartyCommander::CMD_COUNT] = 
 {
-	TSTR_CMD_PARTY_INVITE,				///< ÆÄÆ¼ ÃÊ´ë
-	TSTR_CMD_PARTY_KICK,					///< ÆÄÆ¼¿ø Ãß¹æ
-	TSTR_CMD_PARTY_OUT,					///< ÆÄÆ¼ ³ª°¡±â
-	TSTR_MENU_CORPS_REQ,					///< Àü´ë ÃÊ´ë
-	TSTR_CMD_ASSISTANT_INVITE			///< ºÎ°ü ÀÓ¸í
+	TSTR_CMD_PARTY_INVITE,				///< íŒŒí‹° ì´ˆëŒ€
+	TSTR_CMD_PARTY_KICK,					///< íŒŒí‹°ì› ì¶”ë°©
+	TSTR_CMD_PARTY_OUT,					///< íŒŒí‹° ë‚˜ê°€ê¸°
+	TSTR_MENU_CORPS_REQ,					///< ì „ëŒ€ ì´ˆëŒ€
+	TSTR_CMD_ASSISTANT_INVITE			///< ë¶€ê´€ ìž„ëª…
 };
 // ====================================================================
 

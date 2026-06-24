@@ -1,4 +1,4 @@
-// TControlSvr.cpp : WinMainÀÇ ±¸ÇöÀÔ´Ï´Ù.
+ï»¿// TControlSvr.cpp : WinMainì˜ êµ¬í˜„ìž…ë‹ˆë‹¤.
 
 #include "stdafx.h"
 #include "TControlSvr.h"
@@ -404,7 +404,7 @@ BYTE CTControlSvrModule::WaitForConnect()
 
 BYTE CTControlSvrModule::Accept()
 {
-	// Çö½Â·æ CTManager
+	// í˜„ìŠ¹ë£¡ CTManager
 	if(m_accept == INVALID_SOCKET)
 	{
 		m_vAccept.Clear();
@@ -489,11 +489,11 @@ void CTControlSvrModule::UpdateData()
 	
 
 	MAPTSVRTEMP::iterator itSVRTEMP;
-	MAPTMANAGER::iterator itCMANAGER; // Çö½Â·æ CTManager
+	MAPTMANAGER::iterator itCMANAGER; // í˜„ìŠ¹ë£¡ CTManager
 	MAPTMACHINE::iterator itMACHINE;
 	MAPTGROUP::iterator itGROUP;
 	MAPTSVRTYPE::iterator itSVRTYPE;
-	MAPPLATFORM::iterator itPLATFORM; // Çö½Â·æ CPlatformUsage
+	MAPPLATFORM::iterator itPLATFORM; // í˜„ìŠ¹ë£¡ CPlatformUsage
 
 	for( itSVRTEMP = m_mapTSVRTEMP.begin(); itSVRTEMP != m_mapTSVRTEMP.end(); itSVRTEMP++)
 	{
@@ -526,7 +526,7 @@ void CTControlSvrModule::UpdateData()
 	m_mapPLATFORM.clear();
 
 	/////////////////////////////////////////////////////////////
-	// Çö½Â·æ ¸Å´ÏÀú ±ÇÇÑ
+	// í˜„ìŠ¹ë£¡ ë§¤ë‹ˆì € ê¶Œí•œ
 	//MAPTMANAGERTEMP::iterator itMANAGER;
 	//for( itMANAGER = m_mapMANTEMP.begin(); itMANAGER != m_mapMANTEMP.end(); itMANAGER++)
 	//	delete (*itMANAGER).second;
@@ -542,7 +542,7 @@ void CTControlSvrModule::OnInvalidSession( CTControlSession *pSession)
 
 void CTControlSvrModule::OnCloseSession( CTControlSession *pSession)
 {
-	BYTE bManager = pSession->m_bManager; // Çö½Â·æ CTManager
+	BYTE bManager = pSession->m_bManager; // í˜„ìŠ¹ë£¡ CTManager
 
 	SMART_LOCKCS(&m_csBATCH);
 	MAPTMANAGER::iterator finder;
@@ -584,10 +584,10 @@ void CTControlSvrModule::OnCloseSession( CTControlSession *pSession)
 
 void CTControlSvrModule::ClosingSession( CTControlSession *pSession)
 {
-	// pSession¿¡ ´ëÇÑ ÆÐÅ¶Ã³¸®°¡ ¿Ï·áµÇ´Â ½ÃÁ¡À» ¾Ë¸²
-	// pSession¿¡ ´ëÇÑ ¿À¹ö·¦ ¿ÀÆÛ·¡ÀÌ¼ÇÀÌ ¿Ï·áµÈ °ÍÀ» È®ÀÎÈÄ È£Ãâ ÇÏ¿©¾ß ÇÔ.
+	// pSessionì— ëŒ€í•œ íŒ¨í‚·ì²˜ë¦¬ê°€ ì™„ë£Œë˜ëŠ” ì‹œì ì„ ì•Œë¦¼
+	// pSessionì— ëŒ€í•œ ì˜¤ë²„ëž© ì˜¤í¼ëž˜ì´ì…˜ì´ ì™„ë£Œëœ ê²ƒì„ í™•ì¸í›„ í˜¸ì¶œ í•˜ì—¬ì•¼ í•¨.
 	EnterCriticalSection(&m_csBATCH);
-	MAPTMANAGER::iterator finder = m_mapSESSION.find((DWORD_PTR) pSession); // Çö½Â·æ CTManager
+	MAPTMANAGER::iterator finder = m_mapSESSION.find((DWORD_PTR) pSession); // í˜„ìŠ¹ë£¡ CTManager
 	pSession->m_dwCloseTick = GetTickCount();
 
 	if( pSession->m_bManager && 
@@ -927,7 +927,7 @@ void CTControlSvrModule::QueryStatus()
 					pService->m_dwStatus != DCSVC_STAT_RUNNING)
 				{
 					//-------------------------------------------------------------------------------------
-					// ¼­ºñ½º º¯È­ ¶§ ·Î±× ³²±â±â					
+					// ì„œë¹„ìŠ¤ ë³€í™” ë•Œ ë¡œê·¸ ë‚¨ê¸°ê¸°					
 					switch(pService->m_dwStatus)
 					{					
 					case DCSVC_STAT_STOPPED :			LogEvent("%s Before : DCSVC_STAT_STOPPED", pService->m_strName);		 break;
@@ -961,14 +961,14 @@ void CTControlSvrModule::QueryStatus()
 				
 				}
 				
-				// ¼­ºñ½º°¡ Stop ÀÏ ¶§ ÀÚµ¿À¸·Î Start ½ÃÅ°±â.				
+				// ì„œë¹„ìŠ¤ê°€ Stop ì¼ ë•Œ ìžë™ìœ¼ë¡œ Start ì‹œí‚¤ê¸°.				
 				if(ss.dwCurrentState == DCSVC_STAT_STOPPED 
 					&& pService->m_dwStatus ==  DCSVC_STAT_STOPPED
 					&& m_bAutoStart == TRUE 
 					&& pService->m_bManagerControl == TRUE)
 				{
 					DWORD dwCurTick = GetTickCount();
-					if( pService->m_dwAutoStartTick + 60000 < dwCurTick) // 1ºÐÈÄ¿¡ ½ÃÀÛ
+					if( pService->m_dwAutoStartTick + 60000 < dwCurTick) // 1ë¶„í›„ì— ì‹œìž‘
 					{								
 						StartService(pService);			
 						pService->m_dwAutoStartTick = dwCurTick;
@@ -986,7 +986,7 @@ void CTControlSvrModule::QueryStatus()
 		{			
 			BYTE bSMS = 0;
 
-			// ¼­ºñ½º°¡ Stop µÆÀ» ¶§.
+			// ì„œë¹„ìŠ¤ê°€ Stop ëì„ ë•Œ.
 			if(ss.dwCurrentState == DCSVC_STAT_STOPPED)
 			{
 				LogEvent("QS_Stopped Server : %s", pService->m_strName);
@@ -1189,16 +1189,16 @@ DWORD CTControlSvrModule::WorkThread()
 						}
 						OnInvalidSession(pSession);
 						break;
-						// ***** IOCP »ç¿ë¹ý Áß ¾Ë¾Æ³»±â Èûµç Ã¹¹øÂ° ±¸¹® (¼­¹öÃø ¼¼¼Ç Á¾·á) *****
+						// ***** IOCP ì‚¬ìš©ë²• ì¤‘ ì•Œì•„ë‚´ê¸° íž˜ë“  ì²«ë²ˆì§¸ êµ¬ë¬¸ (ì„œë²„ì¸¡ ì„¸ì…˜ ì¢…ë£Œ) *****
 						//
-						// ¼­¹ö°¡ ¸ÕÀú closesocket()À» È£ÃâÇÏ¿© ¼¼¼ÇÀ» Á¾·áÇÑ °æ¿ìÀÌ¸ç
-						// WSARecv()°¡ È£ÃâµÈ »óÅÂ¿¡¼­¸¸ ÀÌ ÄÚµå·Î µé¾î¿À¸ç
-						// ¸ðµç ¿À¹ö·¦ ¿ÀÆÛ·¡ÀÌ¼ÇÀÌ Á¾·áµÈ »óÅÂÀÌ±â ¶§¹®¿¡
-						// ÀÌ ¼ÒÄÏ ÇÚµé°ú °ü·ÃµÈ µ¥ÀÌÅ¸´Â IOCPÅ¥¿¡ ³²¾ÆÀÖÁö ¾Ê´Ù.
-						// µû¶ó¼­ ÀÌ ½º·¹µå¿¡¼­´Â ÇØ´ç ¼¼¼Ç¿¡ °ü·ÃµÈ ÀÛ¾÷ ¸í·ÉÀ» ´õÀÌ»ó ¼öÇàÇÏÁö ¾Ê±â ¶§¹®¿¡
-						// ´Ù¸¥ ½º·¹µå°¡ Çã¶ôÇÑ´Ù¸é ÀÌ ±¸¹®¿¡¼­ ¼¼¼Ç Æ÷ÀÎÅÍ¸¦ »èÁ¦ÇØµµ ¹«¹æÇÏ´Ù.
-						// ¼¼¼ÇÀ» »èÁ¦ ÇÏ´Âµ¥ °¡Àå ÁÁÀº ÁöÁ¡ÀÌ¹Ç·Î ÀüÃ¼ ½Ã½ºÅÛ ¼³°è½Ã
-						// Á¤»óÀûÀÎ ¼¼¼Ç Á¾·á´Â ¼­¹öÃø¿¡¼­ ¸ÕÀú ¼¼¼ÇÀ» Á¾·á½ÃÅ°µµ·Ï ¼³°èÇÏ´Â °ÍÀÌ ¾ÈÀüÇÏ´Ù.
+						// ì„œë²„ê°€ ë¨¼ì € closesocket()ì„ í˜¸ì¶œí•˜ì—¬ ì„¸ì…˜ì„ ì¢…ë£Œí•œ ê²½ìš°ì´ë©°
+						// WSARecv()ê°€ í˜¸ì¶œëœ ìƒíƒœì—ì„œë§Œ ì´ ì½”ë“œë¡œ ë“¤ì–´ì˜¤ë©°
+						// ëª¨ë“  ì˜¤ë²„ëž© ì˜¤í¼ëž˜ì´ì…˜ì´ ì¢…ë£Œëœ ìƒíƒœì´ê¸° ë•Œë¬¸ì—
+						// ì´ ì†Œì¼“ í•¸ë“¤ê³¼ ê´€ë ¨ëœ ë°ì´íƒ€ëŠ” IOCPíì— ë‚¨ì•„ìžˆì§€ ì•Šë‹¤.
+						// ë”°ë¼ì„œ ì´ ìŠ¤ë ˆë“œì—ì„œëŠ” í•´ë‹¹ ì„¸ì…˜ì— ê´€ë ¨ëœ ìž‘ì—… ëª…ë ¹ì„ ë”ì´ìƒ ìˆ˜í–‰í•˜ì§€ ì•Šê¸° ë•Œë¬¸ì—
+						// ë‹¤ë¥¸ ìŠ¤ë ˆë“œê°€ í—ˆë½í•œë‹¤ë©´ ì´ êµ¬ë¬¸ì—ì„œ ì„¸ì…˜ í¬ì¸í„°ë¥¼ ì‚­ì œí•´ë„ ë¬´ë°©í•˜ë‹¤.
+						// ì„¸ì…˜ì„ ì‚­ì œ í•˜ëŠ”ë° ê°€ìž¥ ì¢‹ì€ ì§€ì ì´ë¯€ë¡œ ì „ì²´ ì‹œìŠ¤í…œ ì„¤ê³„ì‹œ
+						// ì •ìƒì ì¸ ì„¸ì…˜ ì¢…ë£ŒëŠ” ì„œë²„ì¸¡ì—ì„œ ë¨¼ì € ì„¸ì…˜ì„ ì¢…ë£Œì‹œí‚¤ë„ë¡ ì„¤ê³„í•˜ëŠ” ê²ƒì´ ì•ˆì „í•˜ë‹¤.
 					
 					case TOV_SSN_SEND:
 						OnSendComplete(pSession, 0);
@@ -1376,16 +1376,16 @@ void CTControlSvrModule::ProcessSession( CTControlSession *pSession, DWORD dwIoB
 
 	if(!pSession->Read(dwIoBytes))
 	{
-		// ***** IOCP »ç¿ë¹ý Áß ¾Ë¾Æ³»±â Èûµç µÎ¹øÂ° ±¸¹® (Å¬¶óÀÌ¾ðÆ®Ãø ¼¼¼Ç Á¾·á) *****
+		// ***** IOCP ì‚¬ìš©ë²• ì¤‘ ì•Œì•„ë‚´ê¸° íž˜ë“  ë‘ë²ˆì§¸ êµ¬ë¬¸ (í´ë¼ì´ì–¸íŠ¸ì¸¡ ì„¸ì…˜ ì¢…ë£Œ) *****
 		//
-		// Å¬¶óÀÌ¾ðÆ®°¡ ¸ÕÀú closesocket()À» È£ÃâÇÏ¿© ¼¼¼ÇÀ» Á¾·áÇÑ °æ¿ìÀÌ¸ç
-		// WSARecv()°¡ È£ÃâµÈ »óÅÂ¿¡¼­¸¸ ÀÌ ÄÚµå·Î µé¾î¿À¸ç
-		// ¸ðµç ¿À¹ö·¦ ¿ÀÆÛ·¡ÀÌ¼ÇÀÌ Á¾·á µÇ¾ú´Ù°í º¼ ¼ö ¾ø´Ù.
-		// µû¶ó¼­ ÀÌÈÄ¿¡ ÀÌ ½º·¹µå¿¡¼­ ÀÌ ¼¼¼Ç°ú °ü·ÃµÈ ÀÛ¾÷¸í·ÉÀÌ ½ÇÇà µÉ ¼ö ÀÖÀ¸¹Ç·Î
-		// ¿©±â¼­ ¼¼¼Ç Æ÷ÀÎÅÍ¸¦ »èÁ¦ÇÏ¸é ¼­¹ö°¡ ´Ù¿îµÉ ¼ö ÀÖ´Ù.
-		// Receive¿Í °ü·ÃµÈ ¿À¹ö·¦ ¿ÀÆÛ·¹ÀÌ¼ÇÀº È®½ÇÈ÷ Á¾·á µÇ¾úÀ¸¹Ç·Î
-		// Send¿Í °ü·ÃµÈ ¿À¹ö·¦ ¿ÀÆÛ·¹ÀÌ¼ÇÀÌ Á¾·áµÇ¾ú´ÂÁö¸¦
-		// È®ÀÎÇÑ ÈÄ ´Ù¸¥ ½º·¹µåÀÇ ¼¼¼Ç »èÁ¦ ¼ö¶ô°úÁ¤À» °ÅÄ¡°í ¼¼¼ÇÀ» »èÁ¦ ÇØ¾ß ÇÑ´Ù.
+		// í´ë¼ì´ì–¸íŠ¸ê°€ ë¨¼ì € closesocket()ì„ í˜¸ì¶œí•˜ì—¬ ì„¸ì…˜ì„ ì¢…ë£Œí•œ ê²½ìš°ì´ë©°
+		// WSARecv()ê°€ í˜¸ì¶œëœ ìƒíƒœì—ì„œë§Œ ì´ ì½”ë“œë¡œ ë“¤ì–´ì˜¤ë©°
+		// ëª¨ë“  ì˜¤ë²„ëž© ì˜¤í¼ëž˜ì´ì…˜ì´ ì¢…ë£Œ ë˜ì—ˆë‹¤ê³  ë³¼ ìˆ˜ ì—†ë‹¤.
+		// ë”°ë¼ì„œ ì´í›„ì— ì´ ìŠ¤ë ˆë“œì—ì„œ ì´ ì„¸ì…˜ê³¼ ê´€ë ¨ëœ ìž‘ì—…ëª…ë ¹ì´ ì‹¤í–‰ ë  ìˆ˜ ìžˆìœ¼ë¯€ë¡œ
+		// ì—¬ê¸°ì„œ ì„¸ì…˜ í¬ì¸í„°ë¥¼ ì‚­ì œí•˜ë©´ ì„œë²„ê°€ ë‹¤ìš´ë  ìˆ˜ ìžˆë‹¤.
+		// Receiveì™€ ê´€ë ¨ëœ ì˜¤ë²„ëž© ì˜¤í¼ë ˆì´ì…˜ì€ í™•ì‹¤ížˆ ì¢…ë£Œ ë˜ì—ˆìœ¼ë¯€ë¡œ
+		// Sendì™€ ê´€ë ¨ëœ ì˜¤ë²„ëž© ì˜¤í¼ë ˆì´ì…˜ì´ ì¢…ë£Œë˜ì—ˆëŠ”ì§€ë¥¼
+		// í™•ì¸í•œ í›„ ë‹¤ë¥¸ ìŠ¤ë ˆë“œì˜ ì„¸ì…˜ ì‚­ì œ ìˆ˜ë½ê³¼ì •ì„ ê±°ì¹˜ê³  ì„¸ì…˜ì„ ì‚­ì œ í•´ì•¼ í•œë‹¤.
 		LogEvent("Connect Error %d, %d", GetLastError(), dwIoBytes);
 		OnInvalidSession(pSession);
 		return;
@@ -1424,39 +1424,39 @@ void CTControlSvrModule::ProcessSession( CTControlSession *pSession, DWORD dwIoB
 			LogSmartly(inet_ntoa(pSession->m_addr.sin_addr));
 			OnInvalidSession(pSession); 
 			return;
-			// ***** IOCP »ç¿ë¹ý Áß ¾Ë¾Æ³»±â Èûµç ¼¼¹øÂ° ±¸¹® (ºñ Á¤»óÀûÀÎ ¼¼¼Ç Á¾·á) *****
+			// ***** IOCP ì‚¬ìš©ë²• ì¤‘ ì•Œì•„ë‚´ê¸° íž˜ë“  ì„¸ë²ˆì§¸ êµ¬ë¬¸ (ë¹„ ì •ìƒì ì¸ ì„¸ì…˜ ì¢…ë£Œ) *****
 			//
-			// Å¬¶óÀÌ¾ðÆ®°¡ ÆÐÅ¶À» º¯Á¶ÇØ¼­ º¸³½´Ù°Å³ª ³×Æ®Ÿp ¿À·ù·Î ÀÎÇØ ¼¼¼ÇÀÌ ºñ Á¤»óÀûÀÎ »óÅÂ°¡ µÈ °æ¿ìÀÌ¸ç
-			// WSARecv()°¡ È£ÃâµÈ »óÅÂ¿¡¼­¸¸ ÀÌ ÄÚµå·Î µé¾î¿À¸ç
-			// ¸ðµç ¿À¹ö·¦ ¿ÀÆÛ·¡ÀÌ¼ÇÀÌ Á¾·á µÇ¾ú´Ù°í º¼ ¼ö ¾ø´Ù.
-			// µû¶ó¼­ ÀÌÈÄ¿¡ ÀÌ ½º·¹µå¿¡¼­ ÀÌ ¼¼¼Ç°ú °ü·ÃµÈ ÀÛ¾÷¸í·ÉÀÌ ½ÇÇà µÉ ¼ö ÀÖÀ¸¹Ç·Î
-			// ¿©±â¼­ ¼¼¼Ç Æ÷ÀÎÅÍ¸¦ »èÁ¦ÇÏ¸é ¼­¹ö°¡ ´Ù¿îµÉ ¼ö ÀÖ´Ù.
-			// Receive¿Í °ü·ÃµÈ ¿À¹ö·¦ ¿ÀÆÛ·¹ÀÌ¼ÇÀº È®½ÇÈ÷ Á¾·á µÇ¾úÀ¸¹Ç·Î
-			// Send¿Í °ü·ÃµÈ ¿À¹ö·¦ ¿ÀÆÛ·¹ÀÌ¼ÇÀÌ Á¾·áµÇ¾ú´ÂÁö¸¦
-			// È®ÀÎÇÑ ÈÄ ´Ù¸¥ ½º·¹µåÀÇ ¼¼¼Ç »èÁ¦ ¼ö¶ô°úÁ¤À» °ÅÄ¡°í ¼¼¼ÇÀ» »èÁ¦ ÇØ¾ß ÇÑ´Ù.
+			// í´ë¼ì´ì–¸íŠ¸ê°€ íŒ¨í‚·ì„ ë³€ì¡°í•´ì„œ ë³´ë‚¸ë‹¤ê±°ë‚˜ ë„¤íŠ¸ì›¤ ì˜¤ë¥˜ë¡œ ì¸í•´ ì„¸ì…˜ì´ ë¹„ ì •ìƒì ì¸ ìƒíƒœê°€ ëœ ê²½ìš°ì´ë©°
+			// WSARecv()ê°€ í˜¸ì¶œëœ ìƒíƒœì—ì„œë§Œ ì´ ì½”ë“œë¡œ ë“¤ì–´ì˜¤ë©°
+			// ëª¨ë“  ì˜¤ë²„ëž© ì˜¤í¼ëž˜ì´ì…˜ì´ ì¢…ë£Œ ë˜ì—ˆë‹¤ê³  ë³¼ ìˆ˜ ì—†ë‹¤.
+			// ë”°ë¼ì„œ ì´í›„ì— ì´ ìŠ¤ë ˆë“œì—ì„œ ì´ ì„¸ì…˜ê³¼ ê´€ë ¨ëœ ìž‘ì—…ëª…ë ¹ì´ ì‹¤í–‰ ë  ìˆ˜ ìžˆìœ¼ë¯€ë¡œ
+			// ì—¬ê¸°ì„œ ì„¸ì…˜ í¬ì¸í„°ë¥¼ ì‚­ì œí•˜ë©´ ì„œë²„ê°€ ë‹¤ìš´ë  ìˆ˜ ìžˆë‹¤.
+			// Receiveì™€ ê´€ë ¨ëœ ì˜¤ë²„ëž© ì˜¤í¼ë ˆì´ì…˜ì€ í™•ì‹¤ížˆ ì¢…ë£Œ ë˜ì—ˆìœ¼ë¯€ë¡œ
+			// Sendì™€ ê´€ë ¨ëœ ì˜¤ë²„ëž© ì˜¤í¼ë ˆì´ì…˜ì´ ì¢…ë£Œë˜ì—ˆëŠ”ì§€ë¥¼
+			// í™•ì¸í•œ í›„ ë‹¤ë¥¸ ìŠ¤ë ˆë“œì˜ ì„¸ì…˜ ì‚­ì œ ìˆ˜ë½ê³¼ì •ì„ ê±°ì¹˜ê³  ì„¸ì…˜ì„ ì‚­ì œ í•´ì•¼ í•œë‹¤.
 			//
-			// *** ±ÇÀåÇÏÁö ¾Ê´Â Æí¹ý ***
-			// È¤½Ã³ª ¿©±â¼­ closesocket()À» È£Ãâ ÇÏ¿©
-			// ¼­¹öÃø ¼¼¼ÇÁ¾·á ÇÁ·Î¼¼½º·Î µé¾î°¡·Á´Â ½Ãµµ´Â ÇÏÁö ¾Ê´Â °ÍÀÌ ÁÁ´Ù.
-			// closesocket()À» È£ÃâÇØµµ WSARecv()°¡ È£ÃâµÇÁö ¾ÊÀº »óÅÂÀÌ±â ¶§¹®¿¡
-			// ¼­¹öÃø ¼¼¼ÇÁ¾·á ÇÁ·Î¼¼½º·Î µé¾î°¡Áö ¸øÇÑ´Ù. ¸¸¾à WSARecv()¸¦ ¸ÕÀú
-			// È£ÃâÇÏ°í ¹Ù·Î closesocket()À» È£ÃâÇÏ¸é ÇÁ·Î¼¼½º·ÎÀÇ ÁøÀÔÀº °¡´É ÇÒ ¼öµµ ÀÖÀ¸³ª
-			// ºñ Á¤»óÀûÀÎ ¼¼¼ÇÀ» ´ë»óÀ¸·Î ±×·± ¾×¼ÇÀ» ÇÏ´Â °ÍÀº À§ÇèÇÏ´Ù.
+			// *** ê¶Œìž¥í•˜ì§€ ì•ŠëŠ” íŽ¸ë²• ***
+			// í˜¹ì‹œë‚˜ ì—¬ê¸°ì„œ closesocket()ì„ í˜¸ì¶œ í•˜ì—¬
+			// ì„œë²„ì¸¡ ì„¸ì…˜ì¢…ë£Œ í”„ë¡œì„¸ìŠ¤ë¡œ ë“¤ì–´ê°€ë ¤ëŠ” ì‹œë„ëŠ” í•˜ì§€ ì•ŠëŠ” ê²ƒì´ ì¢‹ë‹¤.
+			// closesocket()ì„ í˜¸ì¶œí•´ë„ WSARecv()ê°€ í˜¸ì¶œë˜ì§€ ì•Šì€ ìƒíƒœì´ê¸° ë•Œë¬¸ì—
+			// ì„œë²„ì¸¡ ì„¸ì…˜ì¢…ë£Œ í”„ë¡œì„¸ìŠ¤ë¡œ ë“¤ì–´ê°€ì§€ ëª»í•œë‹¤. ë§Œì•½ WSARecv()ë¥¼ ë¨¼ì €
+			// í˜¸ì¶œí•˜ê³  ë°”ë¡œ closesocket()ì„ í˜¸ì¶œí•˜ë©´ í”„ë¡œì„¸ìŠ¤ë¡œì˜ ì§„ìž…ì€ ê°€ëŠ¥ í•  ìˆ˜ë„ ìžˆìœ¼ë‚˜
+			// ë¹„ ì •ìƒì ì¸ ì„¸ì…˜ì„ ëŒ€ìƒìœ¼ë¡œ ê·¸ëŸ° ì•¡ì…˜ì„ í•˜ëŠ” ê²ƒì€ ìœ„í—˜í•˜ë‹¤.
 		}
 	}
 
 	if(!pSession->WaitForMessage())
 	{
-		// ***** IOCP »ç¿ë¹ý Áß ¾Ë¾Æ³»±â Èûµç ³×¹øÂ° ±¸¹® (ºñ Á¤»óÀûÀÎ ¼¼¼Ç Á¾·á) *****
+		// ***** IOCP ì‚¬ìš©ë²• ì¤‘ ì•Œì•„ë‚´ê¸° íž˜ë“  ë„¤ë²ˆì§¸ êµ¬ë¬¸ (ë¹„ ì •ìƒì ì¸ ì„¸ì…˜ ì¢…ë£Œ) *****
 		//
-		// ³×Æ®Ÿp ¿À·ù·Î ÀÎÇØ ¼¼¼ÇÀÌ ºñ Á¤»óÀûÀÎ »óÅÂ¿¡¼­ WSARecv()ÇÔ¼ö È£ÃâÀÌ ½ÇÆÐÇÑ °æ¿ìÀÌ¸ç
-		// WSARecv()°¡ È£ÃâµÈ »óÅÂ¿¡¼­¸¸ ÀÌ ÄÚµå·Î µé¾î¿À¸ç
-		// ¸ðµç ¿À¹ö·¦ ¿ÀÆÛ·¡ÀÌ¼ÇÀÌ Á¾·á µÇ¾ú´Ù°í º¼ ¼ö ¾ø´Ù.
-		// µû¶ó¼­ ÀÌÈÄ¿¡ ÀÌ ½º·¹µå¿¡¼­ ÀÌ ¼¼¼Ç°ú °ü·ÃµÈ ÀÛ¾÷¸í·ÉÀÌ ½ÇÇà µÉ ¼ö ÀÖÀ¸¹Ç·Î
-		// ¿©±â¼­ ¼¼¼Ç Æ÷ÀÎÅÍ¸¦ »èÁ¦ÇÏ¸é ¼­¹ö°¡ ´Ù¿îµÉ ¼ö ÀÖ´Ù.
-		// Receive¿Í °ü·ÃµÈ ¿À¹ö·¦ ¿ÀÆÛ·¹ÀÌ¼ÇÀº È®½ÇÈ÷ Á¾·á µÇ¾úÀ¸¹Ç·Î
-		// Send¿Í °ü·ÃµÈ ¿À¹ö·¦ ¿ÀÆÛ·¹ÀÌ¼ÇÀÌ Á¾·áµÇ¾ú´ÂÁö¸¦
-		// È®ÀÎÇÑ ÈÄ ´Ù¸¥ ½º·¹µåÀÇ ¼¼¼Ç »èÁ¦ ¼ö¶ô°úÁ¤À» °ÅÄ¡°í ¼¼¼ÇÀ» »èÁ¦ ÇØ¾ß ÇÑ´Ù.
+		// ë„¤íŠ¸ì›¤ ì˜¤ë¥˜ë¡œ ì¸í•´ ì„¸ì…˜ì´ ë¹„ ì •ìƒì ì¸ ìƒíƒœì—ì„œ WSARecv()í•¨ìˆ˜ í˜¸ì¶œì´ ì‹¤íŒ¨í•œ ê²½ìš°ì´ë©°
+		// WSARecv()ê°€ í˜¸ì¶œëœ ìƒíƒœì—ì„œë§Œ ì´ ì½”ë“œë¡œ ë“¤ì–´ì˜¤ë©°
+		// ëª¨ë“  ì˜¤ë²„ëž© ì˜¤í¼ëž˜ì´ì…˜ì´ ì¢…ë£Œ ë˜ì—ˆë‹¤ê³  ë³¼ ìˆ˜ ì—†ë‹¤.
+		// ë”°ë¼ì„œ ì´í›„ì— ì´ ìŠ¤ë ˆë“œì—ì„œ ì´ ì„¸ì…˜ê³¼ ê´€ë ¨ëœ ìž‘ì—…ëª…ë ¹ì´ ì‹¤í–‰ ë  ìˆ˜ ìžˆìœ¼ë¯€ë¡œ
+		// ì—¬ê¸°ì„œ ì„¸ì…˜ í¬ì¸í„°ë¥¼ ì‚­ì œí•˜ë©´ ì„œë²„ê°€ ë‹¤ìš´ë  ìˆ˜ ìžˆë‹¤.
+		// Receiveì™€ ê´€ë ¨ëœ ì˜¤ë²„ëž© ì˜¤í¼ë ˆì´ì…˜ì€ í™•ì‹¤ížˆ ì¢…ë£Œ ë˜ì—ˆìœ¼ë¯€ë¡œ
+		// Sendì™€ ê´€ë ¨ëœ ì˜¤ë²„ëž© ì˜¤í¼ë ˆì´ì…˜ì´ ì¢…ë£Œë˜ì—ˆëŠ”ì§€ë¥¼
+		// í™•ì¸í•œ í›„ ë‹¤ë¥¸ ìŠ¤ë ˆë“œì˜ ì„¸ì…˜ ì‚­ì œ ìˆ˜ë½ê³¼ì •ì„ ê±°ì¹˜ê³  ì„¸ì…˜ì„ ì‚­ì œ í•´ì•¼ í•œë‹¤.
 		LogEvent("3 %d",GetLastError());
 		OnInvalidSession(pSession);
 	}
@@ -1477,18 +1477,18 @@ DWORD CTControlSvrModule::OnReceive( LPPACKETBUF pBUF)
 		ON_RECEIVE(CT_SERVICEUPLOADSTART_REQ)
 		ON_RECEIVE(CT_SERVICEUPLOAD_REQ)
 		ON_RECEIVE(CT_SERVICEUPLOADEND_REQ)
-        ON_RECEIVE(CT_UPDATEPATCH_REQ) // Çö½Â·æ CT_UPDATEPATCH_REQ
-		ON_RECEIVE(CT_ANNOUNCEMENT_REQ) // Çö½Â·æ CT_ANNOUNCEMENT_REQ
-		ON_RECEIVE(CT_USERKICKOUT_REQ) // Çö½Â·æ CT_USERKICKOUT_REQ
-		ON_RECEIVE(CT_USERMOVE_REQ) // Çö½Â·æ CT_USERMOVE_REQ
-		ON_RECEIVE(CT_USERPOSITION_REQ) // Çö½Â·æ CT_USERPOSITION_REQ
-		ON_RECEIVE(CT_MONSPAWNFIND_REQ) // Çö½Â·æ CT_MONSPAWNFIND_REQ
-		ON_RECEIVE(CT_MONSPAWNFIND_ACK) // Çö½Â·æ CT_MONSPAWNFIND_ACK
-		ON_RECEIVE(CT_MONACTION_REQ) // Çö½Â·æ CT_MONACTION_REQ
-		ON_RECEIVE(CT_STLOGIN_REQ) // Çö½Â·æ CT_STLOGIN_REQ
-		ON_RECEIVE(CT_PLATFORM_REQ) // Çö½Â·æ CT_PLATFORM_REQ
-		ON_RECEIVE(CT_USERPROTECTED_REQ) // Çö½Â·æ CT_USERPROTECTED_REQ
-		ON_RECEIVE(CT_CHARMSG_REQ) // Çö½Â·æ CT_CHARMSG_REQ
+        ON_RECEIVE(CT_UPDATEPATCH_REQ) // í˜„ìŠ¹ë£¡ CT_UPDATEPATCH_REQ
+		ON_RECEIVE(CT_ANNOUNCEMENT_REQ) // í˜„ìŠ¹ë£¡ CT_ANNOUNCEMENT_REQ
+		ON_RECEIVE(CT_USERKICKOUT_REQ) // í˜„ìŠ¹ë£¡ CT_USERKICKOUT_REQ
+		ON_RECEIVE(CT_USERMOVE_REQ) // í˜„ìŠ¹ë£¡ CT_USERMOVE_REQ
+		ON_RECEIVE(CT_USERPOSITION_REQ) // í˜„ìŠ¹ë£¡ CT_USERPOSITION_REQ
+		ON_RECEIVE(CT_MONSPAWNFIND_REQ) // í˜„ìŠ¹ë£¡ CT_MONSPAWNFIND_REQ
+		ON_RECEIVE(CT_MONSPAWNFIND_ACK) // í˜„ìŠ¹ë£¡ CT_MONSPAWNFIND_ACK
+		ON_RECEIVE(CT_MONACTION_REQ) // í˜„ìŠ¹ë£¡ CT_MONACTION_REQ
+		ON_RECEIVE(CT_STLOGIN_REQ) // í˜„ìŠ¹ë£¡ CT_STLOGIN_REQ
+		ON_RECEIVE(CT_PLATFORM_REQ) // í˜„ìŠ¹ë£¡ CT_PLATFORM_REQ
+		ON_RECEIVE(CT_USERPROTECTED_REQ) // í˜„ìŠ¹ë£¡ CT_USERPROTECTED_REQ
+		ON_RECEIVE(CT_CHARMSG_REQ) // í˜„ìŠ¹ë£¡ CT_CHARMSG_REQ
 		ON_RECEIVE(CT_RECONNECT_REQ)
 		ON_RECEIVE(CT_SERVICEAUTOSTART_REQ)
 		ON_RECEIVE(CT_CHATBAN_REQ)
@@ -1948,9 +1948,9 @@ void CTControlSvrModule::ParseStrValue(EVENTINFO& stEVENTINFO,CString str,BYTE b
 	else if( bEventID == EVENT_LOTTERY)
 	{
 		//	reword(IDxNUM-win;)'|'title'|'message
-		//	ex) 1203x1-10;55x1-1;|´çÃ·|ÃàÇÏµå¸³´Ï´Ù!
+		//	ex) 1203x1-10;55x1-1;|ë‹¹ì²¨|ì¶•í•˜ë“œë¦½ë‹ˆë‹¤!
 
-		//	º¸»ó
+		//	ë³´ìƒ
 		nPos2 = 0;
 		strTok = str.Tokenize(_T("|"), nPos);
 		strTok2 = strTok.Tokenize(_T(";"), nPos2);

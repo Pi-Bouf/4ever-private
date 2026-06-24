@@ -1,4 +1,4 @@
-// THtmlDocWnd.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// THtmlDocWnd.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"

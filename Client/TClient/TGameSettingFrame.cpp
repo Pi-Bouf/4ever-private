@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+﻿#include "Stdafx.h"
 #include "TGameSettingFrame.h"
 #include "TClientGame.h"
 #include "TClientWnd.h"
@@ -29,17 +29,17 @@ LPBYTE CTGameSettingFrame::TOPTIONPTR[OPTION_COUNT] =
 
 DWORD CTGameSettingFrame::TNAME[OPTION_COUNT] = 
 {
-	TSTR_GAMEOPTION_SHOW_NPC_NAME, //NPC �̸� ǥ��
-	TSTR_GAMEOPTION_SHOW_PLAYER_NAME, //ĳ���� �̸� ǥ��
-	TSTR_GAMEOPTION_SHOW_MONSTER_NAME, //���� �̸� ǥ��
-	TSTR_GAMEOPTION_AUTO_HELP, //�ڵ� ����
-	TSTR_GAMEOPTION_SHOW_TALK_BOX, //��ǳ�� ���̱�
-	TSTR_GAMEOPTION_DENY_WHISPER, //�Ӹ� �ź�
-	TSTR_GAMEOPTION_DENY_COMMUNITY, //Ŀ�´�Ƽ �ź�
-	TSTR_GAMEOPTION_QUICKBAR, //HUD ���̱�
-	TSTR_GAMEOPTION_CONTINUOUS_CHAT, //���� ä��
-	TSTR_GAMEOPTION_MOUSE_CLICK_MOVE, //���콺 Ŭ�� �̵�
-	TSTR_GAMEOPTION_AUTO_TARGETING, //�ڵ� Ÿ���� ���
+	TSTR_GAMEOPTION_SHOW_NPC_NAME, //NPC 이름 표시
+	TSTR_GAMEOPTION_SHOW_PLAYER_NAME, //캐릭터 이름 표시
+	TSTR_GAMEOPTION_SHOW_MONSTER_NAME, //몬스터 이름 표시
+	TSTR_GAMEOPTION_AUTO_HELP, //자동 도움말
+	TSTR_GAMEOPTION_SHOW_TALK_BOX, //말풍선 보이기
+	TSTR_GAMEOPTION_DENY_WHISPER, //귓말 거부
+	TSTR_GAMEOPTION_DENY_COMMUNITY, //커뮤니티 거부
+	TSTR_GAMEOPTION_QUICKBAR, //HUD 보이기
+	TSTR_GAMEOPTION_CONTINUOUS_CHAT, //연속 채팅
+	TSTR_GAMEOPTION_MOUSE_CLICK_MOVE, //마우스 클릭 이동
+	TSTR_GAMEOPTION_AUTO_TARGETING, //자동 타겟팅 사용
 	3000,
 	3001,
 	3002,
@@ -132,7 +132,7 @@ void CTGameSettingFrame::OnLButtonDown( UINT nFlags, CPoint pt)
 				BOOL bCurrent = *(CTGameSettingFrame::TOPTIONPTR[ index ]);
 				CTGaugePannel* pTGAUGE = static_cast<CTGaugePannel*>( CTClientGame::GetInstance()->GetFrame( TFRAME_GAUGE ) );
 
-				if( bChecked != bCurrent && index == 0 ) // ���ǥ�� ����
+				if( bChecked != bCurrent && index == 0 ) // 등급표시 변경
 				{
 					CTGaugePannel* pTGAUGE = static_cast<CTGaugePannel*>( CTClientGame::GetInstance()->GetFrame( TFRAME_GAUGE ) );
 

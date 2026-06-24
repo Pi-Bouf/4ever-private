@@ -1,17 +1,17 @@
-// stdafx.h : Àß º¯°æµÇÁö ¾Ê°í ÀÚÁÖ »ç¿ëÇÏ´Â
-// Ç¥ÁØ ½Ã½ºÅÛ Æ÷ÇÔ ÆÄÀÏ ¹× ÇÁ·ÎÁ§Æ® °ü·Ã Æ÷ÇÔ ÆÄÀÏÀÌ 
-// µé¾î ÀÖ´Â Æ÷ÇÔ ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// stdafx.h : ìž˜ ë³€ê²½ë˜ì§€ ì•Šê³  ìžì£¼ ì‚¬ìš©í•˜ëŠ”
+// í‘œì¤€ ì‹œìŠ¤í…œ í¬í•¨ íŒŒì¼ ë° í”„ë¡œì íŠ¸ ê´€ë ¨ í¬í•¨ íŒŒì¼ì´ 
+// ë“¤ì–´ ìžˆëŠ” í¬í•¨ íŒŒì¼ìž…ë‹ˆë‹¤.
 
 #pragma once
 
 #ifndef VC_EXTRALEAN
-#define VC_EXTRALEAN		// Windows Çì´õ¿¡¼­ °ÅÀÇ »ç¿ëµÇÁö ¾Ê´Â ³»¿ëÀ» Á¦¿Ü½ÃÅµ´Ï´Ù.
+#define VC_EXTRALEAN		// Windows í—¤ë”ì—ì„œ ê±°ì˜ ì‚¬ìš©ë˜ì§€ ì•ŠëŠ” ë‚´ìš©ì„ ì œì™¸ì‹œí‚µë‹ˆë‹¤.
 #endif
 
-// ¾Æ·¡ ÁöÁ¤µÈ ÇÃ·§Æûº¸´Ù ¿ì¼±ÇÏ´Â ÇÃ·§ÆûÀ» ´ë»óÀ¸·Î ÇÏ´Â °æ¿ì ´ÙÀ½ Á¤ÀÇ¸¦ ¼öÁ¤ÇÏ½Ê½Ã¿À.
-// ´Ù¸¥ ÇÃ·§Æû¿¡ »ç¿ëµÇ´Â ÇØ´ç °ªÀÇ ÃÖ½Å Á¤º¸´Â MSDNÀ» ÂüÁ¶ÇÏ½Ê½Ã¿À.
-#ifndef WINVER				// Windows 95 ¹× Windows NT 4 ÀÌÈÄ ¹öÀü¿¡¼­¸¸ ±â´ÉÀ» »ç¿ëÇÒ ¼ö ÀÖ½À´Ï´Ù.
-#define WINVER 0x0601		// Windows 98°ú Windows 2000 ÀÌÈÄ ¹öÀü¿¡ ¸Âµµ·Ï ÀûÇÕÇÑ °ªÀ¸·Î º¯°æÇØ ÁÖ½Ê½Ã¿À.
+// ì•„ëž˜ ì§€ì •ëœ í”Œëž«í¼ë³´ë‹¤ ìš°ì„ í•˜ëŠ” í”Œëž«í¼ì„ ëŒ€ìƒìœ¼ë¡œ í•˜ëŠ” ê²½ìš° ë‹¤ìŒ ì •ì˜ë¥¼ ìˆ˜ì •í•˜ì‹­ì‹œì˜¤.
+// ë‹¤ë¥¸ í”Œëž«í¼ì— ì‚¬ìš©ë˜ëŠ” í•´ë‹¹ ê°’ì˜ ìµœì‹  ì •ë³´ëŠ” MSDNì„ ì°¸ì¡°í•˜ì‹­ì‹œì˜¤.
+#ifndef WINVER				// Windows 95 ë° Windows NT 4 ì´í›„ ë²„ì „ì—ì„œë§Œ ê¸°ëŠ¥ì„ ì‚¬ìš©í•  ìˆ˜ ìžˆìŠµë‹ˆë‹¤.
+#define WINVER 0x0601		// Windows 98ê³¼ Windows 2000 ì´í›„ ë²„ì „ì— ë§žë„ë¡ ì í•©í•œ ê°’ìœ¼ë¡œ ë³€ê²½í•´ ì£¼ì‹­ì‹œì˜¤.
 #endif
 
 typedef struct DXGI_JPEG_AC_HUFFMAN_TABLE {
@@ -28,7 +28,7 @@ typedef struct DXGI_JPEG_QUANTIZATION_TABLE {
 	int Elements[64];
 };
 
-#define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS	// ÀÏºÎ CString »ý¼ºÀÚ´Â ¸í½ÃÀûÀ¸·Î ¼±¾ðµË´Ï´Ù.
+#define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS	// ì¼ë¶€ CString ìƒì„±ìžëŠ” ëª…ì‹œì ìœ¼ë¡œ ì„ ì–¸ë©ë‹ˆë‹¤.
 
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions
@@ -44,7 +44,7 @@ typedef struct DXGI_JPEG_QUANTIZATION_TABLE {
 #include <map>
 #include <vector>
 #include <list>
-#include <algorithm>  // ¾Ë°í¸®Áò ÇÔ¼ö Çì´õ
+#include <algorithm>  // ì•Œê³ ë¦¬ì¦˜ í•¨ìˆ˜ í—¤ë”
 #include <functional> 
 
 using namespace std;
@@ -93,8 +93,8 @@ using namespace std;
 #define MSG_SUCCESS						_T("SUCCESS")
 #define MSG_FAIL						_T("FAIL")
 
-#define MAX_POINT_CNT					1000 // ÁÂÇ¥ ¹è¿­ °¹¼ö
-#define WIDTH_LENGTH					5 // °¡·Î °£°Ý
+#define MAX_POINT_CNT					1000 // ì¢Œí‘œ ë°°ì—´ ê°¯ìˆ˜
+#define WIDTH_LENGTH					5 // ê°€ë¡œ ê°„ê²©
 #define NAME_NULL						_T("")
 #define SQL_GARBAGE						_T("!@#$");
 #define SQL_LIKE(str)					_T("%") + str + _T("%")						
@@ -221,7 +221,7 @@ struct tagPATCHFILE
 	CString m_strFileName;
 	CString m_strPath;
 	CString m_strZipFile;
-	CString m_strOriFileName; // È®ÀåÀÚ¸¦ »« ÆÄÀÏÀÌ¸§.
+	CString m_strOriFileName; // í™•ìž¥ìžë¥¼ ëº€ íŒŒì¼ì´ë¦„.
 	DWORD m_dwSize;
 	DWORD m_dwZipSize;
 	FILETIME m_time;
@@ -250,12 +250,12 @@ enum {
 
 typedef enum MANAGER_CLASS
 {	
-	MANAGER_ALL = 1, // ¸ðµÎ »ç¿ë
-	MANAGER_CONTROL , // ÆÐÄ¡/¾÷·Îµå
-	MANAGER_USER , // °øÁö»çÇ×/°­Á¦ÅðÀå/À§Ä¡ÀÌµ¿
-	MANAGER_SERVICE , // ¼­ºñ½º ON/OFF	
-	MANAGER_GMLEVEL1 , // GMTool ÀÇ ¸ðµç ±â´É(Ä³¸¯ÅÍ ¸Þ¼¼Áö,ÀÌµ¿,Ã¤ÆÃ±ÝÁö,°­Åð)
-	MANAGER_GMLEVEL2 ,  // GMTool ÀÇ Ä³¸¯ÅÍ ¸Þ¼¼Áö, ÀÌµ¿ ±â´É¸¸.	
+	MANAGER_ALL = 1, // ëª¨ë‘ ì‚¬ìš©
+	MANAGER_CONTROL , // íŒ¨ì¹˜/ì—…ë¡œë“œ
+	MANAGER_USER , // ê³µì§€ì‚¬í•­/ê°•ì œí‡´ìž¥/ìœ„ì¹˜ì´ë™
+	MANAGER_SERVICE , // ì„œë¹„ìŠ¤ ON/OFF	
+	MANAGER_GMLEVEL1 , // GMTool ì˜ ëª¨ë“  ê¸°ëŠ¥(ìºë¦­í„° ë©”ì„¸ì§€,ì´ë™,ì±„íŒ…ê¸ˆì§€,ê°•í‡´)
+	MANAGER_GMLEVEL2 ,  // GMTool ì˜ ìºë¦­í„° ë©”ì„¸ì§€, ì´ë™ ê¸°ëŠ¥ë§Œ.	
 	MANAGER_GMLEVEL3 ,
 	MANAGER_COUNT
 
@@ -377,27 +377,27 @@ struct tagLOTTERY
 struct tagEVENTINFO
 {
 	DWORD	m_dwIndex;
-    BYTE	m_bID;			// ÀÌº¥Æ® Á¾·ù
-	CString m_strTitle;		// ÀÌº¥Æ® ÀÌ¸§
-	BYTE	m_bGroupID;		// ¼­¹ö ±×·ì
+    BYTE	m_bID;			// ì´ë²¤íŠ¸ ì¢…ë¥˜
+	CString m_strTitle;		// ì´ë²¤íŠ¸ ì´ë¦„
+	BYTE	m_bGroupID;		// ì„œë²„ ê·¸ë£¹
 	BYTE	m_bSvrType;
 	BYTE	m_bSvrID;		// 0 : ALL 
-	__time64_t m_dStartDate;// ½ÃÀÛ³¯Â¥½Ã°£
-	__time64_t m_dEndDate;	// Á¾·á³¯Â¥½Ã°£
-	WORD	m_wValue;		// ÀÌº¥Æ®°ª
-	WORD	m_wMapID;		// 0xFF:ALL ¸Ê¾ÆÀÌµð
+	__time64_t m_dStartDate;// ì‹œìž‘ë‚ ì§œì‹œê°„
+	__time64_t m_dEndDate;	// ì¢…ë£Œë‚ ì§œì‹œê°„
+	WORD	m_wValue;		// ì´ë²¤íŠ¸ê°’
+	WORD	m_wMapID;		// 0xFF:ALL ë§µì•„ì´ë””
 	DWORD	m_dwStartAlarm; 
 	DWORD	m_dwEndAlarm;
 	BYTE	m_bStartAlarm;
 	BYTE	m_bEndAlarm;
 	CString m_strStartMsg;
 	CString m_strEndMsg;
-	BYTE	m_bState;		// ÀÌº¥Æ® »óÅÂ
+	BYTE	m_bState;		// ì´ë²¤íŠ¸ ìƒíƒœ
 	BYTE	m_bPartTime;
 	VTCASHITEMSALE m_vCashItem;
 	MONEVENT m_stMONEVENT;	
 	VMONREGEN m_vMONREGEN;
-	VLOTTERY m_vLOTTERY;	// °æÇ°¾ÆÀÌÅÛ
+	VLOTTERY m_vLOTTERY;	// ê²½í’ˆì•„ì´í…œ
 	CString m_strLotMsg;
 
 	void Reset()
@@ -791,9 +791,9 @@ struct tagTSTEPS
 
 struct tagTPVP
 {
-	BYTE m_bEvent; //Á¾·ù
+	BYTE m_bEvent; //ì¢…ë¥˜
 	CString m_strName;
-	BYTE m_bType; //°³ÀÎÀü,ÆÄÆ¼Àü
+	BYTE m_bType; //ê°œì¸ì „,íŒŒí‹°ì „
 	DWORD m_dwClass;	
 	DWORD m_dwFee;
 	DWORD m_dwRefund;

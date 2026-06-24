@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #define BOX_PH_COUNT	2
 #define STATIC_MAX		24
@@ -153,7 +153,7 @@ public:
 	virtual void OnMouseMove(UINT nFlags, CPoint pt);
 	virtual void MoveComponent(CPoint pt);
 
-	// Äù½ºÆ®Ãâ·Â
+	// í€˜ìŠ¤íŠ¸ì¶œë ¥
 	void Reset();
 	void ResetTQUEST(LPTQUEST pTQUEST, CQuest* Quest);
 	void SummaryMessage(const CString& strText);
@@ -165,7 +165,7 @@ public:
 	CString GetSpeakerString(CString strSpeaker);
 	static DWORD m_DefaultQColor;
 
-	// ¿ÜºÎ¿¡¼­ Á¢±Ù
+	// ì™¸ë¶€ì—ì„œ ì ‘ê·¼
 public:
 	CTClientObjBase *m_pHost;
 	DWORD m_dwCompleteID;
@@ -204,11 +204,11 @@ public:
 
 	static TComponent* m_pRewardDot;
 	static TComponent* m_pRewardText;
-	// °øÅë
+	// ê³µí†µ
 protected:
 	LPTREWARD 		m_pTTOPREWARD;
 
-	// Äù½ºÆ®Ãâ·Â
+	// í€˜ìŠ¤íŠ¸ì¶œë ¥
 protected:
 	TImageList** m_pRewardSkill;
 	TImageList** m_pRewardItem;

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 
 BYTE CTClientUIBase::m_bDragLock = FALSE;
 CRect CTClientUIBase::m_rtDEFAULT_SCREEN = CRect(0,0,TBASE_SCREEN_X, TBASE_SCREEN_Y);
@@ -63,7 +63,7 @@ void CTClientUIBase::GetUIOffset( CRect rtScreen, CRect rtComp, TFRAMEOFFSET* pF
 
 	CPoint vCenter(
 		rtComp.left + rtComp.Width()/2 + rcDrag.left,
-		rtComp.top + rtComp.Height()/2 + rcDrag.top ); // rcDrag ÁÂÇ¥°è¿¡¼­ Çö ÄÄÆ÷³ÍÆ®ÀÇ Áß¾ÓÁ¡ À§Ä¡°ª.
+		rtComp.top + rtComp.Height()/2 + rcDrag.top ); // rcDrag ì¢Œí‘œê³„ì—ì„œ í˜„ ì»´í¬ë„ŒíŠ¸ì˜ ì¤‘ì•™ì  ìœ„ì¹˜ê°’.
 
 	FLOAT unit_w = rcDrag.Width() / 3.0f;
 	FLOAT unit_h = rcDrag.Height() / 3.0f;
@@ -255,7 +255,7 @@ void CTClientUIBase::MoveComponent( CPoint pt )
 
 		CPoint vCenter(
 			m_rc.left + m_rc.Width()/2 + rcDrag.left,
-			m_rc.top + m_rc.Height()/2 + rcDrag.top ); // rcDrag ÁÂÇ¥°è¿¡¼­ Çö ÄÄÆ÷³ÍÆ®ÀÇ Áß¾ÓÁ¡ À§Ä¡°ª.
+			m_rc.top + m_rc.Height()/2 + rcDrag.top ); // rcDrag ì¢Œí‘œê³„ì—ì„œ í˜„ ì»´í¬ë„ŒíŠ¸ì˜ ì¤‘ì•™ì  ìœ„ì¹˜ê°’.
 
 		FLOAT unit_w = rcDrag.Width() / 3.0f;
 		FLOAT unit_h = rcDrag.Height() / 3.0f;

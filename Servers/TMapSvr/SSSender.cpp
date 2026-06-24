@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 #include <SvrInc.h>
 #include "TMapSvrModule.h"
 
@@ -2761,7 +2761,7 @@ void CTMapSvrModule::SendMW_LEVELUP_ACK(DWORD dwCharID,
 	m_world.Say(pMSG);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////
-// ±æµå
+// ê¸¸ë“œ
 void CTMapSvrModule::SendMW_GUILDESTABLISH_ACK(DWORD dwCharID,
 											   DWORD dwKey,
 											   CString strName)

@@ -1,8 +1,8 @@
-#pragma once
+ï»¿#pragma once
 #include "XListCtrl.h"
 #include "afxwin.h"
 
-// CRPSGame ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CRPSGame ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 class CRPSGame : public CDialog
 {
@@ -21,7 +21,7 @@ public:
 	BYTE		 m_bView;
 
 public:
-	CRPSGame(CWnd* pParent = NULL);   // Ç¥ÁØ »ı¼ºÀÚÀÔ´Ï´Ù.
+	CRPSGame(CWnd* pParent = NULL);   // í‘œì¤€ ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CRPSGame();
 	enum { IDD = IDD_RPSGAME };
 
@@ -38,7 +38,7 @@ public:
 	LPRPSGameData FindRPSData(BYTE bType, BYTE bRound);
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 public:

@@ -1,4 +1,4 @@
-// DlgConnect.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// DlgConnect.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -12,7 +12,7 @@
 
 
 
-// CDlgConnect ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CDlgConnect ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CDlgConnect, CDialog)
 CDlgConnect::CDlgConnect(CWnd* pParent /*=NULL*/)
@@ -45,7 +45,7 @@ END_MESSAGE_MAP()
 
 BOOL CDlgConnect::PreTranslateMessage(MSG* pMsg)
 {
-	// TODO: ¿©±â¿¡ Æ¯¼öÈ­µÈ ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº» Å¬·¡½º¸¦ È£ÃâÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— íŠ¹ìˆ˜í™”ëœ ì½”ë“œë¥¼ ì¶”ê°€ ë°/ë˜ëŠ” ê¸°ë³¸ í´ë˜ìŠ¤ë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
 	
 	//CEdit *pEdit = (CEdit *)GetDlgItem(IDC_EDIT_PASSWORD);
 	//if(pMsg->message == WM_KEYDOWN)
@@ -111,7 +111,7 @@ void CDlgConnect::Init()
 }
 void CDlgConnect::OnCbnSelchangeCombo1()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	CString str;
 	m_cbAccount.GetLBText(m_cbAccount.GetCurSel(),str);
 	if(str == _T(""))
@@ -146,14 +146,14 @@ void CDlgConnect::OnCbnSelchangeCombo1()
 	UpdateData(FALSE);
 }
 
-// ¸ğ´Ş ´ÙÀÌ¾ó·Î±×´Â OnInitDialog() °¡ ½ÇÇàµÇ¾î¾ß¸¸ ÄÁÆ®·Ñ(m_cbAccount)ÀÌ »ı¼ºµÈ´Ù.
+// ëª¨ë‹¬ ë‹¤ì´ì–¼ë¡œê·¸ëŠ” OnInitDialog() ê°€ ì‹¤í–‰ë˜ì–´ì•¼ë§Œ ì»¨íŠ¸ë¡¤(m_cbAccount)ì´ ìƒì„±ëœë‹¤.
 BOOL CDlgConnect::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// TODO:  ¿©±â¿¡ Ãß°¡ ÃÊ±âÈ­ ÀÛ¾÷À» Ãß°¡ÇÕ´Ï´Ù.
+	// TODO:  ì—¬ê¸°ì— ì¶”ê°€ ì´ˆê¸°í™” ì‘ì—…ì„ ì¶”ê°€í•©ë‹ˆë‹¤.
 	
 	Init();
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// ¿¹¿Ü: OCX ¼Ó¼º ÆäÀÌÁö´Â FALSE¸¦ ¹İÈ¯ÇØ¾ß ÇÕ´Ï´Ù.
+	// ì˜ˆì™¸: OCX ì†ì„± í˜ì´ì§€ëŠ” FALSEë¥¼ ë°˜í™˜í•´ì•¼ í•©ë‹ˆë‹¤.
 }

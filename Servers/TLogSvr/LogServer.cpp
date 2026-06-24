@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////////////////////////////////
+ï»¿////////////////////////////////////////////////////////////////////////////////////////////////////////
 //	File Name	:	LogServer.cpp
 //	Copyright	:	(c) Zemi Interactive, Inc 2002-2009
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -293,7 +293,7 @@ inline BOOL CServiceModule::Install()
     SC_HANDLE hService = ::CreateService(
         hSCM, m_szServiceName, m_szServiceName,
         SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS,
-		// ÀÎ½ºÅç½Ã ÀÚµ¿ ½ÃÀÛÀ¸·Î µî·ÏµÈ´Ù. SERVICE_DEMAND_START
+		// ì¸ìŠ¤í†¨ì‹œ ìë™ ì‹œì‘ìœ¼ë¡œ ë“±ë¡ëœë‹¤. SERVICE_DEMAND_START
         SERVICE_AUTO_START, SERVICE_ERROR_NORMAL,
         szFilePath, NULL, NULL, _T("RPCSS\0"), NULL, NULL);
 
@@ -504,7 +504,7 @@ void CServiceModule::Run()
 
 
 /*
- *	Winsocekt »ç¿ë ÃÊ±âÈ­ 	
+ *	Winsocekt ì‚¬ìš© ì´ˆê¸°í™” 	
  */
 BOOL bWinsockInit()
 {
@@ -885,7 +885,7 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/
     lpCmdLine = GetCommandLine(); //this line necessary for _ATL_MIN_CRT
 
 
-	//	ÆÄ¶ó¹ÌÅÍ·Î ÀÔ·ÂµÈ °ªÀ» ¾òÀ½
+	//	íŒŒë¼ë¯¸í„°ë¡œ ì…ë ¥ëœ ê°’ì„ ì–»ìŒ
     TCHAR szTokens[] = _T(" ");
     LPCTSTR lpszToken = FindOneOf(lpCmdLine, szTokens);
 
@@ -913,7 +913,7 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/
     _Module.m_bService = TRUE;
 	
 
-	//	ÆÄ¶ó¹ÌÅÍ ÀÔ·ÂÀÌ µÈ°æ¿ì¸¸ Ã³¸® 
+	//	íŒŒë¼ë¯¸í„° ì…ë ¥ì´ ëœê²½ìš°ë§Œ ì²˜ë¦¬ 
 	if( lpszToken != NULL  )
 	{
 

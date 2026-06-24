@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+ï»¿#include "Stdafx.h"
 #include "TCommunityDlg.h"
 #include "TGuildNormalFrame.h"
 #include "TClientGame.h"
@@ -10,21 +10,21 @@ CTGuildNormalFrame::CTGuildNormalFrame(TComponent *pParent, FRAMEDESC_SHAREDPTR 
 {
 	static const DWORD dwID[] = 
 	{
-		ID_CTRLINST_T_GN,	///< ±æµå¸í
-		ID_CTRLINST_T_GD,	///< ±æµå °³¼³ ÀÏ
-		ID_CTRLINST_T_GM,	///< ±æµåÀå
-		ID_CTRLINST_T_GML,	///< ±æµåÀå ÀÛÀ§
-		ID_CTRLINST_T_GSM1,	///< ºÎ ±æµåÀå
-		ID_CTRLINST_T_GSM2,	///< ºÎ ±æµåÀå
-		ID_CTRLINST_T_GNB,	///< ±æµå¿øÀÇ ¼ö
-		ID_CTRLINST_T_GL,	///< ±æµå ·¹º§
-		ID_CTRLINST_T_GE,	///< ±æµå °æÇèÄ¡
-		ID_CTRLINST_T_MD,	///< ³ªÀÇ Á÷À§
-		ID_CTRLINST_T_ML,	///< ³ªÀÇ ÀÛÀ§
-		ID_CTRLINST_RUNE,	///< ±æµå ÀÚ±Ý
-		ID_CTRLINST_LUNA,	///< ±æµå ÀÚ±Ý
-		ID_CTRLINST_CRON,	///< ±æµå ÀÚ±Ý
-		ID_CTRLINST_GN_TEXT,	///< ±æµå °øÁö»çÇ×
+		ID_CTRLINST_T_GN,	///< ê¸¸ë“œëª…
+		ID_CTRLINST_T_GD,	///< ê¸¸ë“œ ê°œì„¤ ì¼
+		ID_CTRLINST_T_GM,	///< ê¸¸ë“œìž¥
+		ID_CTRLINST_T_GML,	///< ê¸¸ë“œìž¥ ìž‘ìœ„
+		ID_CTRLINST_T_GSM1,	///< ë¶€ ê¸¸ë“œìž¥
+		ID_CTRLINST_T_GSM2,	///< ë¶€ ê¸¸ë“œìž¥
+		ID_CTRLINST_T_GNB,	///< ê¸¸ë“œì›ì˜ ìˆ˜
+		ID_CTRLINST_T_GL,	///< ê¸¸ë“œ ë ˆë²¨
+		ID_CTRLINST_T_GE,	///< ê¸¸ë“œ ê²½í—˜ì¹˜
+		ID_CTRLINST_T_MD,	///< ë‚˜ì˜ ì§ìœ„
+		ID_CTRLINST_T_ML,	///< ë‚˜ì˜ ìž‘ìœ„
+		ID_CTRLINST_RUNE,	///< ê¸¸ë“œ ìžê¸ˆ
+		ID_CTRLINST_LUNA,	///< ê¸¸ë“œ ìžê¸ˆ
+		ID_CTRLINST_CRON,	///< ê¸¸ë“œ ìžê¸ˆ
+		ID_CTRLINST_GN_TEXT,	///< ê¸¸ë“œ ê³µì§€ì‚¬í•­
 		ID_CTRLINST_T_GR,
 		ID_CTRLINST_T_GF,
 		ID_CTRLINST_T_GP,
@@ -53,7 +53,7 @@ CTGuildNormalFrame::CTGuildNormalFrame(TComponent *pParent, FRAMEDESC_SHAREDPTR 
 	TButton* pBtn = (TButton*) FindKid( ID_CTRLINST_B_GP );
 	pBtn->m_menu[ TNM_LCLICK ] = GM_GUILD_DONATE_PVPPOINT;
 
-	// ÀÓ½Ã
+	// ìž„ì‹œ
 	TComponent* pCOMP = FindKid( ID_CTRLINST_18 );
 	if( pCOMP )
 		pCOMP->MoveComponent( CPoint(pCOMP->m_rc.left+5, pCOMP->m_rc.top) );

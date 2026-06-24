@@ -1,21 +1,21 @@
-#pragma once
+ï»¿#pragma once
 
 
-// CGuildChange ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CGuildChange ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 class CGuildChange : public CDialog
 {
 	DECLARE_DYNAMIC(CGuildChange)
 
 public:
-	CGuildChange(CWnd* pParent = NULL);   // Ç¥ÁØ »ı¼ºÀÚÀÔ´Ï´Ù.
+	CGuildChange(CWnd* pParent = NULL);   // í‘œì¤€ ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CGuildChange();
 
-// ´ëÈ­ »óÀÚ µ¥ÀÌÅÍÀÔ´Ï´Ù.
+// ëŒ€í™” ìƒì ë°ì´í„°ì…ë‹ˆë‹¤.
 	enum { IDD = IDD_GUILDCHANGE };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 };

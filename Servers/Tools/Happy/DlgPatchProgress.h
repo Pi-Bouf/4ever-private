@@ -1,15 +1,15 @@
-#pragma once
+ï»¿#pragma once
 #include "afxcmn.h"
 
 
-// CDlgPatchProgress ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CDlgPatchProgress ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 class CDlgPatchProgress : public CDialog
 {
 	DECLARE_DYNAMIC(CDlgPatchProgress)
 
 public:
-	CDlgPatchProgress(CWnd* pParent = NULL);   // Ç¥ÁØ »ı¼ºÀÚÀÔ´Ï´Ù.
+	CDlgPatchProgress(CWnd* pParent = NULL);   // í‘œì¤€ ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CDlgPatchProgress();
 
 	void SetProgress(BYTE bPos);
@@ -17,11 +17,11 @@ public:
 	void SetFileName(CString strName);
 
 	BYTE m_bStatus;
-// ´ëÈ­ »óÀÚ µ¥ÀÌÅÍÀÔ´Ï´Ù.
+// ëŒ€í™” ìƒì ë°ì´í„°ì…ë‹ˆë‹¤.
 	enum { IDD = IDD_DIALOG_PATCHPROGRESS };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 public:

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 class CTTournamentResult : public CTClientUIBase
 {
@@ -78,7 +78,7 @@ public:
 	BYTE m_bDiceLeftTeam;
 	BYTE m_bDiceRightTeam;
 
-	// ±¸¸éÁÂÇ¥°è
+	// êµ¬ë©´ì¢Œí‘œê³„
 	FLOAT m_fDist;
 	FLOAT m_fTheta;
 	FLOAT m_fPhi;

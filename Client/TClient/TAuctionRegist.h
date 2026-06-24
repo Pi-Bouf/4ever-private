@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 enum
 {
@@ -21,26 +21,26 @@ public :	// DEFINITION.
 
 private :	// COMPONENT.
 
-	TImageList*				m_pIcon;							//!< µî·ÏÇÒ ¾ÆÀÌÅÛ¾ÆÀÌÄÜ.
-	TComponent*				m_pUpgrade;							//!< ¾÷±×·¹ÀÌµå ¼öÄ¡.
-	TComponent*				m_pName;							//!< ¾ÆÀÌÅÛÀÌ¸§.
-	TComponent*				m_pItemCount;						//!< ¾ÆÀÌÅÛ¼ö·®.
-	TButton*				m_pTermBtn[ TTERM_BUTTON_COUNT ];	//!< °æ¸Å½Ã°£ ¹öÆ°( 6, 12, 24, 48 ½Ã°£ ).
+	TImageList*				m_pIcon;							//!< ë“±ë¡í•  ì•„ì´í…œì•„ì´ì½˜.
+	TComponent*				m_pUpgrade;							//!< ì—…ê·¸ë ˆì´ë“œ ìˆ˜ì¹˜.
+	TComponent*				m_pName;							//!< ì•„ì´í…œì´ë¦„.
+	TComponent*				m_pItemCount;						//!< ì•„ì´í…œìˆ˜ëŸ‰.
+	TButton*				m_pTermBtn[ TTERM_BUTTON_COUNT ];	//!< ê²½ë§¤ì‹œê°„ ë²„íŠ¼( 6, 12, 24, 48 ì‹œê°„ ).
 
-	TComponent*				m_pTitleStartPrice;					//!< °æ¸Å½ÃÀÛ°¡ & ´Ü°¡.
-	TComponent*				m_pTitleBuyPrice;					//!< Áï½Ã±¸¸Å°¡ & ÃÑ ¾×.
-	TEdit*					m_pBid[ TMONEY_COUNT ];				//!< °æ¸Å½ÃÀÛ°¡°Ý ¿¡µðÆ®¹Ú½º.
-	TEdit*					m_pBuy[ TMONEY_COUNT ];				//!< Áï½Ã±¸¸Å°¡°Ý ¿¡µðÆ®¹Ú½º.
-	TComponent*				m_pTextBuy[ TMONEY_COUNT ];			//!< Áï½Ã±¸¸Å°¡°Ý ÅØ½ºÆ®.
-	TList*					m_pListNotice;						//!< µî·ÏÇÁ·¹ÀÓ ³»¿¡ ¾Ë¸²»çÇ×.
+	TComponent*				m_pTitleStartPrice;					//!< ê²½ë§¤ì‹œìž‘ê°€ & ë‹¨ê°€.
+	TComponent*				m_pTitleBuyPrice;					//!< ì¦‰ì‹œêµ¬ë§¤ê°€ & ì´ ì•¡.
+	TEdit*					m_pBid[ TMONEY_COUNT ];				//!< ê²½ë§¤ì‹œìž‘ê°€ê²© ì—ë””íŠ¸ë°•ìŠ¤.
+	TEdit*					m_pBuy[ TMONEY_COUNT ];				//!< ì¦‰ì‹œêµ¬ë§¤ê°€ê²© ì—ë””íŠ¸ë°•ìŠ¤.
+	TComponent*				m_pTextBuy[ TMONEY_COUNT ];			//!< ì¦‰ì‹œêµ¬ë§¤ê°€ê²© í…ìŠ¤íŠ¸.
+	TList*					m_pListNotice;						//!< ë“±ë¡í”„ë ˆìž„ ë‚´ì— ì•Œë¦¼ì‚¬í•­.
 
 private :	// MEMBER DATA.
 
-	CTClientItem*			m_pItem;							//!< µî·ÏÇÒ ¾ÆÀÌÅÛµ¥ÀÌÅÍ.
-	DWORD					m_dwTerm;							//!< °æ¸Å½Ã°£ µ¥ÀÌÅÍ.
-	TAUCTIONREGINFO			m_RegInfo;							//!< ¾ÆÀÌÅÛ µî·ÏÁ¤º¸.
+	CTClientItem*			m_pItem;							//!< ë“±ë¡í•  ì•„ì´í…œë°ì´í„°.
+	DWORD					m_dwTerm;							//!< ê²½ë§¤ì‹œê°„ ë°ì´í„°.
+	TAUCTIONREGINFO			m_RegInfo;							//!< ì•„ì´í…œ ë“±ë¡ì •ë³´.
 	BOOL					m_bEditEnable;						//!< if Stack > 1  m_bEditEnable = FALSE.
-																//!< °ãÄ¥¼ö ÀÖ´Â ¾ÆÀÌÅÛÀº Áï½Ã±¸¸Å°¡°ÝÀ» ¼öÁ¤ ÇÒ ¼ö ¾ø´Ù.
+																//!< ê²¹ì¹ ìˆ˜ ìžˆëŠ” ì•„ì´í…œì€ ì¦‰ì‹œêµ¬ë§¤ê°€ê²©ì„ ìˆ˜ì • í•  ìˆ˜ ì—†ë‹¤.
 public :	// VIRTUAL FUNCTION.
 
 							CTAuctionRegist(TComponent* pParent, FRAMEDESC_SHAREDPTR pDesc);
@@ -48,11 +48,11 @@ public :	// VIRTUAL FUNCTION.
 
 	/*! */
 	virtual void			RequestInfo();
-	/*! ÇöÀç ÆäÀÌÁö¸¦ À¯ÁöÇÏ¸é¼­ ¾ÆÀÌÅÛ¸®½ºÆ®¸¦ ¾÷µ¥ÀÌÆ®¿äÃ». */
+	/*! í˜„ìž¬ íŽ˜ì´ì§€ë¥¼ ìœ ì§€í•˜ë©´ì„œ ì•„ì´í…œë¦¬ìŠ¤íŠ¸ë¥¼ ì—…ë°ì´íŠ¸ìš”ì²­. */
 	virtual void			RequestUpdatePage();
 	/*! */
 	virtual void			ResetInfo();
-	/*! ¿¡µðÆ® ÄÄÆ÷³ÍÆ® Æ÷Ä¿½º°ü¸®. */
+	/*! ì—ë””íŠ¸ ì»´í¬ë„ŒíŠ¸ í¬ì»¤ìŠ¤ê´€ë¦¬. */
 	virtual void			UpdateEditable( CPoint pt );
 
 	virtual void			OnLButtonDown( UINT nFlags, CPoint pt );
@@ -75,10 +75,10 @@ public :	// INLINE FUNCTION.
 	void					SetItem( CTClientItem* pItem );
 	void					SetInvenID( BYTE bInvenID );
 	void					SetItemCount( BYTE bCount );
-	/*! ´ÜÀÏ ÀÌ¾ÆÅÛÀÇ °æ¿ì¿¡ »ç¿ë */
+	/*! ë‹¨ì¼ ì´ì•„í…œì˜ ê²½ìš°ì— ì‚¬ìš© */
 	void					SetStartPrice( INT64 dwPrice );
 	void					SetBuyPrice( INT64 dwPrice );
-	/*! º¹¼ö ¾ÆÀÌÅÛÀÇ °æ¿ì¿¡ »ç¿ë */
+	/*! ë³µìˆ˜ ì•„ì´í…œì˜ ê²½ìš°ì— ì‚¬ìš© */
 	void					SetUnitPrice( INT64 dwPrice );
 	void					SetTotalPrice( INT64 dwPrice );
 

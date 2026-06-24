@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "BowSystem.h"
 #include "BRSystem.h"
 
@@ -288,7 +288,7 @@ public:
 		vector<LOTPACKET>& pLotPacket);
 
 	////////////////////////////////////////////////////////////////
-	// ±æµå
+	// ê¸¸ë“œ
 	void SendMW_GUILDESTABLISH_REQ(
 		DWORD dwCharID,
 		DWORD dwKEY,

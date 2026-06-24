@@ -1,16 +1,16 @@
-#pragma once
+ï»¿#pragma once
 
 class CTSecuritySystemDlg : public CTClientUIBase
 {
 
 protected :
-	// (1) = Erstellen (2) = Ändern (3) = Abfragen
+	// (1) = Erstellen (2) = í›ždern (3) = Abfragen
 	TComponent*		m_pDlgTitle;			//Dialogtitel = Create Securecode(1)																				ID = 13
 	TComponent*		m_pTitle;				//Anweisung(Rot) = Please create a Securecode(1)																	ID = FBB	
 	TComponent*     m_pHint;				//Hinweis(Hellblau) = A Securecode must be 8-12 characters in length with a number and a special character.(1)		ID = FDF
 	TComponent*     m_pBlueTxt;				//Invalidcodehinweis(Hellbalu) = The entered Securecode is invalid. Please try it again. (3)						ID = FE0
-	TComponent*     m_pYellowTxt;			//Invalidcodehinweis(Gelbweiß) = The entered Securecode is invalid. Please try it again. (3)						ID = FE1
-	TComponent*     m_pShowText;			//Text für die Checkbox = Do not show again																			ID = 6B35
+	TComponent*     m_pYellowTxt;			//Invalidcodehinweis(GelbweiÃŸ) = The entered Securecode is invalid. Please try it again. (3)						ID = FE1
+	TComponent*     m_pShowText;			//Text fÃ¼r die Checkbox = Do not show again																			ID = 6B35
 	
 	TComponent*		m_pStrCode1;			// = Old Securecode		 Text																						ID = 6B27
 	TComponent*		m_pStrCode2;			// = Enter Securecode	 Text																						ID = 6B28
@@ -32,10 +32,10 @@ protected :
 
 private :
 	BYTE			m_bDlgType;				//1 = Create 2 = Change 3 = Disable 4 = Wrongcode 
-	BYTE			m_bOpenType;			//1 = Login  2 = Über Menüleiste
+	BYTE			m_bOpenType;			//1 = Login  2 = Ãœber MenÃ¼leiste
 	BYTE			m_bSessionType;			//1 = Textbox Editieren 2 = Kein Editieren
-	BYTE			m_dwAdviseTick;			//Rendertick für Advisetext
-	BYTE			m_bPreDlgType;			//Für Securecode Error
+	BYTE			m_dwAdviseTick;			//Rendertick fÃ¼r Advisetext
+	BYTE			m_bPreDlgType;			//FÃ¼r Securecode Error
 	BYTE			m_bButtonDown;			//1 = Links 2 = Mitte 3 = Rechts
 	BYTE			m_bWrongAttempts;		//Wie oft der code falsch eingegeben wurde		
 

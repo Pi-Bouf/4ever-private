@@ -1,22 +1,22 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 
 void CTManager::SendCT_OPLOGIN_ACK(BYTE bRet, BYTE bAuthority,DWORD dwID)
 {
 	CPacket * pMsg = new CPacket();
 	pMsg->SetID(CT_OPLOGIN_ACK)
 		<< bRet
-		<< bAuthority // Çö½Â·æ ¸Å´ÏÀú ±ÇÇÑ
+		<< bAuthority // í˜„ìŠ¹ë£¡ ë§¤ë‹ˆì € ê¶Œí•œ
 		<< dwID;
 
 	Say(pMsg);
 }
-// Çö½Â·æ CT_STLOGIN
+// í˜„ìŠ¹ë£¡ CT_STLOGIN
 void CTManager::SendCT_STLOGIN_ACK(BYTE bRet, BYTE bAuthority)
 {
 	CPacket * pMsg = new CPacket();
 	pMsg->SetID(CT_STLOGIN_ACK)
 		<< bRet
-		<< bAuthority; // Çö½Â·æ ¸Å´ÏÀú ±ÇÇÑ
+		<< bAuthority; // í˜„ìŠ¹ë£¡ ë§¤ë‹ˆì € ê¶Œí•œ
 
 	Say(pMsg);
 }
@@ -149,7 +149,7 @@ void CTManager::SendCT_SERVICEUPLOADEND_ACK(BYTE bRet)
 	Say(pMsg);
 }
 ////////////////////////////////////////////////////////
-// Çö½Â·æ CT_AUTHORITY_ACK
+// í˜„ìŠ¹ë£¡ CT_AUTHORITY_ACK
 void CTManager::SendCT_AUTHORITY_ACK()
 {
 	CPacket * pMsg = new CPacket();
@@ -157,7 +157,7 @@ void CTManager::SendCT_AUTHORITY_ACK()
 
 	Say(pMsg);
 }
-// Çö½Â·æ CT_ACCOUNTINPUT_ACK
+// í˜„ìŠ¹ë£¡ CT_ACCOUNTINPUT_ACK
 void CTManager::SendCT_ACCOUNTINPUT_ACK(BYTE bRet)
 {
 	CPacket * pMsg = new CPacket();
@@ -166,7 +166,7 @@ void CTManager::SendCT_ACCOUNTINPUT_ACK(BYTE bRet)
 
 	Say(pMsg);
 }
-// Çö½Â·æ CT_PLATFORM_ACK
+// í˜„ìŠ¹ë£¡ CT_PLATFORM_ACK
 void CTManager::SendCT_PLATFORM_ACK(BYTE bMachineID, DWORD dwCPU, DWORD dwMEM, float fNET)
 {
 	CPacket * pMsg = new CPacket();
@@ -178,7 +178,7 @@ void CTManager::SendCT_PLATFORM_ACK(BYTE bMachineID, DWORD dwCPU, DWORD dwMEM, f
 
 	Say(pMsg);
 }
-// Çö½Â·æ CT_MONSPAWNFIND_ACK
+// í˜„ìŠ¹ë£¡ CT_MONSPAWNFIND_ACK
 void CTManager::SendCT_MONSPAWNFIND_ACK(CPacket *pMsg)
 {
 	Say(pMsg);

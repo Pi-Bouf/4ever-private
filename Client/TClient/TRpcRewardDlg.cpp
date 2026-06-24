@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #ifdef ADD_RPS
 #include "TRpcRewardDlg.h"
 
@@ -69,7 +69,7 @@ void CTRpsRewardDlg::SetReward( BYTE bGameType, BYTE bWinCount )
 	else
 		m_pBtnGiveup->m_strText = CTChart::LoadString(TSTR_RPS_GIVEUP);
 
-	// ÇöÀç º¸»ó
+	// í˜„ìž¬ ë³´ìƒ
 	LPTRPS pTRPS = CTChart::FindTRPS(bGameType, bWinCount);
 	if( pTRPS )
 	{
@@ -129,7 +129,7 @@ void CTRpsRewardDlg::SetReward( BYTE bGameType, BYTE bWinCount )
 
 	if( !m_bClose )
 	{
-		// ´ÙÀ½ º¸»ó
+		// ë‹¤ìŒ ë³´ìƒ
 		LPTRPS pTRPS = CTChart::FindTRPS(bGameType, bWinCount+1);
 
 		if( 0 != pTRPS->wRewardItem1 )

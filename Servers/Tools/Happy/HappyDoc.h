@@ -1,4 +1,4 @@
-// HappyDoc.h : CHappyDoc Å¬·¡½ºÀÇ ÀÎÅÍÆäÀÌ½º
+ï»¿// HappyDoc.h : CHappyDoc í´ë˜ìŠ¤ì˜ ì¸í„°í˜ì´ìŠ¤
 //
 
 
@@ -13,8 +13,8 @@
 #include "ServiceList.h"
 #include "AutoPatch.h"
 #include "PatchList.h"
-#include "ServiceGraph.h" // Çö½Â·æ Graph
-#include "Machine.h" // Çö½Â·æ Machine
+#include "ServiceGraph.h" // í˜„ìŠ¹ë£¡ Graph
+#include "Machine.h" // í˜„ìŠ¹ë£¡ Machine
 #include "MachineGraph.h"
 #include "HappyGroup.h"
 #include "MonsterSpawn.h"
@@ -26,7 +26,7 @@
 
 class CHappyDoc : public CDocument
 {
-protected: // serialization¿¡¼­¸¸ ¸¸µé¾îÁı´Ï´Ù.
+protected: // serializationì—ì„œë§Œ ë§Œë“¤ì–´ì§‘ë‹ˆë‹¤.
 	CHappyDoc();
 	DECLARE_DYNCREATE(CHappyDoc)
 
@@ -43,7 +43,7 @@ public:
 	BYTE ServiceUpload();
 	void NotifyUploadEnd(BYTE bRet);
 	void UpdateUploadProgress();
-	BYTE IsSamePatchFile(LPPATCHFILE pFile); // °°Àº ÀÌ¸§ÀÇ ÆÄÀÏÀÌ ¾øÀ¸¸é FALSE ¸®ÅÏ
+	BYTE IsSamePatchFile(LPPATCHFILE pFile); // ê°™ì€ ì´ë¦„ì˜ íŒŒì¼ì´ ì—†ìœ¼ë©´ FALSE ë¦¬í„´
 	void AddPatchFile(LPPATCHFILE pFile);
 	void OnPatchUpload();
 	BOOL CreateTempDirectory(CString &strFullPath);
@@ -80,14 +80,14 @@ public:
 
 	
 
-// Æ¯¼º
+// íŠ¹ì„±
 public:
 	CHSession	m_session;
 	BYTE	m_bAlertOnFail;
 	BYTE	m_bViewAllService;
 	BYTE	m_bErrorStatus;
-	BYTE	m_bServiceAutoStart; // ¼­ºñ½º Stop ½Ã¿¡ ÀÚµ¿À¸·Î Start
-	BYTE	m_bBtnAutoStart; //Åø¹Ù ÀÚµ¿½ÃÀÛ ¹öÆ°ÀÇ »óÅÂ°ª(Çª½¬»óÅÂÀÎ°¡ ¾Æ´Ñ°¡)
+	BYTE	m_bServiceAutoStart; // ì„œë¹„ìŠ¤ Stop ì‹œì— ìë™ìœ¼ë¡œ Start
+	BYTE	m_bBtnAutoStart; //íˆ´ë°” ìë™ì‹œì‘ ë²„íŠ¼ì˜ ìƒíƒœê°’(í‘¸ì‰¬ìƒíƒœì¸ê°€ ì•„ë‹Œê°€)
 
 	DWORD	m_dwIP;
 	DWORD	m_dwPort;
@@ -112,10 +112,10 @@ public:
 	MAPSVRTYPE	m_mapSvrType;
 	VPATCHFILE	m_vPatchFiles;
 
-	// Çö½Â·æ Machine
+	// í˜„ìŠ¹ë£¡ Machine
 	MAPPLATFORM m_mapPLATFORM;
 
-	// Çö½Â·æ Service Graph
+	// í˜„ìŠ¹ë£¡ Service Graph
 	MAPSERVICEGRAPH m_mapSERVICEGRAPH;
 
 	DWORD m_dwSelectedService;
@@ -148,7 +148,7 @@ private:
 	BYTE	m_bPatchUploading;
 	CDlgPatchProgress * m_pPatchProgress;
 
-// ÀÛ¾÷
+// ì‘ì—…
 public:
 	LPHAPPYSERVICE FindService(DWORD dwID);
 	BYTE IsGroup();
@@ -173,12 +173,12 @@ public:
 	void OnCT_SERVICEUPLOAD_ACK(CPacket * pPacket);
 	void OnCT_SERVICEUPLOADEND_ACK(CPacket * pPacket);
 	void OnCT_UPDATEPATCH_ACK(CPacket * pPacket);
-	void OnCT_AUTHORITY_ACK(CPacket * pPacket); // Çö½Â·æ CT_AUTHORITY_ACK
-	void OnCT_PLATFORM_ACK(CPacket * pPacket); // Çö½Â·æ CT_PLATFORM_ACK
-	void OnCT_MONSPAWNFIND_ACK(CPacket * pPacket); // Çö½Â·æ CT_MONSPAWNFIND_ACK
+	void OnCT_AUTHORITY_ACK(CPacket * pPacket); // í˜„ìŠ¹ë£¡ CT_AUTHORITY_ACK
+	void OnCT_PLATFORM_ACK(CPacket * pPacket); // í˜„ìŠ¹ë£¡ CT_PLATFORM_ACK
+	void OnCT_MONSPAWNFIND_ACK(CPacket * pPacket); // í˜„ìŠ¹ë£¡ CT_MONSPAWNFIND_ACK
 	void OnCT_USERPROTECTED_ACK(CPacket * pPacket);		
-	void OnCT_SERVICEAUTOSTART_ACK(CPacket* pPacket);	// ¼­ºñ½º Stop ½Ã ÀÚµ¿À¸·Î Start ÇÏ´ÂÁö¸¦ ¼ö½Å.
-	void OnCT_CHATBAN_ACK(CPacket* pPacket); // Ã¤ÆÃ±İÁö¿äÃ»ÀÇ ÀÀ´ä.
+	void OnCT_SERVICEAUTOSTART_ACK(CPacket* pPacket);	// ì„œë¹„ìŠ¤ Stop ì‹œ ìë™ìœ¼ë¡œ Start í•˜ëŠ”ì§€ë¥¼ ìˆ˜ì‹ .
+	void OnCT_CHATBAN_ACK(CPacket* pPacket); // ì±„íŒ…ê¸ˆì§€ìš”ì²­ì˜ ì‘ë‹µ.
 	void OnCT_ITEMFIND_ACK(CPacket* pPacket);
 	void OnCT_ITEMSTATE_ACK(CPacket* pPacket);
 	void OnCT_CHATBANLIST_ACK(CPacket* pPacket);
@@ -204,11 +204,11 @@ public:
 	void SendCT_SERVICEUPLOADEND_REQ(BYTE bCancel, BYTE data[], WORD wSize);
 	void SendCT_UPDATEPATCH_REQ();
 
-	void SendCT_ANNOUNCEMENT_REQ(DWORD nID, CString strAnnounce); // Çö½Â·æ CT_ANNOUNCEMENT_REQ
-	void SendCT_USERKICKOUT_REQ(CString strUser); // Çö½Â·æ CT_USERKICKOUT_REQ
-	void SendCT_USERMOVE_REQ(queue<CString>* pqStrUser, BYTE bWorld, BYTE bChannel, WORD wMapID, FLOAT fPosX, FLOAT fPosY, FLOAT fPosZ); // Çö½Â·æ CT_USERMOVE_REQ
-	void SendCT_USERPOSITION_REQ(BYTE bWorld, queue<CString>* pqStrUser, CString strTarget); // Çö½Â·æ CT_USERPOSITION_REQ
-	void SendCT_MONSPAWNFIND_REQ(BYTE bGroupID, BYTE bChannel, WORD wMapID, WORD wSpawnID); // Çö½Â·æ CT_MONSPAWNFIND_REQ
+	void SendCT_ANNOUNCEMENT_REQ(DWORD nID, CString strAnnounce); // í˜„ìŠ¹ë£¡ CT_ANNOUNCEMENT_REQ
+	void SendCT_USERKICKOUT_REQ(CString strUser); // í˜„ìŠ¹ë£¡ CT_USERKICKOUT_REQ
+	void SendCT_USERMOVE_REQ(queue<CString>* pqStrUser, BYTE bWorld, BYTE bChannel, WORD wMapID, FLOAT fPosX, FLOAT fPosY, FLOAT fPosZ); // í˜„ìŠ¹ë£¡ CT_USERMOVE_REQ
+	void SendCT_USERPOSITION_REQ(BYTE bWorld, queue<CString>* pqStrUser, CString strTarget); // í˜„ìŠ¹ë£¡ CT_USERPOSITION_REQ
+	void SendCT_MONSPAWNFIND_REQ(BYTE bGroupID, BYTE bChannel, WORD wMapID, WORD wSpawnID); // í˜„ìŠ¹ë£¡ CT_MONSPAWNFIND_REQ
 	void SendCT_MONACTION_REQ(BYTE bGroup, BYTE bChannel, WORD wMapID, DWORD dwMonID, BYTE bAction, DWORD dwTriggerID, DWORD dwHostID, DWORD dwRHID, BYTE bRHType,WORD wSpawnID);
 	void SendCT_USERPROTECTED_REQ(CString strUserID, DWORD dwTime);
 	void SendCT_CHARMSG_REQ(CString strName, CString strMsg);
@@ -217,9 +217,9 @@ public:
 	
 	void SendCT_RECONNECT_REQ(DWORD _dwID);
 	void SendCT_DISCONNECT_REQ(DWORD _dwID);
-	void SendCT_SERVICEAUTOSTART_REQ(BYTE _bAutoStart); // ¼­ºñ½º Stop ½Ã ÀÚµ¿À¸·Î Start ÇÒÁö¸¦ ¿äÃ»	
-	void SendCT_CHATBAN_REQ(CString strName,WORD wMin,CString strReason); // Æ¯Á¤ Ä³¸¯ÅÍ Ã¤ÆÃ ±İÁö ¿äÃ».
-	void SendCT_SERVICEDATACLEAR_REQ(); // ¼­ºñ½ºÀÇ µ¥ÀÌÅÍ(MAXUSER,ACTIVEUSER,STOPCOUNT,LATEST START,PEEK TIME) ÃÊ±âÈ­
+	void SendCT_SERVICEAUTOSTART_REQ(BYTE _bAutoStart); // ì„œë¹„ìŠ¤ Stop ì‹œ ìë™ìœ¼ë¡œ Start í• ì§€ë¥¼ ìš”ì²­	
+	void SendCT_CHATBAN_REQ(CString strName,WORD wMin,CString strReason); // íŠ¹ì • ìºë¦­í„° ì±„íŒ… ê¸ˆì§€ ìš”ì²­.
+	void SendCT_SERVICEDATACLEAR_REQ(); // ì„œë¹„ìŠ¤ì˜ ë°ì´í„°(MAXUSER,ACTIVEUSER,STOPCOUNT,LATEST START,PEEK TIME) ì´ˆê¸°í™”
 	
 	void SendCT_ITEMFIND_REQ(WORD wItemID,CString strName,BYTE bWorldID);
 	void SendCT_ITEMSTATE_REQ(LPVITEMSTATE pVITEMSTATE,BYTE bWorldID);
@@ -249,28 +249,28 @@ public:
 	void SendCT_CMGIFTLIST_REQ(BYTE bGroup);
 	void SendCT_CMGIFTCHARTUPDATE_REQ(LPQCMGIFT pQList, BYTE bGroup);
 public:
-	// Çö½Â·æ Graph 
+	// í˜„ìŠ¹ë£¡ Graph 
 	BYTE	m_bGraphCheck; 
 	BYTE	m_curView; 
 
 	BYTE	GetCurView();
 	void	SetCurView(BYTE bCur);
 
-	BYTE	m_bAuthority; // ¸Å´ÏÀú ±ÇÇÑ
+	BYTE	m_bAuthority; // ë§¤ë‹ˆì € ê¶Œí•œ
 	DWORD	m_dwManagerID;
 
-	// Çö½Â·æ ·Î±× ±â·Ï
+	// í˜„ìŠ¹ë£¡ ë¡œê·¸ ê¸°ë¡
 	BYTE	m_bLog;
 	BYTE	m_bLogTime;
 
 	CMonsterSpawn * m_pMonSpawn;
 
-// ÀçÁ¤ÀÇ
+// ì¬ì •ì˜
 	public:
 	virtual BOOL OnNewDocument();
 	virtual void Serialize(CArchive& ar);
 
-// ±¸Çö
+// êµ¬í˜„
 public:
 	virtual ~CHappyDoc();
 #ifdef _DEBUG
@@ -278,7 +278,7 @@ public:
 	virtual void Dump(CDumpContext& dc) const;
 #endif
 
-// ¸Ş½ÃÁö ¸Ê ÇÔ¼ö¸¦ »ı¼ºÇß½À´Ï´Ù.
+// ë©”ì‹œì§€ ë§µ í•¨ìˆ˜ë¥¼ ìƒì„±í–ˆìŠµë‹ˆë‹¤.
 protected:
 	DECLARE_MESSAGE_MAP()
 public:
@@ -293,7 +293,7 @@ public:
 
 	CGMToolDlg* m_pdlgGMTool;	
 	SETUSERPOS m_setUSERPOS;
-	void SavePos(USERPOS& _UserPos); // return °ªÀÌ true¸é »õ·Î¿î °ª ÀúÀå false ¸é ±âÁ¸°ª ¼öÁ¤
+	void SavePos(USERPOS& _UserPos); // return ê°’ì´ trueë©´ ìƒˆë¡œìš´ ê°’ ì €ì¥ false ë©´ ê¸°ì¡´ê°’ ìˆ˜ì •
 	void LoadPosListFromFile();
 	void ClearPosList();
 	void SavePosListToFile();

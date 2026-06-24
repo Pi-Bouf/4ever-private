@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+ï»¿#include "Stdafx.h"
 #include "TBlockListDlg.h"
 #include "TClientWnd.h"
 #include "Resource.h"
@@ -178,7 +178,7 @@ void CTBlockListDlg::_UpdateOpButton()
 				int nHeight = m_pList->GetMaxItemHeight();
 				ptBasisPos.y += nHeight * i;
 
-				// Ãß°¡
+				// ì¶”ê°€
 				BLOCKOPBTN vOP;
 				vOP.m_pOpButton[0] = new TButton( this, *m_pOpButton[0] );
 				vOP.m_pOpButton[1] = new TButton( this, *m_pOpButton[1] );
@@ -201,7 +201,7 @@ void CTBlockListDlg::_UpdateOpButton()
 				vOP.m_pOpButton[3]->MoveComponent( ptBasisPos + m_vOpBtnOffset[3] );
 				m_vBlockOpBtns.push_back( vOP );
 				
-				// ¹öÆ°º° ¼¼ÆÃ.
+				// ë²„íŠ¼ë³„ ì„¸íŒ….
 				BYTE bOp = m_vBlockChars[ nTop+i ].m_bBlockOption;
 
 				m_vBlockOpBtns[ i ].m_nIndex = nTop + i;

@@ -1,4 +1,4 @@
-// DlgUpload.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// DlgUpload.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -7,7 +7,7 @@
 #include "MainFrm.h"
 #include "HappyDoc.h"
 
-// CDlgUpload ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CDlgUpload ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CDlgUpload, CDialog)
 CDlgUpload::CDlgUpload(CWnd* pParent /*=NULL*/)
@@ -34,7 +34,7 @@ BEGIN_MESSAGE_MAP(CDlgUpload, CDialog)
 END_MESSAGE_MAP()
 
 
-// CDlgUpload ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CDlgUpload ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 void CDlgUpload::OnBnClickedButtonBrowse()
 {
@@ -66,7 +66,7 @@ BOOL CDlgUpload::OnInitDialog()
 	m_comboBox.SetCurSel(0);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// ¿¹¿Ü: OCX ¼Ó¼º ÆäÀÌÁö´Â FALSE¸¦ ¹İÈ¯ÇØ¾ß ÇÕ´Ï´Ù.
+	// ì˜ˆì™¸: OCX ì†ì„± í˜ì´ì§€ëŠ” FALSEë¥¼ ë°˜í™˜í•´ì•¼ í•©ë‹ˆë‹¤.
 }
 
 void CDlgUpload::OnCbnSelchangeComboMachine()
@@ -91,7 +91,7 @@ void CDlgUpload::OnCbnSelchangeComboMachine()
 	}
 	if(!strAlert.IsEmpty())
 	{
-		strAlert += _T("Refused to access to service or under execution");//¼­ºñ½º¿¡ ¿¢¼¼½º°¡ °ÅºÎµÇ¾ú°Å³ª ½ÇÇàÁß ÀÔ´Ï´Ù
+		strAlert += _T("Refused to access to service or under execution");//ì„œë¹„ìŠ¤ì— ì—‘ì„¸ìŠ¤ê°€ ê±°ë¶€ë˜ì—ˆê±°ë‚˜ ì‹¤í–‰ì¤‘ ì…ë‹ˆë‹¤
 		AfxMessageBox(strAlert);
 	}
 }
@@ -100,14 +100,14 @@ void CDlgUpload::OnBnClickedOk()
 {
 	int nIndex = m_comboBox.GetCurSel();
 	if(nIndex <= 0)
-		AfxMessageBox(_T("Select the machine"));//MachineÀ» ¼±ÅÃÇÏ¼¼¿ä
+		AfxMessageBox(_T("Select the machine"));//Machineì„ ì„ íƒí•˜ì„¸ìš”
 	else
 	{
 		CWnd *pWnd = GetDlgItem(IDC_EDIT_FILENAME);
 		pWnd->GetWindowText(m_strFile);
 		
 		if(m_strFile.IsEmpty())
-			AfxMessageBox(_T("Select the upload file"));//Upload ÆÄÀÏÀ» ¼±ÅÃÇÏ¼¼¿ä
+			AfxMessageBox(_T("Select the upload file"));//Upload íŒŒì¼ì„ ì„ íƒí•˜ì„¸ìš”
 		else
 		{
 			m_bMachine = (BYTE)m_comboBox.GetItemData(nIndex);

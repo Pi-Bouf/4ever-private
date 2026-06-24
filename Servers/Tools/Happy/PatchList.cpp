@@ -1,4 +1,4 @@
-// PatchList.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// PatchList.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -29,7 +29,7 @@ BEGIN_MESSAGE_MAP(CPatchList, CFormView)
 END_MESSAGE_MAP()
 
 
-// CPatchList Áø´ÜÀÔ´Ï´Ù.
+// CPatchList ì§„ë‹¨ì…ë‹ˆë‹¤.
 
 #ifdef _DEBUG
 void CPatchList::AssertValid() const
@@ -44,7 +44,7 @@ void CPatchList::Dump(CDumpContext& dc) const
 #endif //_DEBUG
 
 
-// CPatchList ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CPatchList ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 void CPatchList::OnSize(UINT nType, int cx, int cy)
 {

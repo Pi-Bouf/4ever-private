@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+ï»¿#include "Stdafx.h"
 #include "TNumberEdit.h"
 #include "TClientGame.h"
 #include "TClientWnd.h"
@@ -154,7 +154,7 @@ void CTNumberEdit::OnImeComposition(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			BYTE cTailByte = strORG.GetAt( 1 );
 		    
 			if( cLeadByte == 0x82 &&
-				0x4F <= cTailByte && cTailByte <= 0x58 ) // ÀÏº» Àü°¢ ¼ýÀÚ ¹üÀ§ : 0x824F ~ 0x8258
+				0x4F <= cTailByte && cTailByte <= 0x58 ) // ì¼ë³¸ ì „ê° ìˆ«ìž ë²”ìœ„ : 0x824F ~ 0x8258
 			{
 				WCHAR pBuffer[64];
 				MultiByteToWideChar(CP_ACP, 0, (LPCTSTR)strORG, strORG.GetLength(), pBuffer, 64);

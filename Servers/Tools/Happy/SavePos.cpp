@@ -1,4 +1,4 @@
-// SavePos.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// SavePos.cpp : êµ¬í˜„ íŒŒì¼ìž…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -9,7 +9,7 @@
 #include "MainFrm.h"
 #include "HappyDoc.h"
 
-// CSavePos ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CSavePos ëŒ€í™” ìƒìžìž…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CSavePos, CDialog)
 CSavePos::CSavePos(CWnd* pParent /*=NULL*/)
@@ -26,16 +26,16 @@ BEGIN_MESSAGE_MAP(CSavePos, CDialog)
 	ON_BN_CLICKED(IDOK, OnBnClickedOk)
 END_MESSAGE_MAP()
 
-// CSavePos ¸Þ½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CSavePos ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ìž…ë‹ˆë‹¤.
 void CSavePos::OnBnClickedOk()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	CString strTemp;
 
 	GetDlgItemText(IDC_EDIT_SAVENAME, strTemp);
 
 	if( strTemp.IsEmpty())
-		AfxMessageBox(_T("You should enter the name"), MB_OK); // ÀÌ¸§À» ÀÔ·ÂÇØ¾ß ÇÕ´Ï´Ù
+		AfxMessageBox(_T("You should enter the name"), MB_OK); // ì´ë¦„ì„ ìž…ë ¥í•´ì•¼ í•©ë‹ˆë‹¤
 	else if(m_pstrSaveName)
 	{
 		m_pstrSaveName->Format("%s",strTemp);

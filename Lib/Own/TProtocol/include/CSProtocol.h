@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "ProtocolBase.h"
 
@@ -71,7 +71,7 @@
 //		BYTE bItemID
 //		WORD wItemID
 //		BYTE bLevel
-//		BYTE bGradeEffect	//0316 ¼öÁ¤
+//		BYTE bGradeEffect	//0316 ìˆ˜ì •
 //		}
 // }
 
@@ -127,7 +127,7 @@
 // WORD wPort
 // BYTE bServerID
 
-#define CS_TESTLOGIN_REQ			(CS_LOGIN + 0x000F) // Çö½Â·æ Svr Tester
+#define CS_TESTLOGIN_REQ			(CS_LOGIN + 0x000F) // í˜„ìŠ¹ë£¡ Svr Tester
 #define CS_TESTVERSION_REQ			(CS_LOGIN + 0x0011)
 #define CS_TESTVERSION_ACK			(CS_LOGIN + 0x0012)
 #define CS_AGREEMENT_REQ			(CS_LOGIN + 0x0013)
@@ -165,7 +165,7 @@
 #define CS_CHARINFO_ACK				(CS_MAP + 0x0005)
 // DWORD dwCharID
 // STRING strNAME
-// BYTE bStartAct		0:¿¬ÃâºÒÇÊ¿ä 1:¿¬ÃâÇÊ¿ä		12m10d
+// BYTE bStartAct		0:ì—°ì¶œë¶ˆí•„ìš” 1:ì—°ì¶œí•„ìš”		12m10d
 // BYTE bClass
 // BYTE bRace
 // BYTE bCountry
@@ -177,16 +177,16 @@
 // BYTE bPants
 // BYTE bHand
 // BYTE bFoot
-// BYTE bHelmetHide		: Åõ±¸¼û±â±â
+// BYTE bHelmetHide		: íˆ¬êµ¬ìˆ¨ê¸°ê¸°
 // BYTE bLevel
 // WORD wPartyID
 // DWORD dwGuildID
-// DWORD dwFame			: ±æµå¹®¾ç
-// DWORD dwFameColor	: ±æµå¹®¾ç»ö±ò
+// DWORD dwFame			: ê¸¸ë“œë¬¸ì–‘
+// DWORD dwFameColor	: ê¸¸ë“œë¬¸ì–‘ìƒ‰ê¹”
 // BYTE bGuildDuty
 // BYTE bGuildPeer
 // STRING strGuildName
-// DWORD m_dwTacticsID // ¿ëº´
+// DWORD m_dwTacticsID // ìš©ë³‘
 // STRING strTacticsName 
 // DWORD dwGold
 // DWORD dwSilver
@@ -216,19 +216,19 @@
 // {
 //		BYTE bInvenID
 //		WORD wItemID
-//		__time64_t m_dEndTime				//»ç¿ë ±âÇÑ
+//		__time64_t m_dEndTime				//ì‚¬ìš© ê¸°í•œ
 //		BYTE bItemCount
 //		{
 //			BYTE bItemID
 //			WORD wItemID
 //			BYTE bLevel
 //			BYTE bCount
-//			DWORD dwDuraMax						//³»±¸µµ
+//			DWORD dwDuraMax						//ë‚´êµ¬ë„
 //			DWORD dwDuraCurrent
 //			BYTE bRefineMax
 //			BYTE bRefineCurrent
 //			BYTE bGLevel
-//			__time64_t dEndTime					//»ç¿ë ±âÇÑ
+//			__time64_t dEndTime					//ì‚¬ìš© ê¸°í•œ
 //			BYTE bGradeEffect
 //			BYTE bWrap
 //			BYTE bELD
@@ -286,7 +286,7 @@
 // BYTE bHotkeyCount
 // {
 //		BYTE bInvenID
-//		{					MAX_HOTKEY_POS ¸¸Å­ ¼ø¼­´ë·Î...
+//		{					MAX_HOTKEY_POS ë§Œí¼ ìˆœì„œëŒ€ë¡œ...
 //			BYTE bType
 //			WORD wID
 //		}
@@ -303,11 +303,11 @@
 // STRING strNAME
 // STRING strComment
 // DWORD dwGuildID
-// DWORD dwFame			: ±æµå¹®¾ç
-// DWORD dwFameColor	: ±æµå¹®¾ç»ö±ò
+// DWORD dwFame			: ê¸¸ë“œë¬¸ì–‘
+// DWORD dwFameColor	: ê¸¸ë“œë¬¸ì–‘ìƒ‰ê¹”
 // STRING strGuildName
 // BYTE bGuildPeer
-// DWORD dwTacticsID // ¿ëº´
+// DWORD dwTacticsID // ìš©ë³‘
 // STRING strTacticsName
 // BYTE bStore
 // STRING strStoreName
@@ -324,7 +324,7 @@
 // BYTE bHand
 // BYTE bFoot
 // BYTE bLevel
-// BYTE bHelmetHide		: Åõ±¸¼û±â±â
+// BYTE bHelmetHide		: íˆ¬êµ¬ìˆ¨ê¸°ê¸°
 // DWORD dwMaxHP
 // DWORD dwHP
 // DWORD dwMaxMP
@@ -345,9 +345,9 @@
 // BYTE bColor
 // DWORD dwRegionID
 // BYTE bInPcBang
-// WORD wCastle				//°ø¼ºÀü
-// BYTE bCamp				//°ø¼ºÀü
-// WORD wGodBall			//°ø¼ºÀü
+// WORD wCastle				//ê³µì„±ì „
+// BYTE bCamp				//ê³µì„±ì „
+// WORD wGodBall			//ê³µì„±ì „
 // BYTE bMaintainSkillCount
 // {
 //		WORD wSkillID
@@ -376,12 +376,12 @@
 // WORD wItemID
 // BYTE bLevel
 // BYTE bCount
-// DWORD dwDuraMax						//³»±¸µµ
+// DWORD dwDuraMax						//ë‚´êµ¬ë„
 // DWORD dwDuraCurrent
 // BYTE bRefineMax
 // BYTE bRefineCurrent
 // BYTE bGLevel
-// __time64_t m_dEndTime				//»ç¿ë ±âÇÑ
+// __time64_t m_dEndTime				//ì‚¬ìš© ê¸°í•œ
 // BYTE bGradeEffect
 // BYTE bWrap
 // BYTE bELD
@@ -723,12 +723,12 @@
 // WORD wItemID
 // BYTE bLevel
 // BYTE bCount
-// DWORD dwDuraMax						//³»±¸µµ
+// DWORD dwDuraMax						//ë‚´êµ¬ë„
 // DWORD dwDuraCurrent
 // BYTE bRefineMax
 // BYTE bRefineCurrent
 // BYTE bGLevel
-// __time64_t m_dEndTime				//»ç¿ë ±âÇÑ
+// __time64_t m_dEndTime				//ì‚¬ìš© ê¸°í•œ
 // BYTE bGradeEffect
 // BYTE bWrap
 // BYTE bELD
@@ -745,12 +745,12 @@
 // WORD wItemID
 // BYTE bLevel
 // BYTE bCount
-// DWORD dwDuraMax						//³»±¸µµ
+// DWORD dwDuraMax						//ë‚´êµ¬ë„
 // DWORD dwDuraCurrent
 // BYTE bRefineMax
 // BYTE bRefineCurrent
 // BYTE bGLevel
-// __time64_t m_dEndTime				//»ç¿ë ±âÇÑ
+// __time64_t m_dEndTime				//ì‚¬ìš© ê¸°í•œ
 // BYTE bGradeEffect
 // BYTE bWrap
 // BYTE bELD
@@ -773,12 +773,12 @@
 // WORD wItemID
 // BYTE bLevel
 // BYTE bCount
-// DWORD dwDuraMax						//³»±¸µµ
+// DWORD dwDuraMax						//ë‚´êµ¬ë„
 // DWORD dwDuraCurrent
 // BYTE bRefineMax
 // BYTE bRefineCurrent
 // BYTE bGLevel
-// __time64_t m_dEndTime				//»ç¿ë ±âÇÑ
+// __time64_t m_dEndTime				//ì‚¬ìš© ê¸°í•œ
 // BYTE bGradeEffect
 // BYTE bWrap
 // BYTE bELD
@@ -1096,7 +1096,7 @@
 //		BYTE bDuty
 //		BYTE bPeer
 //		BYTE bIsConnect
-//		DWORD dwRegion					100914 bService »èÁ¦
+//		DWORD dwRegion					100914 bService ì‚­ì œ
 //		WORD wCastle
 //		BYTE bCamp
 //		DWORD dwTactic
@@ -1106,11 +1106,11 @@
 #define CS_GUILDATTR_ACK					(CS_MAP + 0x006F)
 // DWORD dwPlayerID
 // DWORD dwGuildID
-// DWORD dwFame			: ±æµå ¹®¾ç
-// DWORD dwFameColor	: ±æµå ¹®¾ç »ö±ò
+// DWORD dwFame			: ê¸¸ë“œ ë¬¸ì–‘
+// DWORD dwFameColor	: ê¸¸ë“œ ë¬¸ì–‘ ìƒ‰ê¹”
 // CString strGuildName
 // BYTE bGuildPeer
-// DWORD dwTacticsID // ¿ëº´
+// DWORD dwTacticsID // ìš©ë³‘
 // CString strTacticsName
 #define CS_GUILDPEER_REQ					(CS_MAP + 0x0070)
 // STRING strTarget
@@ -1126,25 +1126,25 @@
 // STRING strGuildName
 // STRING strEstablishTime
 // WORD wMemberCount
-// WORD wMaxMemberCount	: ±æµåÀüÃ¼¼ö¿ëÀÎ¿ø 
+// WORD wMaxMemberCount	: ê¸¸ë“œì „ì²´ìˆ˜ìš©ì¸ì› 
 // STRING strChief
-// BYTE bPeer			: ±æµåÀåÀÛÀ§
+// BYTE bPeer			: ê¸¸ë“œì¥ì‘ìœ„
 // STRING strViceChief1
 // STRING strViceChief2
 // BYTE bLevel
-// DWORD dwFame			: bFame->dwFame ¼öÁ¤
-// DWORD dwFameColor	: ¹®¾ç»ö±ò
+// DWORD dwFame			: bFame->dwFame ìˆ˜ì •
+// DWORD dwFameColor	: ë¬¸ì–‘ìƒ‰ê¹”
 // DWORD dwGI
 // DWORD dwExp
-// DWORD dwNextExp		: ´ÙÀ½ ·¹º§¾÷ °æÇèÄ¡
+// DWORD dwNextExp		: ë‹¤ìŒ ë ˆë²¨ì—… ê²½í—˜ì¹˜
 // BYTE bGPoint
 // BYTE bStatus
-// DWORD dwGold			: ±æµå ÀÚ±İ Ãß°¡
+// DWORD dwGold			: ê¸¸ë“œ ìê¸ˆ ì¶”ê°€
 // DWORD dwSilver
 // DWORD dwCooper
-// BYTE bDuty			: ³ªÀÇ Á÷À§ Ãß°¡
-// BYTE bPeer			: ³ªÀÇ ÀÛÀ§ Ãß°¡			100914 // BYTE bService »èÁ¦
-// CString strArticleTitle : ÃÖ±Ù °øÁö»çÇ× Á¦¸ñ
+// BYTE bDuty			: ë‚˜ì˜ ì§ìœ„ ì¶”ê°€
+// BYTE bPeer			: ë‚˜ì˜ ì‘ìœ„ ì¶”ê°€			100914 // BYTE bService ì‚­ì œ
+// CString strArticleTitle : ìµœê·¼ ê³µì§€ì‚¬í•­ ì œëª©
 // DWORD dwPvPTotalPoint
 // DWORD dwPvPUseablePoint
 #define CS_CHAT_REQ							(CS_MAP + 0x0074)
@@ -1190,12 +1190,12 @@
 //		WORD wItemID
 //		BYTE bLevel
 //		BYTE bCount
-//		DWORD dwDuraMax						//³»±¸µµ
+//		DWORD dwDuraMax						//ë‚´êµ¬ë„
 //		DWORD dwDuraCurrent
 //		BYTE bRefineMax
 //		BYTE bRefineCurrent
 //		BYTE bGLevel
-//		__time64_t m_dEndTime				//»ç¿ë ±âÇÑ
+//		__time64_t m_dEndTime				//ì‚¬ìš© ê¸°í•œ
 //		BYTE bGradeEffect
 //		BYTE bWrap
 //		BYTE bELD
@@ -1262,12 +1262,12 @@
 // 		WORD wItemID
 //		BYTE bLevel
 // 		BYTE bCount
-//		DWORD dwDuraMax						//³»±¸µµ
+//		DWORD dwDuraMax						//ë‚´êµ¬ë„
 //		DWORD dwDuraCurrent
 //		BYTE bRefineMax
 //		BYTE bRefineCurrent
 //		BYTE bGLevel
-//		__time64_t m_dEndTime				//»ç¿ë ±âÇÑ
+//		__time64_t m_dEndTime				//ì‚¬ìš© ê¸°í•œ
 //		BYTE bGradeEffect
 //		BYTE bWrap
 //		BYTE bELD
@@ -1294,12 +1294,12 @@
 // WORD wItemID
 // BYTE bLevel
 // BYTE bCount
-// DWORD dwDuraMax						//³»±¸µµ
+// DWORD dwDuraMax						//ë‚´êµ¬ë„
 // DWORD dwDuraCurrent
 // BYTE bRefineMax
 // BYTE bRefineCurrent
 // BYTE bGLevel
-// __time64_t m_dEndTime				//»ç¿ë ±âÇÑ
+// __time64_t m_dEndTime				//ì‚¬ìš© ê¸°í•œ
 // BYTE bGradeEffect
 // BYTE bWrap
 // BYTE bELD
@@ -1402,23 +1402,23 @@
 // WORD wAtkLevel
 // WORD wDefLevel
 // BYTE bPysCriticalProb
-// WORD wPysResist			//»èÁ¦
+// WORD wPysResist			//ì‚­ì œ
 // DWORD dwMinMagicAP
 // DWORD dwMaxMagicAP
 // DWORD dwMagicDefPower
-// WORD	wMagicAtkLevel		//DWORD dwMinMagicLAP ±³Ã¼
-// WORD wMagicDefLevel		//DWORD dwMaxMagicLAP ±³Ã¼
+// WORD	wMagicAtkLevel		//DWORD dwMinMagicLAP êµì²´
+// WORD wMagicDefLevel		//DWORD dwMaxMagicLAP êµì²´
 // BYTE bChargeSpeed
 // BYTE bChargeProb
 // BYTE bMagicCriticalProb
-// WORD wMagicResist		//»èÁ¦
-// WORD bFR		È­¿°ÀúÇ×	//»èÁ¦
-// WORD bIR		³Ã±âÀúÇ×	//»èÁ¦
-// WORD bER		Àü±âÀúÇ×	//»èÁ¦
-// WORD bSR		½Å¼ºÀúÇ×	//»èÁ¦
-// WORD bDR		¾ÏÈæÀúÇ×	//»èÁ¦
+// WORD wMagicResist		//ì‚­ì œ
+// WORD bFR		í™”ì—¼ì €í•­	//ì‚­ì œ
+// WORD bIR		ëƒ‰ê¸°ì €í•­	//ì‚­ì œ
+// WORD bER		ì „ê¸°ì €í•­	//ì‚­ì œ
+// WORD bSR		ì‹ ì„±ì €í•­	//ì‚­ì œ
+// WORD bDR		ì•”í‘ì €í•­	//ì‚­ì œ
 // WORD wSkillPoint
-// BYTE bAftermathStep	ºÎÈ°ÈÄÀ¯Áõ ´Ü°è
+// BYTE bAftermathStep	ë¶€í™œí›„ìœ ì¦ ë‹¨ê³„
 
 #define CS_CANCELACTION_REQ					(CS_MAP + 0x00A5)
 // DWORD dwObjID
@@ -1447,8 +1447,8 @@
 // BYTE bTargetInven
 // BYTE bTargetItemID
 // BYTE bGrade								//0316 bResult==ITEMUPGRADE_SUCCESS_WRAP?TRUE:bGrade, bResult==ITEMUPGRADE_SUCCESS_ELD?bDownValue:bGrade
-// BYTE bGradeEffect						//0316 bResult==ITEMUPGRADE_SUCCESS||ITEMUPGRADE_DOWNGRADE?À¯È¿ÇÑ°ª:pass
-// WORD wColor								//090922 bResult==ITEMUPGRADE_SUCCESS_COLOR ? À¯È¿ÇÑ°ª : pass
+// BYTE bGradeEffect						//0316 bResult==ITEMUPGRADE_SUCCESS||ITEMUPGRADE_DOWNGRADE?ìœ íš¨í•œê°’:pass
+// WORD wColor								//090922 bResult==ITEMUPGRADE_SUCCESS_COLOR ? ìœ íš¨í•œê°’ : pass
 #define CS_ITEMMAGICGRADE_ACK				(CS_MAP + 0x00AB)
 // BYTE bResult
 // BYTE bTargetInven
@@ -1457,7 +1457,7 @@
 // {
 // BYTE bMagicID
 // WORD wValue
-// DWORD dwTime								//0316 »èÁ¦
+// DWORD dwTime								//0316 ì‚­ì œ
 // }
 
 #define CS_CORPSASK_REQ						(CS_MAP + 0x00AC)
@@ -1698,7 +1698,7 @@
 // {
 //		DWORD dwTarget
 // }
-#define CS_TMSINVITE_ACK					(CS_MAP + 0x00CD) // --¸Ş½ÅÁ®Ãß°¡
+#define CS_TMSINVITE_ACK					(CS_MAP + 0x00CD) // --ë©”ì‹ ì ¸ì¶”ê°€
 // DWORD dwTMS
 // BYTE bCount
 // {
@@ -1716,13 +1716,13 @@
 // BYTE bCastleID
 // BYTE bStatus
 #define CS_CASTLEAPPLY_REQ					(CS_MAP + 0x00D3)
-// WORD wCastleID							//°ø¼ºÀü
+// WORD wCastleID							//ê³µì„±ì „
 // DWORD dwTarget
 #define CS_CASTLEAPPLY_ACK					(CS_MAP + 0x00D4)
 // BYTE bResult
-// WORD wCastle					//°ø¼ºÀü
-// DWORD dwTarget				//°ø¼ºÀü
-// BYTE	bCamp					//°ø¼ºÀü
+// WORD wCastle					//ê³µì„±ì „
+// DWORD dwTarget				//ê³µì„±ì „
+// BYTE	bCamp					//ê³µì„±ì „
 #define CS_KICKOUT_REQ						(CS_MAP + 0x00D5)
 // DWORD dwCharID
 #define CS_ANNOUNCEMENTCHAT_ACK				(CS_MAP + 0x00D6)
@@ -1832,7 +1832,7 @@
 // BYTE bResult
 // BYTE bInvenID
 // WORD wItemID
-// __time64_t m_dEndTime				//»ç¿ë ±âÇÑ
+// __time64_t m_dEndTime				//ì‚¬ìš© ê¸°í•œ
 #define CS_INVENDEL_REQ						(CS_MAP + 0x00E5)
 // BYTE bSRCInven
 // BYTE bDESInven
@@ -1975,7 +1975,7 @@
 // {
 //		DWORD dwProtected
 //		STRING strName
-//		BYTE bOption						//Â÷´Ü
+//		BYTE bOption						//ì°¨ë‹¨
 // }
 #define CS_PROTECTEDADD_REQ					(CS_MAP + 0x00F7)
 // STRING strProtected
@@ -1983,7 +1983,7 @@
 // BYTE bRet
 // DWORD dwCharID
 // STRING strProtected
-// BYTE bOption								//Â÷´Ü
+// BYTE bOption								//ì°¨ë‹¨
 #define CS_PROTECTEDERASE_REQ				(CS_MAP + 0x00F9)
 // STRING strProtected
 #define CS_PROTECTEDERASE_ACK				(CS_MAP + 0x00FA)
@@ -2095,12 +2095,12 @@
 //		WORD wItemID
 //		BYTE bLevel
 //		BYTE bCount
-//		DWORD dwDuraMax						//³»±¸µµ
+//		DWORD dwDuraMax						//ë‚´êµ¬ë„
 //		DWORD dwDuraCurrent
 //		BYTE bRefineMax
 //		BYTE bRefineCurrent
 //		BYTE bGLevel
-//		__time64_t m_dEndTime				//»ç¿ë ±âÇÑ
+//		__time64_t m_dEndTime				//ì‚¬ìš© ê¸°í•œ
 //		BYTE bGradeEffect
 //		BYTE bWrap
 //		BYTE bELD
@@ -2155,12 +2155,12 @@
 // WORD wItemID
 // BYTE bLevel
 // BYTE bItemCount
-// DWORD dwDuraMax						//³»±¸µµ
+// DWORD dwDuraMax						//ë‚´êµ¬ë„
 // DWORD dwDuraCurrent
 // BYTE bRefineMax
 // BYTE bRefineCurrent
 // BYTE bGLevel
-// __time64_t m_dEndTime				//»ç¿ë ±âÇÑ
+// __time64_t m_dEndTime				//ì‚¬ìš© ê¸°í•œ
 // BYTE bGradeEffect
 // BYTE bWrap
 // BYTE bELD
@@ -2220,7 +2220,7 @@
 // DWORD dwPostID
 #define CS_POSTVIEW_ACK						(CS_MAP + 0x0127)
 // DWORD dwPostID
-// BYTE bRead				// if(bRead == FALSE) ´ë±İÃ»±¸ 
+// BYTE bRead				// if(bRead == FALSE) ëŒ€ê¸ˆì²­êµ¬ 
 // STRING strMessage
 // DWORD dwGold
 // DWORD dwSilver
@@ -2230,12 +2230,12 @@
 //		WORD wItemID
 //		BYTE bLevel
 //		BYTE bCount
-//		DWORD dwDuraMax						//³»±¸µµ
+//		DWORD dwDuraMax						//ë‚´êµ¬ë„
 //		DWORD dwDuraCurrent
 //		BYTE bRefineMax
 //		BYTE bRefineCurrent
 //		BYTE bGLevel
-//		__time64_t m_dEndTime				//»ç¿ë ±âÇÑ
+//		__time64_t m_dEndTime				//ì‚¬ìš© ê¸°í•œ
 //		BYTE bGradeEffect
 //		BYTE bWrap
 //		BYTE bELD
@@ -2309,11 +2309,11 @@
 // DWORD dwCharID
 // STRING strNAME
 // DWORD dwGuildID
-// DWORD dwFame			: ±æµå¹®¾ç
-// DWORD dwFameColor	: ±æµå¹®¾ç»ö±ò
+// DWORD dwFame			: ê¸¸ë“œë¬¸ì–‘
+// DWORD dwFameColor	: ê¸¸ë“œë¬¸ì–‘ìƒ‰ê¹”
 // STRING strGuildName
 // BYTE bGuildPeer
-// DWORD dwTacticsID // ¿ëº´
+// DWORD dwTacticsID // ìš©ë³‘
 // STRING strTacticsName
 // BYTE bClass
 // BYTE bRace
@@ -2326,7 +2326,7 @@
 // BYTE bPants
 // BYTE bHand
 // BYTE bFoot
-// BYTE bHelmetHide		: Åõ±¸¼û±â±â
+// BYTE bHelmetHide		: íˆ¬êµ¬ìˆ¨ê¸°ê¸°
 // BYTE bLevel
 // DWORD dwPartyChiefID
 // WORD wPartyID
@@ -2337,12 +2337,12 @@
 //	WORD wItemID
 //	BYTE bLevel
 //	BYTE bCount
-//	DWORD dwDuraMax						//³»±¸µµ
+//	DWORD dwDuraMax						//ë‚´êµ¬ë„
 //	DWORD dwDuraCurrent
 //	BYTE bRefineMax
 //	BYTE bRefineCurrent
 //	BYTE bGLevel
-// __time64_t m_dEndTime				//»ç¿ë ±âÇÑ
+// __time64_t m_dEndTime				//ì‚¬ìš© ê¸°í•œ
 //	BYTE bGradeEffect
 //  BYTE bWrap
 //  BYTE bELD
@@ -2376,12 +2376,12 @@
 // WORD wItemID
 // BYTE bLevel
 // BYTE bCount
-// DWORD dwDuraMax						//³»±¸µµ
+// DWORD dwDuraMax						//ë‚´êµ¬ë„
 // DWORD dwDuraCurrent
 // BYTE bRefineMax
 // BYTE bRefineCurrent
 // BYTE bGLevel
-// __time64_t m_dEndTime				//»ç¿ë ±âÇÑ
+// __time64_t m_dEndTime				//ì‚¬ìš© ê¸°í•œ
 // BYTE bGradeEffect
 // BYTE bWrap
 // BYTE bELD
@@ -2396,12 +2396,12 @@
 // WORD wItemID
 // BYTE bLevel
 // BYTE bCount
-// DWORD dwDuraMax						//³»±¸µµ
+// DWORD dwDuraMax						//ë‚´êµ¬ë„
 // DWORD dwDuraCurrent
 // BYTE bRefineMax
 // BYTE bRefineCurrent
 // BYTE bGLevel
-// __time64_t m_dEndTime				//»ç¿ë ±âÇÑ
+// __time64_t m_dEndTime				//ì‚¬ìš© ê¸°í•œ
 // BYTE bGradeEffect
 // BYTE bWrap
 // BYTE bELD
@@ -2417,77 +2417,77 @@
 #define CS_CANCELSKILL_REQ					(CS_MAP + 0x0146)
 // WORD	wSkillID
 
-#define CS_DUELINVITE_REQ					(CS_MAP + 0x0147) // °áÅõÃÊ´ë
+#define CS_DUELINVITE_REQ					(CS_MAP + 0x0147) // ê²°íˆ¬ì´ˆëŒ€
 // DWORD dwTarget
-#define CS_DUELINVITE_ACK					(CS_MAP + 0x0148) // °áÅõÃÊ´ë
+#define CS_DUELINVITE_ACK					(CS_MAP + 0x0148) // ê²°íˆ¬ì´ˆëŒ€
 // DWORD dwInviter
-#define CS_DUELINVITEREPLY_REQ				(CS_MAP + 0x0149) // °áÅõÃÊ´ëÀÀ´ä
+#define CS_DUELINVITEREPLY_REQ				(CS_MAP + 0x0149) // ê²°íˆ¬ì´ˆëŒ€ì‘ë‹µ
 // BYTE bResult
 // DWORD dwInviter
-#define CS_DUELSTART_ACK					(CS_MAP + 0x014A) // °áÅõ½ÃÀÛ
+#define CS_DUELSTART_ACK					(CS_MAP + 0x014A) // ê²°íˆ¬ì‹œì‘
 // BYTE bResult
 // DWORD dwInviter
 // DWORD dwTarget
-#define CS_DUELEND_REQ						(CS_MAP + 0x014B) // °áÅõÆ÷±â
-#define CS_DUELEND_ACK						(CS_MAP + 0x014C) // °áÅõÁ¾·á
+#define CS_DUELEND_REQ						(CS_MAP + 0x014B) // ê²°íˆ¬í¬ê¸°
+#define CS_DUELEND_ACK						(CS_MAP + 0x014C) // ê²°íˆ¬ì¢…ë£Œ
 // DWORD dwLoser
-#define CS_DUELSTANDBY_ACK					(CS_MAP + 0x014D) // °áÅõ´ë±â»óÅÂ
+#define CS_DUELSTANDBY_ACK					(CS_MAP + 0x014D) // ê²°íˆ¬ëŒ€ê¸°ìƒíƒœ
 // DWORD dwInviter
 // DWORD dwTarget
 // FLOAT fCenterX
 // FLOAT fCenterZ
 
-#define CS_GETTARGET_REQ					(CS_MAP + 0x014E) // Å¸°Ù ¿äÃ»
+#define CS_GETTARGET_REQ					(CS_MAP + 0x014E) // íƒ€ê²Ÿ ìš”ì²­
 // DWORD dwCharID
-#define CS_GETTARGET_ACK					(CS_MAP + 0x014F) // Å¸°Ù ¿äÃ»
+#define CS_GETTARGET_ACK					(CS_MAP + 0x014F) // íƒ€ê²Ÿ ìš”ì²­
 // DWORD dwTargetID
 // BYTE bTargetType
-#define CS_GETTARGETANS_REQ					(CS_MAP + 0x0150) // Å¸°Ù ¿äÃ» ÀÀ´ä
+#define CS_GETTARGETANS_REQ					(CS_MAP + 0x0150) // íƒ€ê²Ÿ ìš”ì²­ ì‘ë‹µ
 // DWORD dwAnswerCharID
 // DWORD dwTargetID
 // BYTE bTargetType
-#define CS_GETTARGETANS_ACK					(CS_MAP + 0x0151) // Å¸°Ù ¿äÃ» ÀÀ´ä
+#define CS_GETTARGETANS_ACK					(CS_MAP + 0x0151) // íƒ€ê²Ÿ ìš”ì²­ ì‘ë‹µ
 // DWORD dwAnswerCharID
 #define CS_MONITEMTAKEALL_REQ				(CS_MAP + 0x0152)
 // DWORD dwMonID
 #define CS_SMSSEND_REQ						(CS_MAP + 0x0153)
 // BYTE bInvenID
 // BYTE bItemID
-// BYTE bType	: 1 - °³ÀÎ, 2 - ±æµå
+// BYTE bType	: 1 - ê°œì¸, 2 - ê¸¸ë“œ
 // STRING strTargetName
 // STRING strMessage
 #define CS_SMSSEND_ACK						(CS_MAP + 0x0154)
 // BYTE bResult
-// BYTE bType	: 1 - °³ÀÎ, 2 - ±æµå
+// BYTE bType	: 1 - ê°œì¸, 2 - ê¸¸ë“œ
 // STRING TargetName
 
-// < ±æµå ¿µÅä ¼º / ¼Ò¼Ó Á¡·ÉÁö º¸±â > Á¶°Ç : ±æµå UI³»¿¡¼­
+// < ê¸¸ë“œ ì˜í†  ì„± / ì†Œì† ì ë ¹ì§€ ë³´ê¸° > ì¡°ê±´ : ê¸¸ë“œ UIë‚´ì—ì„œ
 #define CS_GUILDLOCALLIST_REQ				(CS_MAP + 0x0155)
 #define CS_GUILDLOCALLIST_ACK				(CS_MAP + 0x0156)
-// WORD wCount	: ¼º ¸ñ·Ï ¼ö
+// WORD wCount	: ì„± ëª©ë¡ ìˆ˜
 // {
-// 		WORD wCastle			: ¼º¾ÆÀÌµğ
-// 		CString strCastleName	: ¼ºÀÌ¸§
-//		BYTE bCanApplyCastle	: °ø¼ºÀü Âü°¡ ½ÅÃ» °¡´É		//°ø¼ºÀü
-//		DWORD dwGuildID			: Á¡·É ±æµå
-//		CString strGuildName	: Á¡·É ±æµå ÀÌ¸§
-//		BYTE bCountry			: ¼Ò¼Ó ±¹°¡
-//		INT64 dlNextWar			: ´ÙÀ½ °ø¼º ½Ã°£			//°ø¼ºÀü
-//		CString strHero			: °ø¼º ¿µ¿õ					//°ø¼ºÀü
-//		CString strAtkGuild		: °ø°İÃø ±æµå				//°ø¼ºÀü
+// 		WORD wCastle			: ì„±ì•„ì´ë””
+// 		CString strCastleName	: ì„±ì´ë¦„
+//		BYTE bCanApplyCastle	: ê³µì„±ì „ ì°¸ê°€ ì‹ ì²­ ê°€ëŠ¥		//ê³µì„±ì „
+//		DWORD dwGuildID			: ì ë ¹ ê¸¸ë“œ
+//		CString strGuildName	: ì ë ¹ ê¸¸ë“œ ì´ë¦„
+//		BYTE bCountry			: ì†Œì† êµ­ê°€
+//		INT64 dlNextWar			: ë‹¤ìŒ ê³µì„± ì‹œê°„			//ê³µì„±ì „
+//		CString strHero			: ê³µì„± ì˜ì›…					//ê³µì„±ì „
+//		CString strAtkGuild		: ê³µê²©ì¸¡ ê¸¸ë“œ				//ê³µì„±ì „
 //		WORD wDefGuildPoint
 //		BYTE bDefCount
 //		WORD wAtkGuildPoint
 //		WORD wAtkPoint
 //		BYTE bAtkCount
 //		WORD wMyGuildPoint
-//		WORD wLocalCnt			: Á¡·ÉÁö ¸ñ·Ï¼ö
+//		WORD wLocalCnt			: ì ë ¹ì§€ ëª©ë¡ìˆ˜
 //		{
-//			WORD wLocal				: Á¡·ÉÁö¾ÆÀÌµğ
-// 			CString strLocalName	: Á¡·ÉÁöÀÌ¸§
-//			DWORD dwGuildID			: Á¡·É ±æµå
-//			CString strGuildName	: Á¡·É ±æµå ÀÌ¸§
-//			BYTE bCountry			: ¼Ò¼Ó ±¹°¡
+//			WORD wLocal				: ì ë ¹ì§€ì•„ì´ë””
+// 			CString strLocalName	: ì ë ¹ì§€ì´ë¦„
+//			DWORD dwGuildID			: ì ë ¹ ê¸¸ë“œ
+//			CString strGuildName	: ì ë ¹ ê¸¸ë“œ ì´ë¦„
+//			BYTE bCountry			: ì†Œì† êµ­ê°€
 //			INT64 dlNextWar
 //			CString strHero
 //		}
@@ -2500,28 +2500,28 @@
 //		INT64 dlNextWar
 // }
 
-// < ±æµå ¼ÒÀ¯ ¿µÅä ±¹°¡ ¹İ³³ > Á¶°Ç : ±æµå UI³»¿¡¼­
+// < ê¸¸ë“œ ì†Œìœ  ì˜í†  êµ­ê°€ ë°˜ë‚© > ì¡°ê±´ : ê¸¸ë“œ UIë‚´ì—ì„œ
 #define CS_GUILDLOCALRETURN_REQ				(CS_MAP + 0x0157)
-// WORD wID		: ¼ÒÀ¯ ¼º (À¯´Ö¾ÆÀÌµğ) / Á¡·ÉÁö(·ÎÄÃ¾ÆÀÌµğ)
+// WORD wID		: ì†Œìœ  ì„± (ìœ ë‹›ì•„ì´ë””) / ì ë ¹ì§€(ë¡œì»¬ì•„ì´ë””)
 #define CS_GUILDLOCALRETURN_ACK				(CS_MAP + 0x0158)
 // BYTE bResult
 
-// < ±æµå Ã¢°í ¸ñ·Ï >
+// < ê¸¸ë“œ ì°½ê³  ëª©ë¡ >
 #define CS_GUILDCABINETLIST_REQ				(CS_MAP + 0x0159)
 #define CS_GUILDCABINETLIST_ACK				(CS_MAP + 0x015A)
-// BYTE bMax	: ÀüÃ¼Ä­¼ö
-// BYTE bCount	: Ã¢°í Ä­¼ö
+// BYTE bMax	: ì „ì²´ì¹¸ìˆ˜
+// BYTE bCount	: ì°½ê³  ì¹¸ìˆ˜
 // {
-//		DWORD dwItemID : Ã¢°í¿¡¼­ ¾ÆÀÌÅÆ ¾ÆÀÌµğ
+//		DWORD dwItemID : ì°½ê³ ì—ì„œ ì•„ì´íƒ¬ ì•„ì´ë””
 //		WORD wItemID
 //		BYTE bLevel
 //		BYTE bCount
-//		DWORD dwDuraMax						//³»±¸µµ
+//		DWORD dwDuraMax						//ë‚´êµ¬ë„
 //		DWORD dwDuraCurrent
 //		BYTE bRefineMax
 //		BYTE bRefineCurrent
 //		BYTE bGLevel
-//		__time64_t m_dEndTime				//»ç¿ë ±âÇÑ
+//		__time64_t m_dEndTime				//ì‚¬ìš© ê¸°í•œ
 //		BYTE bGradeEffect
 //		BYTE bWrap
 //		BYTE bELD
@@ -2533,46 +2533,46 @@
 //		}
 // }
 
-// < ±æµå Ã¢°í ¾ÆÀÌÅÆ ³Ö±â >
+// < ê¸¸ë“œ ì°½ê³  ì•„ì´íƒ¬ ë„£ê¸° >
 #define CS_GUILDCABINETPUTIN_REQ			(CS_MAP + 0x015B)
-// BYTE bInvenID : ÀÚ½ÅÀÇ ÀÎº¥¾ÆÀÌµğ
+// BYTE bInvenID : ìì‹ ì˜ ì¸ë²¤ì•„ì´ë””
 // BYTE bItemID
 // BYTE bCount
 #define CS_GUILDCABINETPUTIN_ACK			(CS_MAP + 0x015C)
 // BYTE bResult
 
-// < ±æµå Ã¢°í ¾ÆÀÌÅÆ »©±â >
+// < ê¸¸ë“œ ì°½ê³  ì•„ì´íƒ¬ ë¹¼ê¸° >
 #define CS_GUILDCABINETTAKEOUT_REQ			(CS_MAP + 0x015D)
-// DWORD dwItemID : ±æµå Ã¢°í¿¡¼­ ¾ÆÀÌÅÆ ¾ÆÀÌµğ
+// DWORD dwItemID : ê¸¸ë“œ ì°½ê³ ì—ì„œ ì•„ì´íƒ¬ ì•„ì´ë””
 // BYTE bCount
 // BYTE bItemID
 // BYTE bInvenID
 #define CS_GUILDCABINETTAKEOUT_ACK			(CS_MAP + 0x015E)
 // BYTE bResult
 
-// < ±æµå °æÇèÄ¡ / ÀÚ±İ ±âºÎ >
+// < ê¸¸ë“œ ê²½í—˜ì¹˜ / ìê¸ˆ ê¸°ë¶€ >
 #define CS_GUILDCONTRIBUTION_REQ			(CS_MAP + 0x015F)
-// DWORD dwExp		: °æÇèÄ¡
-// DWORD dwGold		: µ· (1·éÀÌÇÏ 1·ç³ªÀÌ»ó)
+// DWORD dwExp		: ê²½í—˜ì¹˜
+// DWORD dwGold		: ëˆ (1ë£¬ì´í•˜ 1ë£¨ë‚˜ì´ìƒ)
 // DWORD dwSilver
 // DWORD dwCooper
 #define CS_GUILDCONTRIBUTION_ACK			(CS_MAP + 0x0160)
 // BYTE bResult
 
-// < ±æµå °øÁö»çÇ× º¸±â > Á¶°Ç : ±æµå UI³»¿¡¼­
+// < ê¸¸ë“œ ê³µì§€ì‚¬í•­ ë³´ê¸° > ì¡°ê±´ : ê¸¸ë“œ UIë‚´ì—ì„œ
 #define CS_GUILDARTICLELIST_REQ				(CS_MAP + 0x0161)
 #define CS_GUILDARTICLELIST_ACK				(CS_MAP + 0x0162)
-// BYTE bCount	: ¸ñ·Ï ¼ö
+// BYTE bCount	: ëª©ë¡ ìˆ˜
 // {
-// 		DWORD dwID			: ÀÏ·Ã¹øÈ£
-//		BYTE bDuty			: ±ÇÇÑ
-//		CString strWritter	: ÀÛ¼ºÀÚ
-//		CString strTitle	: Á¦¸ñ
-// 		CString strArticle	: °øÁö»çÇ×
-// 		CString strDate		: ÀÛ¼ºÀÏ
+// 		DWORD dwID			: ì¼ë ¨ë²ˆí˜¸
+//		BYTE bDuty			: ê¶Œí•œ
+//		CString strWritter	: ì‘ì„±ì
+//		CString strTitle	: ì œëª©
+// 		CString strArticle	: ê³µì§€ì‚¬í•­
+// 		CString strDate		: ì‘ì„±ì¼
 // }
 
-// < ±æµå °øÁö»çÇ× µî·Ï/»èÁ¦ > Á¶°Ç : ºÎ±æµåÀå ÀÌ»ó / ±æµå UI³»¿¡¼­
+// < ê¸¸ë“œ ê³µì§€ì‚¬í•­ ë“±ë¡/ì‚­ì œ > ì¡°ê±´ : ë¶€ê¸¸ë“œì¥ ì´ìƒ / ê¸¸ë“œ UIë‚´ì—ì„œ
 #define CS_GUILDARTICLEADD_REQ				(CS_MAP + 0x0163)
 // CString strTitle
 // CString strArticle
@@ -2584,7 +2584,7 @@
 // BYTE bResult
 
 
-// < ±æµåÀü¿ë ¹®¾ç µî·Ï > Á¶°Ç : ±æµåÀå / ±æµå UI³»¿¡¼­
+// < ê¸¸ë“œì „ìš© ë¬¸ì–‘ ë“±ë¡ > ì¡°ê±´ : ê¸¸ë“œì¥ / ê¸¸ë“œ UIë‚´ì—ì„œ
 #define CS_GUILDFAME_REQ					(CS_MAP + 0x0167)
 // DWORD dwFame
 // DWORD dwFameColor
@@ -2593,7 +2593,7 @@
 // DWORD dwFame
 // DWORD dwFameColor
 
-// < ±æµå ¸ğÁı / ¿ëº´´Ü ±¤°í º¸±â >
+// < ê¸¸ë“œ ëª¨ì§‘ / ìš©ë³‘ë‹¨ ê´‘ê³  ë³´ê¸° >
 #define CS_GUILDARTICLEUPDATE_REQ			(CS_MAP + 0x0169)
 // DWORD dwID
 // CString strTitle
@@ -2602,13 +2602,13 @@
 // BYTE bResult
 
 //090522
-// < ±æµå ¸ğÁı ±¤°í ¿Ã¸®±â - Áö¿ì±â > Á¶°Ç : ºÎ±æµåÀå ÀÌ»ó
+// < ê¸¸ë“œ ëª¨ì§‘ ê´‘ê³  ì˜¬ë¦¬ê¸° - ì§€ìš°ê¸° > ì¡°ê±´ : ë¶€ê¸¸ë“œì¥ ì´ìƒ
 #define CS_GUILDWANTEDADD_REQ				(CS_MAP + 0x016B)
-// DWORD dwID			: »õ·Î¿Ã¸±¶§-0 / ¼öÁ¤-¾ÆÀÌµğ
-// CString strTitle		: Á¦¸ñ
-// CString strText		: ³»¿ë
-// BYTE bMinLevel		: ÃÖ¼Ò·¹º§
-// BYTE bMaxLevel		: ÃÖ´ë·¹º§
+// DWORD dwID			: ìƒˆë¡œì˜¬ë¦´ë•Œ-0 / ìˆ˜ì •-ì•„ì´ë””
+// CString strTitle		: ì œëª©
+// CString strText		: ë‚´ìš©
+// BYTE bMinLevel		: ìµœì†Œë ˆë²¨
+// BYTE bMaxLevel		: ìµœëŒ€ë ˆë²¨
 
 #define CS_GUILDWANTEDADD_ACK				(CS_MAP + 0x016C)
 // BYTE bResult
@@ -2617,59 +2617,59 @@
 #define CS_GUILDWANTEDDEL_ACK				(CS_MAP + 0x016E)
 // BYTE bResult
 
-// < ±æµå ¸ğÁı ±¤°í º¸±â >
+// < ê¸¸ë“œ ëª¨ì§‘ ê´‘ê³  ë³´ê¸° >
 #define CS_GUILDWANTEDLIST_REQ				(CS_MAP + 0x016F)
 #define CS_GUILDWANTEDLIST_ACK				(CS_MAP + 0x0170)
-// DWORD dwCount	: ±¤°í ¼ö
+// DWORD dwCount	: ê´‘ê³  ìˆ˜
 // {
-// 		DWORD dwGuildID		: ±æµå¾ÆÀÌµğ
-//		CString strName		: ±æµåÀÌ¸§
-//		CString strTitle	: Á¦¸ñ
-//		CString strText		: ³»¿ë
+// 		DWORD dwGuildID		: ê¸¸ë“œì•„ì´ë””
+//		CString strName		: ê¸¸ë“œì´ë¦„
+//		CString strTitle	: ì œëª©
+//		CString strText		: ë‚´ìš©
 //		BYTE bMinLevel
 //		BYTE bMaxLevel
 //		INT64 dlTime
 //		BYTE bApplied
 // }
 
-// < ±æµå Áö¿ø ½ÅÃ»/Ãë¼Ò > Á¶°Ç : ±æµå¸ğÁı UI³»¿¡¼­ 
+// < ê¸¸ë“œ ì§€ì› ì‹ ì²­/ì·¨ì†Œ > ì¡°ê±´ : ê¸¸ë“œëª¨ì§‘ UIë‚´ì—ì„œ 
 #define CS_GUILDVOLUNTEERING_REQ			(CS_MAP + 0x171)
-// DWORD dwID		: ±æµå ¸ğÁı±¤°í ¾ÆÀÌµğ
+// DWORD dwID		: ê¸¸ë“œ ëª¨ì§‘ê´‘ê³  ì•„ì´ë””
 #define CS_GUILDVOLUNTEERING_ACK			(CS_MAP + 0x172)
 // BYTE bResult
 #define CS_GUILDVOLUNTEERINGDEL_REQ			(CS_MAP + 0x173)
 #define CS_GUILDVOLUNTEERINGDEL_ACK			(CS_MAP + 0x174)
 // BYTE bResult
 
-// < ±æµå Áö¿øº´ ¸ñ·Ï > Á¶°Ç : ±æµå UI³»¿¡¼­ 
+// < ê¸¸ë“œ ì§€ì›ë³‘ ëª©ë¡ > ì¡°ê±´ : ê¸¸ë“œ UIë‚´ì—ì„œ 
 #define CS_GUILDVOLUNTEERLIST_REQ			(CS_MAP + 0x0175)
 #define CS_GUILDVOLUNTEERLIST_ACK			(CS_MAP + 0x0176)
-// DWORD dwCount : Áö¿øº´ ¼ö
+// DWORD dwCount : ì§€ì›ë³‘ ìˆ˜
 // {
 //		DWORD dwCharID
 //		CString strName
 //		BYTE bLevel
 //		BYTE bClass
-//		DWORD dwRegion		: ÇöÀç À§Ä¡
+//		DWORD dwRegion		: í˜„ì¬ ìœ„ì¹˜
 // }
 
-// ±æµåÀåÀÌ ÀÔ´Ü Èñ¸ÁÀÚ¿¡ ´ëÇÑ ÀÇ»çÇ¥½Ã
+// ê¸¸ë“œì¥ì´ ì…ë‹¨ í¬ë§ìì— ëŒ€í•œ ì˜ì‚¬í‘œì‹œ
 #define CS_GUILDVOLUNTEERREPLY_REQ			(CS_MAP + 0x0177)
 // DWORD dwCharID
 // BYTE bReply
 #define CS_GUILDVOLUNTEERREPLY_ACK			(CS_MAP + 0x0178)
 // BYTE bResult
 
-// <¿ëº´>
-// < ¿ëº´ ¸ğÁı ±¤°í ¿Ã¸®±â - Áö¿ì±â>
+// <ìš©ë³‘>
+// < ìš©ë³‘ ëª¨ì§‘ ê´‘ê³  ì˜¬ë¦¬ê¸° - ì§€ìš°ê¸°>
 #define CS_GUILDTACTICSWANTEDADD_REQ		(CS_MAP + 0x0179)
-// DWORD dwID			: »õ·Î¿Ã¸±¶§-0 / ¼öÁ¤-¾ÆÀÌµğ
-// CString strTitle		: Á¦¸ñ
-// CString strText		: ³»¿ë
-// BYTE bDay			: ±â°£
-// BYTE bMinLevel		: ÃÖ¼Ò·¹º§
-// BYTE bMaxLevel		: ÃÖ´ë·¹º§
-// DWORD dwPoint		: °øÀû
+// DWORD dwID			: ìƒˆë¡œì˜¬ë¦´ë•Œ-0 / ìˆ˜ì •-ì•„ì´ë””
+// CString strTitle		: ì œëª©
+// CString strText		: ë‚´ìš©
+// BYTE bDay			: ê¸°ê°„
+// BYTE bMinLevel		: ìµœì†Œë ˆë²¨
+// BYTE bMaxLevel		: ìµœëŒ€ë ˆë²¨
+// DWORD dwPoint		: ê³µì 
 // DWORD dwGold
 // DWORD dwSilver
 // DWORD dwCooper
@@ -2681,20 +2681,20 @@
 #define CS_GUILDTACTICSWANTEDDEL_ACK		(CS_MAP + 0x017C)
 // BYTE bResult
 
-// <¿ëº´ ¸ğÁı ±¤°í ¸®½ºÆ®>
+// <ìš©ë³‘ ëª¨ì§‘ ê´‘ê³  ë¦¬ìŠ¤íŠ¸>
 #define CS_GUILDTACTICSWANTEDLIST_REQ		(CS_MAP + 0x017D)
 #define CS_GUILDTACTICSWANTEDLIST_ACK		(CS_MAP + 0x017E)
-// DWORD dwCount	: ±¤°í ¼ö
+// DWORD dwCount	: ê´‘ê³  ìˆ˜
 // {
-//		DWORD dwID			: ¾ÆÀÌµğ
-// 		DWORD dwGuildID		: ±æµå¾ÆÀÌµğ
-//		CString strName		: ±æµåÀÌ¸§
-//		CString strTitle	: Á¦¸ñ
-//		CString strText		: ³»¿ë
-//		BYTE bDay			: ±â°£
-//		BYTE bMinLevel		: ÃÖ¼Ò·¹º§
-//		BYTE bMaxLevel		: ÃÖ´ë·¹º§
-//		DWORD dwPoint		: °øÀû
+//		DWORD dwID			: ì•„ì´ë””
+// 		DWORD dwGuildID		: ê¸¸ë“œì•„ì´ë””
+//		CString strName		: ê¸¸ë“œì´ë¦„
+//		CString strTitle	: ì œëª©
+//		CString strText		: ë‚´ìš©
+//		BYTE bDay			: ê¸°ê°„
+//		BYTE bMinLevel		: ìµœì†Œë ˆë²¨
+//		BYTE bMaxLevel		: ìµœëŒ€ë ˆë²¨
+//		DWORD dwPoint		: ê³µì 
 //		DWORD dwGold
 //		DWORD dwSilver
 //		DWORD dwCooper
@@ -2702,7 +2702,7 @@
 //		BYTE bApplied
 // }
 
-// <¿ëº´ Áö¿ø/Ãë¼Ò>
+// <ìš©ë³‘ ì§€ì›/ì·¨ì†Œ>
 #define CS_GUILDTACTICSVOLUNTEERING_REQ		(CS_MAP + 0x017F)
 // DWORD dwID
 #define CS_GUILDTACTICSVOLUNTEERING_ACK		(CS_MAP + 0x0180)
@@ -2711,7 +2711,7 @@
 #define CS_GUILDTACTICSVOLUNTEERINGDEL_ACK	(CS_MAP + 0x0182)
 // BYTE bResult
 
-// < ¿ëº´ Áö¿øÀÚ ¸®½ºÆ® > Á¶°Ç : ±æµå UI³»¿¡¼­
+// < ìš©ë³‘ ì§€ì›ì ë¦¬ìŠ¤íŠ¸ > ì¡°ê±´ : ê¸¸ë“œ UIë‚´ì—ì„œ
 #define CS_GUILDTACTICSVOLUNTEERLIST_REQ	(CS_MAP + 0x0183)
 #define CS_GUILDTACTICSVOLUNTEERLIST_ACK	(CS_MAP + 0x0184)
 // BYTE bCount
@@ -2728,16 +2728,16 @@
 //		DWORD dwCooper
 // }
 
-//±æµåÀåÀÇ ¿ëº´Èñ¸ÁÀÚ¿¡ ´ëÇÑ ÀÇ»çÇ¥Çö
+//ê¸¸ë“œì¥ì˜ ìš©ë³‘í¬ë§ìì— ëŒ€í•œ ì˜ì‚¬í‘œí˜„
 #define CS_GUILDTACTICSREPLY_REQ			(CS_MAP + 0x0185)
 // DWORD dwCharID
 // BYTE bReply
 #define CS_GUILDTACTICSREPLY_ACK			(CS_MAP + 0x0186)
 // BYTE bResult
 
-// < ±æµå ¿ëº´ °­Åğ >
+// < ê¸¸ë“œ ìš©ë³‘ ê°•í‡´ >
 #define CS_GUILDTACTICSKICKOUT_REQ			(CS_MAP + 0x0187)
-// DWORD dwCharID	100914 º»ÀÎ Å»Åğ½Ã º»½Å CharID
+// DWORD dwCharID	100914 ë³¸ì¸ íƒˆí‡´ì‹œ ë³¸ì‹  CharID
 #define CS_GUILDTACTICSKICKOUT_ACK			(CS_MAP + 0x0188)
 // BYTE bResult
 // DWORD dwTarget
@@ -2771,7 +2771,7 @@
 //		WORD wSkillID
 // }
 #define CS_HELMETHIDE_REQ					(CS_MAP + 0x018E)
-// BYTE bHide	: 1 - Åõ±¸¼û±â±â 0 - Åõ±¸º¸ÀÌ±â
+// BYTE bHide	: 1 - íˆ¬êµ¬ìˆ¨ê¸°ê¸° 0 - íˆ¬êµ¬ë³´ì´ê¸°
 #define CS_HELMETHIDE_ACK					(CS_MAP + 0x018F)
 // DWORD dwCharID
 // BYTE bHide
@@ -2781,7 +2781,7 @@
 // STRING strTarget
 #define CS_PARTYMEMBERRECALL_ACK			(CS_MAP + 0x0191)
 // BYTE bResult
-// BYTE bType	// 0:ÆÄÆ¼¿ø ¼ÒÈ¯ 1:´ë»óÀ¸·Î ÀÌµ¿
+// BYTE bType	// 0:íŒŒí‹°ì› ì†Œí™˜ 1:ëŒ€ìƒìœ¼ë¡œ ì´ë™
 // CString strTarget
 
 #define CS_CASHITEMCABINET_REQ				(CS_MAP + 0x0192)
@@ -2793,12 +2793,12 @@
 //		WORD wItemID
 //		BYTE bLevel
 //		BYTE bCount
-//		DWORD dwDuraMax						//³»±¸µµ
+//		DWORD dwDuraMax						//ë‚´êµ¬ë„
 //		DWORD dwDuraCurrent
 //		BYTE bRefineMax
 //		BYTE bRefineCurrent
 //		BYTE bGLevel
-//		__time64_t m_dEndTime				//»ç¿ë ±âÇÑ
+//		__time64_t m_dEndTime				//ì‚¬ìš© ê¸°í•œ
 //		BYTE bGradeEffect
 //		BYTE bWrap
 //		BYTE bELD
@@ -2834,12 +2834,12 @@
 //			WORD wItemID
 //			BYTE bLevel
 //			BYTE bCount
-//			DWORD dwDuraMax						//³»±¸µµ
+//			DWORD dwDuraMax						//ë‚´êµ¬ë„
 //			DWORD dwDuraCurrent
 //			BYTE bRefineMax
 //			BYTE bRefineCurrent
 //			BYTE bGLevel
-//			WORD wUseDay						//»ç¿ë ±âÇÑ
+//			WORD wUseDay						//ì‚¬ìš© ê¸°í•œ
 //			BYTE bGradeEffect
 //			BYTE bWrap
 //			BYTE bELD
@@ -2911,12 +2911,12 @@
 // WORD wItemID
 // BYTE bLevel
 // BYTE bCount
-// DWORD dwDuraMax						//³»±¸µµ
+// DWORD dwDuraMax						//ë‚´êµ¬ë„
 // DWORD dwDuraCurrent
 // BYTE bRefineMax
 // BYTE bRefineCurrent
 // BYTE bGLevel
-// __time64_t m_dEndTime				//»ç¿ë ±âÇÑ
+// __time64_t m_dEndTime				//ì‚¬ìš© ê¸°í•œ
 // BYTE bGradeEffect
 // BYTE bWrap
 // BYTE bELD
@@ -2929,7 +2929,7 @@
 
 #define CS_ADDGODTOWER_ACK					(CS_MAP + 0x01A8)
 // WORD wID
-// FLOAT fPosX						//°ø¼ºÀü
+// FLOAT fPosX						//ê³µì„±ì „
 // FLOAT fPosY
 // FLOAT fPosZ
 // WORD wGadBallID
@@ -2985,7 +2985,7 @@
 #define CS_BALANCEOFPOWER_ACK				(CS_MAP + 0x01B4)
 // FLOAT fPower_Def
 // DWORD dwLeftTick
-// WORD wKillPoint_Atk			//°ø¼ºÀü
+// WORD wKillPoint_Atk			//ê³µì„±ì „
 // WORD wKillPoint_Def
 // CString strOwner1_Atk
 // CString strOwner2_Atk
@@ -3022,11 +3022,11 @@
 #define CS_DURATIONEND_ACK					(CS_MAP + 0x01BB)	//12m10d
 // BYTE bInven
 // BYTE bItemID
-// BYTE bDeleted	0:¼º´É¾øÀ½ 1:¾ÆÀÌÅÛ ³¯¶ó°¨
+// BYTE bDeleted	0:ì„±ëŠ¥ì—†ìŒ 1:ì•„ì´í…œ ë‚ ë¼ê°
 #define CS_DURATIONREP_REQ					(CS_MAP + 0x01BC)
-// BYTE bNeedCost	0:¼ö¸®, 1:ºñ¿ë¿äÃ»
-// BYTE bType	0:ÀÏ¹İ¼ö¸®, 1:Àåºñ¼ö¸® 2:ÀüºÎ¼ö¸®
-// BYTE bInven	ÀÏ¹İ¼ö¸®ÀÏ °æ¿ì
+// BYTE bNeedCost	0:ìˆ˜ë¦¬, 1:ë¹„ìš©ìš”ì²­
+// BYTE bType	0:ì¼ë°˜ìˆ˜ë¦¬, 1:ì¥ë¹„ìˆ˜ë¦¬ 2:ì „ë¶€ìˆ˜ë¦¬
+// BYTE bInven	ì¼ë°˜ìˆ˜ë¦¬ì¼ ê²½ìš°
 // BYTE bItemID		"
 // WORD wNpcID
 // BYTE bNpcInvenID
@@ -3044,7 +3044,7 @@
 //		DWORD dwDuraCurrent
 // }
 #define CS_REFINE_REQ						(CS_MAP + 0x01BF)
-// BYTE bNeedCost	0:Á¦·Ã 1:ºñ¿ë¿äÃ»
+// BYTE bNeedCost	0:ì œë ¨ 1:ë¹„ìš©ìš”ì²­
 // BYTE bInven
 // BYTE bItemID
 // BYTE bAddCount
@@ -3070,7 +3070,7 @@
 // BYTE bRefineMax
 // BYTE bRefineCurrent
 // BYTE bGLevel
-// __time64_t m_dEndTime				//»ç¿ë ±âÇÑ
+// __time64_t m_dEndTime				//ì‚¬ìš© ê¸°í•œ
 // BYTE bGradeEffect
 // BYTE bWrap
 // BYTE bELD
@@ -3084,7 +3084,7 @@
 // WORD wExceptSkill
 #define CS_ACTEND_REQ						(CS_MAP + 0x01C3)	//12m10d
 #define CS_CASHCABINETBUY_REQ				(CS_MAP + 0x01C4)	//12m12d
-// BYTE bNeedCash	0:buy 1:ÇÊ¿äÄ³½¬¿ä±¸
+// BYTE bNeedCash	0:buy 1:í•„ìš”ìºì‰¬ìš”êµ¬
 #define CS_CASHCABINETBUY_ACK				(CS_MAP + 0x01C5)	//12m12d
 // BYTE bResult
 // __int64 ldwTime
@@ -3099,12 +3099,12 @@
 // WORD wItemID
 // BYTE bLevel
 // BYTE bCount
-// DWORD dwDuraMax						//³»±¸µµ
+// DWORD dwDuraMax						//ë‚´êµ¬ë„
 // DWORD dwDuraCurrent
 // BYTE bRefineMax
 // BYTE bRefineCurrent
 // BYTE bGLevel
-// __time64_t m_dEndTime				//»ç¿ë ±âÇÑ
+// __time64_t m_dEndTime				//ì‚¬ìš© ê¸°í•œ
 // BYTE bGradeEffect
 // BYTE bWrap
 // BYTE bELD
@@ -3128,7 +3128,7 @@
 // CString strName
 #define CS_STOPTHECLOCK_REQ					(CS_MAP + 0x01CB)
 // BYTE bInven
-// BYTE bItem		°¡¹æÀÏ °æ¿ì INVALID_SLOT
+// BYTE bItem		ê°€ë°©ì¼ ê²½ìš° INVALID_SLOT
 // WORD wShopItemID
 #define CS_STOPTHECLOCK_ACK					(CS_MAP + 0x01CC)
 // BYTE bInven
@@ -3174,16 +3174,16 @@
 // WORD wCount
 // {
 //		STRING strName
-//		BYTE bOption						//Â÷´Ü
+//		BYTE bOption						//ì°¨ë‹¨
 // }
 #define CS_RELAYPROTECTEDADD_REQ			(CS_MAP + 0x01D8)
 // STRING strName
-// BYTE bOption								//Â÷´Ü
+// BYTE bOption								//ì°¨ë‹¨
 #define CS_RELAYPROTECTEDDEL_REQ			(CS_MAP + 0x01D9)
 // STRING strName
 #define CS_CHECKRELAY_REQ					(CS_MAP + 0x01DA)
 #define CS_RELAYPROTECTEDOPTION_REQ			(CS_MAP + 0x01DB) // if(bOption == PROTECTED_CHAT)
-// CString strName							//Â÷´Ü
+// CString strName							//ì°¨ë‹¨
 // BYTE bOption
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -3234,13 +3234,13 @@
 //		DWORD dwEntryPoint_D
 // }
 #define CS_PVPRECORD_REQ					(CS_MAP + 0x01E9)
-// BYTE bType // 0:ÀüÀï 1:´ë°á 
+// BYTE bType // 0:ì „ìŸ 1:ëŒ€ê²° 
 #define CS_PVPRECORD_ACK					(CS_MAP + 0x01EA)
 // BYTE bType
 // DWORD dwRankOrder
 // BYTE bRankPercent
 // INT nPoint
-// Á÷¾÷ ¼ø¼­´ë·Î(TCLASS_COUNT)
+// ì§ì—… ìˆœì„œëŒ€ë¡œ(TCLASS_COUNT)
 // {
 //		DWORD dwKillCount
 //		DWORD dwDieCount
@@ -3255,7 +3255,7 @@
 //		INT64 dlDate
 // }
 #define CS_ENDWAR_ACK						(CS_MAP + 0x01EB)
-//	BYTE bType								//°ø¼ºÀü
+//	BYTE bType								//ê³µì„±ì „
 //	DWORD dwWinGuildID
 //	DWORD dwDefTotal
 //	DWORD dwAtkTotal
@@ -3267,9 +3267,9 @@
 //	DWORD dwAtkPower
 //	WORD wAtkPoint
 //	WORD wAtkKillPoint
-#define CS_NPCMONSTERLIST_ACK				(CS_MAP + 0x01EC)	//°ø¼ºÀü
-#define CS_MONSTERBUY_REQ					(CS_MAP + 0x01ED)	//°ø¼ºÀü
-#define CS_MONSTERBUY_ACK					(CS_MAP + 0x01EE)	//°ø¼ºÀü
+#define CS_NPCMONSTERLIST_ACK				(CS_MAP + 0x01EC)	//ê³µì„±ì „
+#define CS_MONSTERBUY_REQ					(CS_MAP + 0x01ED)	//ê³µì„±ì „
+#define CS_MONSTERBUY_ACK					(CS_MAP + 0x01EE)	//ê³µì„±ì „
 // BYTE bResult
 #define CS_ENTERCASTLE_ACK					(CS_MAP + 0x01EF)
 // WORD wCastle
@@ -3282,7 +3282,7 @@
 // FLOAT fPosX
 // FLOAT fPosY
 // FLOAT fPosZ
-#define CS_PROTECTEDOPTION_REQ				(CS_MAP + 0x01F2)	//Â÷´Ü
+#define CS_PROTECTEDOPTION_REQ				(CS_MAP + 0x01F2)	//ì°¨ë‹¨
 // DWORD dwCharID
 // BYTE bOption
 #define CS_FRIENDLIST_REQ					(CS_MAP + 0x01F3)	//0309
@@ -3306,7 +3306,7 @@
 // BYTE bRefineMax
 // BYTE bRefineCurrent
 // BYTE bGLevel
-// __time64_t m_dEndTime				//»ç¿ë ±âÇÑ
+// __time64_t m_dEndTime				//ì‚¬ìš© ê¸°í•œ
 // BYTE bGradeEffect
 // BYTE bWrap
 // BYTE bELD
@@ -3424,7 +3424,7 @@
 // WORD wNpcID
 // DWORD dwAuctionID
 // BYTE bCount
-// __int64 ldwBidPrice // °³´ç°¡°İ
+// __int64 ldwBidPrice // ê°œë‹¹ê°€ê²©
 #define CS_AUCTIONBUYDIRECT_ACK				(CS_MAP + 0x020A)
 // BYTE bResult
 #define CS_AUCTIONFIND_REQ					(CS_MAP + 0x020B)
@@ -3515,7 +3515,7 @@
 #define CS_KICKOUTMAP_ACK					(CS_MAP + 0x0210)
 // WORD wMapID
 
-// ¿Â¶óÀÎ ¿ëº´ ÃÊ´ë/¼ö¶ô
+// ì˜¨ë¼ì¸ ìš©ë³‘ ì´ˆëŒ€/ìˆ˜ë½
 #define CS_GUILDTACTICSINVITE_REQ			(CS_MAP + 0x0211)
 // CString strName
 // BYTE bDay
@@ -3541,9 +3541,9 @@
 // DWORD dwCooper
 #define CS_GUILDTACTICSANSWER_ACK			(CS_MAP + 0x0214)
 // BYTE bResult
-// DWORD dwTacticsID		: ¿ëº´±æµå¾ÆÀÌµğ
-// CString strTactics		: ¿ëº´±æµåÀÌ¸§
-// CString strTacticsName	: »õ·Î °¡ÀÔµÈ ¿ëº´ ÀÌ¸§
+// DWORD dwTacticsID		: ìš©ë³‘ê¸¸ë“œì•„ì´ë””
+// CString strTactics		: ìš©ë³‘ê¸¸ë“œì´ë¦„
+// CString strTacticsName	: ìƒˆë¡œ ê°€ì…ëœ ìš©ë³‘ ì´ë¦„
 #define CS_GUILDTACTICSLIST_REQ				(CS_MAP + 0x0215)
 #define CS_GUILDTACTICSLIST_ACK				(CS_MAP + 0x0216)
 // BYTE bCount
@@ -3713,25 +3713,25 @@
 // WORD wNotReadCount
 #define CS_TOURNAMENTAPPLYINFO_REQ			(CS_MAP + 0x0227)
 #define CS_TOURNAMENTAPPLYINFO_ACK			(CS_MAP + 0x0228)
-// BYTE bEntryCount	Á¾¸ñ¼ö
+// BYTE bEntryCount	ì¢…ëª©ìˆ˜
 // {
-// 		BYTE bEntryID			Á¾¸ñ
-// 		BYTE bType				±¸ºĞ
-// 		DWORD dwClass			Á¾Á·
-// 		BYTE bStep				ÁøÇà»óÈ²
-// 		BYTE bMyApplied			Áö¿ø
-//		DWORD dwFee				¼ö¼ö·á
-//		DWORD dwBackFee			È¯ºÒ·á
-//		BYTE bPermitCount		Çã°¡¼­ °¹¼ö
-//		BYTE bNeed				ÀÏ¹İÁ¤¿ø
-//		WORD wTotalApplicant	ÀÏ¹İÁö¿øÀÚ¼ö
-//		BYTE bRewardCount		»óÇ°¼ö
+// 		BYTE bEntryID			ì¢…ëª©
+// 		BYTE bType				êµ¬ë¶„
+// 		DWORD dwClass			ì¢…ì¡±
+// 		BYTE bStep				ì§„í–‰ìƒí™©
+// 		BYTE bMyApplied			ì§€ì›
+//		DWORD dwFee				ìˆ˜ìˆ˜ë£Œ
+//		DWORD dwBackFee			í™˜ë¶ˆë£Œ
+//		BYTE bPermitCount		í—ˆê°€ì„œ ê°¯ìˆ˜
+//		BYTE bNeed				ì¼ë°˜ì •ì›
+//		WORD wTotalApplicant	ì¼ë°˜ì§€ì›ììˆ˜
+//		BYTE bRewardCount		ìƒí’ˆìˆ˜
 //		{
 //			BYTE bChartType
 //			WORD wItemID
 //			BYTE bCount
 //		}
-// 		BYTE b1stCount			1±ºÁö¿øÀÚ
+// 		BYTE b1stCount			1êµ°ì§€ì›ì
 // 		{
 //			DWORD dwCharID
 //			BYTE bCountry
@@ -3749,20 +3749,20 @@
 // BYTE bEntryID
 #define CS_TOURNAMENTJOINLIST_REQ			(CS_MAP + 0x022B)
 #define CS_TOURNAMENTJOINLIST_ACK			(CS_MAP + 0x022C)
-// BYTE bEntryCount	Á¾¸ñ¼ö
+// BYTE bEntryCount	ì¢…ëª©ìˆ˜
 // {
-// 		BYTE bEntryID			Á¾¸ñ
-// 		BYTE bType				±¸ºĞ
-// 		DWORD dwClass			Á¾Á·
-// 		BYTE bStep				ÁøÇà»óÈ²
-// 		BYTE bMyApplied			Áö¿ø
-//		BYTE bRewardCount		»óÇ°¼ö
+// 		BYTE bEntryID			ì¢…ëª©
+// 		BYTE bType				êµ¬ë¶„
+// 		DWORD dwClass			ì¢…ì¡±
+// 		BYTE bStep				ì§„í–‰ìƒí™©
+// 		BYTE bMyApplied			ì§€ì›
+//		BYTE bRewardCount		ìƒí’ˆìˆ˜
 //		{
 //			BYTE bChartType
 //			WORD wItemID
 //			BYTE bCount
 //		}
-// 		BYTE bJoinCount			Âü°¡ÀÚ¼ö
+// 		BYTE bJoinCount			ì°¸ê°€ììˆ˜
 // 		{
 //			DWORD dwCharID
 //			BYTE bCountry
@@ -3794,20 +3794,20 @@
 // CString strName
 #define CS_TOURNAMEMTMATCHLIST_REQ			(CS_MAP + 0x0231)
 #define CS_TOURNAMENTMATCHLIST_ACK			(CS_MAP + 0x0232)
-// BYTE bEntryCount	Á¾¸ñ¼ö
+// BYTE bEntryCount	ì¢…ëª©ìˆ˜
 // {
-// 		BYTE bEntryID			Á¾¸ñ
-// 		BYTE bType				±¸ºĞ
-// 		DWORD dwClass			Á¾Á·
-// 		BYTE bStep				ÁøÇà»óÈ²
-// 		BYTE bMyApplied			Áö¿ø
-//		BYTE bRewardCount		»óÇ°¼ö
+// 		BYTE bEntryID			ì¢…ëª©
+// 		BYTE bType				êµ¬ë¶„
+// 		DWORD dwClass			ì¢…ì¡±
+// 		BYTE bStep				ì§„í–‰ìƒí™©
+// 		BYTE bMyApplied			ì§€ì›
+//		BYTE bRewardCount		ìƒí’ˆìˆ˜
 //		{
 //			BYTE bChartType
 //			WORD wItemID
 //			BYTE bCount
 //		}
-// 		BYTE bJoinCount			Âü°¡ÀÚ¼ö
+// 		BYTE bJoinCount			ì°¸ê°€ììˆ˜
 // 		{
 //			BYTE bSlotID
 //			DWORD dwCharID
@@ -3817,31 +3817,31 @@
 //			BYTE bClass
 //			DWORD dwRank
 //			DWORD dwMonthRank
-//			BYTE bQfWin			8°­ ½ÂÆĞ
-//			BYTE bSfWin			4°­ ½ÂÆĞ
-//			BYTE bFWin			°á½Â ½ÂÆĞ
+//			BYTE bQfWin			8ê°• ìŠ¹íŒ¨
+//			BYTE bSfWin			4ê°• ìŠ¹íŒ¨
+//			BYTE bFWin			ê²°ìŠ¹ ìŠ¹íŒ¨
 // 		}
 // }
 #define CS_TOURNAMENTEVENTLIST_REQ			(CS_MAP + 0x0233)
 #define CS_TOURNAMENTEVENTLIST_ACK			(CS_MAP + 0x0234)
-// BYTE bBase					±âº»´çÃ·±İ1022
-// DWORD dwTotal				ÃÑ ´©Àû ´çÃ·±İ1022
-// BYTE bEntryCount	Á¾¸ñ¼ö
+// BYTE bBase					ê¸°ë³¸ë‹¹ì²¨ê¸ˆ1022
+// DWORD dwTotal				ì´ ëˆ„ì  ë‹¹ì²¨ê¸ˆ1022
+// BYTE bEntryCount	ì¢…ëª©ìˆ˜
 // {
-// 		BYTE bEntryID			Á¾¸ñ
-// 		BYTE bType				±¸ºĞ
+// 		BYTE bEntryID			ì¢…ëª©
+// 		BYTE bType				êµ¬ë¶„
 //		CString strChoice
 //		BYTE bCountry
-//		FLOAT fRate				´çÃ·±İ¹èÀ²(¼Ò¼öÁ¡ 2ÀÚ¸®)1022
-//		DWORD dwSRate			´çÃ·±İ1022
+//		FLOAT fRate				ë‹¹ì²¨ê¸ˆë°°ìœ¨(ì†Œìˆ˜ì  2ìë¦¬)1022
+//		DWORD dwSRate			ë‹¹ì²¨ê¸ˆ1022
 // }
 #define CS_TOURNAMENTEVENTINFO_REQ			(CS_MAP + 0x0235)
 // BYTE bEntryID
 #define CS_TOURNAMENTEVENTINFO_ACK			(CS_MAP + 0x0236)
 // BYTE bEntryID
-// BYTE bBase					±âº»´çÃ·±İ1022
-// DWORD dwTotal				ÃÑ ´©Àû ´çÃ·±İ1022
-// BYTE bJoinCount			Âü°¡ÀÚ¼ö
+// BYTE bBase					ê¸°ë³¸ë‹¹ì²¨ê¸ˆ1022
+// DWORD dwTotal				ì´ ëˆ„ì  ë‹¹ì²¨ê¸ˆ1022
+// BYTE bJoinCount			ì°¸ê°€ììˆ˜
 // {
 //		DWORD dwCharID
 //		BYTE bCountry
@@ -3851,7 +3851,7 @@
 //		BYTE bClass
 //		DWORD dwRank
 //		DWORD dwMonthRank
-//		FLOAT fRate				´çÃ·±İ¹è¿ç(¼Ò¼öÁ¡ 2ÀÚ¸®)1022
+//		FLOAT fRate				ë‹¹ì²¨ê¸ˆë°°ìšœ(ì†Œìˆ˜ì  2ìë¦¬)1022
 //		BYTE bPartyCount
 //		{
 //			DWORD dwCharID
@@ -3879,7 +3879,7 @@
 // WORD wRedKill
 // BYTE bCount
 // {
-//		BYTE bSlotID					ÆÀ±¸ºĞ1022
+//		BYTE bSlotID					íŒ€êµ¬ë¶„1022
 //		DWORD dwCharID
 //		BYTE bCountry
 //		CString strName
@@ -3921,16 +3921,16 @@
 // DWORD dwSilver
 // DWORD dwCooper
 #define CS_RPSGAME_REQ						(CS_MAP + 0x0248)
-// BYTE bRPS 0:°¡À§1:¹ÙÀ§:2º¸3:Æ÷±â
+// BYTE bRPS 0:ê°€ìœ„1:ë°”ìœ„:2ë³´3:í¬ê¸°
 #define CS_RPSGAME_ACK						(CS_MAP + 0x0249)
-// BYTE bWinCount	0:ÆĞ¹è
+// BYTE bWinCount	0:íŒ¨ë°°
 // BYTE bPlayerRPS
 // BYTE bNpcRPS
 #define CS_ACDCLOSE_REQ						(CS_MAP + 0x024A)
 
 // 100914
 #define CS_CHANGECOUNTRY_REQ				(CS_MAP + 0x024B)
-// BYTE bType(±¹°¡º¯°æ:IK_COUNTRY, Áö¿ø±¹º¯°æ:IK_AIDCOUNTRY)
+// BYTE bType(êµ­ê°€ë³€ê²½:IK_COUNTRY, ì§€ì›êµ­ë³€ê²½:IK_AIDCOUNTRY)
 // BYTE bCountry
 // ACK : CS_CHANGECHARBASE_ACK(bValue = bCountry)
 #define CS_WARCOUNTRYBALANCE_REQ			(CS_MAP + 0x024C)
@@ -3946,7 +3946,7 @@
 // BYTE bResult (MEETING_RESULT)
 // CString strName( bType==0 ? Inviter Name : Target Name)
 #define CS_ARENA_REQ						(CS_MAP + 0x0250)
-// BYTE bCommand ( 0:½ÅÃ», 1:³ª°¡±â)
+// BYTE bCommand ( 0:ì‹ ì²­, 1:ë‚˜ê°€ê¸°)
 // WORD wNpcID
 #define CS_ARENA_ACK						(CS_MAP + 0x0251)
 // BYTE bResult
@@ -3982,7 +3982,7 @@
 // CString TargetName
 // WORD wGiftID
 #define CS_CMGIFT_ACK						(CS_MAP + 0x0259)
-// BYTE bRet	(0:success, 1:Àß¸øµÈTarget 2:Àß¸øµÈGiftID, 3:ÀÌ¹Ì¹ŞÀº¼±¹°, 4:½ÇÆĞ)
+// BYTE bRet	(0:success, 1:ì˜ëª»ëœTarget 2:ì˜ëª»ëœGiftID, 3:ì´ë¯¸ë°›ì€ì„ ë¬¼, 4:ì‹¤íŒ¨)
 
 #define CS_ASSISTANT_REQ					(CS_MAP + 0x0260)
 

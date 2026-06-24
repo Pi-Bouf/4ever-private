@@ -1,21 +1,21 @@
-#pragma once
+ï»¿#pragma once
 #include "afxcmn.h"
 #include "EventInfo.h"
 
-// CEventDlg ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CEventDlg ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 class CEventDlg : public CDialog
 {
 	DECLARE_DYNAMIC(CEventDlg)
 
 public:
-	CEventDlg(CWnd* pParent = NULL);   // Ç¥ÁØ »ı¼ºÀÚÀÔ´Ï´Ù.
+	CEventDlg(CWnd* pParent = NULL);   // í‘œì¤€ ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CEventDlg();
 
-// ´ëÈ­ »óÀÚ µ¥ÀÌÅÍÀÔ´Ï´Ù.
+// ëŒ€í™” ìƒì ë°ì´í„°ì…ë‹ˆë‹¤.
 	enum { IDD = IDD_EVENT };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 public:

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "ProtocolBase.h"
 
@@ -330,7 +330,7 @@
 #define MW_PETRIDING_REQ					(MW_BASE + 0x00CE)
 #define MW_PETRIDING_ACK					(MW_BASE + 0x00CF)
 
-/*		< ±æµå Ãß°¡ >		*/
+/*		< ê¸¸ë“œ ì¶”ê°€ >		*/
 #define MW_GUILDCABINETLIST_REQ				(MW_BASE + 0x00D0)
 #define MW_GUILDCABINETLIST_ACK				(MW_BASE + 0x00D1)
 

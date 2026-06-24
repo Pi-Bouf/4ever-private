@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "tmonster.h"
 
 class CTRecallMon :
@@ -16,7 +16,7 @@ public:
 
 
 	WORD m_wCompanionID;
-	DWORD m_dwMaxHP;		//�н�
+	DWORD m_dwMaxHP;		//분신
 	DWORD m_dwMaxMP;
 	BYTE m_bAtkLevel;
 	BYTE m_bAtkSkillLevel;

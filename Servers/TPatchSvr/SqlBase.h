@@ -1,4 +1,4 @@
-// SqlBase.h: interface for the CSqlBase class.
+ï»¿// SqlBase.h: interface for the CSqlBase class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-/*ÁÖÀÇÇÒ SQL & C++ Data Types ----------------------------------------
+/*ì£¼ì˜í•  SQL & C++ Data Types ----------------------------------------
 	C Type					SQL Type
 
 	float					REAL

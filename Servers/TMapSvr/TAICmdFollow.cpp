@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 
 
 CTAICmdFollow::CTAICmdFollow()
@@ -25,7 +25,7 @@ BYTE CTAICmdFollow::CanRun( CTMonster *pMON, DWORD dwEventHost, DWORD dwRHId, BY
 		pMON->m_dwHostID != dwEventHost ||
 		!pMON->m_dwTargetID ||
 		pMON->m_pSPAWN->m_pSPAWN->m_bRoamType == 4 ||
-		!pMON->CheckAttack()) //°íÁ¤¸ó½ºÅÍ
+		!pMON->CheckAttack()) //ê³ ì •ëª¬ìŠ¤í„°
 		return FALSE;
 
 	return CTAICommand::CanRun( pMON, dwEventHost, dwRHId, bRHType);

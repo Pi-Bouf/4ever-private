@@ -1,4 +1,4 @@
-#pragma once
+О╩©#pragma once
 
 
 class CTItem
@@ -14,8 +14,8 @@ public:
 	BYTE m_bLevel;
 	BYTE m_bGem;
 	WORD m_wMoggItemID;
-	BYTE m_bInven;	//╩Г©Кюз╟ё ╬фюлеш ╟е╥║©║╪╜╦╦ ╟╙ ╪Ёа╓го©╘ ╩Г©Каъ.
-	DWORD m_dwOwnerID;	//дЫ╫╨ф╝ ╬фюлеш ажюн╪Ёа╓
+	BYTE m_bInven;	//Л┌╛Л ╘Л·░Й╟└ Л∙└Л²╢М┘° Й╠╟К·≤Л≈░Л└°К╖▄ Й╟▓ Л└╓Л═∙М∙≤Л≈╛ Л┌╛Л ╘Л╓▒.
+	DWORD m_dwOwnerID;	//М─≤Л┼╓М┼╦ Л∙└Л²╢М┘° Лё╪Л²╦Л└╓Л═∙
 
 	WORD m_wItemID;
 	BYTE m_bCount;

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "TClient.h"
 #include "TClientWnd.h"
 #include "Curse.h"
@@ -231,7 +231,7 @@ int CTClientWnd::OnGM_BACKTO_LOGIN()
 	{
 		if( m_session[i].m_bSVR != SVR_NONE )
 		{
-			m_bIntendLogout = TRUE; // ³»°¡ ÀÇµµÇÑ ¼¼¼ÇÁ¾·áÀÌ´Ù.
+			m_bIntendLogout = TRUE; // ë‚´ê°€ ì˜ë„í•œ ì„¸ì…˜ì¢…ë£Œì´ë‹¤.
 			m_session[i].OnClose(0);
 		}
 	}
@@ -308,7 +308,7 @@ int CTClientWnd::OnGM_SELECT_CHANNEL()
 
 	m_pTGROUP = pGROUP->Clone();
 
-	if( m_pTGROUP->m_bSelectedChannelIndex == 0xFF ) // Ã¤³Î ÀÚµ¿ ¼±ÅÃ
+	if( m_pTGROUP->m_bSelectedChannelIndex == 0xFF ) // ì±„ë„ ìžë™ ì„ íƒ
 	{
 		VECTORBYTE vSTATGRP[ TSTATUS_COUNT ];
 

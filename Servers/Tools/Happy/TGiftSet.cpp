@@ -1,4 +1,4 @@
-// TGiftSet.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// TGiftSet.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -9,7 +9,7 @@
 #include "HappyDoc.h"
 
 
-// CTGiftSet ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CTGiftSet ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNCREATE(CTGiftSet, CDialog)
 CTGiftSet::CTGiftSet(CWnd* pParent /*=NULL*/)
@@ -43,7 +43,7 @@ BOOL CTGiftSet::OnInitDialog()
 	m_stDefalultGift.m_wErrGiftID = 0;
 	m_stDefalultGift.m_strTitle = _T("Title");
 	m_stDefalultGift.m_strMsg = _T("Message");
-	return TRUE;  // Æ÷Ä¿½º¸¦ ÄÁÆ®·Ñ¿¡ ¼³Á¤ÇÏÁö ¾ÊÀ¸¸é TRUE¸¦ ¹İÈ¯ÇÕ´Ï´Ù.
+	return TRUE;  // í¬ì»¤ìŠ¤ë¥¼ ì»¨íŠ¸ë¡¤ì— ì„¤ì •í•˜ì§€ ì•Šìœ¼ë©´ TRUEë¥¼ ë°˜í™˜í•©ë‹ˆë‹¤.
 }
 
 BEGIN_MESSAGE_MAP(CTGiftSet, CDialog)
@@ -181,7 +181,7 @@ void CTGiftSet::InsertListItem(LPCMGIFT pGift)
 	nCol++;	
 	m_lcCMGift.SetCheckbox(nRow,nCol,pGift->m_bToolOnly);
 
-	// Áßº¹½Ã
+	// ì¤‘ë³µì‹œ
 	nCol++;	
 	m_lcCMGift.SetEditBox(nRow,nCol,TRUE,-1,-1,-1,FALSE,NULL,ES_CENTER|ES_NOHIDESEL|WS_CHILD|WS_VISIBLE|ES_NUMBER);
 	m_lcCMGift.SetEditBoxAlign(nRow,nCol,ES_CENTER);
@@ -380,7 +380,7 @@ BOOL CTGiftSet::PreTranslateMessage(MSG* pMsg)
 
 int CTGiftSet::GetSelectItem()
 {
-	// ¼±ÅÃµÈ ¾ÆÀÌÅÛ Ã£±â		
+	// ì„ íƒëœ ì•„ì´í…œ ì°¾ê¸°		
 	int iCount = m_lcCMGift.GetItemCount();
 	for(int i = 0; i < iCount; i++)
 	{

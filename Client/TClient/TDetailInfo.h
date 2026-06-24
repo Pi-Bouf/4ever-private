@@ -1,24 +1,24 @@
-#pragma once
+ï»¿#pragma once
 
 #define TDETINFO_OUTLOOK_STYLE_TITLE			1
 #define TDETINFO_OUTLOOK_STYLE_UNTITLE		2
 
-/// »ó¼¼Á¤º¸ Å¸ÀÔ ¿­°Å
+/// ìƒì„¸ì •ë³´ íƒ€ìž… ì—´ê±°
 enum TDETINFO_TYPE
 {
-	TDETINFO_TYPE_NOR,			///< Å¸ÀÌÆ²°ú ¼³¸í¸¸ ÀÖ´Â °£´ÜÇÑ »ó¼¼ Á¤º¸
-	TDETINFO_TYPE_ITEM,			///< ¾ÆÀÌÅÛ ¼³¸í Å¸ÀÔÀÇ »ó¼¼ Á¤º¸
+	TDETINFO_TYPE_NOR,			///< íƒ€ì´í‹€ê³¼ ì„¤ëª…ë§Œ ìžˆëŠ” ê°„ë‹¨í•œ ìƒì„¸ ì •ë³´
+	TDETINFO_TYPE_ITEM,			///< ì•„ì´í…œ ì„¤ëª… íƒ€ìž…ì˜ ìƒì„¸ ì •ë³´
 	TDEFINFO_TYPE_INSTITEM,
-	TDETINFO_TYPE_SEALEDITEM,	///< ºÀÀÎ ¾ÆÀÌÅÛ ¼³¸í Å¸ÀÔÀÇ »ó¼¼ Á¤º¸
-	TDETINFO_TYPE_OPTIONITEM,	///< ¿É¼Ç ¾ÆÀÌÅÛ ¼³¸í Å¸ÀÔÀÇ »ó¼¼ Á¤º¸
-	TDETINFO_TYPE_SKILL,		///< ½ºÅ³ ¼³¸í Å¸ÀÔÀÇ »ó¼¼ Á¤º¸
-	TDETINFO_TYPE_CASTLE,	///< ¼º ¼³¸í Å¸ÀÔÀÇ »ó¼¼ Á¤º¸
-	TDETINFO_TYPE_TERRITORY, ///< Áö¿ª ¼³¸í Å¸ÀÔÀÇ »ó¼¼ Á¤º¸
-	TDETINFO_TYPE_STAT, ///< ½ºÅÈ Á¤º¸
-	TDETINFO_TYPE_PVP, ///< PVP»óÅÂ Á¤º¸
+	TDETINFO_TYPE_SEALEDITEM,	///< ë´‰ì¸ ì•„ì´í…œ ì„¤ëª… íƒ€ìž…ì˜ ìƒì„¸ ì •ë³´
+	TDETINFO_TYPE_OPTIONITEM,	///< ì˜µì…˜ ì•„ì´í…œ ì„¤ëª… íƒ€ìž…ì˜ ìƒì„¸ ì •ë³´
+	TDETINFO_TYPE_SKILL,		///< ìŠ¤í‚¬ ì„¤ëª… íƒ€ìž…ì˜ ìƒì„¸ ì •ë³´
+	TDETINFO_TYPE_CASTLE,	///< ì„± ì„¤ëª… íƒ€ìž…ì˜ ìƒì„¸ ì •ë³´
+	TDETINFO_TYPE_TERRITORY, ///< ì§€ì—­ ì„¤ëª… íƒ€ìž…ì˜ ìƒì„¸ ì •ë³´
+	TDETINFO_TYPE_STAT, ///< ìŠ¤íƒ¯ ì •ë³´
+	TDETINFO_TYPE_PVP, ///< PVPìƒíƒœ ì •ë³´
 	TDETINFO_TYPE_TEXT,
-	TDEFINFO_TYPE_DEFTOOLTIP,	///< ¼³¸í¸¸ ÀÖ´Â °£´ÜÇÑ »ó¼¼ Á¤º¸
-	TDETINFO_TYPE_FAMERANK,	///< ¸í¿¹ÀÇ Àü´ç Á¤º¸
+	TDEFINFO_TYPE_DEFTOOLTIP,	///< ì„¤ëª…ë§Œ ìžˆëŠ” ê°„ë‹¨í•œ ìƒì„¸ ì •ë³´
+	TDETINFO_TYPE_FAMERANK,	///< ëª…ì˜ˆì˜ ì „ë‹¹ ì •ë³´
 	TDETINFO_TYPE_TOURNAMENT_PLAYER,
 	TDETINFO_TYPE_MISSION,
 	TDETINFO_TYPE_PLAYER,
@@ -43,24 +43,24 @@ enum TDETINFO_TYPE
 
 // =====================================================================
 /**	@class		ITDetailInfo
-	@brief		»ó¼¼Á¤º¸ÀÇ Àü´Þ°ú Ç¥½Ã¸¦ À§ÇÑ ±âº» ÀÎÅÍÆäÀÌ½º.
+	@brief		ìƒì„¸ì •ë³´ì˜ ì „ë‹¬ê³¼ í‘œì‹œë¥¼ ìœ„í•œ ê¸°ë³¸ ì¸í„°íŽ˜ì´ìŠ¤.
 	
 */// ===================================================================
 class ITDetailInfo
 {
 public:
-	/// _GetLineState() ÀÇ ¹ÝÈ¯°ªÀ¸·Î »ç¿ë.
+	/// _GetLineState() ì˜ ë°˜í™˜ê°’ìœ¼ë¡œ ì‚¬ìš©.
 	enum LINE_STATE
 	{
-		LS_VALID,		///< ¾Æ¹« ¹®Á¦ ¾øÀ½
-		LS_INVALID,		///< ÀÌ ¶óÀÎÀº Àû¿ëÇÒ ¼ö ¾øÀ½
-		LS_NEEDCONV,	///< ÀÌ ¶óÀÎÀº º¯È¯ÀÌ ÇÊ¿äÇÔ
-		LS_TITLE,		///< Å¸ÀÌÆ²¿ë ¶óÀÎÀÓ
+		LS_VALID,		///< ì•„ë¬´ ë¬¸ì œ ì—†ìŒ
+		LS_INVALID,		///< ì´ ë¼ì¸ì€ ì ìš©í•  ìˆ˜ ì—†ìŒ
+		LS_NEEDCONV,	///< ì´ ë¼ì¸ì€ ë³€í™˜ì´ í•„ìš”í•¨
+		LS_TITLE,		///< íƒ€ì´í‹€ìš© ë¼ì¸ìž„
 		LS_COUNT
 	};
 
 public:
-	/// »ó¼¼Á¤º¸ÀÇ ÇÑ ÁÙÀ» Ç¥½ÃÇÏ±âÀ§ÇÑ Á¤º¸.
+	/// ìƒì„¸ì •ë³´ì˜ í•œ ì¤„ì„ í‘œì‹œí•˜ê¸°ìœ„í•œ ì •ë³´.
 	struct Line
 	{
 		CString		m_strText;
@@ -78,23 +78,23 @@ public:
 	static const char m_cTokenMark;
 
 protected:
-	TDETINFO_TYPE	m_eType;			///< »ó¼¼Á¤º¸ Å¸ÀÔ
+	TDETINFO_TYPE	m_eType;			///< ìƒì„¸ì •ë³´ íƒ€ìž…
 	
-	DWORD			m_dwInfoID;			///< »ó¼¼Á¤º¸ ¾ÆÀÌµð
-	WORD			m_wImageID;			///< »ó¼¼Á¤º¸¸¦ ´ëÇ¥ÇÏ´Â ÀÌ¹ÌÁöÀÇ ¾ÆÀÌµð
-	CRect			m_rcRef;			///< Á¤º¸Ã¢ÀÌ ÂüÁ¶ÇÏ´Â °÷ÀÇ UI Å©±â
+	DWORD			m_dwInfoID;			///< ìƒì„¸ì •ë³´ ì•„ì´ë””
+	WORD			m_wImageID;			///< ìƒì„¸ì •ë³´ë¥¼ ëŒ€í‘œí•˜ëŠ” ì´ë¯¸ì§€ì˜ ì•„ì´ë””
+	CRect			m_rcRef;			///< ì •ë³´ì°½ì´ ì°¸ì¡°í•˜ëŠ” ê³³ì˜ UI í¬ê¸°
 	
-	BOOL			m_bLRType;			///< »ó¼¼Ã¢À» ÂüÁ¶¿µ¿ª¿¡¼­ ÁÂ¿ìÃøÀ¸·Î Ç¥½ÃÇÒÁö ¿©ºÎ.
-	BOOL			m_bPriorLeft;		///< »ó¼¼Ã¢À» ¿ÞÂÊÀ¸·Î ¸ÕÀú Ç¥½ÃÇÒÁö ¿©ºÎ
-	BOOL			m_bPriorTop;		///< »ó¼¼Ã¢À» À§ÂÊÀ¸·Î ¸ÕÀú Ç¥½ÃÇÒÁö ¿©ºÎ
+	BOOL			m_bLRType;			///< ìƒì„¸ì°½ì„ ì°¸ì¡°ì˜ì—­ì—ì„œ ì¢Œìš°ì¸¡ìœ¼ë¡œ í‘œì‹œí• ì§€ ì—¬ë¶€.
+	BOOL			m_bPriorLeft;		///< ìƒì„¸ì°½ì„ ì™¼ìª½ìœ¼ë¡œ ë¨¼ì € í‘œì‹œí• ì§€ ì—¬ë¶€
+	BOOL			m_bPriorTop;		///< ìƒì„¸ì°½ì„ ìœ„ìª½ìœ¼ë¡œ ë¨¼ì € í‘œì‹œí• ì§€ ì—¬ë¶€
 	BOOL            m_bUsePoint;
 	CPoint          m_pPoint;
 
-	BOOL			m_bNeedBuild;		///< »ó¼¼Á¤º¸¸¦ ´Ù½Ã ±¸¼ºÇØ¾ß ÇÏ´Â°¡¸¦ À§ÇÑ ÇÃ·¡±×
+	BOOL			m_bNeedBuild;		///< ìƒì„¸ì •ë³´ë¥¼ ë‹¤ì‹œ êµ¬ì„±í•´ì•¼ í•˜ëŠ”ê°€ë¥¼ ìœ„í•œ í”Œëž˜ê·¸
 	BYTE            m_bCanHandle2ndInfo;
 
-	Line			m_TitleB;			///< »ó¼¼Á¤º¸¸¦ ´ëÇ¥ÇÏ´Â Å¸ÀÌÆ²
-	LineVec			m_LinesB;			///< »ó¼¼Á¤º¸ ÁÙ
+	Line			m_TitleB;			///< ìƒì„¸ì •ë³´ë¥¼ ëŒ€í‘œí•˜ëŠ” íƒ€ì´í‹€
+	LineVec			m_LinesB;			///< ìƒì„¸ì •ë³´ ì¤„
 	INT			m_nOutlookStyle;
 
 public:
@@ -110,25 +110,25 @@ public:
 
 public:
 	/**
-		»ó¼¼Á¤º¸ UIÀÇ ±âÁØ ¹æÇâÀ» ¼³Á¤ÇÑ´Ù.
-		ÀÌ ¼³Á¤¿¡ µû¶ó GetUIPosition() ·Î ºÎÅÍ ¾ò¾îÁö´Â
-		»ó¼¼Á¤º¸Ã¢ÀÇ À§Ä¡°ªÀÌ °áÁ¤µÈ´Ù.
+		ìƒì„¸ì •ë³´ UIì˜ ê¸°ì¤€ ë°©í–¥ì„ ì„¤ì •í•œë‹¤.
+		ì´ ì„¤ì •ì— ë”°ë¼ GetUIPosition() ë¡œ ë¶€í„° ì–»ì–´ì§€ëŠ”
+		ìƒì„¸ì •ë³´ì°½ì˜ ìœ„ì¹˜ê°’ì´ ê²°ì •ëœë‹¤.
 	*/
 	void SetDir(BOOL bLR, BOOL bPriorLeft, BOOL bPriorTop, BOOL bUsePoint = FALSE, const CPoint& pPoint = CPoint(0,0));
 
-	/// »ó¼¼Á¤º¸ UI¸¦ ³õÀ» À§Ä¡
+	/// ìƒì„¸ì •ë³´ UIë¥¼ ë†“ì„ ìœ„ì¹˜
 	virtual CPoint GetUIPosition(const CRect& rcDetDlg, const CPoint& ptMouse );
 
-	/// »ó¼¼Á¤º¸¸¦ ´ëÇ¥ÇÏ´Â Å¸ÀÌÆ²À» ¾ò´Â´Ù.
+	/// ìƒì„¸ì •ë³´ë¥¼ ëŒ€í‘œí•˜ëŠ” íƒ€ì´í‹€ì„ ì–»ëŠ”ë‹¤.
 	const CString& GetTitleText();
-	/// »ó¼¼Á¤º¸¸¦ ´ëÇ¥ÇÏ´Â Å¸ÀÌÆ²ÀÇ »öÀ» ¾ò´Â´Ù.
+	/// ìƒì„¸ì •ë³´ë¥¼ ëŒ€í‘œí•˜ëŠ” íƒ€ì´í‹€ì˜ ìƒ‰ì„ ì–»ëŠ”ë‹¤.
 	DWORD GetTitleColor();
 
-	/// »ó¼¼Á¤º¸ÀÇ ÀüÃ¼ ÁÙÀÇ ¼ö¸¦ ¾ò´Â´Ù.
+	/// ìƒì„¸ì •ë³´ì˜ ì „ì²´ ì¤„ì˜ ìˆ˜ë¥¼ ì–»ëŠ”ë‹¤.
 	UINT GetLineCount();
-	/// »ó¼¼Á¤º¸ÀÇ ÀüÃ¼ ÁÙÀÇ ÅØ½ºÆ®¸¦ ¾ò´Â´Ù.
+	/// ìƒì„¸ì •ë³´ì˜ ì „ì²´ ì¤„ì˜ í…ìŠ¤íŠ¸ë¥¼ ì–»ëŠ”ë‹¤.
 	const CString& GetLineText(UINT nLine);
-	/// »ó¼¼Á¤º¸ÀÇ ÀüÃ¼ ÁÙÀÇ »öÀ» ¾ò´Â´Ù.
+	/// ìƒì„¸ì •ë³´ì˜ ì „ì²´ ì¤„ì˜ ìƒ‰ì„ ì–»ëŠ”ë‹¤.
 	DWORD GetLineColor(UINT nLine);
 	CString BuildTimeFormatSTR( DWORD dwTick);
 	void SetCanHandleSecondInfo( BYTE bValue )
@@ -137,25 +137,25 @@ public:
 	}
 
 public:	
-	/// ¼­·Î °°Àº Å¸°Ù¿¡ ´ëÇÑ »ó¼¼Á¤º¸ÀÎ°¡¸¦ ºñ±³ÇÑ´Ù.
+	/// ì„œë¡œ ê°™ì€ íƒ€ê²Ÿì— ëŒ€í•œ ìƒì„¸ì •ë³´ì¸ê°€ë¥¼ ë¹„êµí•œë‹¤.
 	virtual BOOL Compare(const ITDetailInfo* pTarget) = 0;
-	/// »ó¼¼Á¤º¸¸¦ ±¸¼ºÇÑ´Ù.
+	/// ìƒì„¸ì •ë³´ë¥¼ êµ¬ì„±í•œë‹¤.
 	virtual void Build() = 0;
-	/// ¾ÆÀÌÅÛ ¹Ú½ºÀÇ ½ºÅ²À» »ç¿ëÇÒ °Í ÀÎ°¡?
+	/// ì•„ì´í…œ ë°•ìŠ¤ì˜ ìŠ¤í‚¨ì„ ì‚¬ìš©í•  ê²ƒ ì¸ê°€?
 	virtual INT CheckUsingSkin();
 
 public :
 //	virtual CTClientItem* GetItemInst() const	{ return NULL; }
 
 protected:
-	/// ÁÖ¾îÁø ¹®ÀÚ¿­ÀÇ »óÅÂ¸¦ ÆÇ´ÜÇÑ´Ù.
+	/// ì£¼ì–´ì§„ ë¬¸ìžì—´ì˜ ìƒíƒœë¥¼ íŒë‹¨í•œë‹¤.
 	virtual LINE_STATE _GetLineState(const CString& strSource, int nIdx);
 	
-	/// ÁÖ¾îÁø ¹®ÀÚ¿­À» ¶óÀÎ¿¡ Ãß°¡ÇÑ´Ù.
+	/// ì£¼ì–´ì§„ ë¬¸ìžì—´ì„ ë¼ì¸ì— ì¶”ê°€í•œë‹¤.
 	virtual void _AddLine(const CString& strSource, DWORD dwColor = TDEFAULT_TEXT_COLOR);
-	/// ÁÖ¾îÁø ¹®ÀÚ¿­À» º¯È¯ÇÑ ÈÄ Å¸ÀÌÆ²·Î ¼³Á¤ÇÑ´Ù.
+	/// ì£¼ì–´ì§„ ë¬¸ìžì—´ì„ ë³€í™˜í•œ í›„ íƒ€ì´í‹€ë¡œ ì„¤ì •í•œë‹¤.
 	virtual void _ConvertAndSetTitle(const CString& strSource, DWORD dwColor = TDEFAULT_TEXT_COLOR);
-	/// ÁÖ¾îÁø ¹®ÀÚ¿­À» º¯È¯ÇÑ ÈÄ ¶óÀÎ¿¡ Ãß°¡ÇÑ´Ù.
+	/// ì£¼ì–´ì§„ ë¬¸ìžì—´ì„ ë³€í™˜í•œ í›„ ë¼ì¸ì— ì¶”ê°€í•œë‹¤.
 	virtual void _ConvertAndAddLine(const CString& strSource, DWORD dwColor = TDEFAULT_TEXT_COLOR);
 
 protected:
@@ -173,14 +173,14 @@ public:
 };
 // =====================================================================
 /**	@class		CTStatDetInfo
-	@brief		½ºÅÈ ¿¡´ëÇÑ ¼³¸íÀ» °¡Áø »ó¼¼Á¤º¸ÀÇ Àü´Þ°ú 
-				Ç¥½Ã¸¦ À§ÇÑ Å¬·¡½º.
+	@brief		ìŠ¤íƒ¯ ì—ëŒ€í•œ ì„¤ëª…ì„ ê°€ì§„ ìƒì„¸ì •ë³´ì˜ ì „ë‹¬ê³¼ 
+				í‘œì‹œë¥¼ ìœ„í•œ í´ëž˜ìŠ¤.
 	
 */// ===================================================================
 class CTStatDetInfo : public ITDetailInfo
 {
 public:
-	/// ¾ÆÀÌÅÛ ´É·ÂÄ¡ ÅäÅ« Å¸ÀÔ
+	/// ì•„ì´í…œ ëŠ¥ë ¥ì¹˜ í† í° íƒ€ìž…
 	enum TINFOTOKEN_STAT
 	{
 		TINFOTOKEN_STAT_STR,
@@ -233,7 +233,7 @@ public:
 	virtual void Build();
 
 public:
-	/// ÁÖ¾îÁø ¹®ÀÚ¿­À» º¯È¯ÇÑ ÈÄ ¶óÀÎ¿¡ Ãß°¡ÇÑ´Ù.
+	/// ì£¼ì–´ì§„ ë¬¸ìžì—´ì„ ë³€í™˜í•œ í›„ ë¼ì¸ì— ì¶”ê°€í•œë‹¤.
 	virtual void _ConvertAndAddLine(const CString& strSource, DWORD dwColor = TDEFAULT_TEXT_COLOR);
 	virtual CString _GetAttrString( TINFOTOKEN_STAT eToken);
 
@@ -244,14 +244,14 @@ public:
 
 // =====================================================================
 /**	@class		CTNorDetInfo
-	@brief		Å¸ÀÌÆ²°ú ±×¿¡´ëÇÑ ¼³¸íÀ» °¡Áø »ó¼¼Á¤º¸ÀÇ Àü´Þ°ú 
-				Ç¥½Ã¸¦ À§ÇÑ Å¬·¡½º.
+	@brief		íƒ€ì´í‹€ê³¼ ê·¸ì—ëŒ€í•œ ì„¤ëª…ì„ ê°€ì§„ ìƒì„¸ì •ë³´ì˜ ì „ë‹¬ê³¼ 
+				í‘œì‹œë¥¼ ìœ„í•œ í´ëž˜ìŠ¤.
 	
 */// ===================================================================
 class CTNorDetInfo : public ITDetailInfo
 {
 protected:
-	/// Å¸ÀÌÆ²
+	/// íƒ€ì´í‹€
 	CString m_strTITLE;	
 	
 public:	
@@ -276,65 +276,65 @@ public:
 
 // =====================================================================
 /**	@class		CTItemDetInfo
-	@brief		ÀÏ¹Ý ¾ÆÀÌÅÛ¿¡ °üÇÑ »ó¼¼Á¤º¸ÀÇ Àü´Þ°ú Ç¥½Ã¸¦ À§ÇÑ Å¬·¡½º.
+	@brief		ì¼ë°˜ ì•„ì´í…œì— ê´€í•œ ìƒì„¸ì •ë³´ì˜ ì „ë‹¬ê³¼ í‘œì‹œë¥¼ ìœ„í•œ í´ëž˜ìŠ¤.
 	
 */// ===================================================================
 class CTItemDetInfo : public ITDetailInfo
 {
 public:
-	/// ¾ÆÀÌÅÛ ´É·ÂÄ¡ ÅäÅ« Å¸ÀÔ
+	/// ì•„ì´í…œ ëŠ¥ë ¥ì¹˜ í† í° íƒ€ìž…
 	enum TINFOTOKEN_ITEM
 	{
-		TINFOTOKEN_ITEM_ITEMMINAP,		///< ÃÖ¼Ò°ø°Ý·Â
-		TINFOTOKEN_ITEM_ITEMMAXAP,		///< ÃÖ´ë°ø°Ý·Â
-		TINFOTOKEN_ITEM_ITEMAPSEC,		///< ÃÊ´ç°ø°Ý·Â
-		TINFOTOKEN_ITEM_ITEMDP,			///< ¹°¸®¹æ¾î·Â
-		TINFOTOKEN_ITEM_ITEMMINMAP,		///< ÃÖ¼Ò¸¶¹ý°ø°Ý·Â
-		TINFOTOKEN_ITEM_ITEMMAXMAP,		///< ÃÖ´ë¸¶¹ý°ø°Ý·Â
-		TINFOTOKEN_ITEM_ITEMMAPSEC,		///< ÃÊ´ç¸¶¹ý°ø°Ý·Â
-		TINFOTOKEN_ITEM_ITEMMDP,		///< ¸¶¹ý¹æ¾î·Â
-		TINFOTOKEN_ITEM_ITEMBLOCK,		///< ¹æÆÐ¹æ¾îÀ²
-		TINFOTOKEN_ITEM_ATTRLEVEL,		///< ¼º´É·¹º§
-		TINFOTOKEN_ITEM_GEMSTONELEVEL, ///< ¿ä±¸·¹º§
-		TINFOTOKEN_ITEM_CURDURA,		///< ÇöÀç ³»±¸µµ
-		TINFOTOKEN_ITEM_MAXDURA,		///< ÃÖ´ë ³»±¸µµ
-		TINFOTOKEN_ITEM_CURREFI,		///< ÇöÀç Àç·ÃÈ½¼ö
-		TINFOTOKEN_ITEM_MAXREFI,		///< ÃÖ´ë Àç·ÃÈ½¼ö
-		TINFOTOKEN_ITEM_SELLPRICE,		///< ÆÇ¸Å °¡°Ý
-		TINFOTOKEN_ITEM_ENDTIME,	///< ³²Àº±âÇÑ
-		TINFOTOKEN_ITEM_NEEDSLEVEL, ///< ¿ä±¸·¹º§
+		TINFOTOKEN_ITEM_ITEMMINAP,		///< ìµœì†Œê³µê²©ë ¥
+		TINFOTOKEN_ITEM_ITEMMAXAP,		///< ìµœëŒ€ê³µê²©ë ¥
+		TINFOTOKEN_ITEM_ITEMAPSEC,		///< ì´ˆë‹¹ê³µê²©ë ¥
+		TINFOTOKEN_ITEM_ITEMDP,			///< ë¬¼ë¦¬ë°©ì–´ë ¥
+		TINFOTOKEN_ITEM_ITEMMINMAP,		///< ìµœì†Œë§ˆë²•ê³µê²©ë ¥
+		TINFOTOKEN_ITEM_ITEMMAXMAP,		///< ìµœëŒ€ë§ˆë²•ê³µê²©ë ¥
+		TINFOTOKEN_ITEM_ITEMMAPSEC,		///< ì´ˆë‹¹ë§ˆë²•ê³µê²©ë ¥
+		TINFOTOKEN_ITEM_ITEMMDP,		///< ë§ˆë²•ë°©ì–´ë ¥
+		TINFOTOKEN_ITEM_ITEMBLOCK,		///< ë°©íŒ¨ë°©ì–´ìœ¨
+		TINFOTOKEN_ITEM_ATTRLEVEL,		///< ì„±ëŠ¥ë ˆë²¨
+		TINFOTOKEN_ITEM_GEMSTONELEVEL, ///< ìš”êµ¬ë ˆë²¨
+		TINFOTOKEN_ITEM_CURDURA,		///< í˜„ìž¬ ë‚´êµ¬ë„
+		TINFOTOKEN_ITEM_MAXDURA,		///< ìµœëŒ€ ë‚´êµ¬ë„
+		TINFOTOKEN_ITEM_CURREFI,		///< í˜„ìž¬ ìž¬ë ¨íšŸìˆ˜
+		TINFOTOKEN_ITEM_MAXREFI,		///< ìµœëŒ€ ìž¬ë ¨íšŸìˆ˜
+		TINFOTOKEN_ITEM_SELLPRICE,		///< íŒë§¤ ê°€ê²©
+		TINFOTOKEN_ITEM_ENDTIME,	///< ë‚¨ì€ê¸°í•œ
+		TINFOTOKEN_ITEM_NEEDSLEVEL, ///< ìš”êµ¬ë ˆë²¨
 		TINFOTOKEN_ITEM_COUNT
 	};
 
-	/// ¾ÆÀÌÅÛ¿¡¼­ °øÅëÀûÀ¸·Î »ç¿ëÇÏ´Â ÅäÅ« Å¸ÀÔ
+	/// ì•„ì´í…œì—ì„œ ê³µí†µì ìœ¼ë¡œ ì‚¬ìš©í•˜ëŠ” í† í° íƒ€ìž…
 	enum TINFO_ITEMTYPE
 	{
-		TINFO_ITEMTYPE_ITEMNORMAL,		///< ÀÏ¹Ý¾ÆÀÌÅÛ
-		TINFO_ITEMTYPE_ITEMGRADE,		///< °­È­¾ÆÀÌÅÛ
-		TINFO_ITEMTYPE_ITEMMAGIC,		///< ¸ÅÁ÷¾ÆÀÌÅÛ
-		TINFO_ITEMTYPE_ITEMSET,			///< ¼¼Æ®¾ÆÀÌÅÛ
-		TINFO_ITEMTYPE_ITEMRARE,		///< ·¹¾î¾ÆÀÌÅÛ
-		TINFO_ITEMTYPE_ITEMUNIQUE,		///< À¯´ÏÅ©¾ÆÀÌÅÛ
+		TINFO_ITEMTYPE_ITEMNORMAL,		///< ì¼ë°˜ì•„ì´í…œ
+		TINFO_ITEMTYPE_ITEMGRADE,		///< ê°•í™”ì•„ì´í…œ
+		TINFO_ITEMTYPE_ITEMMAGIC,		///< ë§¤ì§ì•„ì´í…œ
+		TINFO_ITEMTYPE_ITEMSET,			///< ì„¸íŠ¸ì•„ì´í…œ
+		TINFO_ITEMTYPE_ITEMRARE,		///< ë ˆì–´ì•„ì´í…œ
+		TINFO_ITEMTYPE_ITEMUNIQUE,		///< ìœ ë‹ˆí¬ì•„ì´í…œ
 		//TINFO_ITEMTYPE_GEMSTONELEVEL,
 		TINFO_ITEMTYPE_COUNT
 	};
 
 public:
-	/// ¾ÆÀÌÅÛ ´É·ÂÄ¡ ÅäÅ« ¸®½ºÆ®
+	/// ì•„ì´í…œ ëŠ¥ë ¥ì¹˜ í† í° ë¦¬ìŠ¤íŠ¸
 	static const CString TITEM_TOKENS[TINFOTOKEN_ITEM_COUNT];
-	/// ¾ÆÀÌÅÛÀÇ °øÅë ÅäÅ« ¸®½ºÆ®
+	/// ì•„ì´í…œì˜ ê³µí†µ í† í° ë¦¬ìŠ¤íŠ¸
 	static const CString TITEM_TYPE_TOKENS[TINFO_ITEMTYPE_COUNT];
-	/// ¾ÆÀÌÅÛ ¼º´É ·¹º§µî±Þº° ÀÌ¸§
+	/// ì•„ì´í…œ ì„±ëŠ¥ ë ˆë²¨ë“±ê¸‰ë³„ ì´ë¦„
 	static const DWORD TITEMATTR_NAMES[TATTRLEVELNAME_MAX];
-	/// ¾ÆÀÌÅÛ ¼º´É ·¹º§ÀÌ¸§ ÅäÅ«
+	/// ì•„ì´í…œ ì„±ëŠ¥ ë ˆë²¨ì´ë¦„ í† í°
 	static const CString TITEM_ATTRNAME_TOKEN;
 
 protected:
-	LPTITEM 	m_pItemTemp;		///< »ó¼¼ÇÏ°íÀÚ ÇÏ´Â ¾ÆÀÌÅÛÀÇ ÅÛÇÃ¸´ µ¥ÀÌÅ¸
-	WORD		m_wAttrID;			///< ÀÌ ¾ÆÀÌÅÛÀÇ ´É·ÂÄ¡ ¾ÆÀÌµð
-	CString		m_strAttrName;		///< ¼º´ÉÀ» ³ªÅ¸³»´Â µî±Þ¸í
-	WORD		m_wAttrLevel;		///< ¼º´É ·¹º§
-	DWORD		m_dwSellPrice;		///< ÆÇ¸Å °¡°Ý
+	LPTITEM 	m_pItemTemp;		///< ìƒì„¸í•˜ê³ ìž í•˜ëŠ” ì•„ì´í…œì˜ í…œí”Œë¦¿ ë°ì´íƒ€
+	WORD		m_wAttrID;			///< ì´ ì•„ì´í…œì˜ ëŠ¥ë ¥ì¹˜ ì•„ì´ë””
+	CString		m_strAttrName;		///< ì„±ëŠ¥ì„ ë‚˜íƒ€ë‚´ëŠ” ë“±ê¸‰ëª…
+	WORD		m_wAttrLevel;		///< ì„±ëŠ¥ ë ˆë²¨
+	DWORD		m_dwSellPrice;		///< íŒë§¤ ê°€ê²©
 
 public:
 	LPTITEM GetItemTemp() const	{ return m_pItemTemp; }
@@ -350,13 +350,13 @@ protected:
 	virtual void _ConvertAndSetTitle(const CString& strSource, DWORD dwColor = TDEFAULT_TEXT_COLOR);
 	virtual void _ConvertAndAddLine(const CString& strSource, DWORD dwColor = TDEFAULT_TEXT_COLOR);
 
-	/// ¾ÆÀÌÅÛ ¾ÆÀÌÄÜÀ» Á¤ÇÑ´Ù.
+	/// ì•„ì´í…œ ì•„ì´ì½˜ì„ ì •í•œë‹¤.
 	virtual void _BuildItemIcon();
-	/// ¾ÆÀÌÅÛ ¼º´É°ªÀ» Á¤ÇÑ´Ù.
+	/// ì•„ì´í…œ ì„±ëŠ¥ê°’ì„ ì •í•œë‹¤.
 	virtual void _BuildAttrID();
-	/// ¾ÆÀÌÅÛ ¼º´É°ü·Ã ¹®ÀÚ¿­À» ¾ò´Â´Ù.
+	/// ì•„ì´í…œ ì„±ëŠ¥ê´€ë ¨ ë¬¸ìžì—´ì„ ì–»ëŠ”ë‹¤.
 	virtual CString _GetAttrString(TINFOTOKEN_ITEM eToken);
-	/// ¾ÆÀÌÅÛ ¼º´É°ü·Ã ¹®ÀÚ¿­ »ö±òÀ» ¾ò´Â´Ù.
+	/// ì•„ì´í…œ ì„±ëŠ¥ê´€ë ¨ ë¬¸ìžì—´ ìƒ‰ê¹”ì„ ì–»ëŠ”ë‹¤.
 	virtual DWORD _GetAttrColor(TINFOTOKEN_ITEM eToken, DWORD dwDefaultColor );
 
 protected:
@@ -373,14 +373,14 @@ public:
 
 // =====================================================================
 /**	@class		CTItemInstDetInfo
-	@brief		°­È­³ª ¸ÅÁ÷µîÀÇ ºÎ°¡ ¿É¼ÇÀÌ ºÙÀ» ¼ö ÀÖ´Â ÀÎ½ºÅÏ½ºÇü 
-				¾ÆÀÌÅÛ¿¡ °üÇÑ »ó¼¼Á¤º¸ÀÇ Àü´Þ°ú Ç¥½Ã¸¦ À§ÇÑ ÀÎÅÍÆäÀÌ½º.
+	@brief		ê°•í™”ë‚˜ ë§¤ì§ë“±ì˜ ë¶€ê°€ ì˜µì…˜ì´ ë¶™ì„ ìˆ˜ ìžˆëŠ” ì¸ìŠ¤í„´ìŠ¤í˜• 
+				ì•„ì´í…œì— ê´€í•œ ìƒì„¸ì •ë³´ì˜ ì „ë‹¬ê³¼ í‘œì‹œë¥¼ ìœ„í•œ ì¸í„°íŽ˜ì´ìŠ¤.
 	
 */// ===================================================================
 class CTItemInstDetInfo : public CTItemDetInfo
 {
 protected:
-	/// ±âº» ÅÛÇÃ¸´ µ¥ÀÌÅ¸·Î ºÎÅÍ ½ÇÁ¦ »ý¼ºµÈ ¾ÆÀÌÅÛ ÀÎ½ºÅÏ½º.
+	/// ê¸°ë³¸ í…œí”Œë¦¿ ë°ì´íƒ€ë¡œ ë¶€í„° ì‹¤ì œ ìƒì„±ëœ ì•„ì´í…œ ì¸ìŠ¤í„´ìŠ¤.
 	CTClientItem*	m_pItemInst;
 
 public:
@@ -427,7 +427,7 @@ public :
 
 // =====================================================================
 /**	@class		CTSealedItemDetInfo
-	@brief		ºÀÀÎµÈ ¾ÆÀÌÅÛ¿¡ °üÇÑ »ó¼¼Á¤º¸ÀÇ Àü´Þ°ú Ç¥½Ã¸¦ À§ÇÑ Å¬·¡½º.
+	@brief		ë´‰ì¸ëœ ì•„ì´í…œì— ê´€í•œ ìƒì„¸ì •ë³´ì˜ ì „ë‹¬ê³¼ í‘œì‹œë¥¼ ìœ„í•œ í´ëž˜ìŠ¤.
 	
 */// ===================================================================
 class CTSealedItemDetInfo : public CTItemInstDetInfo
@@ -479,13 +479,13 @@ public:
 };
 // =====================================================================
 /**	@class		CTMagicItemDetInfo
-	@brief		Ãß°¡¿É¼Ç(µî±Þ,¸ÅÁ÷,·¹¾î) ¾ÆÀÌÅÛ¿¡ °üÇÑ »ó¼¼Á¤º¸ÀÇ Àü´Þ°ú Ç¥½Ã¸¦ À§ÇÑ Å¬·¡½º.
+	@brief		ì¶”ê°€ì˜µì…˜(ë“±ê¸‰,ë§¤ì§,ë ˆì–´) ì•„ì´í…œì— ê´€í•œ ìƒì„¸ì •ë³´ì˜ ì „ë‹¬ê³¼ í‘œì‹œë¥¼ ìœ„í•œ í´ëž˜ìŠ¤.
 	
 */// ===================================================================
 class CTOptionItemDetInfo : public CTItemInstDetInfo
 {
 public:
-	/// ¸ÅÁ÷ ¿É¼Ç ÅäÅ« Å¸ÀÔ
+	/// ë§¤ì§ ì˜µì…˜ í† í° íƒ€ìž…
 	enum TINFOTOKEN_MAGICOPTION
 	{
 		TINFOTOKEN_MAGICOPTION1,
@@ -497,7 +497,7 @@ public:
 		TINFOTOKEN_MAGICOPTION_COUNT,
 	};
 
-	/// ¸ÅÁ÷ µ¥ÀÌÅ¸ ÅäÅ« Å¸ÀÔ
+	/// ë§¤ì§ ë°ì´íƒ€ í† í° íƒ€ìž…
 	enum TINFOTOKEN_MAGICDATA
 	{
 		TINFOTOKEN_MAGICDATA1,
@@ -509,7 +509,7 @@ public:
 		TINFOTOKEN_MAGICDATA_COUNT
 	};
 
-	/// ¸ÅÁ÷ °ü·Ã ÅäÅ« Å¸ÀÔ
+	/// ë§¤ì§ ê´€ë ¨ í† í° íƒ€ìž…
 	enum TINFOTOKEN_MAGIC
 	{
 		TINFOTOKEN_MAGIC_TITLE,
@@ -518,7 +518,7 @@ public:
 	};
 
 public:
-	/// ¾ÆÀÌÅÛ °­È­ ÅäÅ«
+	/// ì•„ì´í…œ ê°•í™” í† í°
 	static const CString TGRADEITEM_TOKEN;
 	static const CString TGEMITEM_TOKEN;
 
@@ -526,13 +526,13 @@ protected:
 	BOOL	m_bProcOption;
 
 public:
-	/// ¸ÅÁ÷ ¿É¼Ç ÅäÅ« ¸®½ºÆ®
+	/// ë§¤ì§ ì˜µì…˜ í† í° ë¦¬ìŠ¤íŠ¸
 	static const CString TMAGICOPTION_TOKENS[TINFOTOKEN_MAGICOPTION_COUNT];
-	/// ¸ÅÁ÷ µ¥ÀÌÅ¸ ÅäÅ« ¸®½ºÆ®
+	/// ë§¤ì§ ë°ì´íƒ€ í† í° ë¦¬ìŠ¤íŠ¸
 	static const CString TMAGICDATA_TOKENS[TINFOTOKEN_MAGICDATA_COUNT];
-	/// ¸ÅÁ÷ °ü·Ã ÅäÅ« ¸®½ºÆ®
+	/// ë§¤ì§ ê´€ë ¨ í† í° ë¦¬ìŠ¤íŠ¸
 	static const CString TMAGIC_TOKENS[TINFOTOKEN_MAGIC_COUNT];
-	/// ¸Åºò ¿É¼Ç ·¹º§¿¡ µû¸¥ ¹®ÀÚ¿­
+	/// ë§¤ë¹… ì˜µì…˜ ë ˆë²¨ì— ë”°ë¥¸ ë¬¸ìžì—´
 	static const CString TMAGICLEVEL_NAMES[TMAGICLEVEL_MAX];
 
 public:	
@@ -564,12 +564,12 @@ public:
 
 // =====================================================================
 /**	@class		CTSkillDetInfo
-	@brief		½ºÅ³¿¡ °üÇÑ »ó¼¼Á¤º¸ÀÇ Àü´Þ°ú Ç¥½Ã¸¦ À§ÇÑ Å¬·¡½º.
+	@brief		ìŠ¤í‚¬ì— ê´€í•œ ìƒì„¸ì •ë³´ì˜ ì „ë‹¬ê³¼ í‘œì‹œë¥¼ ìœ„í•œ í´ëž˜ìŠ¤.
 */// ===================================================================
 class CTSkillDetInfo : public ITDetailInfo
 {
 public:
-	/// ½ºÅ³ Å¸ÀÔ ÅäÅ«
+	/// ìŠ¤í‚¬ íƒ€ìž… í† í°
 	enum TINFOTOKEN_SKILL
 	{
 	TINFOTOKEN_SKILL_DATA1 = 0,
@@ -598,14 +598,14 @@ public:
 	static const CString TSKILL_TOKENS[TINFOTOKEN_SKILL_COUNT];
 
 protected:
-    LPTSKILL	m_pTSkill;		///< ½ºÅ³ ÅÛÇÃ¸´
-	BYTE		m_bLevel;		///< Ç¥±âÇÏ°íÀÚ ÇÏ´Â ½ºÅ³ÀÇ ·¹º§
-	BOOL		m_bSkillReq;	///< ½ºÅ³ ¿ä±¸»çÇ× Ç¥½Ã ¿©ºÎ
+    LPTSKILL	m_pTSkill;		///< ìŠ¤í‚¬ í…œí”Œë¦¿
+	BYTE		m_bLevel;		///< í‘œê¸°í•˜ê³ ìž í•˜ëŠ” ìŠ¤í‚¬ì˜ ë ˆë²¨
+	BOOL		m_bSkillReq;	///< ìŠ¤í‚¬ ìš”êµ¬ì‚¬í•­ í‘œì‹œ ì—¬ë¶€
 
 	/**
-		Build Áß ½ºÅ³ÀÇ ÇöÀç ·¹º§¿¡ ´ëÇÑ »ó¼¼¸¦ ±¸¼ºÇÏ´Â 
-		ÁßÀÎÁö ´ÙÀ½¿¡ ¾÷±×·¹ÀÌµå ÇÏ±âÀ§ÇÑ »ó¼¼¸¦ ±¸¼ºÇÏ´Â
-		ÁßÀÎÁö¸¦ ±¸º°ÇÏ±âÀ§ÇÑ ÇÃ·¡±×.
+		Build ì¤‘ ìŠ¤í‚¬ì˜ í˜„ìž¬ ë ˆë²¨ì— ëŒ€í•œ ìƒì„¸ë¥¼ êµ¬ì„±í•˜ëŠ” 
+		ì¤‘ì¸ì§€ ë‹¤ìŒì— ì—…ê·¸ë ˆì´ë“œ í•˜ê¸°ìœ„í•œ ìƒì„¸ë¥¼ êµ¬ì„±í•˜ëŠ”
+		ì¤‘ì¸ì§€ë¥¼ êµ¬ë³„í•˜ê¸°ìœ„í•œ í”Œëž˜ê·¸.
 	*/
 	BOOL		m_bProcUpgrade;
 
@@ -639,7 +639,7 @@ public:
 
 // =====================================================================
 /**	@class		CTCastleDetInfo
-	@brief		¼º¿¡ °üÇÑ »ó¼¼Á¤º¸ÀÇ Àü´Þ°ú Ç¥½Ã¸¦ À§ÇÑ Å¬·¡½º.
+	@brief		ì„±ì— ê´€í•œ ìƒì„¸ì •ë³´ì˜ ì „ë‹¬ê³¼ í‘œì‹œë¥¼ ìœ„í•œ í´ëž˜ìŠ¤.
 */// ===================================================================
 class CTCastleDefInfo : public ITDetailInfo
 {
@@ -694,7 +694,7 @@ public :
 
 // =====================================================================
 /**	@class		CTTerritoryDetInfo
-	@brief		Áö¿ª¿¡ °üÇÑ »ó¼¼Á¤º¸ÀÇ Àü´Þ°ú Ç¥½Ã¸¦ À§ÇÑ Å¬·¡½º.
+	@brief		ì§€ì—­ì— ê´€í•œ ìƒì„¸ì •ë³´ì˜ ì „ë‹¬ê³¼ í‘œì‹œë¥¼ ìœ„í•œ í´ëž˜ìŠ¤.
 */// ===================================================================
 
 class CTTerritoryDetInfo : public ITDetailInfo

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 
 
 CTManager::CTManager()
@@ -13,7 +13,7 @@ CTManager::~CTManager()
 {
 }
 
-// Çö½Â·æ ±ÇÇÑÀ» °Ë»çÇÏ¿© °á°ú¸¦ ¸®ÅÏ
+// í˜„ìŠ¹ë£¡ ê¶Œí•œì„ ê²€ì‚¬í•˜ì—¬ ê²°ê³¼ë¥¼ ë¦¬í„´
 BYTE CTManager::CheckAuthority(BYTE m_bClass) 
 {	
 	if( m_bAuthority <= m_bClass)

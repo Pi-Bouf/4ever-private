@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "Resource.h"
 #include "TClientWnd.h"
 #include "TClient.h"
@@ -3453,11 +3453,11 @@ int CTClientGame::OnGM_ITEMUP_READY()
 			strMSG = CTChart::LoadString( TSTR_ITEMUP_WARN_ELD );
 			break;
 
-		case IK_CLEARREFINE: //Á¦·ÃÃÊ±âÈ­
+		case IK_CLEARREFINE: //ì œë ¨ì´ˆê¸°í™”
 			strMSG = CTChart::LoadString( TSTR_ITEMUP_WARN_CLEARREFINE );
 			break;
 
-		case IK_CHGGRADEEFFECT: //°­È­ÀÌÆåÆ®º¯°æ
+		case IK_CHGGRADEEFFECT: //ê°•í™”ì´í™íŠ¸ë³€ê²½
 			strMSG = CTChart::LoadString( TSTR_ITEMUP_WARN_CHANGEEFFECT );
 			break;
 
@@ -5124,10 +5124,10 @@ int CTClientGame::OnGM_SEND_MAIL()
 
 
 
-	// µÎ°¡Áö °æ·Î·Î GM_SEND_MAILÀ» »ç¿ëÇÑ´Ù.
-	// 1. ¸¶À»Áö¿ª(PC¹æ »ç¿ëÀÚÀÎ °æ¿ì ¾î´ÀÁö¿ª¿¡¼­µç)¿¡¼­ ÇÏ´ÜÀÇ ÆíÁöº¸³»±â ¹öÆ°À» ´­·¯¼­ º¸³¾¶§
-	// 2. ÆíÁöº¸³»±â Ä³½¬¾ÆÀÌÅÛÀ» »ç¿ëÇØ¼­ ¾î´ÀÁö¿ª¿¡¼­µç º¸³¾¶§.
-	// 2¹øÀÇ °æ¿ì m_bSendByCashItemÀÌ 1·Î ¼³Á¤µÇ¾î ÀÖ´Ù.
+	// ë‘ê°€ì§€ ê²½ë¡œë¡œ GM_SEND_MAILì„ ì‚¬ìš©í•œë‹¤.
+	// 1. ë§ˆì„ì§€ì—­(PCë°© ì‚¬ìš©ìì¸ ê²½ìš° ì–´ëŠì§€ì—­ì—ì„œë“ )ì—ì„œ í•˜ë‹¨ì˜ í¸ì§€ë³´ë‚´ê¸° ë²„íŠ¼ì„ ëˆŒëŸ¬ì„œ ë³´ë‚¼ë•Œ
+	// 2. í¸ì§€ë³´ë‚´ê¸° ìºì‰¬ì•„ì´í…œì„ ì‚¬ìš©í•´ì„œ ì–´ëŠì§€ì—­ì—ì„œë“  ë³´ë‚¼ë•Œ.
+	// 2ë²ˆì˜ ê²½ìš° m_bSendByCashItemì´ 1ë¡œ ì„¤ì •ë˜ì–´ ìˆë‹¤.
 
 	if( pDlg->m_bSendByCashItem)
 		pDlg->m_bSendByCashItem = 2; // 0:none 1:will send 2:sended
@@ -6112,11 +6112,11 @@ int CTClientGame::OnGM_TOGGLE_CASH_CHARGE()
 	{
 		switch( m_pMainWnd->m_bSiteCode )
 		{
-		case 0: //losteden.jp·Î ·Î±×ÀÎ ÇÑ À¯Àú : Ã¤³Î 0 strURL = "http://losteden.jp/point/choice/";
+		case 0: //losteden.jpë¡œ ë¡œê·¸ì¸ í•œ ìœ ì € : ì±„ë„ 0 strURL = "http://losteden.jp/point/choice/";
 			strURL = CTChart::LoadString( TSTR_URL_CASHCHARGE);
 			break;
 
-		case 1: //daletto.comÀ¸·Î ·Î±×ÀÎ ÇÑ À¯Àú : Ã¤³Î 1 strURL = "http://losteden.daletto.com/point/choice/";
+		case 1: //daletto.comìœ¼ë¡œ ë¡œê·¸ì¸ í•œ ìœ ì € : ì±„ë„ 1 strURL = "http://losteden.daletto.com/point/choice/";
 			strURL = CTChart::LoadString( TSTR_URL_CASHCHARGE_CH1);
 			break;
 
@@ -6904,7 +6904,7 @@ int CTClientGame::OnGM_DURATIONREP_NOR()
 
 	m_bDurationRepInven = pDlg->GetLastInvenID(CTItemRepairDlg::TARGET_SLOT);
 	m_bDurationRepSlot = pDlg->GetLastInvenSlot(CTItemRepairDlg::TARGET_SLOT);
-	m_bDurationRepType = RPT_NORMAL; //ÀÏ¹İ¼ö¸®
+	m_bDurationRepType = RPT_NORMAL; //ì¼ë°˜ìˆ˜ë¦¬
 
 	if( m_pSESSION )
 
@@ -6935,7 +6935,7 @@ int CTClientGame::OnGM_DURATIONREP_NOR()
 
 
 
-			TRUE,	// ºñ¿ë¿äÃ»
+			TRUE,	// ë¹„ìš©ìš”ì²­
 			m_bDurationRepType,
 			m_bDurationRepInven,
 			m_bDurationRepSlot,
@@ -6988,7 +6988,7 @@ int CTClientGame::OnGM_NPC_DURATIONREP_ALL()
 
 		m_bDurationRepInven = 0;
 		m_bDurationRepSlot = 0;
-		m_bDurationRepType = RPT_ALL; //ÀüºÎ¼ö¸®
+		m_bDurationRepType = RPT_ALL; //ì „ë¶€ìˆ˜ë¦¬
 
 		if( m_pSESSION )
 		{
@@ -6996,7 +6996,7 @@ int CTClientGame::OnGM_NPC_DURATIONREP_ALL()
 
 			m_pSESSION->SendCS_DURATIONREP_REQ(
 
-				TRUE,	// ºñ¿ë¿äÃ»
+				TRUE,	// ë¹„ìš©ìš”ì²­
 				m_bDurationRepType,
 				m_bDurationRepInven,
 				m_bDurationRepSlot,
@@ -7043,7 +7043,7 @@ int CTClientGame::OnGM_NPC_DURATIONREP_EQUIP()
 
 		m_bDurationRepInven = 0;
 		m_bDurationRepSlot = 0;
-		m_bDurationRepType = RPT_EQUIP; //Àåºñ¼ö¸®
+		m_bDurationRepType = RPT_EQUIP; //ì¥ë¹„ìˆ˜ë¦¬
 
 		if( m_pSESSION )
 		{
@@ -7051,7 +7051,7 @@ int CTClientGame::OnGM_NPC_DURATIONREP_EQUIP()
 
 			m_pSESSION->SendCS_DURATIONREP_REQ(
 
-				TRUE,	// ºñ¿ë¿äÃ»
+				TRUE,	// ë¹„ìš©ìš”ì²­
 				m_bDurationRepType,
 				m_bDurationRepInven,
 				m_bDurationRepSlot,
@@ -7101,7 +7101,7 @@ int CTClientGame::OnGM_DURATIONREP_REQ()
 
 	m_pSESSION->SendCS_DURATIONREP_REQ(
 
-		FALSE,	// ¼ö¸®¿äÃ»
+		FALSE,	// ìˆ˜ë¦¬ìš”ì²­
 		m_bDurationRepType,
 		m_bDurationRepInven,
 		m_bDurationRepSlot,
@@ -7218,7 +7218,7 @@ int CTClientGame::OnGM_REFINE_COST()
 
 		m_pSESSION->SendCS_REFINE_REQ(
 
-			TRUE,	// ºñ¿ë¿äÃ»
+			TRUE,	// ë¹„ìš©ìš”ì²­
 			m_bRefineInven,
 			m_bRefineSlot,
 			22637,
@@ -7314,7 +7314,7 @@ int CTClientGame::OnGM_REFINE()
 
 		m_pSESSION->SendCS_REFINE_REQ(
 
-			FALSE,	// Á¦·Ã¿äÃ»
+			FALSE,	// ì œë ¨ìš”ì²­
 			m_bRefineInven,
 			m_bRefineSlot,
 			22637,
@@ -8860,14 +8860,14 @@ int CTClientGame::OnGM_TEXTOOL_DOWN()
 	return TERR_NONE;
 }
 
-int CTClientGame::OnGM_TEXTOOL_EXT2() //¼öÁ÷Á¤·Ä
+int CTClientGame::OnGM_TEXTOOL_EXT2() //ìˆ˜ì§ì •ë ¬
 {
 	CTexTool* pTT = static_cast<CTexTool*>( m_vTFRAME[ TFRAME_TEXTOOL ] );
 	pTT->AlignV();
 	return TERR_NONE;
 }
 
-int CTClientGame::OnGM_TEXTOOL_EXT4() //¼öÆòÁ¤·Ä
+int CTClientGame::OnGM_TEXTOOL_EXT4() //ìˆ˜í‰ì •ë ¬
 {
 	CTexTool* pTT = static_cast<CTexTool*>( m_vTFRAME[ TFRAME_TEXTOOL ] );
 	pTT->AlignH();
@@ -9434,7 +9434,7 @@ int CTClientGame::OnGM_CLOSE_RECV_MAIL()
 	return OnGM_TOGGLE_MAIL();
 }
 
-int CTClientGame::OnGM_TOURNAMENT_ENTRY() // Âü°¡½ÅÃ»
+int CTClientGame::OnGM_TOURNAMENT_ENTRY() // ì°¸ê°€ì‹ ì²­
 {
 	return TERR_NONE;
 }
@@ -9451,7 +9451,7 @@ int CTClientGame::OnGM_TOURNAMENT_ENTRY_DO()
 	return TERR_NONE;
 }
 
-int CTClientGame::OnGM_TOURNAMENT_GIVEUP() // Âü°¡Æ÷±â
+int CTClientGame::OnGM_TOURNAMENT_GIVEUP() // ì°¸ê°€í¬ê¸°
 {
 	CTTournament* pDLG = static_cast<CTTournament*>( m_vTFRAME[ TFRAME_TOURNAMENT ] );
 	INT nSel = pDLG->m_pMATCHLIST->GetCurSelIndex();
@@ -9489,7 +9489,7 @@ int CTClientGame::OnGM_TOURNAMENT_GIVEUP_DO()
 	return TERR_NONE;
 }
 
-int CTClientGame::OnGM_TOURNAMENT_EVENT_SELECT_PLAYER() // ÀÌº¥Æ®°áÁ¤
+int CTClientGame::OnGM_TOURNAMENT_EVENT_SELECT_PLAYER() // ì´ë²¤íŠ¸ê²°ì •
 {
 	CTTournamentEvent* pDLG = static_cast<CTTournamentEvent*>( m_vTFRAME[ TFRAME_TOURNAMENT_EVENT ]);
 	switch( pDLG->m_nMode )
@@ -9573,7 +9573,7 @@ int CTClientGame::OnGM_TOURNAMENT_EVENT_PREV()
 	return TERR_NONE;
 }
 
-int CTClientGame::OnGM_TOURNAMENT_ADD_PARTY() // ÆÄÆ¼¿ø Ãß°¡
+int CTClientGame::OnGM_TOURNAMENT_ADD_PARTY() // íŒŒí‹°ì› ì¶”ê°€
 {
 	CTTournamentSelectTarget* pDLG = static_cast<CTTournamentSelectTarget*>( m_vTFRAME[ TFRAME_TOURNAMENT_SELECT_TARGET ] );
 	pDLG->SetAddPartyMode();
@@ -9589,7 +9589,7 @@ int CTClientGame::OnGM_TOURNAMENT_ADD_PARTY() // ÆÄÆ¼¿ø Ãß°¡
 	return TERR_NONE;
 }
 
-int CTClientGame::OnGM_TOURNAMENT_REMOVE_PARTY() // ÆÄÆ¼¿ø »èÁ¦
+int CTClientGame::OnGM_TOURNAMENT_REMOVE_PARTY() // íŒŒí‹°ì› ì‚­ì œ
 {
 	CTTournament* pDLG = static_cast<CTTournament*>( m_vTFRAME[ TFRAME_TOURNAMENT ] );
 
@@ -9634,7 +9634,7 @@ int CTClientGame::OnGM_TOURNAMENT_REMOVE_PARTY() // ÆÄÆ¼¿ø »èÁ¦
 	return TERR_NONE;
 }
 
-int CTClientGame::OnGM_TOURNAMENT_REMOVE_PARTY_DO() // ÆÄÆ¼¿ø »èÁ¦
+int CTClientGame::OnGM_TOURNAMENT_REMOVE_PARTY_DO() // íŒŒí‹°ì› ì‚­ì œ
 {
 	m_pMainWnd->CloseMessageBox();
 
@@ -9646,14 +9646,14 @@ int CTClientGame::OnGM_TOURNAMENT_REMOVE_PARTY_DO() // ÆÄÆ¼¿ø »èÁ¦
 	return TERR_NONE;
 }
 
-int CTClientGame::OnGM_TOURNAMENT_SELECT_TARGET() // ´ë»ó¼±ÅÃ
+int CTClientGame::OnGM_TOURNAMENT_SELECT_TARGET() // ëŒ€ìƒì„ íƒ
 {
 	CTTournamentSelectTarget* pDLG = static_cast<CTTournamentSelectTarget*>( m_vTFRAME[TFRAME_TOURNAMENT_SELECT_TARGET] );
 	pDLG->OnGM_TOURNAMENT_SELECT_TARGET();
 	return TERR_NONE;
 }
 
-int CTClientGame::OnGM_TOURNAMENT_SHOW_MATCH() // ´ëÁøÇ¥ º¸¿©ÁÖ±â
+int CTClientGame::OnGM_TOURNAMENT_SHOW_MATCH() // ëŒ€ì§„í‘œ ë³´ì—¬ì£¼ê¸°
 {
 	if( !m_pTARGET || m_pTARGET->m_bType != OT_NPC || (
 		!m_pTARGET->m_bDrawGhost && (
@@ -9728,7 +9728,7 @@ int CTClientGame::OnGM_TOURNAMENT_SELECT_TARGET_FRIEND()
 }
 
 
-// ¾Æ·¡ ¾²·¹±âÀÏµí
+// ì•„ë˜ ì“°ë ˆê¸°ì¼ë“¯
 int CTClientGame::OnGM_TOURNAMENT_SELECT_WINNER()
 {
 	return TERR_NONE;
@@ -9988,7 +9988,7 @@ int CTClientGame::OnGM_RPS_GIVEUP()
 	DisableUI( TFRAME_RPS_REWARD );
 
 	m_bRPSGaming = FALSE;
-	GetSession()->SendCS_RPSGAME_REQ( RPSCARD_COUNT ); // Æ÷±â
+	GetSession()->SendCS_RPSGAME_REQ( RPSCARD_COUNT ); // í¬ê¸°
 	return TERR_NONE;
 }
 

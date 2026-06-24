@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 class CTClientObjBase : public CTachyonObject
 {
@@ -140,7 +140,7 @@ public:
 
 	BYTE m_bTakenItemAll;
 
-	/// T_INVALID : º¯Àå¾Æ´Ô, TCONTRY_TYPE : ÇØ´ç±¹°¡·Î º¯Àå Áß
+	/// T_INVALID : ë³€ìž¥ì•„ë‹˜, TCONTRY_TYPE : í•´ë‹¹êµ­ê°€ë¡œ ë³€ìž¥ ì¤‘
 	BYTE m_bDisguise;	
 
 	BYTE m_bIsHolded;
@@ -278,7 +278,7 @@ public:
 	void ClearInven();
 	void ClearMaintainOnDie();
 
-	// ¹öÇÁ °ü·Ã ¸Þ¼Òµå
+	// ë²„í”„ ê´€ë ¨ ë©”ì†Œë“œ
 	void ClearMaintain();
 	void InsertMaintain( WORD wID, CTClientMaintain *pTMAINTAIN);
 	void EraseMaintain( WORD wSkillID);

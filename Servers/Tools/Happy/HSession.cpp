@@ -1,4 +1,4 @@
-// HSession.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// HSession.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -24,7 +24,7 @@ CHSession::~CHSession()
 }
 
 
-// CHSession ¸â¹ö ÇÔ¼öÀÔ´Ï´Ù.
+// CHSession ë©¤ë²„ í•¨ìˆ˜ì…ë‹ˆë‹¤.
 void CHSession::SetOwner(CHappyDoc *pOwner)
 {
 	m_pOwner = pOwner;
@@ -114,14 +114,14 @@ BOOL CHSession::IsValid()
 }
 void CHSession::OnAccept(int nErrorCode)
 {
-	// TODO: ¿©±â¿¡ Æ¯¼öÈ­µÈ ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº» Å¬·¡½º¸¦ È£ÃâÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— íŠ¹ìˆ˜í™”ëœ ì½”ë“œë¥¼ ì¶”ê°€ ë°/ë˜ëŠ” ê¸°ë³¸ í´ë˜ìŠ¤ë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
 
 	CAsyncSocket::OnAccept(nErrorCode);
 }
 
 void CHSession::OnClose(int nErrorCode)
 {
-	// TODO: ¿©±â¿¡ Æ¯¼öÈ­µÈ ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº» Å¬·¡½º¸¦ È£ÃâÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— íŠ¹ìˆ˜í™”ëœ ì½”ë“œë¥¼ ì¶”ê°€ ë°/ë˜ëŠ” ê¸°ë³¸ í´ë˜ìŠ¤ë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
 	m_bValid = FALSE;
 	m_pOwner->OnClose(nErrorCode);
 	End();
@@ -130,7 +130,7 @@ void CHSession::OnClose(int nErrorCode)
 
 void CHSession::OnConnect(int nErrorCode)
 {
-	// TODO: ¿©±â¿¡ Æ¯¼öÈ­µÈ ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº» Å¬·¡½º¸¦ È£ÃâÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— íŠ¹ìˆ˜í™”ëœ ì½”ë“œë¥¼ ì¶”ê°€ ë°/ë˜ëŠ” ê¸°ë³¸ í´ë˜ìŠ¤ë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
 	if(!m_pOwner) return;
 
 	if( nErrorCode == 0)
@@ -144,7 +144,7 @@ void CHSession::OnConnect(int nErrorCode)
 
 void CHSession::OnReceive(int nErrorCode)
 {
-	// TODO: ¿©±â¿¡ Æ¯¼öÈ­µÈ ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº» Å¬·¡½º¸¦ È£ÃâÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— íŠ¹ìˆ˜í™”ëœ ì½”ë“œë¥¼ ì¶”ê°€ ë°/ë˜ëŠ” ê¸°ë³¸ í´ë˜ìŠ¤ë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
 	if(nErrorCode == 0)
 	{
 		if(m_packet.IsReadBufferFull()) m_packet.ExpandIoBuffer();

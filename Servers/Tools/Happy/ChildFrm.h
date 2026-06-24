@@ -1,4 +1,4 @@
-// ChildFrm.h : CChildFrame Å¬·¡½ºÀÇ ÀÎÅÍÆäÀÌ½º
+ï»¿// ChildFrm.h : CChildFrame í´ë˜ìŠ¤ì˜ ì¸í„°í˜ì´ìŠ¤
 //
 
 
@@ -11,16 +11,16 @@ class CChildFrame : public CMDIChildWnd
 public:
 	CChildFrame();
 
-// Æ¯¼º
+// íŠ¹ì„±
 public:
 
-// ÀÛ¾÷
+// ì‘ì—…
 public:
 
-// ÀçÁ¤ÀÇ
+// ì¬ì •ì˜
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 
-// ±¸Çö
+// êµ¬í˜„
 public:
 	virtual ~CChildFrame();
 #ifdef _DEBUG
@@ -28,7 +28,7 @@ public:
 	virtual void Dump(CDumpContext& dc) const;
 #endif
 
-// ¸Ş½ÃÁö ¸Ê ÇÔ¼ö¸¦ »ı¼ºÇß½À´Ï´Ù.
+// ë©”ì‹œì§€ ë§µ í•¨ìˆ˜ë¥¼ ìƒì„±í–ˆìŠµë‹ˆë‹¤.
 protected:
 	DECLARE_MESSAGE_MAP()
 };

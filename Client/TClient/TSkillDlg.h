@@ -1,44 +1,44 @@
-#pragma once
+ï»¿#pragma once
 
 
 class CTSkillDlg : public CTClientUIBase
 {
 public:
-	MAPTSKILLTEMP	m_mapTSKILL;		///< ¹è¿ï¼ö ÀÖ´Â ½ºÅ³ ¸ñ·Ï
-	MAPTSKILLTEMP	m_mapTINITSKILL;	///< ÃÊ±âÈ­ °¡´ÉÇÑ ½ºÅ³ ¸ñ·Ï
+	MAPTSKILLTEMP	m_mapTSKILL;		///< ë°°ìš¸ìˆ˜ ìžˆëŠ” ìŠ¤í‚¬ ëª©ë¡
+	MAPTSKILLTEMP	m_mapTINITSKILL;	///< ì´ˆê¸°í™” ê°€ëŠ¥í•œ ìŠ¤í‚¬ ëª©ë¡
 
 	CTClientChar*	m_pMainChar;
 	CPoint			m_vPOS;
 
 	TTabCtrl*		m_pTTAB;
 	
-	BYTE 			m_bTRADE;			///< ½ºÅ³À» ¹è¿ì´Â ÁßÀÎ°¡?
-	BYTE 			m_bSKILLINIT;		///< ½ºÅ³À» ÃÊ±âÈ­ ÇÏ´Â ÁßÀÎ°¡?
-	BYTE			m_bSiInvenID;		///< ½ºÅ³ ÃÊ±âÈ­ ¾ÆÀÌÅÛÀÇ ÀÎº¥ ¾ÆÀÌµð
-	BYTE			m_bSiSlotID;		///< ½ºÅ³ ÃÊ±âÈ­ ¾ÆÀÌÅÛÀÇ ÀÎº¥¿¡¼­ÀÇ ½½·Ô ¾ÆÀÌµð
-	WORD			m_bSiSelectID;		///< ½ºÅ³ ÃÊ±âÈ­¸¦ À§ÇØ °¡Àå ÃÖ±Ù¿¡ ¼±ÅÃµÈ ½ºÅ³ÀÇ ¾ÆÀÌµð
+	BYTE 			m_bTRADE;			///< ìŠ¤í‚¬ì„ ë°°ìš°ëŠ” ì¤‘ì¸ê°€?
+	BYTE 			m_bSKILLINIT;		///< ìŠ¤í‚¬ì„ ì´ˆê¸°í™” í•˜ëŠ” ì¤‘ì¸ê°€?
+	BYTE			m_bSiInvenID;		///< ìŠ¤í‚¬ ì´ˆê¸°í™” ì•„ì´í…œì˜ ì¸ë²¤ ì•„ì´ë””
+	BYTE			m_bSiSlotID;		///< ìŠ¤í‚¬ ì´ˆê¸°í™” ì•„ì´í…œì˜ ì¸ë²¤ì—ì„œì˜ ìŠ¬ë¡¯ ì•„ì´ë””
+	WORD			m_bSiSelectID;		///< ìŠ¤í‚¬ ì´ˆê¸°í™”ë¥¼ ìœ„í•´ ê°€ìž¥ ìµœê·¼ì— ì„ íƒëœ ìŠ¤í‚¬ì˜ ì•„ì´ë””
 
 	LPTOPENBYCASH m_pOpenByCash;
 	void SetOpenByCash( LPTOPENBYCASH );
 	void ClearOpenByCash();
 
 public:
-	/// ÇØ´ç ½ºÅ³¿¡ ´ëÇÑ ¹è¿ì±â ¹öÆ°À» Ç¥½ÃÇÒÁö ¿©ºÎ¸¦ ¾ò´Â´Ù.
+	/// í•´ë‹¹ ìŠ¤í‚¬ì— ëŒ€í•œ ë°°ìš°ê¸° ë²„íŠ¼ì„ í‘œì‹œí• ì§€ ì—¬ë¶€ë¥¼ ì–»ëŠ”ë‹¤.
 	BYTE IsButtonVisible(
 		LPTSKILL pTSKILL,
 		BYTE bLevel);
 	
-	/// ÇöÀç ¼±ÅÃµÈ ÅÇÀ» ¾ò´Â´Ù.
+	/// í˜„ìž¬ ì„ íƒëœ íƒ­ì„ ì–»ëŠ”ë‹¤.
 	BYTE GetCurSel();
 	
-	/// ½ºÅ³ ÃÊ±âÈ­ ¸ðµå¸¦ ½ÃÀÛÇÑ´Ù.
+	/// ìŠ¤í‚¬ ì´ˆê¸°í™” ëª¨ë“œë¥¼ ì‹œìž‘í•œë‹¤.
 	BYTE StartSkillInitMode(BYTE bInvenID, BYTE bSlotID);
-	/// ½ºÅ³ ÃÊ±âÈ­ ¸ðµå¸¦ ³¡³½´Ù.
+	/// ìŠ¤í‚¬ ì´ˆê¸°í™” ëª¨ë“œë¥¼ ëë‚¸ë‹¤.
 	BYTE EndSkillInitMode();
 
-	/// ½ºÅ³ ÃÊ±âÈ­ °¡´É ¸ñ·ÏÀ» ÀüºÎ Áö¿î´Ù.
+	/// ìŠ¤í‚¬ ì´ˆê¸°í™” ê°€ëŠ¥ ëª©ë¡ì„ ì „ë¶€ ì§€ìš´ë‹¤.
 	void ClearInitPossSkill();
-	/// ½ºÅ³ ÃÊ±âÈ­ °¡´É ¸ñ·ÏÀ» Ãß°¡ÇÑ´Ù.
+	/// ìŠ¤í‚¬ ì´ˆê¸°í™” ê°€ëŠ¥ ëª©ë¡ì„ ì¶”ê°€í•œë‹¤.
 	void AddInitPossSkill(WORD wSkillID);
 
 protected:

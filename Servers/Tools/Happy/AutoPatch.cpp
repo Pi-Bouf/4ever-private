@@ -1,4 +1,4 @@
-// AutoPatch.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// AutoPatch.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -38,7 +38,7 @@ BEGIN_MESSAGE_MAP(CAutoPatch, CFormView)
 END_MESSAGE_MAP()
 
 
-// CAutoPatch Áø´ÜÀÔ´Ï´Ù.
+// CAutoPatch ì§„ë‹¨ì…ë‹ˆë‹¤.
 
 #ifdef _DEBUG
 void CAutoPatch::AssertValid() const
@@ -53,7 +53,7 @@ void CAutoPatch::Dump(CDumpContext& dc) const
 #endif //_DEBUG
 
 
-// CAutoPatch ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CAutoPatch ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 void CAutoPatch::OnSize(UINT nType, int cx, int cy)
 {
@@ -112,7 +112,7 @@ void CAutoPatch::OnInitialUpdate()
 	}
 }
 BOOL CAutoPatch::IsDirectory(CString strPath)
-//Æú´õ³ª µå¶óÀÌºê ÀÎÁö ¾Ë¾Æº¸´Â ÇÔ¼ö
+//í´ë”ë‚˜ ë“œë¼ì´ë¸Œ ì¸ì§€ ì•Œì•„ë³´ëŠ” í•¨ìˆ˜
 {
 	CFileStatus fStatus;
 	CFile::GetStatus(strPath,fStatus);
@@ -151,23 +151,23 @@ HTREEITEM CAutoPatch::AddTreeItem(CTreeCtrl * pTreeCtrl, CString strPath)
 	CString strDir,strTitle;
 	HTREEITEM hItem,hFound;
 	
-	if(!IsDirectory(strPath))//Æú´õ°¡ ¾Æ´Ï¸é ±×³É Áö³ª°¡°í
+	if(!IsDirectory(strPath))//í´ë”ê°€ ì•„ë‹ˆë©´ ê·¸ëƒ¥ ì§€ë‚˜ê°€ê³ 
 		return NULL;
 
-	strDir=GetDir(strPath);//ºÎ¸ğÆú´õÀÇ °æ·Î¸¦ Ã£¾Æ¼­
+	strDir=GetDir(strPath);//ë¶€ëª¨í´ë”ì˜ ê²½ë¡œë¥¼ ì°¾ì•„ì„œ
 	ProperPath(strDir);
-	hFound=FindItem(pTreeCtrl, strDir);//ÇØ´ç ºÎ¸ğ ¾ÆÀÌÅÛÀ» Ã£À½
-	if(hFound)//ÀÖÀ¸¸é
+	hFound=FindItem(pTreeCtrl, strDir);//í•´ë‹¹ ë¶€ëª¨ ì•„ì´í…œì„ ì°¾ìŒ
+	if(hFound)//ìˆìœ¼ë©´
 	{
 		strTitle=GetFileTitle(strPath);
 		hItem=pTreeCtrl->InsertItem(strTitle,CLOSED_FOLDER,OPEN_FOLDER,hFound);
-		return hItem;//ÀÚ½Ä ¾ÆÀÌÅÛÀ¸·Î ³ÖÀ½
+		return hItem;//ìì‹ ì•„ì´í…œìœ¼ë¡œ ë„£ìŒ
 	}
 	return NULL;
 }
 HTREEITEM CAutoPatch::AddTreeItem(CTreeCtrl * pTreeCtrl, HTREEITEM hParent,LPCTSTR szText,int nIcon,int nSelectedIcon)
 {
-	//Æ®¸® ¾ÆÀÌÅÛÀ» ¿Ã¸®´Â ÇÔ¼ö
+	//íŠ¸ë¦¬ ì•„ì´í…œì„ ì˜¬ë¦¬ëŠ” í•¨ìˆ˜
 
 	TV_INSERTSTRUCT tvStruct;
 
@@ -182,7 +182,7 @@ HTREEITEM CAutoPatch::AddTreeItem(CTreeCtrl * pTreeCtrl, HTREEITEM hParent,LPCTS
 	return pTreeCtrl->InsertItem(&tvStruct);
 }
 void CAutoPatch::AddChildFolderItem(CTreeCtrl * pTreeCtrl, HTREEITEM hParent)
-//ÇÏºÎ Æú´õ¸¦ Ã£¾Æ¼­ Æ®¸®ºä¿¡ ³ëµå¸¦ ¿Ã¸®´Â ºÎºĞ
+//í•˜ë¶€ í´ë”ë¥¼ ì°¾ì•„ì„œ íŠ¸ë¦¬ë·°ì— ë…¸ë“œë¥¼ ì˜¬ë¦¬ëŠ” ë¶€ë¶„
 {
 	HTREEITEM hItem;
 	CFileFind finder;
@@ -208,7 +208,7 @@ void CAutoPatch::AddChildFolderItem(CTreeCtrl * pTreeCtrl, HTREEITEM hParent)
 	finder.Close();
 }
 CString CAutoPatch::GetFileTitle(CString strPath)
-//ÆÄÀÏÀÇ ÀüÃ¼°æ·ÎÁß¿¡¼­ ÀÌ¸§¸¸ ÃßÃâÇÏ´Â ÇÔ¼ö
+//íŒŒì¼ì˜ ì „ì²´ê²½ë¡œì¤‘ì—ì„œ ì´ë¦„ë§Œ ì¶”ì¶œí•˜ëŠ” í•¨ìˆ˜
 {
 	CString strTitle;
 	if(strPath.GetLength()==3)
@@ -228,30 +228,30 @@ void CAutoPatch::ProperPath(CString &strPath)
 		strPath+="\\";
 }
 HICON CAutoPatch::GetIconHandle(int nIndex)
-//Shell32.dll¿¡¼­ ÇØ´ç ¾ÆÀÌÄÜÀÇ ÇÚµéÀ» ¾ò¾î³»´Â ÇÔ¼ö
+//Shell32.dllì—ì„œ í•´ë‹¹ ì•„ì´ì½˜ì˜ í•¸ë“¤ì„ ì–»ì–´ë‚´ëŠ” í•¨ìˆ˜
 {
 	CString strPath;
 
-	strPath=GetSystemDir();//À©µµ¿ì ½Ã½ºÅÛ µğ·ºÅä¸®¸¦ ±¸ÇÏ°í
+	strPath=GetSystemDir();//ìœˆë„ìš° ì‹œìŠ¤í…œ ë””ë ‰í† ë¦¬ë¥¼ êµ¬í•˜ê³ 
 	ProperPath(strPath);
-	strPath=strPath+"Shell32.dll";//Shell32.dllÆÄÀÏÀÇ ¾ÆÀÌÄÜÀ» ÃßÃâ
+	strPath=strPath+"Shell32.dll";//Shell32.dllíŒŒì¼ì˜ ì•„ì´ì½˜ì„ ì¶”ì¶œ
 
 	HICON hIconSmall,hIconLarge;
 
 	::ExtractIconEx(strPath,nIndex,&hIconLarge,&hIconSmall,1);
 	
-	return hIconSmall;//ÀÛÀº ¾ÆÀÌÄÜÀ» ¹İÈ¯
+	return hIconSmall;//ì‘ì€ ì•„ì´ì½˜ì„ ë°˜í™˜
 }
 CString CAutoPatch::GetSystemDir() const
-//À©µµ¿ìÁî ½Ã½ºÅÛ Æú´õÀÇ °æ·Î¸¦ ¹İÈ¯
+//ìœˆë„ìš°ì¦ˆ ì‹œìŠ¤í…œ í´ë”ì˜ ê²½ë¡œë¥¼ ë°˜í™˜
 {
 	TCHAR szPath[MAX_PATH];
 	::GetSystemDirectory(szPath,MAX_PATH);
 
 	return szPath;
 }
-void CAutoPatch::SetImageList()//ÀÌ¹ÌÁö ¸®½ºÆ® ÃÊ±âÈ­
-//Shell32.dll¿¡¼­ ¾ÆÀÌÄÜÀ» ÃßÃâÇØ¼­ ÀÌ¹Ì±â ¸®½ºÆ®¿¡ ³Ö´Â ÇÔ¼ö
+void CAutoPatch::SetImageList()//ì´ë¯¸ì§€ ë¦¬ìŠ¤íŠ¸ ì´ˆê¸°í™”
+//Shell32.dllì—ì„œ ì•„ì´ì½˜ì„ ì¶”ì¶œí•´ì„œ ì´ë¯¸ê¸° ë¦¬ìŠ¤íŠ¸ì— ë„£ëŠ” í•¨ìˆ˜
 {
 	m_imageList.Create(16,16,ILC_COLOR8|ILC_MASK,1,1);
 	HICON hIcon;
@@ -290,7 +290,7 @@ void CAutoPatch::SetImageList()//ÀÌ¹ÌÁö ¸®½ºÆ® ÃÊ±âÈ­
 	m_treectrlNextFile.SetImageList(&m_imageList,TVSIL_NORMAL);
 	m_imageList.Detach();
 }
-void CAutoPatch::SetTreeNodes()//ÃÖÃÊ·Î Æ®¸®ºä¿¡ ³ëµå¸¦ ¿Ã¸®´Â ºÎºĞ
+void CAutoPatch::SetTreeNodes()//ìµœì´ˆë¡œ íŠ¸ë¦¬ë·°ì— ë…¸ë“œë¥¼ ì˜¬ë¦¬ëŠ” ë¶€ë¶„
 {
 	LPSHELLFOLDER lpsf = NULL;
 	LPITEMIDLIST lpi_MyComputer = NULL;
@@ -309,7 +309,7 @@ void CAutoPatch::SetTreeNodes()//ÃÖÃÊ·Î Æ®¸®ºä¿¡ ³ëµå¸¦ ¿Ã¸®´Â ºÎºĞ
 		hr = StrRetToBuf(&str, lpi_MyComputer, pszName, MAX_PATH);
 		if (SUCCEEDED(hr))
 		{
-			if (str.uType == STRRET_WSTR) // ÀÌ if ¹®ÀÇ ¿ëµµ´Â Àß ¸ğ¸£°ÚÀ½.
+			if (str.uType == STRRET_WSTR) // ì´ if ë¬¸ì˜ ìš©ë„ëŠ” ì˜ ëª¨ë¥´ê² ìŒ.
 				pMalloc->Free(str.pOleStr);
 		}
 	}
@@ -327,13 +327,13 @@ void CAutoPatch::SetTreeNodes()//ÃÖÃÊ·Î Æ®¸®ºä¿¡ ³ëµå¸¦ ¿Ã¸®´Â ºÎºĞ
 	HTREEITEM hItem;
 
 	hItem=AddTreeItem(&m_treectrlPrevFile, NULL,m_strMyComputer,MY_COM,MY_COM);
-	SetDrives(&m_treectrlPrevFile, hItem);//µå¶óÀÌºê¸¦ °Ë»öÇØ¼­ ¿Ã¸²
+	SetDrives(&m_treectrlPrevFile, hItem);//ë“œë¼ì´ë¸Œë¥¼ ê²€ìƒ‰í•´ì„œ ì˜¬ë¦¼
 
 	hItem=AddTreeItem(&m_treectrlNextFile, NULL,m_strMyComputer,MY_COM,MY_COM);
-	SetDrives(&m_treectrlNextFile, hItem);//µå¶óÀÌºê¸¦ °Ë»öÇØ¼­ ¿Ã¸²
+	SetDrives(&m_treectrlNextFile, hItem);//ë“œë¼ì´ë¸Œë¥¼ ê²€ìƒ‰í•´ì„œ ì˜¬ë¦¼
 }
 
-void CAutoPatch::SetDrives(CTreeCtrl * pTreeCtrl, HTREEITEM& hParent)//µå¶óÀÌºê¸¦ °Ë»öÇÏ´Â ºÎºĞ
+void CAutoPatch::SetDrives(CTreeCtrl * pTreeCtrl, HTREEITEM& hParent)//ë“œë¼ì´ë¸Œë¥¼ ê²€ìƒ‰í•˜ëŠ” ë¶€ë¶„
 {
 	int nIndex=0;
 	DWORD dwDrives;
@@ -344,7 +344,7 @@ void CAutoPatch::SetDrives(CTreeCtrl * pTreeCtrl, HTREEITEM& hParent)//µå¶óÀÌºê¸
 	SHFILEINFO shInfo;
 	HTREEITEM hItem;
 
-	dwDrives=::GetLogicalDrives();//ÇöÀç Á¸ÀçÇÏ´Â µå¶óÀÌºêÀÇ »óÅÂ¸¦ ºñÆ®´ÜÀ§·Î Ç¥½Ã
+	dwDrives=::GetLogicalDrives();//í˜„ì¬ ì¡´ì¬í•˜ëŠ” ë“œë¼ì´ë¸Œì˜ ìƒíƒœë¥¼ ë¹„íŠ¸ë‹¨ìœ„ë¡œ í‘œì‹œ
 
 	while(dwDrives)
 	{
@@ -354,7 +354,7 @@ void CAutoPatch::SetDrives(CTreeCtrl * pTreeCtrl, HTREEITEM& hParent)//µå¶óÀÌºê¸
 			strDrive=CString(cDrive)+":\\";
 			nIcon=GetDriveIcon(strDrive);
 			SHGetFileInfo(strDrive,0,&shInfo,sizeof(SHFILEINFO),SHGFI_TYPENAME);
-			strVolumeName=GetVolumeName(strDrive,shInfo.szTypeName);//µå¸®ÀÌºêÀÇ º¼·ıÀÌ¸§À» ±¸ÇÔ
+			strVolumeName=GetVolumeName(strDrive,shInfo.szTypeName);//ë“œë¦¬ì´ë¸Œì˜ ë³¼ë¥¨ì´ë¦„ì„ êµ¬í•¨
 			hItem=AddTreeItem(pTreeCtrl, hParent,strVolumeName,nIcon,nIcon);
 			SetButtonState(pTreeCtrl, hItem);
 		}
@@ -362,8 +362,8 @@ void CAutoPatch::SetDrives(CTreeCtrl * pTreeCtrl, HTREEITEM& hParent)//µå¶óÀÌºê¸
 		dwDrives>>=1;
 	}
 }
-void CAutoPatch::SetButtonState( CTreeCtrl * pTreeCtrl, HTREEITEM hItem)//ÇÏºÎ µğ·ºÅä¸®°¡ ÀÖ´ÂÁö 
-//¾Ë¾Æ³»¼­ ³ëµåÀÇ »óÅÂ¸¦ Ç¥½ÃÇÔ
+void CAutoPatch::SetButtonState( CTreeCtrl * pTreeCtrl, HTREEITEM hItem)//í•˜ë¶€ ë””ë ‰í† ë¦¬ê°€ ìˆëŠ”ì§€ 
+//ì•Œì•„ë‚´ì„œ ë…¸ë“œì˜ ìƒíƒœë¥¼ í‘œì‹œí•¨
 {
 	CFileFind finder;
 	CString strPath;
@@ -379,14 +379,14 @@ void CAutoPatch::SetButtonState( CTreeCtrl * pTreeCtrl, HTREEITEM hItem)//ÇÏºÎ µ
 			bFind=finder.FindNextFile();
 			if(finder.IsDirectory() && !finder.IsDots())
 			{
-				AddTreeItem(pTreeCtrl, hItem,"",CLOSED_FOLDER,OPEN_FOLDER);//°ø¶õÀÇ ´õ¹Ì ¾ÆÀÌÅÛÀ» ¸¸µë
+				AddTreeItem(pTreeCtrl, hItem,"",CLOSED_FOLDER,OPEN_FOLDER);//ê³µë€ì˜ ë”ë¯¸ ì•„ì´í…œì„ ë§Œë“¬
 				break;
 			}
 		}
 	}
 	finder.Close();
 }
-int CAutoPatch::GetDriveIcon(CString& strDrive )//µå¶óÀÌºê ¾ÆÀÌÄÜÀÎµ¦½º¸¦ ±¸ÇÔ
+int CAutoPatch::GetDriveIcon(CString& strDrive )//ë“œë¼ì´ë¸Œ ì•„ì´ì½˜ì¸ë±ìŠ¤ë¥¼ êµ¬í•¨
 {
 	int nType,nIcon;
 
@@ -410,7 +410,7 @@ int CAutoPatch::GetDriveIcon(CString& strDrive )//µå¶óÀÌºê ¾ÆÀÌÄÜÀÎµ¦½º¸¦ ±¸ÇÔ
 	return nIcon;
 }
 
-CString CAutoPatch::GetItemPath(CTreeCtrl * pTreeCtrl, HTREEITEM hItem)//Æ®¸®¾ÆÀÌÅÛÀÇ °æ·Î¸¦ ±¸ÇÔ
+CString CAutoPatch::GetItemPath(CTreeCtrl * pTreeCtrl, HTREEITEM hItem)//íŠ¸ë¦¬ì•„ì´í…œì˜ ê²½ë¡œë¥¼ êµ¬í•¨
 {
 	HTREEITEM hParent;
 	CString strTitle;
@@ -423,7 +423,7 @@ CString CAutoPatch::GetItemPath(CTreeCtrl * pTreeCtrl, HTREEITEM hItem)//Æ®¸®¾ÆÀ
 	
 	if(strTitle.Find(":")!=-1)
 	{
-		strPath=PickDriveLetter(strTitle);//µå¶óÀÌºê °æ·Î
+		strPath=PickDriveLetter(strTitle);//ë“œë¼ì´ë¸Œ ê²½ë¡œ
 		return strPath;
 	}
 	
@@ -451,7 +451,7 @@ CString CAutoPatch::GetItemPath(CTreeCtrl * pTreeCtrl, HTREEITEM hItem)//Æ®¸®¾ÆÀ
 	return strPath;
 }
 CString CAutoPatch::GetSpecialFolderPath(int nFolder)
-//Æ¯¼öÆú´õÀÇ °æ·Î¸¦ ¹İÈ¯
+//íŠ¹ìˆ˜í´ë”ì˜ ê²½ë¡œë¥¼ ë°˜í™˜
 {
 	TCHAR szPath[MAX_PATH];
 
@@ -460,7 +460,7 @@ CString CAutoPatch::GetSpecialFolderPath(int nFolder)
 	return "";
 }
 CString CAutoPatch::PickDriveLetter(CString strVolumeName)
-//º¼·ı ÀÌ¸§¿¡¼­ µå¶óÀÌºê ÀÌ¸§¸¸ ÃßÃâÇÏ´Â ÇÔ¼ö
+//ë³¼ë¥¨ ì´ë¦„ì—ì„œ ë“œë¼ì´ë¸Œ ì´ë¦„ë§Œ ì¶”ì¶œí•˜ëŠ” í•¨ìˆ˜
 {
 	CString strDriveLetter;
 	int nPos=strVolumeName.Find(":");
@@ -471,7 +471,7 @@ CString CAutoPatch::PickDriveLetter(CString strVolumeName)
 	return strDriveLetter;
 }
 CString CAutoPatch::GetDir(CString strPath)
-//ÇØ´ç °æ·Î¿¡¼­ ºÎ¸ğ Æú´õÀÇ °æ·Î¸¦ ¹İÈ¯ÇÔ
+//í•´ë‹¹ ê²½ë¡œì—ì„œ ë¶€ëª¨ í´ë”ì˜ ê²½ë¡œë¥¼ ë°˜í™˜í•¨
 {
 	CString strDir=strPath;
 	if(strDir.Right(1)=="\\")
@@ -482,7 +482,7 @@ CString CAutoPatch::GetDir(CString strPath)
 	return strDir;
 }
 HTREEITEM CAutoPatch::FindItem(CTreeCtrl * pTreeCtrl, CString strPath)
-//ÇØ´ç °æ·Î¸¦ °¡Áö°í ÀÖ´Â ¾ÆÀÌÅÛÀ» Ã£À½
+//í•´ë‹¹ ê²½ë¡œë¥¼ ê°€ì§€ê³  ìˆëŠ” ì•„ì´í…œì„ ì°¾ìŒ
 {
 	CString strTreePath;
 
@@ -500,7 +500,7 @@ HTREEITEM CAutoPatch::FindItem(CTreeCtrl * pTreeCtrl, CString strPath)
 	return NULL;
 }
 CString CAutoPatch::GetVolumeName(CString  strDrive,CString strTypeName)
-//µå¶óÀÌºêÀÇ º¼·ı ÀÌ¸§À» ¹İÈ¯
+//ë“œë¼ì´ë¸Œì˜ ë³¼ë¥¨ ì´ë¦„ì„ ë°˜í™˜
 {
 	TCHAR szVolumeName[MAX_PATH]={0};
 	CString strFullName;
@@ -517,7 +517,7 @@ CString CAutoPatch::GetVolumeName(CString  strDrive,CString strTypeName)
 	return strFullName;
 }
 void CAutoPatch::DeleteAllChildren(CTreeCtrl * pTreeCtrl, HTREEITEM hItem)
-//ÇÏºÎ³ëµå¸¦ ¸ğµÎ »èÁ¦ÇÏ´Â ÇÔ¼ö
+//í•˜ë¶€ë…¸ë“œë¥¼ ëª¨ë‘ ì‚­ì œí•˜ëŠ” í•¨ìˆ˜
 {
 	HTREEITEM hChildItem,hNextItem;
 
@@ -539,16 +539,16 @@ void CAutoPatch::OnTvnItemexpandingTreePrevfile(NMHDR *pNMHDR, LRESULT *pResult)
 	HTREEITEM hItem=pNMTreeView->itemNew.hItem;
 	HTREEITEM hParent;
 
-	if(pNMTreeView->action=TVE_EXPAND)//ÆîÄ¥¶§
+	if(pNMTreeView->action=TVE_EXPAND)//í¼ì¹ ë•Œ
 	{
 		hParent=m_treectrlPrevFile.GetParentItem(hItem);
 		if(hParent)
 		{
-			DeleteAllChildren(&m_treectrlPrevFile, hItem);//ÀÚ½Ä ¾ÆÀÌÅÛ ´Ù Áö¿ì°í(´õ¹Ì¾ÆÀÌÅÛ Áö¿ì±â)
-			AddChildFolderItem(&m_treectrlPrevFile, hItem);//»õ·Î ÀÚ½Ä ¾ÆÀÌÅÛÀ» ¿Ã¸²
+			DeleteAllChildren(&m_treectrlPrevFile, hItem);//ìì‹ ì•„ì´í…œ ë‹¤ ì§€ìš°ê³ (ë”ë¯¸ì•„ì´í…œ ì§€ìš°ê¸°)
+			AddChildFolderItem(&m_treectrlPrevFile, hItem);//ìƒˆë¡œ ìì‹ ì•„ì´í…œì„ ì˜¬ë¦¼
 		}
 	}
-	else//´İÀ» ¶§
+	else//ë‹«ì„ ë•Œ
 	{
 		DeleteAllChildren(&m_treectrlPrevFile, hItem);
 		SetButtonState(&m_treectrlPrevFile, hItem);
@@ -565,16 +565,16 @@ void CAutoPatch::OnTvnItemexpandingTreeNextfile(NMHDR *pNMHDR, LRESULT *pResult)
 	HTREEITEM hItem=pNMTreeView->itemNew.hItem;
 	HTREEITEM hParent;
 
-	if(pNMTreeView->action=TVE_EXPAND)//ÆîÄ¥¶§
+	if(pNMTreeView->action=TVE_EXPAND)//í¼ì¹ ë•Œ
 	{
 		hParent=m_treectrlNextFile.GetParentItem(hItem);
 		if(hParent)
 		{
-			DeleteAllChildren(&m_treectrlNextFile, hItem);//ÀÚ½Ä ¾ÆÀÌÅÛ ´Ù Áö¿ì°í(´õ¹Ì¾ÆÀÌÅÛ Áö¿ì±â)
-			AddChildFolderItem(&m_treectrlNextFile, hItem);//»õ·Î ÀÚ½Ä ¾ÆÀÌÅÛÀ» ¿Ã¸²
+			DeleteAllChildren(&m_treectrlNextFile, hItem);//ìì‹ ì•„ì´í…œ ë‹¤ ì§€ìš°ê³ (ë”ë¯¸ì•„ì´í…œ ì§€ìš°ê¸°)
+			AddChildFolderItem(&m_treectrlNextFile, hItem);//ìƒˆë¡œ ìì‹ ì•„ì´í…œì„ ì˜¬ë¦¼
 		}
 	}
-	else//´İÀ» ¶§
+	else//ë‹«ì„ ë•Œ
 	{
 		DeleteAllChildren(&m_treectrlNextFile, hItem);
 		SetButtonState(&m_treectrlNextFile, hItem);
@@ -679,7 +679,7 @@ LPPATCHFILE CAutoPatch::CheckExist(LPCTSTR strFile1, LPCTSTR strFile2)
 		{
 			FILETIME ftLastWrite;
 			DWORD nSize = (DWORD)file2.GetLength();
-			//if(!nSize) // »çÀÌÁî 0
+			//if(!nSize) // ì‚¬ì´ì¦ˆ 0
 			//	return NULL;
 
 			GetFileTime((void *)file2.m_hFile, NULL, NULL, &ftLastWrite);
@@ -757,7 +757,7 @@ LPPATCHFILE CAutoPatch::CompareFiles(LPCTSTR strFile1, LPCTSTR strFile2)
 
 	FILETIME ftLastWrite;
 	DWORD nSize = (DWORD)file2.GetLength();
-	//if(!nSize) // »çÀÌÁî 0
+	//if(!nSize) // ì‚¬ì´ì¦ˆ 0
 	//	return NULL;
 
 	GetFileTime((void *)file2.m_hFile, NULL, NULL, &ftLastWrite);
@@ -775,7 +775,7 @@ LPPATCHFILE CAutoPatch::CompareFiles(LPCTSTR strFile1, LPCTSTR strFile2)
 
 	DWORD dwFileSize = (DWORD)file1.GetLength();
 	if(dwFileSize != file2.GetLength())
-	{//ÆÄÀÏÀÇ »çÀÌÁî°¡ ´Ù¸£´Ù¸é
+	{//íŒŒì¼ì˜ ì‚¬ì´ì¦ˆê°€ ë‹¤ë¥´ë‹¤ë©´
 		file1.Close(); file2.Close();
 		return pPatchFile;
 	}
@@ -835,6 +835,6 @@ void CAutoPatch::SeparatePath(LPPATCHFILE pFile)
 void CAutoPatch::OnTvnSelchangedTreeNextfile(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	*pResult = 0;
 }

@@ -1,4 +1,4 @@
-// HappyDoc.cpp : CHappyDoc Å¬·¡½ºÀÇ ±¸Çö
+ï»¿// HappyDoc.cpp : CHappyDoc í´ëž˜ìŠ¤ì˜ êµ¬í˜„
 //
 
 #include "stdafx.h"
@@ -55,11 +55,11 @@ BEGIN_MESSAGE_MAP(CHappyDoc, CDocument)
 END_MESSAGE_MAP()
 
 
-// CHappyDoc »ý¼º/¼Ò¸ê
+// CHappyDoc ìƒì„±/ì†Œë©¸
 
 CHappyDoc::CHappyDoc()
 {
-	// TODO: ¿©±â¿¡ ÀÏÈ¸¼º »ý¼º ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì¼íšŒì„± ìƒì„± ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	m_session.Close();
 	m_session.SetOwner(this);
 
@@ -77,7 +77,7 @@ CHappyDoc::CHappyDoc()
 	m_strZippedPatchFile = "";
 	m_strZippedPatchFileOnly = "";
 	//////////////////////////////////
-	// Çö½Â·æ Graph
+	// í˜„ìŠ¹ë£¡ Graph
 	m_bGraphCheck = 0; 
 	m_curView = 0; 
 	//////////////////////////////////
@@ -89,13 +89,13 @@ CHappyDoc::CHappyDoc()
 	m_pMonSpawn = NULL;
 	m_pdlgGMTool = NULL;
 
-	// 06/02/01 ¹Ú»ó¿¬ Compare¹öÆ°°ú PatchUpdate ¹öÆ° ÃÊ±â È°¼ºÈ­ ¼ÂÆÃ(ºñÈ°¼ºÈ­)
+	// 06/02/01 ë°•ìƒì—° Compareë²„íŠ¼ê³¼ PatchUpdate ë²„íŠ¼ ì´ˆê¸° í™œì„±í™” ì…‹íŒ…(ë¹„í™œì„±í™”)
 	//-------------------------------------------------------------------
 	CMainFrame * pFrm = (CMainFrame *)AfxGetMainWnd();
 	
 	pFrm->SetPatchBarCompareVisible(FALSE);
 	pFrm->SetPatchBarPatchUpdateVisible(FALSE);
-	m_bErrorStatus = 0;			// ¿¡·¯ »óÅÂ°ª ÃÊ±â ¼³Á¤
+	m_bErrorStatus = 0;			// ì—ëŸ¬ ìƒíƒœê°’ ì´ˆê¸° ì„¤ì •
 	//-------------------------------------------------------------------
 
 	GetCurrentDirectory(_MAX_PATH, m_szCurrentDirectory);
@@ -270,7 +270,7 @@ void CHappyDoc::DisconnectServer()
 
 	CServiceTree * pTree = ( CServiceTree * )pFrm->m_wndSplitter.GetView( pFrm->m_nTree );
 	pTree->UpdateServiceTree(0xffffffff);
-	// Çö½Â·æ Machine
+	// í˜„ìŠ¹ë£¡ Machine
 	CMachine * pMachine = (CMachine *)pFrm->m_wndSplitter.GetView(pFrm->m_nMachine);
 	pMachine->ClearMachineTree();
 	CPatchList * pList = (CPatchList *)pFrm->m_wndSplitter.GetView(pFrm->m_nListPatch);
@@ -309,7 +309,7 @@ void CHappyDoc::GroupStart()
 	CString strWorld = (pTree->m_treeCtrl).GetItemText(hGroup);
 	CString strGroup = (pTree->m_treeCtrl).GetItemText(pTree->m_treeCtrl.GetSelectedItem());
 
-	MAPSERVICEGRAPH::iterator it; // ¼­ºñ½º °Ë»ö
+	MAPSERVICEGRAPH::iterator it; // ì„œë¹„ìŠ¤ ê²€ìƒ‰
 	for(it = m_mapSERVICEGRAPH.begin(); it != m_mapSERVICEGRAPH.end(); it++)
 	{
 		if( !lstrcmp(strWorld, (*it).second.m_strWorld) && 
@@ -327,7 +327,7 @@ void CHappyDoc::GroupStop()
 	CString strWorld = (pTree->m_treeCtrl).GetItemText(hGroup);
 	CString strGroup = (pTree->m_treeCtrl).GetItemText(pTree->m_treeCtrl.GetSelectedItem());
 
-	MAPSERVICEGRAPH::iterator it; // ¼­ºñ½º °Ë»ö
+	MAPSERVICEGRAPH::iterator it; // ì„œë¹„ìŠ¤ ê²€ìƒ‰
 	for(it = m_mapSERVICEGRAPH.begin(); it != m_mapSERVICEGRAPH.end(); it++)
 	{
 		if( !lstrcmp(strWorld, (*it).second.m_strWorld) && 
@@ -345,14 +345,14 @@ BOOL CHappyDoc::OnNewDocument()
 	CServiceList * pList = (CServiceList *)pFrm->m_wndSplitter.GetView(pFrm->m_nList);
 	CAutoPatch * pPatch = (CAutoPatch *)pFrm->m_wndSplitter.GetView(pFrm->m_nPatch);
 	CPatchList * pPatchList = (CPatchList *)pFrm->m_wndSplitter.GetView(pFrm->m_nListPatch);
-	CServiceGraph * pGraph = (CServiceGraph *)pFrm->m_wndSplitter.GetView(pFrm->m_nGraph); // Çö½Â·æ Graph
+	CServiceGraph * pGraph = (CServiceGraph *)pFrm->m_wndSplitter.GetView(pFrm->m_nGraph); // í˜„ìŠ¹ë£¡ Graph
 	AddView(pTree);
 	AddView(pList);
 	AddView(pPatch);
 	AddView(pPatchList);
-	AddView(pGraph); // Çö½Â·æ Graph
-	// TODO: ¿©±â¿¡ ´Ù½Ã ÃÊ±âÈ­ ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
-	// SDI ¹®¼­´Â ÀÌ ¹®¼­¸¦ ´Ù½Ã »ç¿ëÇÕ´Ï´Ù.
+	AddView(pGraph); // í˜„ìŠ¹ë£¡ Graph
+	// TODO: ì—¬ê¸°ì— ë‹¤ì‹œ ì´ˆê¸°í™” ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
+	// SDI ë¬¸ì„œëŠ” ì´ ë¬¸ì„œë¥¼ ë‹¤ì‹œ ì‚¬ìš©í•©ë‹ˆë‹¤.
 
 	return TRUE;
 }
@@ -372,11 +372,11 @@ void CHappyDoc::Serialize(CArchive& ar)
 {
 	if (ar.IsStoring())
 	{
-		// TODO: ¿©±â¿¡ ÀúÀå ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+		// TODO: ì—¬ê¸°ì— ì €ìž¥ ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	}
 	else
 	{
-		// TODO: ¿©±â¿¡ ·Îµù ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+		// TODO: ì—¬ê¸°ì— ë¡œë”© ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	}
 }
 
@@ -384,7 +384,7 @@ void CHappyDoc::OnConnect(int nErrorCode)
 {
 	if(nErrorCode)
 	{
-		AfxMessageBox(_T("Failed to connect to server")); // ¼­¹ö Á¢¼Ó¿¡ ½ÇÆÐÇß½À´Ï´Ù
+		AfxMessageBox(_T("Failed to connect to server")); // ì„œë²„ ì ‘ì†ì— ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤
 		return;
 	}
 	SendCT_OPLOGIN_REQ();
@@ -460,13 +460,13 @@ void CHappyDoc::OnReceive(CPacket * pPacket)
 void CHappyDoc::SessionStart(CString strIp, DWORD dwPort)
 {
 	if(!m_session.Start(strIp, dwPort))
-		AfxMessageBox(_T("Failed to connect to server ")); //¼­¹ö Á¢¼Ó¿¡ ½ÇÆÐÇß½À´Ï´Ù
+		AfxMessageBox(_T("Failed to connect to server ")); //ì„œë²„ ì ‘ì†ì— ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤
 }
 void CHappyDoc::Say(CPacket * pPacket)
 {
 	m_session.Say(pPacket);
 }
-// CHappyDoc Áø´Ü
+// CHappyDoc ì§„ë‹¨
 
 #ifdef _DEBUG
 void CHappyDoc::AssertValid() const
@@ -493,11 +493,11 @@ void CHappyDoc::NotifyUploadEnd(BYTE bRet)
 		CButton * pButton = (CButton *)m_dlgUploadProgress.GetDlgItem(IDCANCEL);
 
 		if(bRet)
-			pEdit->SetWindowText(_T("The error occurred during the transfer")); //Àü¼ÛÁß ¿¡·¯°¡ ¹ß»ýÇß½À´Ï´Ù.
+			pEdit->SetWindowText(_T("The error occurred during the transfer")); //ì „ì†¡ì¤‘ ì—ëŸ¬ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.
 		else
-			pEdit->SetWindowText(_T("The transfer is complete"));//Àü¼ÛÀÌ ¿Ï·áµÇ¾ú½À´Ï´Ù.
+			pEdit->SetWindowText(_T("The transfer is complete"));//ì „ì†¡ì´ ì™„ë£Œë˜ì—ˆìŠµë‹ˆë‹¤.
 
-		pButton->SetWindowText(_T("OK"));//È®ÀÎ
+		pButton->SetWindowText(_T("OK"));//í™•ì¸
 	}
 	if(m_fileUpload.m_hFile != CFile::hFileNull)
 		m_fileUpload.Close();
@@ -576,7 +576,7 @@ void CHappyDoc::OnPatchUpload()
 
 	m_pPatchProgress = new CDlgPatchProgress();
 	m_pPatchProgress->Create(IDD_DIALOG_PATCHPROGRESS);
-	m_pPatchProgress->SetWindowText(_T("Patching..."));//ÆÐÄ¡Áß
+	m_pPatchProgress->SetWindowText(_T("Patching..."));//íŒ¨ì¹˜ì¤‘
 	CPatchList * pPatch = (CPatchList *)GetPatchListView();
 	CRect rect, rect2;
 	CPoint point;
@@ -617,7 +617,7 @@ DWORD CHappyDoc::ThreadPatchUpload()
 	BYTE bError = FALSE;
 	TCHAR buffer[1024];
 	GetCurrentDirectory(1024, buffer);
-	m_bErrorStatus = 0;				// ¿¡·¯ »óÅÂ ÁöÁ¤°ª
+	m_bErrorStatus = 0;				// ì—ëŸ¬ ìƒíƒœ ì§€ì •ê°’
 
 	m_pPatchProgress->SetStatus(1);
 
@@ -625,7 +625,7 @@ DWORD CHappyDoc::ThreadPatchUpload()
 	if(!CreateTempDirectory(strTemporary))
 	{
 		bError = TRUE;
-		m_bErrorStatus = _ERR_TEMPDIR;	// ERROR »óÅÂ ÀÔ·Â
+		m_bErrorStatus = _ERR_TEMPDIR;	// ERROR ìƒíƒœ ìž…ë ¥
 		goto exit_patch_upload;	
 	}
 
@@ -633,7 +633,7 @@ DWORD CHappyDoc::ThreadPatchUpload()
 	if(!ZipPatchFiles(strTemporary))
 	{
 		bError = TRUE;
-		m_bErrorStatus = _ERR_ZIP;		// ERROR »óÅÂ ÀÔ·Â
+		m_bErrorStatus = _ERR_ZIP;		// ERROR ìƒíƒœ ìž…ë ¥
 		goto exit_patch_upload;
 	}
 
@@ -648,7 +648,7 @@ DWORD CHappyDoc::ThreadPatchUpload()
 	}
 	*/
 
-	// Çö½Â·æ ÀÓ½Ã UploadPatch
+	// í˜„ìŠ¹ë£¡ ìž„ì‹œ UploadPatch
 	if(!NewUploadPatchFiles(strTemporary))
 	{
 		bError = TRUE;	
@@ -690,7 +690,7 @@ exit_patch_upload:
 		strError.Format(_T("Error Code %d"),nError);
 		m_pPatchProgress->SetProgress(0);
 
-		if( m_bErrorStatus != 0 )	// »óÅÂ°°ÀÌ ÁöÁ¤µÇ¾úÀ¸¸é »óÅÂ°ªÀÇ »óÅÂ·Î ¿¡·¯ ¸Þ½ÃÁö¸¦ º¸¿©ÁØ´Ù.
+		if( m_bErrorStatus != 0 )	// ìƒíƒœê°™ì´ ì§€ì •ë˜ì—ˆìœ¼ë©´ ìƒíƒœê°’ì˜ ìƒíƒœë¡œ ì—ëŸ¬ ë©”ì‹œì§€ë¥¼ ë³´ì—¬ì¤€ë‹¤.
 			m_pPatchProgress->SetStatus(m_bErrorStatus);
 		else
 			m_pPatchProgress->SetStatus(3);
@@ -698,13 +698,13 @@ exit_patch_upload:
 	}
 	else
 	{
-		if( m_bErrorStatus != 0 )	// »óÅÂ°°ÀÌ ÁöÁ¤µÇ¾úÀ¸¸é »óÅÂ°ªÀÇ »óÅÂ·Î ¿¡·¯ ¸Þ½ÃÁö¸¦ º¸¿©ÁØ´Ù.
+		if( m_bErrorStatus != 0 )	// ìƒíƒœê°™ì´ ì§€ì •ë˜ì—ˆìœ¼ë©´ ìƒíƒœê°’ì˜ ìƒíƒœë¡œ ì—ëŸ¬ ë©”ì‹œì§€ë¥¼ ë³´ì—¬ì¤€ë‹¤.
 			m_pPatchProgress->SetStatus(m_bErrorStatus);
 		else
 			m_pPatchProgress->SetStatus(0);
 
 		/*
-		// ¹Ú»ó¿¬ Àü¼Û ¿Ï·áÈÄ FTP ÁÖ¼Ò ACCOUNT ÀúÀå
+		// ë°•ìƒì—° ì „ì†¡ ì™„ë£Œí›„ FTP ì£¼ì†Œ ACCOUNT ì €ìž¥
 		//-------------------------------------------------------
 		DWORD dwIPTemp;
 		dwIPTemp = DWORD( inet_addr( m_strFtpAddr ) );
@@ -769,13 +769,13 @@ BOOL CHappyDoc::UploadPatchFiles(LPCTSTR strSourcePath)
 	
 	if(m_strFtpAddr.IsEmpty() || m_strFtpUser.IsEmpty() || m_strFtpPasswd.IsEmpty() || !m_wFtpPort)
 	{
-		m_bErrorStatus = _ERR_EMPTY;					// ERROR »óÅÂ ÀÔ·Â
+		m_bErrorStatus = _ERR_EMPTY;					// ERROR ìƒíƒœ ìž…ë ¥
 		return FALSE;
 	}
 
 	if(!SetCurrentDirectory(strSourcePath))
 	{
-		m_bErrorStatus = _ERR_CURRENTDIR;				// ERROR »óÅÂ ÀÔ·Â
+		m_bErrorStatus = _ERR_CURRENTDIR;				// ERROR ìƒíƒœ ìž…ë ¥
 		return FALSE;
 	}
 
@@ -820,7 +820,7 @@ BOOL CHappyDoc::UploadPatchFiles(LPCTSTR strSourcePath)
 		}
 		else
 		{
-			m_bErrorStatus = _ERR_ADDRORACCOUNT;		// ERROR »óÅÂ ÀÔ·Â
+			m_bErrorStatus = _ERR_ADDRORACCOUNT;		// ERROR ìƒíƒœ ìž…ë ¥
 		}
 	}
 	CATCH(CInternetException, pEx)
@@ -907,7 +907,7 @@ BYTE CHappyDoc::UploadPatchFile(HINTERNET hConnect, LPPATCHFILE pPatch, int& nSe
 //
 //	m_pPatchProgress = new CDlgPatchProgress();
 //	m_pPatchProgress->Create(IDD_DIALOG_PATCHPROGRESS);
-//	m_pPatchProgress->SetWindowText(_T("PrePatching..."));//ÆÐÄ¡Áß
+//	m_pPatchProgress->SetWindowText(_T("PrePatching..."));//íŒ¨ì¹˜ì¤‘
 //	CPatchList * pPatch = (CPatchList *)GetPatchListView();
 //	CRect rect, rect2;
 //	CPoint point;
@@ -1263,10 +1263,10 @@ void CHappyDoc::OnBnClickedButtonCompare()
 			return;
 
 		CString strMsg;
-		strMsg.Format(_T("Abstracted %d file /%10.2f Kb"), m_vPatchFiles.size(), m_dwPatchSize/1000.0);//%d ÆÄÀÏ/%10.2f Kb°¡ ÃßÃâ µÇ¾ú½À´Ï´Ù.
+		strMsg.Format(_T("Abstracted %d file /%10.2f Kb"), m_vPatchFiles.size(), m_dwPatchSize/1000.0);//%d íŒŒì¼/%10.2f Kbê°€ ì¶”ì¶œ ë˜ì—ˆìŠµë‹ˆë‹¤.
 		AfxMessageBox(strMsg);
 				
-		pFrm->SetPatchBarPatchUpdateVisible(TRUE); // 06/02/01 ¹Ú»ó¿¬ PatchUpdate ¹öÆ° È°¼ºÈ­ ¼ÂÆÃ
+		pFrm->SetPatchBarPatchUpdateVisible(TRUE); // 06/02/01 ë°•ìƒì—° PatchUpdate ë²„íŠ¼ í™œì„±í™” ì…‹íŒ…
 
 		//CopyFileNotZip();
 	}
@@ -1317,16 +1317,16 @@ void CHappyDoc::CopyFileNotZip()
 
 void CHappyDoc::OnBnClickedButtonPatchup()
 {
-	m_bPatchType = 1;	// ÆÐÄ¡
+	m_bPatchType = 1;	// íŒ¨ì¹˜
 	if(m_vPatchFiles.size())
 		OnPatchUpload();
 	else
-		AfxMessageBox("There is no patch file"); //ÆÐÄ¡ÇÒ ÆÄÀÏÀÌ ¾ø½À´Ï´Ù.
+		AfxMessageBox("There is no patch file"); //íŒ¨ì¹˜í•  íŒŒì¼ì´ ì—†ìŠµë‹ˆë‹¤.
 }
 
 void CHappyDoc::OnBnClickedButtonPrepatchup()
 {	
-	m_bPatchType = 2; // preÆÐÄ¡
+	m_bPatchType = 2; // preíŒ¨ì¹˜
 	if(m_vPatchFiles.size())
 		OnPatchUpload();
 	else
@@ -1334,7 +1334,7 @@ void CHappyDoc::OnBnClickedButtonPrepatchup()
 }
 
 ////////////////////////////////////////
-// Çö½Â·æ Graph
+// í˜„ìŠ¹ë£¡ Graph
 BYTE CHappyDoc::GetCurView()
 {	
 	return m_curView;
@@ -1641,7 +1641,7 @@ void CHappyDoc::SavePosListToFile()
 
 void CHappyDoc::CloseAllDialog()
 {
-	// View ¾ò±â
+	// View ì–»ê¸°
 	CHappyView* pView = (CHappyView*)(((CMainFrame *)AfxGetMainWnd())->GetActiveFrame())->GetActiveView();
 	if(pView && pView->m_dlgGMTool)
 	{
@@ -1665,7 +1665,7 @@ void CHappyDoc::ShowRetDlg(BYTE bShow,BYTE bRet,CString str)
 		CString strRet,strName,strMin;
 		if(bRet)
 		{
-			// View ¾ò±â
+			// View ì–»ê¸°
 			CHappyView* pView = (CHappyView*)(((CMainFrame *)AfxGetMainWnd())->GetActiveFrame())->GetActiveView();
 			if(pView && pView->m_dlgGMTool)
 			{
@@ -1793,7 +1793,7 @@ void CHappyDoc::ChangeXListCtrl( DWORD dwCtrlID,int nRow, int nCol, int nCtrlTyp
 {	
     //nCtrlType: 1- EDIT. 2- COMBO. 3- DATA. 4- Check
 
-	// View ¾ò±â
+	// View ì–»ê¸°
 	CHappyView* pView = (CHappyView*)(((CMainFrame *)AfxGetMainWnd())->GetActiveFrame())->GetActiveView();
 	if(!pView || !pView->m_dlgGMTool)
 		return;

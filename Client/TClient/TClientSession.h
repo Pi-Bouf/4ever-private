@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 
 class CTClientSession : public CTachyonSession
@@ -6,7 +6,7 @@ class CTClientSession : public CTachyonSession
 public:
 	BYTE m_bSvrID;
 	BYTE m_bSVR;
-	BYTE m_bLogicalValid; // ³í¸®Àû À¯È¿¼º
+	BYTE m_bLogicalValid; // ë…¼ë¦¬ì  ìœ íš¨ì„±
 
 // Msg Sender
 public:
@@ -471,41 +471,41 @@ public:
 
 	void SendCS_GUILDINFO_REQ();
 
-	// < ±æµå ¿µÅä ¼º / ¼Ò¼Ó Á¡·ÉÁö º¸±â > Á¶°Ç : ±æµå UI³»¿¡¼­
+	// < ê¸¸ë“œ ì˜í†  ì„± / ì†Œì† ì ë ¹ì§€ ë³´ê¸° > ì¡°ê±´ : ê¸¸ë“œ UIë‚´ì—ì„œ
 	void SendCS_GUILDLOCALLIST_REQ();
 
-	// < ±æµå ¼ÒÀ¯ ¿µÅä ±¹°¡ ¹Ý³³ > Á¶°Ç : ±æµå UI³»¿¡¼­
+	// < ê¸¸ë“œ ì†Œìœ  ì˜í†  êµ­ê°€ ë°˜ë‚© > ì¡°ê±´ : ê¸¸ë“œ UIë‚´ì—ì„œ
 	void SendCS_GUILDLOCALRETURN_REQ(
-		WORD wID);		// ¼ÒÀ¯ ¼º (À¯´Ö¾ÆÀÌµð) / Á¡·ÉÁö(·ÎÄÃ¾ÆÀÌµð)
+		WORD wID);		// ì†Œìœ  ì„± (ìœ ë‹›ì•„ì´ë””) / ì ë ¹ì§€(ë¡œì»¬ì•„ì´ë””)
 
-	// < ±æµå Ã¢°í ¸ñ·Ï >
+	// < ê¸¸ë“œ ì°½ê³  ëª©ë¡ >
 	void SendCS_GUILDCABINETLIST_REQ();
 
-	// < ±æµå Ã¢°í ¾ÆÀÌÅÆ ³Ö±â >
+	// < ê¸¸ë“œ ì°½ê³  ì•„ì´íƒ¬ ë„£ê¸° >
 	void SendCS_GUILDCABINETPUTIN_REQ(
-		BYTE bInvenID,	// ÀÚ½ÅÀÇ ÀÎº¥¾ÆÀÌµð
+		BYTE bInvenID,	// ìžì‹ ì˜ ì¸ë²¤ì•„ì´ë””
 		BYTE bItemID,
 		BYTE bCount);
 
-	// < ±æµå Ã¢°í ¾ÆÀÌÅÆ »©±â >
+	// < ê¸¸ë“œ ì°½ê³  ì•„ì´íƒ¬ ë¹¼ê¸° >
 	void SendCS_GUILDCABINETTAKEOUT_REQ(
-		DWORD dwItemID, // ±æµå Ã¢°í¿¡¼­ ¾ÆÀÌÅÆ ¾ÆÀÌµð
+		DWORD dwItemID, // ê¸¸ë“œ ì°½ê³ ì—ì„œ ì•„ì´íƒ¬ ì•„ì´ë””
 		BYTE bCount,
 		BYTE bInvenID,
 		BYTE bItemID);
 
-	// < ±æµå °æÇèÄ¡ / ÀÚ±Ý ±âºÎ >
+	// < ê¸¸ë“œ ê²½í—˜ì¹˜ / ìžê¸ˆ ê¸°ë¶€ >
 	void SendCS_GUILDCONTRIBUTION_REQ(
-		DWORD dwExp,	// °æÇèÄ¡
-		DWORD dwGold,	// µ· (1·éÀÌÇÏ 1·ç³ªÀÌ»ó)
+		DWORD dwExp,	// ê²½í—˜ì¹˜
+		DWORD dwGold,	// ëˆ (1ë£¬ì´í•˜ 1ë£¨ë‚˜ì´ìƒ)
 		DWORD dwSilver,
 		DWORD dwCooper,
 		DWORD dwPvPoint );
 
-	// < ±æµå °øÁö»çÇ× º¸±â > Á¶°Ç : ±æµå UI³»¿¡¼­
+	// < ê¸¸ë“œ ê³µì§€ì‚¬í•­ ë³´ê¸° > ì¡°ê±´ : ê¸¸ë“œ UIë‚´ì—ì„œ
 	void SendCS_GUILDARTICLELIST_REQ();
 
-	// < ±æµå °øÁö»çÇ× µî·Ï/»èÁ¦ > Á¶°Ç : ºÎ±æµåÀå ÀÌ»ó / ±æµå UI³»¿¡¼­
+	// < ê¸¸ë“œ ê³µì§€ì‚¬í•­ ë“±ë¡/ì‚­ì œ > ì¡°ê±´ : ë¶€ê¸¸ë“œìž¥ ì´ìƒ / ê¸¸ë“œ UIë‚´ì—ì„œ
 	void SendCS_GUILDARTICLEADD_REQ(
 		CString strTitle,
 		CString strArticle);
@@ -513,37 +513,37 @@ public:
 	void SendCS_GUILDARTICLEDEL_REQ(
 		DWORD dwID);
 
-	// < ±æµåÀü¿ë ¹®¾ç µî·Ï > Á¶°Ç : ±æµåÀå / ±æµå UI³»¿¡¼­
+	// < ê¸¸ë“œì „ìš© ë¬¸ì–‘ ë“±ë¡ > ì¡°ê±´ : ê¸¸ë“œìž¥ / ê¸¸ë“œ UIë‚´ì—ì„œ
 	void SendCS_GUILDFAME_REQ(
 		DWORD dwFame,
 		DWORD dwFameColor);
 
-	// < ±æµå ¸ðÁý / ¿ëº´´Ü ±¤°í º¸±â >
+	// < ê¸¸ë“œ ëª¨ì§‘ / ìš©ë³‘ë‹¨ ê´‘ê³  ë³´ê¸° >
 	void SendCS_GUILDWANTEDLIST_REQ();
 
 	void SendCS_GUILDWANTEDADD_REQ(
-		DWORD dwID,			// »õ·Î¿Ã¸±¶§-0 / ¼öÁ¤-¾ÆÀÌµð
+		DWORD dwID,			// ìƒˆë¡œì˜¬ë¦´ë•Œ-0 / ìˆ˜ì •-ì•„ì´ë””
 		CString strTitle,
 		CString strText,
 		BYTE bMinLevel,
 		BYTE bMaxLevel);
 
-	// < ±æµå ¸ðÁý / ¿ëº´´Ü ±¤°í ¿Ã¸®±â - Áö¿ì±â > Á¶°Ç : ºÎ±æµåÀå ÀÌ»ó
+	// < ê¸¸ë“œ ëª¨ì§‘ / ìš©ë³‘ë‹¨ ê´‘ê³  ì˜¬ë¦¬ê¸° - ì§€ìš°ê¸° > ì¡°ê±´ : ë¶€ê¸¸ë“œìž¥ ì´ìƒ
 	void SendCS_GUILDWANTEDDEL_REQ(
 		DWORD dwID);
 
-	// < ±æµå ½ÅÃ» Áö¿øº´ ¸ñ·Ï > Á¶°Ç : ±æµå UI³»¿¡¼­ 
+	// < ê¸¸ë“œ ì‹ ì²­ ì§€ì›ë³‘ ëª©ë¡ > ì¡°ê±´ : ê¸¸ë“œ UIë‚´ì—ì„œ 
 	void SendCS_GUILDVOLUNTEERLIST_REQ();
 
 	void SendCS_GUILDVOLUNTEERING_REQ(
-		DWORD dwID);		// ±æµå ¸ðÁý±¤°í ¾ÆÀÌµð
+		DWORD dwID);		// ê¸¸ë“œ ëª¨ì§‘ê´‘ê³  ì•„ì´ë””
 
 	void SendCS_GUILDVOLUNTEERINGDEL_REQ();
     
-	// < ±æµå ¿ëº´ ¸®½ºÆ® > Á¶°Ç : ±æµå UI³»¿¡¼­
+	// < ê¸¸ë“œ ìš©ë³‘ ë¦¬ìŠ¤íŠ¸ > ì¡°ê±´ : ê¸¸ë“œ UIë‚´ì—ì„œ
 	void SendCS_GUILDTACTICSLIST_REQ();
 
-	// < ±æµå ¿ëº´ ÃÊ´ë >
+	// < ê¸¸ë“œ ìš©ë³‘ ì´ˆëŒ€ >
 	void SendCS_GUILDTACTICSINVITE_REQ(
 		CString strName,
 		BYTE bDay,
@@ -561,15 +561,15 @@ public:
 		DWORD dwSilver,
 		DWORD dwCooper );
 
-	// < ±æµå ¿ëº´ ¸ðÁý >
+	// < ê¸¸ë“œ ìš©ë³‘ ëª¨ì§‘ >
 	void SendCS_GUILDTACTICSWANTEDADD_REQ(
-		DWORD dwID,			//»õ·Î¿Ã¸±¶§-0 / ¼öÁ¤-¾ÆÀÌµð
-		CString strTitle,		//Á¦¸ñ
-		CString strText,		//³»¿ë
-		BYTE bDay,			//±â°£
-		BYTE bMinLevel,		//ÃÖ¼Ò·¹º§
-		BYTE bMaxLevel,		//ÃÖ´ë·¹º§
-		DWORD dwPoint,		//°øÀû
+		DWORD dwID,			//ìƒˆë¡œì˜¬ë¦´ë•Œ-0 / ìˆ˜ì •-ì•„ì´ë””
+		CString strTitle,		//ì œëª©
+		CString strText,		//ë‚´ìš©
+		BYTE bDay,			//ê¸°ê°„
+		BYTE bMinLevel,		//ìµœì†Œë ˆë²¨
+		BYTE bMaxLevel,		//ìµœëŒ€ë ˆë²¨
+		DWORD dwPoint,		//ê³µì 
 		DWORD dwGold,
 		DWORD dwSilver,
 		DWORD dwCooper);
@@ -590,7 +590,7 @@ public:
 	void SendCS_GUILDTACTICSKICKOUT_REQ(
 		DWORD dwCharID );
 
-	// < ±æµå °øÁö»çÇ× ¼öÁ¤> Á¶°Ç : ºÎ±æµåÀå ÀÌ»ó / ±æµå UI³»¿¡¼­
+	// < ê¸¸ë“œ ê³µì§€ì‚¬í•­ ìˆ˜ì •> ì¡°ê±´ : ë¶€ê¸¸ë“œìž¥ ì´ìƒ / ê¸¸ë“œ UIë‚´ì—ì„œ
 	void SendCS_GUILDARTICLEUPDATE_REQ(
 		DWORD dwID,
 		CString strTitle,
@@ -678,19 +678,19 @@ public:
 	void SendCS_DEMOUNTGODBALL_REQ(
 		WORD wGodTower);
 
-	// ³»±¸µµ ¼ö¸®
+	// ë‚´êµ¬ë„ ìˆ˜ë¦¬
 	void SendCS_DURATIONREP_REQ(
-		BYTE bNeedCost,		// FALSE:¼ö¸® TRUE:ºñ¿ë¿äÃ»
-		BYTE bType,			// 0:ÀÏ¹Ý¼ö¸®, 1:Àåºñ¼ö¸® 2:ÀüºÎ¼ö¸®
-		BYTE bInven,		// ÀÏ¹Ý¼ö¸®ÀÏ °æ¿ì
+		BYTE bNeedCost,		// FALSE:ìˆ˜ë¦¬ TRUE:ë¹„ìš©ìš”ì²­
+		BYTE bType,			// 0:ì¼ë°˜ìˆ˜ë¦¬, 1:ìž¥ë¹„ìˆ˜ë¦¬ 2:ì „ë¶€ìˆ˜ë¦¬
+		BYTE bInven,		// ì¼ë°˜ìˆ˜ë¦¬ì¼ ê²½ìš°
 		BYTE bItemID,
 		WORD wNpcID,
 		BYTE bInvenIDofOpenCash,
 		BYTE bSlotIDofOpenCash);
 
-	// ³»±¸µµ Á¦·Ã
+	// ë‚´êµ¬ë„ ì œë ¨
 	void SendCS_REFINE_REQ(
-		BYTE bNeedCost,		// FALSE:Á¦·Ã TRUE:ºñ¿ë¿äÃ»
+		BYTE bNeedCost,		// FALSE:ì œë ¨ TRUE:ë¹„ìš©ìš”ì²­
 		BYTE bInven,
 		BYTE bItemID,
 		WORD wNpcID,
@@ -723,7 +723,7 @@ public:
 
 	void SendCS_STOPTHECLOCK_REQ(
 		BYTE bInven,
-		BYTE bItem, //°¡¹æÀÏ °æ¿ì INVALID_SLOT
+		BYTE bItem, //ê°€ë°©ì¼ ê²½ìš° INVALID_SLOT
 		WORD wShopItemID);
 
 	void SendCS_CHECKRELAY_REQ();
@@ -831,7 +831,7 @@ public:
 		CString strName );
 
 	void SendCS_ARENA_REQ(
-		BYTE bCommand, // ( 0:½ÅÃ», 1:³ª°¡±â)
+		BYTE bCommand, // ( 0:ì‹ ì²­, 1:ë‚˜ê°€ê¸°)
 		WORD wNpcID,
 		WORD wArenaID );
 

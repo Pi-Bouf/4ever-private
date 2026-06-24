@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 #include "TClientGame.h"
 
 CTClientMonster::CTClientMonster()
@@ -135,7 +135,7 @@ void CTClientMonster::InitMonster( CD3DDevice *pDevice,
 		m_vTGOAL.y = m_vPosition._42;
 		m_vTGOAL.z = m_vPosition._43;
 
-		// Àº½É°¨Áö ±â´É On/Off (ÀÏ´Ü PC¸¸)
+		// ì€ì‹¬ê°ì§€ ê¸°ëŠ¥ On/Off (ì¼ë‹¨ PCë§Œ)
 		if( m_pMON->m_bCanDetectHidingPC)
 			m_wTDETECT |= (1 << OT_PC);
 	}

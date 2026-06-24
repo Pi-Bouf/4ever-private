@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "TClient.h"
 #include "Curse.h"
 #include "TClientGame.h"
@@ -1888,7 +1888,7 @@ void CTClientSession::SendCS_CHANGETITLE_REQ(WORD wTitleID)
 
 void CTClientSession::SendCS_STOPTHECLOCK_REQ(
 	BYTE bInven,
-	BYTE bItem, //°¡¹æÀÏ °æ¿ì INVALID_SLOT
+	BYTE bItem, //ê°€ë°©ì¼ ê²½ìš° INVALID_SLOT
 	WORD wShopItemID)
 {
 	CPacket vMSG;
@@ -2031,13 +2031,13 @@ void CTClientSession::SendCS_AUCTIONBIDLIST_REQ( LPTAUCTIONFINDINFO pFindInfo )
 }
 
 void CTClientSession::SendCS_GUILDTACTICSWANTEDADD_REQ(
-	DWORD dwID,			//»õ·Î¿Ã¸±¶§-0 / ¼öÁ¤-¾ÆÀÌµğ
-	CString strTitle,		//Á¦¸ñ
-	CString strText,		//³»¿ë
-	BYTE bDay,			//±â°£
-	BYTE bMinLevel,		//ÃÖ¼Ò·¹º§
-	BYTE bMaxLevel,		//ÃÖ´ë·¹º§
-	DWORD dwPoint,		//°øÀû
+	DWORD dwID,			//ìƒˆë¡œì˜¬ë¦´ë•Œ-0 / ìˆ˜ì •-ì•„ì´ë””
+	CString strTitle,		//ì œëª©
+	CString strText,		//ë‚´ìš©
+	BYTE bDay,			//ê¸°ê°„
+	BYTE bMinLevel,		//ìµœì†Œë ˆë²¨
+	BYTE bMaxLevel,		//ìµœëŒ€ë ˆë²¨
+	DWORD dwPoint,		//ê³µì 
 	DWORD dwGold,
 	DWORD dwSilver,
 	DWORD dwCooper)
@@ -2569,7 +2569,7 @@ void CTClientSession::SendCS_MEETINGROOM_REQ(
 }
 
 void CTClientSession::SendCS_ARENA_REQ(
-	BYTE bCommand, // ( 0:½ÅÃ», 1:³ª°¡±â)
+	BYTE bCommand, // ( 0:ì‹ ì²­, 1:ë‚˜ê°€ê¸°)
 	WORD wNpcID,
 	WORD wArenaID )
 {

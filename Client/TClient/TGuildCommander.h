@@ -1,51 +1,51 @@
-#pragma once
+ï»¿#pragma once
 
 class CTGuildCommander
 {
 public:
-	/// ±æµå ±ÇÇÑ ¿­°Å
+	/// ê¸¸ë“œ ê¶Œí•œ ì—´ê±°
 	enum AuthorityEnum
 	{
-		AUTHORITY_MASTER,					///< ±æµåÀå ÀÌ»ó
-		AUTHORITY_SUBMASTER,				///< ºÎ±æµåÀå ÀÌ»ó
-		AUTHORITY_MEMBER,					///< ±æµå¿ø ÀÌ»ó
-		AUTHORITY_NOT_MEMBER,				///< ±æµå¿øÀ» Á¦¿ÜÇÑ ¸ğµÎ
-		AUTHORITY_ALL,						///< Á¦ÇÑ ¾øÀ½( ¸ğµÎ )
+		AUTHORITY_MASTER,					///< ê¸¸ë“œì¥ ì´ìƒ
+		AUTHORITY_SUBMASTER,				///< ë¶€ê¸¸ë“œì¥ ì´ìƒ
+		AUTHORITY_MEMBER,					///< ê¸¸ë“œì› ì´ìƒ
+		AUTHORITY_NOT_MEMBER,				///< ê¸¸ë“œì›ì„ ì œì™¸í•œ ëª¨ë‘
+		AUTHORITY_ALL,						///< ì œí•œ ì—†ìŒ( ëª¨ë‘ )
 		AUTHORITY_COUNT
 	};
 
-	/// ¸í·É ¿­°Å
+	/// ëª…ë ¹ ì—´ê±°
 	enum CmdEnum
 	{
-		CMD_SHOW_GUILDAPPDLG,				///< ±æµå ¸ğÁıÃ¢ ¶ç¿ì±â
-		CMD_INVITE,							///< ±æµå ÃÊ´ë
-		CMD_LEAVE,							///< ±æµå Å»Åğ
-		CMD_KICK,							///< ±æµå¿ø Ãß¹æ
-		CMD_DISORGONIZATION,				///< ±æµå ÇØÃ¼ ½ÅÃ»
-		CMD_DISORGONIZATION_CANCEL,			///< ±æµå ÇØÃ¼ Ãë¼Ò
-		CMD_APPOINTMENT_MASTER,				///< ±æµåÀå À§ÀÓ
-		CMD_APPOINTMENT_SUBMASTER,			///< ºÎ±æµåÀå À§ÀÓ
-		CMD_DISMISS_SUBMASTER,				///< ºÎ±æµåÀå ÇØÀÓ
-		CMD_PEER_CANCEL,					///< ÁÖ¾îÁø ÀÛÀ§¸¦ Ãë¼Ò
-		CMD_PEER_BARON,						///< ³²ÀÛ¿¡ ÀÓ¸í
-		CMD_PEER_VISCOUNT,					///< ÀÚÀÛ¿¡ ÀÓ¸í
-		CMD_PEER_COUNT,						///< ¹éÀÛ¿¡ ÀÓ¸í
-		CMD_PEER_MARQUIS,					///< ÈÄÀÛ¿¡ ÀÓ¸í
-		CMD_PEER_DUKE,						///< °øÀÛ¿¡ ÀÓ¸í
-		CMD_INVITE_TACTICS,					///< ¿ëº´ÃÊ´ë
+		CMD_SHOW_GUILDAPPDLG,				///< ê¸¸ë“œ ëª¨ì§‘ì°½ ë„ìš°ê¸°
+		CMD_INVITE,							///< ê¸¸ë“œ ì´ˆëŒ€
+		CMD_LEAVE,							///< ê¸¸ë“œ íƒˆí‡´
+		CMD_KICK,							///< ê¸¸ë“œì› ì¶”ë°©
+		CMD_DISORGONIZATION,				///< ê¸¸ë“œ í•´ì²´ ì‹ ì²­
+		CMD_DISORGONIZATION_CANCEL,			///< ê¸¸ë“œ í•´ì²´ ì·¨ì†Œ
+		CMD_APPOINTMENT_MASTER,				///< ê¸¸ë“œì¥ ìœ„ì„
+		CMD_APPOINTMENT_SUBMASTER,			///< ë¶€ê¸¸ë“œì¥ ìœ„ì„
+		CMD_DISMISS_SUBMASTER,				///< ë¶€ê¸¸ë“œì¥ í•´ì„
+		CMD_PEER_CANCEL,					///< ì£¼ì–´ì§„ ì‘ìœ„ë¥¼ ì·¨ì†Œ
+		CMD_PEER_BARON,						///< ë‚¨ì‘ì— ì„ëª…
+		CMD_PEER_VISCOUNT,					///< ìì‘ì— ì„ëª…
+		CMD_PEER_COUNT,						///< ë°±ì‘ì— ì„ëª…
+		CMD_PEER_MARQUIS,					///< í›„ì‘ì— ì„ëª…
+		CMD_PEER_DUKE,						///< ê³µì‘ì— ì„ëª…
+		CMD_INVITE_TACTICS,					///< ìš©ë³‘ì´ˆëŒ€
 		CMD_COUNT
 	};
 
-	/// ±âºÎ Á¾·ù
+	/// ê¸°ë¶€ ì¢…ë¥˜
 	enum DonateEnum
 	{
-		DON_NONE,							///< ±âºÎ°¡ ¾Æ´Ô
-		DON_EXP,							///< °æÇèÄ¡ ±âºÎ
-		DON_MONEY,							///< ÀÚ±İ ±âºÎ
-		DON_PVP,							///< °øÀû ±âºÎ
+		DON_NONE,							///< ê¸°ë¶€ê°€ ì•„ë‹˜
+		DON_EXP,							///< ê²½í—˜ì¹˜ ê¸°ë¶€
+		DON_MONEY,							///< ìê¸ˆ ê¸°ë¶€
+		DON_PVP,							///< ê³µì  ê¸°ë¶€
 	};
 
-	/// Áö¿øÀÚ °»½Å Å¸ÀÔ
+	/// ì§€ì›ì ê°±ì‹  íƒ€ì…
 	enum VolunUpdateType
 	{
 		VUT_NONE,
@@ -54,36 +54,36 @@ public:
 		VUT_COUNT
 	};
 
-	/// ±æµå¿¡ ´ëÇÑ »ó¼¼ Á¤º¸
+	/// ê¸¸ë“œì— ëŒ€í•œ ìƒì„¸ ì •ë³´
 	struct GuildDetInfo
 	{
-		DWORD				m_dwGuildID;			///< ±æµå ¾ÆÀÌµğ
-		CString				m_strGName;				///< ±æµå¸í
-		//CString				m_strGDate;				///< ±æµå °³¼³ ÀÏ
+		DWORD				m_dwGuildID;			///< ê¸¸ë“œ ì•„ì´ë””
+		CString				m_strGName;				///< ê¸¸ë“œëª…
+		//CString				m_strGDate;				///< ê¸¸ë“œ ê°œì„¤ ì¼
 		INT64					m_ldwGDate;
-		CString				m_strGMaster;			///< ±æµåÀå
-		BYTE				m_bGMasterPeer;			///< ±æµåÀå ÀÛÀ§
-		CString				m_strGSubMaster1;		///< ºÎ ±æµåÀå1
-		CString				m_strGSubMaster2;		///< ºÎ ±æµåÀå2
-		WORD				m_nGMbCnt;				///< ±æµå¿øÀÇ ¼ö (ÇöÀç ¼ö)
-		WORD				m_nGMbMax;				///< ±æµå¿øÀÇ ¼ö (ÃÖ´ë °¡´É ¼ö)
-		BYTE				m_nGLev;				///< ±æµå ·¹º§
-		DWORD				m_dwGExpCur;			///< ±æµå °æÇèÄ¡ (ÇöÀç ¼öÄ¡)
-		DWORD				m_dwGExpMax;			///< ±æµå °æÇèÄ¡ (´ÙÀ½ ·¹º§¾÷ ¼öÄ¡)
-		CString				m_strGKind;				///< ±æµå Á¾·ù
-		BYTE				m_bMyDuty;				///< ³ªÀÇ Á÷À§
-		DWORD				m_nGRune;				///< ±æµå ÀÚ±İ (·é)
-		DWORD				m_nGLuna;				///< ±æµå ÀÚ±İ (·ç³ª)
-		DWORD				m_nGCron;				///< ±æµå ÀÚ±İ (Å©·Ğ)
-		BYTE				m_bMyPeerage;			///< ³ªÀÇ ÀÛÀ§
-		BYTE				m_bMyService;			///< ³ªÀÇ ±æµå °øÇåµµ
-		BOOL				m_bShowMark;			///< ±æµå ¸¶Å© Ç¥½Ã ¿©ºÎ
-		BYTE				m_bMark;				///< ±æµå ¸¶Å©
-		BYTE				m_bMarkBack;			///< ±æµå ¸¶Å© ¹è°æ
-		BYTE				m_bMarkColor;			///< ±æµå ¸¶Å© »ö
-		BYTE				m_bMarkBackColor1;		///< ±æµå ¸¶Å© ¹è°æ »ö
-		BYTE				m_bMarkBackColor2;		///< ±æµå ¸¶Å© ¹è°æ »ö
-		CString				m_strNotify;			///< ±æµå °øÁö»çÇ×
+		CString				m_strGMaster;			///< ê¸¸ë“œì¥
+		BYTE				m_bGMasterPeer;			///< ê¸¸ë“œì¥ ì‘ìœ„
+		CString				m_strGSubMaster1;		///< ë¶€ ê¸¸ë“œì¥1
+		CString				m_strGSubMaster2;		///< ë¶€ ê¸¸ë“œì¥2
+		WORD				m_nGMbCnt;				///< ê¸¸ë“œì›ì˜ ìˆ˜ (í˜„ì¬ ìˆ˜)
+		WORD				m_nGMbMax;				///< ê¸¸ë“œì›ì˜ ìˆ˜ (ìµœëŒ€ ê°€ëŠ¥ ìˆ˜)
+		BYTE				m_nGLev;				///< ê¸¸ë“œ ë ˆë²¨
+		DWORD				m_dwGExpCur;			///< ê¸¸ë“œ ê²½í—˜ì¹˜ (í˜„ì¬ ìˆ˜ì¹˜)
+		DWORD				m_dwGExpMax;			///< ê¸¸ë“œ ê²½í—˜ì¹˜ (ë‹¤ìŒ ë ˆë²¨ì—… ìˆ˜ì¹˜)
+		CString				m_strGKind;				///< ê¸¸ë“œ ì¢…ë¥˜
+		BYTE				m_bMyDuty;				///< ë‚˜ì˜ ì§ìœ„
+		DWORD				m_nGRune;				///< ê¸¸ë“œ ìê¸ˆ (ë£¬)
+		DWORD				m_nGLuna;				///< ê¸¸ë“œ ìê¸ˆ (ë£¨ë‚˜)
+		DWORD				m_nGCron;				///< ê¸¸ë“œ ìê¸ˆ (í¬ë¡ )
+		BYTE				m_bMyPeerage;			///< ë‚˜ì˜ ì‘ìœ„
+		BYTE				m_bMyService;			///< ë‚˜ì˜ ê¸¸ë“œ ê³µí—Œë„
+		BOOL				m_bShowMark;			///< ê¸¸ë“œ ë§ˆí¬ í‘œì‹œ ì—¬ë¶€
+		BYTE				m_bMark;				///< ê¸¸ë“œ ë§ˆí¬
+		BYTE				m_bMarkBack;			///< ê¸¸ë“œ ë§ˆí¬ ë°°ê²½
+		BYTE				m_bMarkColor;			///< ê¸¸ë“œ ë§ˆí¬ ìƒ‰
+		BYTE				m_bMarkBackColor1;		///< ê¸¸ë“œ ë§ˆí¬ ë°°ê²½ ìƒ‰
+		BYTE				m_bMarkBackColor2;		///< ê¸¸ë“œ ë§ˆí¬ ë°°ê²½ ìƒ‰
+		CString				m_strNotify;			///< ê¸¸ë“œ ê³µì§€ì‚¬í•­
 		DWORD			m_dwPvPTotalPoint;
 		DWORD			m_dwPvPUseablePoint;
 		DWORD			m_dwMonthPoint;
@@ -101,26 +101,26 @@ public:
 		GuildDetInfo();
 	};
 
-	/// ±æµå¿ø
+	/// ê¸¸ë“œì›
 	struct GuildMember
 	{
-		DWORD m_dwCharID;				///< Ä³¸¯ÅÍ ¾ÆÀÌµğ
-		CString m_strName;				///< Ä³¸¯ÅÍ ÀÌ¸§
-		BYTE m_bLevel;				///< ·¹º§
-		BYTE m_bClassID;				///< Á÷¾÷
-		BYTE m_bDuty;				///< Á÷À§
-		BYTE m_bPeer;				///< ÀÛÀ§
-		BYTE m_bIsConnect;			///< Á¢¼Ó¿©ºÎ
-		DWORD m_dwRegion;				///< À§Ä¡
+		DWORD m_dwCharID;				///< ìºë¦­í„° ì•„ì´ë””
+		CString m_strName;				///< ìºë¦­í„° ì´ë¦„
+		BYTE m_bLevel;				///< ë ˆë²¨
+		BYTE m_bClassID;				///< ì§ì—…
+		BYTE m_bDuty;				///< ì§ìœ„
+		BYTE m_bPeer;				///< ì‘ìœ„
+		BYTE m_bIsConnect;			///< ì ‘ì†ì—¬ë¶€
+		DWORD m_dwRegion;				///< ìœ„ì¹˜
 		WORD m_wCastle;
 		BYTE m_bCamp;
-		DWORD m_dwTactics;		///< ´Ù¸¥ ±æµå ¿ëº´ÀÎ°¡?
+		DWORD m_dwTactics;		///< ë‹¤ë¥¸ ê¸¸ë“œ ìš©ë³‘ì¸ê°€?
 		BYTE m_bWarCountry;
 		INT64 m_dlConnectedDate;
 	};
 	typedef std::vector<GuildMember>	GuildMemberVec;
 
-	/// ±æµå ¿ëº´
+	/// ê¸¸ë“œ ìš©ë³‘
 	struct GuildTactics
 	{
 		DWORD m_dwCharID;
@@ -131,37 +131,37 @@ public:
 		DWORD m_dwPoint;
 		INT64 m_dlMoney;
 		INT64 m_dlEndTime;
-		DWORD m_dwGotPoint; // °è¾à±â°£µ¿¾È ¾òÀº °øÀû Æ÷ÀÎÆ®
+		DWORD m_dwGotPoint; // ê³„ì•½ê¸°ê°„ë™ì•ˆ ì–»ì€ ê³µì  í¬ì¸íŠ¸
 		DWORD m_dwRegion;
 		WORD m_wCastle;
 		BYTE m_bCamp;
 	};
 	typedef std::vector<GuildTactics>	GuildTacticsVec;
 
-	/// ±æµå °øÁö»çÇ×
+	/// ê¸¸ë“œ ê³µì§€ì‚¬í•­
 	struct GuildNotify
 	{
-		DWORD				m_dwID;					///< ¾ÆÀÌµğ	
-		BYTE				m_bDuty;				///< °øÁö ÀÛ¼ºÀÚ ±ÇÇÑ
-		CString				m_strTitle;				///< °øÁö Å¸ÀÌÆ²
-		CString				m_strAuthor;			///< °øÁö ÀÛ¼ºÀÚ
-		CString				m_strText;				///< °øÁö ³»¿ë
-		CString				m_strDate;				///< ÀÛ¼ºÀÏ
+		DWORD				m_dwID;					///< ì•„ì´ë””	
+		BYTE				m_bDuty;				///< ê³µì§€ ì‘ì„±ì ê¶Œí•œ
+		CString				m_strTitle;				///< ê³µì§€ íƒ€ì´í‹€
+		CString				m_strAuthor;			///< ê³µì§€ ì‘ì„±ì
+		CString				m_strText;				///< ê³µì§€ ë‚´ìš©
+		CString				m_strDate;				///< ì‘ì„±ì¼
 	};
 	typedef std::vector<GuildNotify>	GuildNotifyVec;
 
-	/// ±æµå Áö¿øÀÚ Á¤º¸
+	/// ê¸¸ë“œ ì§€ì›ì ì •ë³´
 	struct GuildVolunteer
 	{
 		DWORD m_dwCharID;
 		CString m_strName;
 		BYTE m_bLevel;
 		BYTE m_bClass;
-		DWORD m_dwRegion; // ÇöÀçÀ§Ä¡
+		DWORD m_dwRegion; // í˜„ì¬ìœ„ì¹˜
 	};
 	typedef std::vector<GuildVolunteer>	GuildVolunteerVec;
 
-	/// ¿ëº´ Áö¿øÀÚ Á¤º¸
+	/// ìš©ë³‘ ì§€ì›ì ì •ë³´
 	struct GuildTacticsVolunteer
 	{
 		DWORD m_dwCharID;
@@ -177,7 +177,7 @@ public:
 	};
 	typedef std::vector<GuildTacticsVolunteer> GuildTacticsVolunteerVec;
 
-	/// ±æµå ±¸ÀÎ Á¤º¸
+	/// ê¸¸ë“œ êµ¬ì¸ ì •ë³´
 	struct GuildOffer
 	{
 		//DWORD m_dwID;
@@ -192,7 +192,7 @@ public:
 	};
 	typedef std::vector<GuildOffer>		GuildOfferVec;
 
-	/// ±æµå ±¸Á÷ Á¤º¸
+	/// ê¸¸ë“œ êµ¬ì§ ì •ë³´
 	struct GuildTacticsOffer
 	{
 		DWORD m_dwID;
@@ -212,33 +212,33 @@ public:
 	};
 	typedef std::vector<GuildTacticsOffer>		GuildTacticsOfferVec;
 
-	/// Áö¿ª Á¡·ÉÁö Á¤º¸
+	/// ì§€ì—­ ì ë ¹ì§€ ì •ë³´
 	struct LocalTerritory
 	{
 		WORD				m_wCastleID;
-		WORD				m_wLocalID;				///< Á¡·ÉÁö¾ÆÀÌµğ
-		CString				m_strLocalName;			///< Á¡·ÉÁöÀÌ¸§
-		DWORD				m_dwGuildID;			///< Á¡·É ±æµå
-		CString				m_strGuildName;			///< Á¡·É ±æµå ÀÌ¸§
-		BYTE				m_bCountry;				///< ¼Ò¼Ó ±¹°¡
+		WORD				m_wLocalID;				///< ì ë ¹ì§€ì•„ì´ë””
+		CString				m_strLocalName;			///< ì ë ¹ì§€ì´ë¦„
+		DWORD				m_dwGuildID;			///< ì ë ¹ ê¸¸ë“œ
+		CString				m_strGuildName;			///< ì ë ¹ ê¸¸ë“œ ì´ë¦„
+		BYTE				m_bCountry;				///< ì†Œì† êµ­ê°€
 		__int64			m_dNextWar;
 		CString			m_strHeroName;
 		BYTE				m_bStatus;
 	};
 	typedef std::vector<LocalTerritory>	LocalTerritoryVec;
 
-	/// Á¡·ÉÁö Á¤º¸
+	/// ì ë ¹ì§€ ì •ë³´
 	struct Territory
 	{
-		WORD m_wCastleID;			///< ¼º¾ÆÀÌµğ
-		CString m_strCastleName;		///< ¼ºÀÌ¸§
-		BYTE m_bCanApplyCastle;		///< ¼º Áö¿ø°¡´É	//°ø¼ºÀü
-		DWORD m_dwGuildID;			///< Á¡·É ±æµå
-		CString m_strGuildName;			///< Á¡·É ±æµå ÀÌ¸§
-		BYTE m_bCountry;				///< ¼Ò¼Ó ±¹°¡
-		INT64 m_dlNextWar;			///< ´ÙÀ½ °ø¼º ½Ã°£	//°ø¼ºÀü
-		CString m_strHero;				///< °ø¼º ¿µ¿õ		//°ø¼ºÀü
-		CString m_strAtkGuild;			///< °ø°İÃø ±æµå	//°ø¼ºÀü
+		WORD m_wCastleID;			///< ì„±ì•„ì´ë””
+		CString m_strCastleName;		///< ì„±ì´ë¦„
+		BYTE m_bCanApplyCastle;		///< ì„± ì§€ì›ê°€ëŠ¥	//ê³µì„±ì „
+		DWORD m_dwGuildID;			///< ì ë ¹ ê¸¸ë“œ
+		CString m_strGuildName;			///< ì ë ¹ ê¸¸ë“œ ì´ë¦„
+		BYTE m_bCountry;				///< ì†Œì† êµ­ê°€
+		INT64 m_dlNextWar;			///< ë‹¤ìŒ ê³µì„± ì‹œê°„	//ê³µì„±ì „
+		CString m_strHero;				///< ê³µì„± ì˜ì›…		//ê³µì„±ì „
+		CString m_strAtkGuild;			///< ê³µê²©ì¸¡ ê¸¸ë“œ	//ê³µì„±ì „
 		CString m_strDefGuild;
 		WORD m_wDefGuildPoint;
 		WORD m_wDefCountryPoint;
@@ -249,9 +249,9 @@ public:
 		WORD m_wMyGuildPoint;
 		BYTE m_bStatus;
 		
-		LocalTerritoryVec	m_vLocals;				///< ¼Ò¼ÓµÈ Á¡·ÉÁö ¸®½ºÆ®
-		VTOP3 m_vDTop3s; //µåÇÁ°Ö Å¾3
-		VTOP3 m_vCTop3s; //Å©¶ô½Ã¿Â Å¾3
+		LocalTerritoryVec	m_vLocals;				///< ì†Œì†ëœ ì ë ¹ì§€ ë¦¬ìŠ¤íŠ¸
+		VTOP3 m_vDTop3s; //ë“œí”„ê²” íƒ‘3
+		VTOP3 m_vCTop3s; //í¬ë½ì‹œì˜¨ íƒ‘3
 	};
 	typedef std::vector<Territory>		TerritoryVec;
 
@@ -259,14 +259,14 @@ public:
 	{
 		WORD m_wMissionID;
 		CString m_strMission;
-		BYTE m_bCountry;				///< ¼Ò¼Ó ±¹°¡
+		BYTE m_bCountry;				///< ì†Œì† êµ­ê°€
 		CTime m_NextWar;
 		BYTE m_bStatus;
 	};
 	typedef std::vector<Mission>		MissionVec;
 	Mission m_SkyGarden;
 
-	/// ÆË¾÷ ¹öÆ° Á¤º¸
+	/// íŒì—… ë²„íŠ¼ ì •ë³´
 	struct PopupBtnInfo
 	{
 		DWORD			m_dwTXT;
@@ -301,238 +301,238 @@ public:
 	};
 	typedef std::vector<GuildWeekPvP> GuildWeekPvPVec;
 
-	/// ¸í·É¿¡ µû¸¥ ±ÇÇÑ ¹è¿­
+	/// ëª…ë ¹ì— ë”°ë¥¸ ê¶Œí•œ ë°°ì—´
 	static const DWORD CMD_AUTHORITY[];
-	/// ¸í·É¿¡ µû¸¥ ¹®ÀÚ¿­ ¹è¿­
+	/// ëª…ë ¹ì— ë”°ë¥¸ ë¬¸ìì—´ ë°°ì—´
 	static const DWORD CMD_STRING[];
-	/// ¸í·É¿¡ ´ëÇÑ »ó¼¼ ¹®ÀÚ¿­ ¹è¿­
+	/// ëª…ë ¹ì— ëŒ€í•œ ìƒì„¸ ë¬¸ìì—´ ë°°ì—´
 	static const DWORD CMD_DESC_STRING[];
 
 public:
-	/// ±æµå Ä¿¸Çµå ÀÎ½ºÅÏ½º¸¦ ¾ò´Â´Ù.
+	/// ê¸¸ë“œ ì»¤ë§¨ë“œ ì¸ìŠ¤í„´ìŠ¤ë¥¼ ì–»ëŠ”ë‹¤.
 	static CTGuildCommander* GetInstance();
 
-	/// Ã¤ÆÃ ¸Ş½ÃÁö¿¡ ÀÇÇÑ ±æµå ¸í·É ÀÌº¥Æ®¸¦ Ã³¸®ÇÑ´Ù.
+	/// ì±„íŒ… ë©”ì‹œì§€ì— ì˜í•œ ê¸¸ë“œ ëª…ë ¹ ì´ë²¤íŠ¸ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	static CString OnGuildCmdByChatMsg(const CString& strCMD, const VECTORSTRING& vPARAM, DWORD dwUSER);
-	/// Ã¤ÆÃ ¸Ş½ÃÁö Ä¿¸Çµå¸¦ µî·ÏÇÑ´Ù.
+	/// ì±„íŒ… ë©”ì‹œì§€ ì»¤ë§¨ë“œë¥¼ ë“±ë¡í•œë‹¤.
 	static void RegChatCmds();
 
-	/// ÁöÀ§¿¡ µû¸¥ ¹®ÀÚ¿­À» ¾ò´Â´Ù.
+	/// ì§€ìœ„ì— ë”°ë¥¸ ë¬¸ìì—´ì„ ì–»ëŠ”ë‹¤.
 	static CString GetDutyStr(BYTE bDuty);
-	/// ÀÛÀ§¿¡ µû¸¥ ¹®ÀÚ¿­À» ¾ò´Â´Ù.
+	/// ì‘ìœ„ì— ë”°ë¥¸ ë¬¸ìì—´ì„ ì–»ëŠ”ë‹¤.
 	static CString GetPeerageStr(BYTE bPeer);
 	
 public:
-	DWORD				m_dwInviterID;			///< ³ª¸¦ ÃÊ´ëÇÑ »ç¶÷ÀÇ ¾ÆÀÌµğ
-	BOOL				m_bDisorgCancel;		///< ±æµå ÇØÃ¼ Ãë¼ÒÀÎÁö ½ÅÃ»ÀÎÁö ¿©ºÎ
-	DonateEnum			m_eCurDonMode;			///< ÇöÀç ±âºÎ »óÅÂ
-	VolunUpdateType		m_eCurVolunUpdate;		///< Áö¿øÀÚ °»½Å Å¸ÀÔ
-	CString				m_strKickTarget;		///< ±æµå Ãß¹æ Å¸°Ù
-	DWORD				m_dwKickTarget;		///< ±æµå Ãß¹æ Å¸°Ù ¾ÆÀÌµğ
-	CString				m_strTacticsInviter;	///< ³ª¸¦ ¿ëº´À¸·Î ÃÊ´ëÇÑ »ç¶÷
+	DWORD				m_dwInviterID;			///< ë‚˜ë¥¼ ì´ˆëŒ€í•œ ì‚¬ëŒì˜ ì•„ì´ë””
+	BOOL				m_bDisorgCancel;		///< ê¸¸ë“œ í•´ì²´ ì·¨ì†Œì¸ì§€ ì‹ ì²­ì¸ì§€ ì—¬ë¶€
+	DonateEnum			m_eCurDonMode;			///< í˜„ì¬ ê¸°ë¶€ ìƒíƒœ
+	VolunUpdateType		m_eCurVolunUpdate;		///< ì§€ì›ì ê°±ì‹  íƒ€ì…
+	CString				m_strKickTarget;		///< ê¸¸ë“œ ì¶”ë°© íƒ€ê²Ÿ
+	DWORD				m_dwKickTarget;		///< ê¸¸ë“œ ì¶”ë°© íƒ€ê²Ÿ ì•„ì´ë””
+	CString				m_strTacticsInviter;	///< ë‚˜ë¥¼ ìš©ë³‘ìœ¼ë¡œ ì´ˆëŒ€í•œ ì‚¬ëŒ
 
-	GuildDetInfo		m_GuildDetInfo;			///< ±æµå »ó¼¼ Á¤º¸
-	GuildMemberVec		m_GuildMemberVec;		///< ±æµå¿ø ¸®½ºÆ®
-	GuildTacticsVec		m_GuildTacticsVec;		///< ¿ëº´ ¸®½ºÆ®
-	GuildNotifyVec		m_GuildNotifyVec;		///< °øÁö»çÇ× ¸®½ºÆ®
-	GuildLatestPvPVec	m_GuildLatestPvPVec;	///< ÃÖ±ÙÀüÅõ±â¿©µµ
-	GuildWeekPvPVec	m_GuildWeekPvPVec; ///< ÁÖ°£ÀüÅõ±â¿©µµ
+	GuildDetInfo		m_GuildDetInfo;			///< ê¸¸ë“œ ìƒì„¸ ì •ë³´
+	GuildMemberVec		m_GuildMemberVec;		///< ê¸¸ë“œì› ë¦¬ìŠ¤íŠ¸
+	GuildTacticsVec		m_GuildTacticsVec;		///< ìš©ë³‘ ë¦¬ìŠ¤íŠ¸
+	GuildNotifyVec		m_GuildNotifyVec;		///< ê³µì§€ì‚¬í•­ ë¦¬ìŠ¤íŠ¸
+	GuildLatestPvPVec	m_GuildLatestPvPVec;	///< ìµœê·¼ì „íˆ¬ê¸°ì—¬ë„
+	GuildWeekPvPVec	m_GuildWeekPvPVec; ///< ì£¼ê°„ì „íˆ¬ê¸°ì—¬ë„
 
-	GuildVolunteerVec	m_GuildVolunteerVec;	///< ±æµåÁö¿øº´ ¸®½ºÆ®
-	GuildTacticsVolunteerVec	m_TacticsVolunteerVec;	///< ¿ëº´Áö¿øÀÚ ¸®½ºÆ®
+	GuildVolunteerVec	m_GuildVolunteerVec;	///< ê¸¸ë“œì§€ì›ë³‘ ë¦¬ìŠ¤íŠ¸
+	GuildTacticsVolunteerVec	m_TacticsVolunteerVec;	///< ìš©ë³‘ì§€ì›ì ë¦¬ìŠ¤íŠ¸
 
-	GuildOfferVec		m_GuildOfferVec;		///< ±æµå ±¸ÀÎ ¸®½ºÆ®
-	GuildTacticsOfferVec		m_GuildTacticsOfferVec;			///< ±æµå ±¸Á÷ ¸®½ºÆ®
+	GuildOfferVec		m_GuildOfferVec;		///< ê¸¸ë“œ êµ¬ì¸ ë¦¬ìŠ¤íŠ¸
+	GuildTacticsOfferVec		m_GuildTacticsOfferVec;			///< ê¸¸ë“œ êµ¬ì§ ë¦¬ìŠ¤íŠ¸
 
-	TerritoryVec		m_TerritoryVec;			///< Á¡·ÉÁö¿ª Á¤º¸
+	TerritoryVec		m_TerritoryVec;			///< ì ë ¹ì§€ì—­ ì •ë³´
 	MissionVec		m_MissionVec;
 
 public:
-	/// ±æµå °ü·Ã ¸í·ÉÀ» ³»¸°´Ù.
+	/// ê¸¸ë“œ ê´€ë ¨ ëª…ë ¹ì„ ë‚´ë¦°ë‹¤.
 	void DoGuildCommand(CmdEnum eCmd, const CString& strParam="");
 
 	GuildMember* FindGuildMemberByID( DWORD dwCharID );
 
 public:
-	/// ±æµå ÇØÃ¼/Ã¢¼³ °ü·Ã
+	/// ê¸¸ë“œ í•´ì²´/ì°½ì„¤ ê´€ë ¨
 	// -----------------------------------------------------------------------------------------
-	/// ±æµå Ã¢¼³ ÀÀ´ä ¸Ş½ÃÁö¸¦ Ã³¸®ÇÑ´Ù.
+	/// ê¸¸ë“œ ì°½ì„¤ ì‘ë‹µ ë©”ì‹œì§€ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	void RecvGuildEstablish(BYTE bResult, DWORD dwGuildID, const CString& strGuild);
 	
-	/// ±æµå ÇØÃ¼ ½ÅÃ»/Ãë¼Ò ¸Ş½ÃÁö¸¦ Ã³¸®ÇÑ´Ù.
+	/// ê¸¸ë“œ í•´ì²´ ì‹ ì²­/ì·¨ì†Œ ë©”ì‹œì§€ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	void RecvGuildDisorganization(BYTE bResult);
-	/// ±æµå ÇØÃ¼ ½ÅÃ»/Ãë¼Ò ¸¦ º¸³½´Ù.
+	/// ê¸¸ë“œ í•´ì²´ ì‹ ì²­/ì·¨ì†Œ ë¥¼ ë³´ë‚¸ë‹¤.
 	void RequestGuildDisorganization(BOOL bCancel);
 
-	/// ±æµå ÃÊ´ë/°¡ÀÔ/Å»Åğ °ü·Ã
+	/// ê¸¸ë“œ ì´ˆëŒ€/ê°€ì…/íƒˆí‡´ ê´€ë ¨
 	// -----------------------------------------------------------------------------------------
-	/// ±æµå ÃÊ´ë ¸Ş½ÃÁö¸¦ Ã³¸®ÇÑ´Ù.
+	/// ê¸¸ë“œ ì´ˆëŒ€ ë©”ì‹œì§€ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	void RecvGuildInvite(BYTE bResult, DWORD dwInviterID, const CString& strInviter, const CString& strGuild);
-    /// ±æµå ÃÊ´ë¿¡ ´ëÇÑ ÀÀ´äÀ» º¸³½´Ù.
+    /// ê¸¸ë“œ ì´ˆëŒ€ì— ëŒ€í•œ ì‘ë‹µì„ ë³´ë‚¸ë‹¤.
 	void RequestGuildInviteAnswer(BYTE bReply);
-	/// ÁÖ¾îÁø ÇÃ·¹ÀÌ¾î¸¦ ±æµå·Î ÃÊ´ëÇÑ´Ù.
+	/// ì£¼ì–´ì§„ í”Œë ˆì´ì–´ë¥¼ ê¸¸ë“œë¡œ ì´ˆëŒ€í•œë‹¤.
 	void RequestGuildInvite(const CString& strTarget);
 
-	/// ±æµå °¡ÀÔ ¸Ş½ÃÁö¸¦ Ã³¸®ÇÑ´Ù.
+	/// ê¸¸ë“œ ê°€ì… ë©”ì‹œì§€ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	void RecvGuildJoin(BYTE bResult, DWORD dwGuildID, const CString& strGuild, DWORD dwNewMemberID, const CString& strNewMember, BYTE bMax);
 	
-	/// ±æµå Å»Åğ ¸Ş½ÃÁö¸¦ Ã³¸®ÇÑ´Ù.
+	/// ê¸¸ë“œ íƒˆí‡´ ë©”ì‹œì§€ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	void RecvGuildLeave(BYTE bResult, const CString& strTarget, BYTE bReason);
 	/**
-		Æ¯Á¤ ±æµå¿ø Ãß¹æÀ» ¿äÃ»ÇÑ´Ù.
+		íŠ¹ì • ê¸¸ë“œì› ì¶”ë°©ì„ ìš”ì²­í•œë‹¤.
 
-		@param strTarget	Ãß¹æÇÏ°íÀÚ ÇÏ´Â ±æµå¿øÀÇ ÀÌ¸§.
-		@param bWarn		Ãß¹æÀü¿¡ °æ°í ¸Ş½ÃÁö¸¦ ¶ç¿ïÁö ¿©ºÎ.
+		@param strTarget	ì¶”ë°©í•˜ê³ ì í•˜ëŠ” ê¸¸ë“œì›ì˜ ì´ë¦„.
+		@param bWarn		ì¶”ë°©ì „ì— ê²½ê³  ë©”ì‹œì§€ë¥¼ ë„ìš¸ì§€ ì—¬ë¶€.
 	*/
 	void RequestGuildKickOut(const CString& strTarget, BOOL bWarn);
 	void RequestGuildTacticsKickOut(const CString& strTarget, DWORD dwTarget, BYTE bWarn);
-	/// ÇöÀç ±æµå¿¡¼­ ³ª°£´Ù,
+	/// í˜„ì¬ ê¸¸ë“œì—ì„œ ë‚˜ê°„ë‹¤,
 	void RequestGuildLeave();
 
-	/// ±æµå ±ÇÇÑ °ü·Ã
+	/// ê¸¸ë“œ ê¶Œí•œ ê´€ë ¨
 	// -----------------------------------------------------------------------------------------
-	/// ±æµåÀå ÀÓ¸í ¸Ş½ÃÁö¸¦ Ã³¸®ÇÑ´Ù.
+	/// ê¸¸ë“œì¥ ì„ëª… ë©”ì‹œì§€ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	void RecvGuildDuty(BYTE bResult, const CString& strTarget, BYTE bDuty);
-	/// ÁÖ¾îÁø ±æµå¿øÀÇ Á÷À§¸¦ º¯°æÇÑ´Ù.
+	/// ì£¼ì–´ì§„ ê¸¸ë“œì›ì˜ ì§ìœ„ë¥¼ ë³€ê²½í•œë‹¤.
 	void RequestGuildDuty(const CString& strTarget, BYTE bDuty);
 
-	/// ±æµå ÀÛÀ§ º¯°æ ¸Ş½ÃÁö¸¦ Ã³¸®ÇÑ´Ù.
+	/// ê¸¸ë“œ ì‘ìœ„ ë³€ê²½ ë©”ì‹œì§€ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	void RecvGuildPeer(BYTE bResult, const CString& strTarget, BYTE bPeer, BYTE bOldPeer);
-	/// ÁÖ¾îÁø ±æµå¿øÀÇ ÀÛÀ§¸¦ º¯°æÇÑ´Ù.
+	/// ì£¼ì–´ì§„ ê¸¸ë“œì›ì˜ ì‘ìœ„ë¥¼ ë³€ê²½í•œë‹¤.
 	void RequestGuildPeer(const CString& strTarget, BYTE bPeer);
 
-	/// ±æµå Á¤º¸ °ü·Ã
+	/// ê¸¸ë“œ ì •ë³´ ê´€ë ¨
 	// -----------------------------------------------------------------------------------------
-	/// ±æµå°ü·Ã »óÅÂ º¯°æ ¸Ş½ÃÁö¸¦ Ã³¸®ÇÑ´Ù.
+	/// ê¸¸ë“œê´€ë ¨ ìƒíƒœ ë³€ê²½ ë©”ì‹œì§€ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	void RecvGuildAttr( DWORD dwPlayerID, DWORD dwGuildID, const CString& strGuildName, 
 						BYTE bGuildPeer,  DWORD dwTacticsID, const CString& strTacticsName,
 						CTClientGuildMark* pGuildMark );
 
-	/// ±æµå »ó¼¼ Á¤º¸¸¦ ¾ò´Â´Ù.
+	/// ê¸¸ë“œ ìƒì„¸ ì •ë³´ë¥¼ ì–»ëŠ”ë‹¤.
 	GuildDetInfo& GetGuildDetInfo() { return m_GuildDetInfo; }
 
-	/// ±æµå »ó¼¼ Á¤º¸ º¯°æ ¸Ş½ÃÁö¸¦ Ã³¸®ÇÑ´Ù.
+	/// ê¸¸ë“œ ìƒì„¸ ì •ë³´ ë³€ê²½ ë©”ì‹œì§€ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	void RecvGuildDetInfo(const GuildDetInfo& info);
-	/// ±æµå »ó¼¼ Á¤º¸¸¦ ¿äÃ»ÇÑ´Ù.
+	/// ê¸¸ë“œ ìƒì„¸ ì •ë³´ë¥¼ ìš”ì²­í•œë‹¤.
 	void RequestGuildDetInfo();
-	/// ±æµå ¸â¹ö ¸®½ºÆ® º¯°æ ¸Ş½ÃÁö¸¦ Ã³¸®ÇÑ´Ù.
+	/// ê¸¸ë“œ ë©¤ë²„ ë¦¬ìŠ¤íŠ¸ ë³€ê²½ ë©”ì‹œì§€ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	void RecvGuildMemberList(GuildMemberVec* pMembers);
-	/// ±æµå ¿ëº´ ¸®½ºÆ® º¯°æ ¸Ş½ÃÁö¸¦ Ã³¸®ÇÑ´Ù.
+	/// ê¸¸ë“œ ìš©ë³‘ ë¦¬ìŠ¤íŠ¸ ë³€ê²½ ë©”ì‹œì§€ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	void RecvGuildTacticsList(GuildTacticsVec* pMembers);
 
-	/// ±æµå ±âºÎ °ü·Ã
+	/// ê¸¸ë“œ ê¸°ë¶€ ê´€ë ¨
 	// -----------------------------------------------------------------------------------------
-	/// ±æµå ±âºÎ ¸Ş½ÃÁö¸¦ Ã³¸®ÇÑ´Ù.
+	/// ê¸¸ë“œ ê¸°ë¶€ ë©”ì‹œì§€ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	void RecvGuildDonation(BYTE bResult);
-	/// ±æµå °æÇèÄ¡ ±âºÎ¸¦ ¿äÃ»ÇÑ´Ù.
+	/// ê¸¸ë“œ ê²½í—˜ì¹˜ ê¸°ë¶€ë¥¼ ìš”ì²­í•œë‹¤.
 	void RequestGuildDonationExp(DWORD dwEXP);
-	/// ±æµå ÀÚ±İ ±âºÎ¸¦ ¿äÃ»ÇÑ´Ù.
+	/// ê¸¸ë“œ ìê¸ˆ ê¸°ë¶€ë¥¼ ìš”ì²­í•œë‹¤.
 	void RequestGuildDonationMoney(DWORD dwRune,DWORD dwLuna,DWORD dwCron);
-	/// ±æµå °øÀû ±âºÎ¸¦ ¿äÃ»ÇÑ´Ù.
+	/// ê¸¸ë“œ ê³µì  ê¸°ë¶€ë¥¼ ìš”ì²­í•œë‹¤.
 	void RequestGuildDonationPVP(DWORD dwPVP);
 
-	/// °øÁö»çÇ× °ü·Ã
+	/// ê³µì§€ì‚¬í•­ ê´€ë ¨
 	// -----------------------------------------------------------------------------------------
-	/// ±æµå °ø½Ã»çÇ× ¸®½ºÆ® º¯°æ ¸Ş½ÃÁö¸¦ Ã³¸®ÇÑ´Ù.
+	/// ê¸¸ë“œ ê³µì‹œì‚¬í•­ ë¦¬ìŠ¤íŠ¸ ë³€ê²½ ë©”ì‹œì§€ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	void RecvGuildNotifyList(GuildNotifyVec* pNotVec);
-	/// ±æµå °øÁö»çÇ× Á¤º¸¸¦ ¿äÃ»ÇÑ´Ù.
+	/// ê¸¸ë“œ ê³µì§€ì‚¬í•­ ì •ë³´ë¥¼ ìš”ì²­í•œë‹¤.
 	void RequestGuildNotifyList();
 	
-	/// ±æµå °øÁö»çÇ×ÀÇ Ãß°¡¸¦ ¿äÃ»ÇÑ´Ù.
+	/// ê¸¸ë“œ ê³µì§€ì‚¬í•­ì˜ ì¶”ê°€ë¥¼ ìš”ì²­í•œë‹¤.
 	void RequestGuildNewNotify(const CString& strTitle, const CString& strArticle);
-	/// ±æµå °øÁö»çÇ×ÀÇ »èÁ¦¸¦ ¿äÃ»ÇÑ´Ù.
+	/// ê¸¸ë“œ ê³µì§€ì‚¬í•­ì˜ ì‚­ì œë¥¼ ìš”ì²­í•œë‹¤.
 	void RequestGuildDelNotify(DWORD dwID);
-	/// ±æµå °øÁö»çÇ×ÀÇ ¼öÁ¤À» ¿äÃ»ÇÑ´Ù.
+	/// ê¸¸ë“œ ê³µì§€ì‚¬í•­ì˜ ìˆ˜ì •ì„ ìš”ì²­í•œë‹¤.
 	void RequestGuildModNotify(DWORD dwID, const CString& strTitle, const CString& strArticle);
 
-	/// ±æµå Áö¿øÀÚÀÇ ¸®½ºÆ® °»½Å ¸Ş½ÃÁö¸¦ Ã³¸®ÇÑ´Ù.
+	/// ê¸¸ë“œ ì§€ì›ìì˜ ë¦¬ìŠ¤íŠ¸ ê°±ì‹  ë©”ì‹œì§€ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	void RecvTacticsVolunteerList(GuildVolunteerVec* pVol);
 
-	/// Áö¿øÀÚ »èÁ¦ ¸Ş½ÃÁö¸¦ Ã³¸®ÇÑ´Ù.
+	/// ì§€ì›ì ì‚­ì œ ë©”ì‹œì§€ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	void RecvDeleteVolunteer(BYTE bResult);
-	/// ÁÖ¾îÁø Ä³¸¯ÅÍ¸¦ Áö¿øÀÚ ¸®½ºÆ®¿¡¼­ »èÁ¦ÇÑ´Ù.
+	/// ì£¼ì–´ì§„ ìºë¦­í„°ë¥¼ ì§€ì›ì ë¦¬ìŠ¤íŠ¸ì—ì„œ ì‚­ì œí•œë‹¤.
 	void RequestDeleteVolunteer(DWORD dwCharID);
 
-	/// ±æµå ¸¶Å© °ü·Ã
+	/// ê¸¸ë“œ ë§ˆí¬ ê´€ë ¨
 	// -----------------------------------------------------------------------------------------
-	/// »õ·Î¿î ±æµå ¸¶Å© µî·ÏÀ» ¿äÃ»ÇÑ´Ù.
+	/// ìƒˆë¡œìš´ ê¸¸ë“œ ë§ˆí¬ ë“±ë¡ì„ ìš”ì²­í•œë‹¤.
 	void RequestGuildMarkReg(CTClientGuildMark* pMark);
 
-	/// Á¡·ÉÁö °ü·Ã
+	/// ì ë ¹ì§€ ê´€ë ¨
 	// -----------------------------------------------------------------------------------------
-	/// Á¡·ÉÁö ¸®½ºÆ® ¸Ş½ÃÁö¸¦ Ã³¸®ÇÑ´Ù.
+	/// ì ë ¹ì§€ ë¦¬ìŠ¤íŠ¸ ë©”ì‹œì§€ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	void RecvTerritoryList(TerritoryVec* pTerr);
-	/// Á¡·ÉÁö °ü·Ã ¸®½ºÆ®¸¦ ¼­¹ö¿¡ ¿äÃ»ÇÑ´Ù.
+	/// ì ë ¹ì§€ ê´€ë ¨ ë¦¬ìŠ¤íŠ¸ë¥¼ ì„œë²„ì— ìš”ì²­í•œë‹¤.
 	void RequestTerritoryList();
 
-	/// ¿ëº´ ÃÊ´ë °ü·Ã (±æµå±¸ÀÎº¸°í ½ÅÃ»ÇÑ »ç¶÷)
+	/// ìš©ë³‘ ì´ˆëŒ€ ê´€ë ¨ (ê¸¸ë“œêµ¬ì¸ë³´ê³  ì‹ ì²­í•œ ì‚¬ëŒ)
 	// -----------------------------------------------------------------------------------------
-	/// ÁÖ¾îÁø ÇÃ·¹ÀÌ¾î¸¦ ¿ëº´À¸·Î ÃÊ´ëÇÑ´Ù.
+	/// ì£¼ì–´ì§„ í”Œë ˆì´ì–´ë¥¼ ìš©ë³‘ìœ¼ë¡œ ì´ˆëŒ€í•œë‹¤.
 	void RequestTacticsOfferInvite(const CString& strName);
-	/// ¿ëº´ ÃÊ´ë °ü·Ã (±æµå±¸Á÷À» ÅëÇÑ ±İ¾×Á¦½Ã)
+	/// ìš©ë³‘ ì´ˆëŒ€ ê´€ë ¨ (ê¸¸ë“œêµ¬ì§ì„ í†µí•œ ê¸ˆì•¡ì œì‹œ)
 	// -----------------------------------------------------------------------------------------
-	/// ¿ëº´ ÃÊ´ë ¸Ş½ÃÁö¸¦ Ã³¸®ÇÑ´Ù.
+	/// ìš©ë³‘ ì´ˆëŒ€ ë©”ì‹œì§€ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	void RecvTacticsSeekInvite( const CString& strGuild, const CString& strInviter,
 								DWORD dwRune, DWORD dwLuna, DWORD dwCron);
-	/// ÁÖ¾îÁø ÇÃ·¹ÀÌ¾î¸¦ ¿ëº´À¸·Î ÃÊ´ëÇÑ´Ù.
+	/// ì£¼ì–´ì§„ í”Œë ˆì´ì–´ë¥¼ ìš©ë³‘ìœ¼ë¡œ ì´ˆëŒ€í•œë‹¤.
 	void RequestTacticsSeekInvite(DWORD dwID, DWORD dwRune, DWORD dwLuna, DWORD dwCron);
 
-	/// ¿ëº´ °ü·Ã
+	/// ìš©ë³‘ ê´€ë ¨
 	// -----------------------------------------------------------------------------------------
-	/// ¿ëº´ Å»Åğ ¸Ş½ÃÁö¸¦ Ã³¸®ÇÑ´Ù.
+	/// ìš©ë³‘ íƒˆí‡´ ë©”ì‹œì§€ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	void RecvTacticsLeave(BYTE bResult);
-	/// ¿ëº´ Å»Åğ¸¦ ¿äÃ»ÇÑ´Ù.
+	/// ìš©ë³‘ íƒˆí‡´ë¥¼ ìš”ì²­í•œë‹¤.
 	void RequestTacticsLeave();
 
 public:
-	/// ±æµå ¸â¹ö¸¦ Á¤·ÄÇÑ´Ù.
+	/// ê¸¸ë“œ ë©¤ë²„ë¥¼ ì •ë ¬í•œë‹¤.
 	void SortGuildMember();
-	/// ¿ëº´À» Á¤·ÄÇÑ´Ù.
+	/// ìš©ë³‘ì„ ì •ë ¬í•œë‹¤.
 	void SortTactics();
-	/// ÃÖ±ÙÀüÅõ±â¿©µµ
+	/// ìµœê·¼ì „íˆ¬ê¸°ì—¬ë„
 	void SortLatestPVP();
-	/// ÁÖ°£ÀüÅõ±â¿©µµ
+	/// ì£¼ê°„ì „íˆ¬ê¸°ì—¬ë„
 	void SortWeekPVP();
 
 public:
-	/// ÁÖ¾îÁø ÀÎµ¦½ºÀÇ ±æµå¿ø Á¤º¸¸¦ ¾ò´Â´Ù.
+	/// ì£¼ì–´ì§„ ì¸ë±ìŠ¤ì˜ ê¸¸ë“œì› ì •ë³´ë¥¼ ì–»ëŠ”ë‹¤.
 	const GuildMember& GetGuildMember(size_t nIndex) { return m_GuildMemberVec[nIndex]; }
-	/// ÁÖ¾îÁø ÀÎµ¦½ºÀÇ ±æµå¿ø Á¤º¸¸¦ ¾ò´Â´Ù.
+	/// ì£¼ì–´ì§„ ì¸ë±ìŠ¤ì˜ ê¸¸ë“œì› ì •ë³´ë¥¼ ì–»ëŠ”ë‹¤.
 	GuildMember* GetGuildMemberPtr(size_t nIndex)	{ return &m_GuildMemberVec[nIndex]; }
-	/// ÀüÃ¼ ±æµå¿ø ¼ö¸¦ ¾ò´Â´Ù.
+	/// ì „ì²´ ê¸¸ë“œì› ìˆ˜ë¥¼ ì–»ëŠ”ë‹¤.
 	size_t GetCountGuildMember() { return m_GuildMemberVec.size(); }
 
-	/// ÁÖ¾îÁø ÀÎµ¦½ºÀÇ ¿ëº´ Á¤º¸¸¦ ¾ò´Â´Ù.
+	/// ì£¼ì–´ì§„ ì¸ë±ìŠ¤ì˜ ìš©ë³‘ ì •ë³´ë¥¼ ì–»ëŠ”ë‹¤.
 	GuildTactics* GetTacticsPtr(size_t nIndex) { return &m_GuildTacticsVec[nIndex]; }
-	/// ÀüÃ¼ ¿ëº´ÀÇ ¼ö¸¦ ¾ò´Â´Ù.
+	/// ì „ì²´ ìš©ë³‘ì˜ ìˆ˜ë¥¼ ì–»ëŠ”ë‹¤.
 	size_t GetCountTactics() { return m_GuildTacticsVec.size(); }
 
-	///< ÃÖ±ÙÀüÅõ±â¿©µµ
+	///< ìµœê·¼ì „íˆ¬ê¸°ì—¬ë„
 	const GuildLatestPvP& GetGuildLatestPvP(size_t nIndex) const	{ return m_GuildLatestPvPVec[nIndex]; }
 
-	///< ÁÖ°£ÀüÅõ±â¿©µµ
+	///< ì£¼ê°„ì „íˆ¬ê¸°ì—¬ë„
 	const GuildWeekPvP& GetGuildWeekPvP(size_t nIndex) const	{ return m_GuildWeekPvPVec[nIndex]; }
 
-	/// ÁÖ¾îÁø ÀÎµ¦½ºÀÇ °øÁöÁ¤º¸¸¦ ¾ò´Â´Ù.
+	/// ì£¼ì–´ì§„ ì¸ë±ìŠ¤ì˜ ê³µì§€ì •ë³´ë¥¼ ì–»ëŠ”ë‹¤.
 	const GuildNotify& GetGuildNotify(size_t nIndex) const	{ return m_GuildNotifyVec[nIndex]; }
-	/// ÀüÃ¼ °øÁö»çÇ×ÀÇ ¼ö¸¦ ¾ò´Â´Ù.
+	/// ì „ì²´ ê³µì§€ì‚¬í•­ì˜ ìˆ˜ë¥¼ ì–»ëŠ”ë‹¤.
 	size_t GetCountGuildNotify() const { return m_GuildNotifyVec.size(); }
 
-	/// ÇöÀç Áö¿øÀÚ °»½Å »óÅÂ¸¦ ¾ò´Â´Ù.
+	/// í˜„ì¬ ì§€ì›ì ê°±ì‹  ìƒíƒœë¥¼ ì–»ëŠ”ë‹¤.
 	VolunUpdateType GetCurVolunUpdate() const { return m_eCurVolunUpdate; }
 
-	/// ÁÖ¾îÁø ÀÎµ¦½ºÀÇ Á¡·ÉÁöÁ¤º¸¸¦ ¾ò´Â´Ù.
+	/// ì£¼ì–´ì§„ ì¸ë±ìŠ¤ì˜ ì ë ¹ì§€ì •ë³´ë¥¼ ì–»ëŠ”ë‹¤.
 	Territory& GetTerritory(size_t nIndex) { return m_TerritoryVec[nIndex]; }
-	/// ÀüÃ¼ Á¡·ÉÁöÀÇ ¼ö¸¦ ¾ò´Â´Ù.
+	/// ì „ì²´ ì ë ¹ì§€ì˜ ìˆ˜ë¥¼ ì–»ëŠ”ë‹¤.
 	size_t GetCountTerritory() const	{ return m_TerritoryVec.size(); }
 
 
 
 
-		///< ÃÖ±ÙÀüÅõ±â¿©µµ
+		///< ìµœê·¼ì „íˆ¬ê¸°ì—¬ë„
 	GuildLatestPvP* GetGuildLatestPvPbyID(DWORD dwCharID);	
 
-	///< ÁÖ°£ÀüÅõ±â¿©µµ
+	///< ì£¼ê°„ì „íˆ¬ê¸°ì—¬ë„
 	GuildWeekPvP* GetGuildWeekPvPbyID(DWORD dwCharID);
 protected:
 	CTGuildCommander();

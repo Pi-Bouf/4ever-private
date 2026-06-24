@@ -1,24 +1,24 @@
-#pragma once
+ï»¿#pragma once
 #include "afxwin.h"
 #include "afxcmn.h"
 
 
 
-// CItemChgState ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CItemChgState ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 class CItemChgState : public CDialog
 {
 	DECLARE_DYNAMIC(CItemChgState)
 
 public:
-	CItemChgState(CWnd* pParent = NULL);   // Ç¥ÁØ »ı¼ºÀÚÀÔ´Ï´Ù.
+	CItemChgState(CWnd* pParent = NULL);   // í‘œì¤€ ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CItemChgState();
 
-// ´ëÈ­ »óÀÚ µ¥ÀÌÅÍÀÔ´Ï´Ù.
+// ëŒ€í™” ìƒì ë°ì´í„°ì…ë‹ˆë‹¤.
 	enum { IDD = IDD_ITEMSTATE };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 public:

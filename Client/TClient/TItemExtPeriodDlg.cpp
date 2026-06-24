@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "TItemExtPeriodDlg.h"
 #include "Resource.h"
 #include "TClientGame.h"
@@ -24,13 +24,13 @@ CTItemExtPeriodDlg::~CTItemExtPeriodDlg()
 // ====================================================================================================
 
 // ====================================================================================================
-// ÀÌ ¸Þ¼Òµå´Â ¾ÆÀÌÅÛÀ» ½½·Ô¿¡ ¿Ã¸±¶§ À¯È¿ÇÑ ¾ÆÀÌÅÛÀÎ°¡¸¦ ÆÇº°ÇØÁÖ´Â ¸Þ¼ÒµåÀÌ´Ù.
+// ì´ ë©”ì†Œë“œëŠ” ì•„ì´í…œì„ ìŠ¬ë¡¯ì— ì˜¬ë¦´ë•Œ ìœ íš¨í•œ ì•„ì´í…œì¸ê°€ë¥¼ íŒë³„í•´ì£¼ëŠ” ë©”ì†Œë“œì´ë‹¤.
 BOOL CTItemExtPeriodDlg::CheckItem(BYTE bSlotID, CTClientItem* pClientItem) const
 {
 	LPTITEM pItem = pClientItem->GetTITEM();
 
-	// ±â°£¿¬ÀåÀÌ Çã¿ëµÇÁö ¾Ê´Â ¾ÆÀÌÅÛÀ» °É·Á³»´Â µî... ÀÌ·± Á¶°Ç¹® ´ÙÀ½°ú °°ÀÌ Ã³¸®ÇÑ´Ù.
-	// ¸ðµç ½½·ÔÀÇ ¾ÆÀÌÅÛ¿¡ °øÅëµÈ Á¶°Ç
+	// ê¸°ê°„ì—°ìž¥ì´ í—ˆìš©ë˜ì§€ ì•ŠëŠ” ì•„ì´í…œì„ ê±¸ë ¤ë‚´ëŠ” ë“±... ì´ëŸ° ì¡°ê±´ë¬¸ ë‹¤ìŒê³¼ ê°™ì´ ì²˜ë¦¬í•œë‹¤.
+	// ëª¨ë“  ìŠ¬ë¡¯ì˜ ì•„ì´í…œì— ê³µí†µëœ ì¡°ê±´
 	/*if( pClientItem->CanGamble() )
 	{
 		m_strLastError = CTChart::LoadString( TSTR_ITEM_ERR_GAMBLE);
@@ -43,7 +43,7 @@ BOOL CTItemExtPeriodDlg::CheckItem(BYTE bSlotID, CTClientItem* pClientItem) cons
 		return FALSE;
 	}*/
 
-	switch( bSlotID ) // ½½·Ôº° ¾ÆÀÌÅÛ Á¶°Ç °Ë»ç
+	switch( bSlotID ) // ìŠ¬ë¡¯ë³„ ì•„ì´í…œ ì¡°ê±´ ê²€ì‚¬
 	{
 	case TARGET_SLOT	:
 		if( pClientItem->GetEndTime() == 0 )

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "TCharInfoNewPVPDlg.h"
 #include "TClientGame.h"
 #include "TCharInfoNewInner.h"
@@ -237,20 +237,20 @@ void CTCharDuelsDlg::ResetData(
 	m_pHL_TITLE->m_strText = CString(" ");
 	m_pHR_TITLE->m_strText = CString(" ");
 
-	// ÃÑÀüÀû
+	// ì´ì „ì 
 	m_pH_COL[0][0]->m_strText = CTChart::LoadString( TSTR_CHARPVP_TOTAL_RECORD );
 	m_pH_VALUE[0][0]->m_strText.Format( "%d", dwTotalWin + dwTotalLose );
 
-	// ½Â·ü
+	// ìŠ¹ë¥ 
 	m_pH_COL[0][1]->m_strText = CTChart::LoadString( TSTR_CHARPVP_POFV );
 	m_pH_VALUE[0][1]->m_strText.Format( "%.0f%%",
 		dwTotalWin ? FLOAT(dwTotalWin) / FLOAT(dwTotalWin + dwTotalLose) * 100.0f : 0 );
 
-	// ½Â
+	// ìŠ¹
 	m_pH_COL[1][0]->m_strText = CTChart::LoadString( TSTR_CHARPVP_WIN );
 	m_pH_VALUE[1][0]->m_strText.Format( "%d", dwTotalWin );
 
-	// ÆÐ
+	// íŒ¨
 	m_pH_COL[1][1]->m_strText = CTChart::LoadString( TSTR_CHARPVP_LOSE );
 	m_pH_VALUE[1][1]->m_strText.Format( "%d", dwTotalLose );
 

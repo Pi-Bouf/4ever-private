@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  *	CUdpSocket.h
  *
  */
@@ -25,13 +25,13 @@ private:
 
 	SOCKADDR_IN  m_ReceivAddr;
 	
-	HANDLE		m_hReadEventCompleted;				// IO READ ¿Ï·áµÇ¾úÀ½À» ¾Ë¸²
-	HANDLE		m_hReadCompletedThread;				// IO ¿Ï·áµÈÈÄ Ã³¸®ÇÏ´Â Thread
+	HANDLE		m_hReadEventCompleted;				// IO READ ì™„ë£Œë˜ì—ˆìŒì„ ì•Œë¦¼
+	HANDLE		m_hReadCompletedThread;				// IO ì™„ë£Œëœí›„ ì²˜ë¦¬í•˜ëŠ” Thread
 
 	HANDLE		m_hWorkTickThread;					// DB Connection Check
 	HANDLE		m_hWorkTickEvent;					
-													// ±×·¸Áö ¾ÊÀ» °æ¿ì´Â ´Ù¸¥ ÀÛ¾÷ Ã³¸®
-	CXPtrList	m_listReadCompleted;				// ¿Ï·áµÈ IO Å¥, Ã³¸®¸¦ ±â´Ù¸°´Ù.
+													// ê·¸ë ‡ì§€ ì•Šì„ ê²½ìš°ëŠ” ë‹¤ë¥¸ ì‘ì—… ì²˜ë¦¬
+	CXPtrList	m_listReadCompleted;				// ì™„ë£Œëœ IO í, ì²˜ë¦¬ë¥¼ ê¸°ë‹¤ë¦°ë‹¤.
 
 	char		*m_lpRecvBuf;
 	char		*m_lpSendBuf;

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 class CTGuildJoinNewDlg: public ITInnerFrame
 {
 public:
@@ -26,7 +26,7 @@ public:
 		GTVI_COUNT
 	};
 
-	/// ÆË¾÷ ¹öÆ° Á¤º¸
+	/// íŒì—… ë²„íŠ¼ ì •ë³´
 	enum PopupMenu
 	{
 		GVFPM_MAIL=0,

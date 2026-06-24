@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 class CTNormalCabinetDlg;
 class CTCabinetSlot;
@@ -38,15 +38,15 @@ public:
 	virtual ~CTCabinetItem();
 };
 
-/// º¸°üÇÔ ±¸ÇöÀ» À§ÇÑ º£ÀÌ½º ÀÎÅÍÆäÀÌ½º Å¬·¡½º
+/// ë³´ê´€í•¨ êµ¬í˜„ì„ ìœ„í•œ ë² ì´ìŠ¤ ì¸í„°í˜ì´ìŠ¤ í´ë˜ìŠ¤
 class CTCabinetDlg : public CTClientUIBase
 {
 public:
 	enum CABUPDATE_STATE
 	{
-		CABUPDATE_NOTYET,		///< ¾ÆÁ÷ º¸°üÇÔ¿¡ ´ëÇÑ ¾Æ¹«·± Á¤º¸µµ °¡Áö°í ÀÖÁö ¾ÊÀ½
-		CABUPDATE_DOING,		///< º¸°üÇÔ Á¤º¸¸¦ ¾ò¾î¿À´ÂÁß
-		CABUPDATE_COMPLETE,		///< º¸°üÇÔ Á¤º¸¸¦ ¾ò¾î¿ÔÀ½
+		CABUPDATE_NOTYET,		///< ì•„ì§ ë³´ê´€í•¨ì— ëŒ€í•œ ì•„ë¬´ëŸ° ì •ë³´ë„ ê°€ì§€ê³  ìˆì§€ ì•ŠìŒ
+		CABUPDATE_DOING,		///< ë³´ê´€í•¨ ì •ë³´ë¥¼ ì–»ì–´ì˜¤ëŠ”ì¤‘
+		CABUPDATE_COMPLETE,		///< ë³´ê´€í•¨ ì •ë³´ë¥¼ ì–»ì–´ì™”ìŒ
 	};
 
 	struct Cabinet
@@ -67,10 +67,10 @@ public:
 protected:
 	CABUPDATE_STATE	m_nCabUpdateSt;
 
-	INT				m_nMaxItemSlot;		///< ÀüÃ¼ ¾ÆÀÌÅÛ ½½·ÔÀÇ ¼ö
-	INT				m_nMaxItemCol;		///< ¾ÆÀÌÅÛ °¡·Î ½½·ÔÀÇ ¼ö
-	INT				m_nMaxCabCnt;		///< º¸°üÇÔÀÇ ¼ö
-	INT				m_nMaxStorage;		///< ÇÑ º¸°üÇÔ¿¡ ÀúÀåÇÒ ¼ö ÀÖ´Â ÃÖ´ë ¾ÆÀÌÅÛ ¼ö
+	INT				m_nMaxItemSlot;		///< ì „ì²´ ì•„ì´í…œ ìŠ¬ë¡¯ì˜ ìˆ˜
+	INT				m_nMaxItemCol;		///< ì•„ì´í…œ ê°€ë¡œ ìŠ¬ë¡¯ì˜ ìˆ˜
+	INT				m_nMaxCabCnt;		///< ë³´ê´€í•¨ì˜ ìˆ˜
+	INT				m_nMaxStorage;		///< í•œ ë³´ê´€í•¨ì— ì €ì¥í•  ìˆ˜ ìˆëŠ” ìµœëŒ€ ì•„ì´í…œ ìˆ˜
 
 	TComponent*		m_pTitle;
 	TComponent*		m_pSelectTxt;
@@ -87,68 +87,68 @@ protected:
 
 public:
 	/**
-		ÇÏÀ§ Å¬·¡½º´Â ÀÌ Å¬·¡½º¿¡ ´ÙÀ½ ¸â¹öµéÀ» ¹İµå½Ã ±¸ÃàÇØ ÁÖ¾î¾ß ÇÑ´Ù.
+		í•˜ìœ„ í´ë˜ìŠ¤ëŠ” ì´ í´ë˜ìŠ¤ì— ë‹¤ìŒ ë©¤ë²„ë“¤ì„ ë°˜ë“œì‹œ êµ¬ì¶•í•´ ì£¼ì–´ì•¼ í•œë‹¤.
 
-		m_nMaxItemSlot	: ¾ÆÀÌÅÛ ½½·ÔÀÇ ÀüÃ¼ °¹¼ö
-		m_nMaxItemCol	: ¾ÆÀÌÅÛ ½½·ÔÀÇ °¡·Î °¹¼ö
-		m_nMaxCabCnt	: º¸°üÇÔ °¹¼ö
-		m_pTitle		: Å¸ÀÌÆ²
-		m_pSelectTxt	: ¼±ÅÃ
-		m_pCostTxt		: ºñ¿ë
-		m_ppOpenBtn		: º¸°üÇÔ ¹øÈ£ ¼±ÅÃ ¹öÆ°
-		m_pCabinets		: º¸°üÇÔ ¹øÈ£ Á¤º¸
+		m_nMaxItemSlot	: ì•„ì´í…œ ìŠ¬ë¡¯ì˜ ì „ì²´ ê°¯ìˆ˜
+		m_nMaxItemCol	: ì•„ì´í…œ ìŠ¬ë¡¯ì˜ ê°€ë¡œ ê°¯ìˆ˜
+		m_nMaxCabCnt	: ë³´ê´€í•¨ ê°¯ìˆ˜
+		m_pTitle		: íƒ€ì´í‹€
+		m_pSelectTxt	: ì„ íƒ
+		m_pCostTxt		: ë¹„ìš©
+		m_ppOpenBtn		: ë³´ê´€í•¨ ë²ˆí˜¸ ì„ íƒ ë²„íŠ¼
+		m_pCabinets		: ë³´ê´€í•¨ ë²ˆí˜¸ ì •ë³´
 	*/
 	virtual void SetupComponent() = 0;
 
-	/// º¸°üÇÔ ÀÎÅÍÆäÀÌ½º¸¦ ÃÊ±âÈ­ÇÑ´Ù.
+	/// ë³´ê´€í•¨ ì¸í„°í˜ì´ìŠ¤ë¥¼ ì´ˆê¸°í™”í•œë‹¤.
 	virtual void Initial();
 
-	/// º¸°üÇÔÀ» È­¸é¿¡ Ç¥½ÃÇÏµµ·Ï ¿äÃ»ÇÑ´Ù.
+	/// ë³´ê´€í•¨ì„ í™”ë©´ì— í‘œì‹œí•˜ë„ë¡ ìš”ì²­í•œë‹¤.
 	virtual void RequestShowComponent() = 0;
 
-	/// ÇØ´ç º¸°üÇÔÀÇ ¿­¸² ´İÈûÀ» ¼³Á¤ÇÑ´Ù.
+	/// í•´ë‹¹ ë³´ê´€í•¨ì˜ ì—´ë¦¼ ë‹«í˜ì„ ì„¤ì •í•œë‹¤.
 	virtual void SetCabinetInfo(UINT nCab, BOOL bOpen);
 
-	/// ÁÖ¾îÁø º¸°üÇÔÀ» ¼±ÅÃÇÑ´Ù.
+	/// ì£¼ì–´ì§„ ë³´ê´€í•¨ì„ ì„ íƒí•œë‹¤.
 	virtual BOOL SelectCab(UINT nCab);
 
-	/// ÁÖ¾îÁø º¸°üÇÔÀ» ºñ¿î´Ù.
+	/// ì£¼ì–´ì§„ ë³´ê´€í•¨ì„ ë¹„ìš´ë‹¤.
 	virtual void Clear(UINT nCab);
-	/// ÀüÃ¼ º¸°üÇÔÀ» ºñ¿î´Ù.
+	/// ì „ì²´ ë³´ê´€í•¨ì„ ë¹„ìš´ë‹¤.
 	virtual void ClearAll();
 
-	/// º¸°üÇÔÀ» °»½ÅÇÑ´Ù.
+	/// ë³´ê´€í•¨ì„ ê°±ì‹ í•œë‹¤.
 	virtual void Update(DWORD dwTick);
 
-	/// ÇØ´ç º¸°üÇÔÀ» ¿­±âÀ§ÇÑ °¡°İÀ» ¾ò´Â´Ù.
+	/// í•´ë‹¹ ë³´ê´€í•¨ì„ ì—´ê¸°ìœ„í•œ ê°€ê²©ì„ ì–»ëŠ”ë‹¤.
 	virtual INT64 GetCabOpenCost(UINT nCab);
-	/// ÇØ´ç º¸°üÇÔÀ» ÀÌ¿ëÇÏ±â À§ÇÑ °¡°İÀ» ¾ò´Â´Ù.
+	/// í•´ë‹¹ ë³´ê´€í•¨ì„ ì´ìš©í•˜ê¸° ìœ„í•œ ê°€ê²©ì„ ì–»ëŠ”ë‹¤.
 	virtual INT64 GetCabUseCost(UINT nCab);
 
 public:
-	/// º¸°üÇÔÀÇ Á¤º¸ °»½ÅÀÌ ¿Ï·áµÇ¾ú´Ù°í ¼³Á¤ÇÑ´Ù.
+	/// ë³´ê´€í•¨ì˜ ì •ë³´ ê°±ì‹ ì´ ì™„ë£Œë˜ì—ˆë‹¤ê³  ì„¤ì •í•œë‹¤.
 	void CompleteCabUpdate();
-	/// ÁÖ¾îÁø º¸°üÇÔÀÇ Á¤º¸ °»½ÅÀÌ ¿Ï·áµÇ¾ú´Ù°í ¼³Á¤ÇÑ´Ù.
+	/// ì£¼ì–´ì§„ ë³´ê´€í•¨ì˜ ì •ë³´ ê°±ì‹ ì´ ì™„ë£Œë˜ì—ˆë‹¤ê³  ì„¤ì •í•œë‹¤.
 	void CompleteCabinetUpdate(UINT nCab);
 
-	/// ÁÖ¾îÁø º¸°üÇÔ¿¡ ¾ÆÀÌÅÛÀ» Ãß°¡ÇÑ´Ù.
+	/// ì£¼ì–´ì§„ ë³´ê´€í•¨ì— ì•„ì´í…œì„ ì¶”ê°€í•œë‹¤.
 	virtual BOOL AddItem(UINT nCab, CTCabinetItem* pItem);
-	/// ÁÖ¾îÁø º¸°üÇÔ¿¡¼­ ¾ÆÀÌÅÛÀ» »èÁ¦ÇÑ´Ù.
+	/// ì£¼ì–´ì§„ ë³´ê´€í•¨ì—ì„œ ì•„ì´í…œì„ ì‚­ì œí•œë‹¤.
 	VOID DeleteItem(UINT nCab, DWORD dwCabintItemID);
-	/// StID ¸¦ °¡Áö°í º¸°üÇÔ¿¡¼­ ¾ÆÀÌÅÛÀ» Ã£´Â´Ù.
+	/// StID ë¥¼ ê°€ì§€ê³  ë³´ê´€í•¨ì—ì„œ ì•„ì´í…œì„ ì°¾ëŠ”ë‹¤.
 	CTCabinetItem* GetCabItemByStID(UINT nCab, DWORD dwStItemID);
-	/// ÇöÀç ¼±ÅÃµÈ ¾ÆÀÌÅÛÀ» ¾ò´Â´Ù.
+	/// í˜„ì¬ ì„ íƒëœ ì•„ì´í…œì„ ì–»ëŠ”ë‹¤.
 	CTCabinetItem* GetSelectCabItem();
 
-	/// ÇöÀç ¼±ÅÃµÈ º¸°üÇÔÀ» ¾ò´Â´Ù.
+	/// í˜„ì¬ ì„ íƒëœ ë³´ê´€í•¨ì„ ì–»ëŠ”ë‹¤.
 	UINT GetSelectCab() const;
 
-	/// º¸°üÇÔÀÇ ¿ë·®À» ¼³Á¤ÇÑ´Ù.
+	/// ë³´ê´€í•¨ì˜ ìš©ëŸ‰ì„ ì„¤ì •í•œë‹¤.
 	void SetMaxStorage(INT nMax);
-	/// º¸°üÇÔÀÇ Å¸ÀÌÆ²À» ¼³Á¤ÇÑ´Ù.
+	/// ë³´ê´€í•¨ì˜ íƒ€ì´í‹€ì„ ì„¤ì •í•œë‹¤.
 	void SetTitle(const CString& strTITLE);
 
-	/// ÀÌ º¸°üÇÔÀÇ °»½ÅÀÌ ÇÊ¿äÇÔÀ» Åëº¸ÇÑ´Ù.
+	/// ì´ ë³´ê´€í•¨ì˜ ê°±ì‹ ì´ í•„ìš”í•¨ì„ í†µë³´í•œë‹¤.
 	void NotifyUpdate();
 
 	void SelectLastestItem();

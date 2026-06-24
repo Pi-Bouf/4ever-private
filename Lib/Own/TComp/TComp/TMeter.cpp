@@ -1,4 +1,4 @@
-// TMeter.cpp: implementation of the TMeter class.
+Ôªø// TMeter.cpp: implementation of the TMeter class.
 //
 //////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
@@ -141,10 +141,10 @@ HRESULT TMeter::DrawKids( DWORD dwTickCount )
 
 void TMeter::SetIncremental(CSize &size)
 {
-	if(m_style & TMS_GROW_RIGHT)		{ size.cy = 0;						}//°Ê
-	else if(m_style & TMS_GROW_DOWN)	{ size.cx = 0;						}//°È	
-	else if(m_style & TMS_GROW_LEFT)	{ size.cy = 0; size.cx = -size.cx;	}//°Á
-	else								{ size.cx = 0; size.cy = -size.cy;	}//°Ë
+	if(m_style & TMS_GROW_RIGHT)		{ size.cy = 0;						}//‚Üí
+	else if(m_style & TMS_GROW_DOWN)	{ size.cx = 0;						}//‚Üì	
+	else if(m_style & TMS_GROW_LEFT)	{ size.cy = 0; size.cx = -size.cx;	}//‚Üê
+	else								{ size.cx = 0; size.cy = -size.cy;	}//‚Üë
 }
 
 void TMeter::SetIncrementalStart(CPoint &point, CSize size)

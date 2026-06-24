@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 #include <iostream>
 #include "md5.h"
 
@@ -179,7 +179,7 @@ void CTachyonRes::RenderBACK( BYTE bSTEP,
 				BYTE bAlpha = 0;
 				BOOL bShowBar = FALSE;
 
-				// ¾÷µ¥ÀÌÆ®
+				// ì—…ë°ì´íŠ¸
 				switch( pLoadingScene->m_nState )
 				{
 				case 1: // Fade In (Blending)
@@ -192,7 +192,7 @@ void CTachyonRes::RenderBACK( BYTE bSTEP,
 						if( pLoadingScene->m_fAlpha > 256.0f )
 						{
 							pLoadingScene->m_fAlpha = 255.0f;
-							pLoadingScene->m_nState = 2; // FadeIn³¡³ª¸é KeppÀ¸·Î ³Ñ¾î°¡ÀÚ.
+							pLoadingScene->m_nState = 2; // FadeInëë‚˜ë©´ Keppìœ¼ë¡œ ë„˜ì–´ê°€ìž.
 							bAlpha = 255;
 						}
 						else
@@ -213,13 +213,13 @@ void CTachyonRes::RenderBACK( BYTE bSTEP,
 						pLoadingScene->m_dwKeepTime += dwElapsedTime;
 
 						if( pLoadingScene->m_dwKeepTime > pLoadingScene->m_nKeepTime )
-							pLoadingScene->m_nState = 3; // KeepÀÌ ³¡³ª¸é Fade OutÀ¸·Î °¡ÀÚ.
+							pLoadingScene->m_nState = 3; // Keepì´ ëë‚˜ë©´ Fade Outìœ¼ë¡œ ê°€ìž.
 					}
 					break;
 
 				case 3: // Fade Out Init
 					{
-						// ³»°¡ Fade OutÀ» ½ÃÀÛÇÒ ¶§ ³ªÀÇ ´ÙÀ½¹ø Scene·Î È°¼ºÈ­½ÃÄÑÁÖÀÚ.
+						// ë‚´ê°€ Fade Outì„ ì‹œìž‘í•  ë•Œ ë‚˜ì˜ ë‹¤ìŒë²ˆ Sceneë¡œ í™œì„±í™”ì‹œì¼œì£¼ìž.
 						if( CTachyonRes::m_vTLOADINGSCENE.size() > i+1 )
 						{
 							if( CTachyonRes::m_vTLOADINGSCENE[ i+1] )

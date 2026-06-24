@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 #include "TSiegeEnd.h"
 #include "TClientGame.h"
 
@@ -69,12 +69,12 @@ void CTSiegeEnd::Endwar(
 	CTClientChar* pMainChar = pGame->GetMainChar();
 	if( pMainChar )
 	{
-		if( pMainChar->m_strGUILD == strAtkName ) // °ø°ÝÀÌ¶ó¸é
+		if( pMainChar->m_strGUILD == strAtkName ) // ê³µê²©ì´ë¼ë©´
 		{
 			((TImageList*)m_pTCountryAtk)->SetCurImage( pMainChar->m_bContryID );
 			((TImageList*)m_pTCountryDef)->SetCurImage( !pMainChar->m_bContryID );
 		}
-		else // ¼öºñÃøÀÌ¶ó¸é
+		else // ìˆ˜ë¹„ì¸¡ì´ë¼ë©´
 		{
 			((TImageList*)m_pTCountryDef)->SetCurImage( pMainChar->m_bContryID );
 			((TImageList*)m_pTCountryAtk)->SetCurImage( !pMainChar->m_bContryID );

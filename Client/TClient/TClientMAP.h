@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 class CTClientMAP
 {
@@ -97,8 +97,8 @@ protected:
 	int m_nTCellZ;
 
 ///////////////////////////////////////////////////////////////////
-// Load thread ���ο��� ȣ��Ǵ� �Լ��� �̹Ƿ� �� �Լ���
-// �ȿ����� �Ѱܹ��� �Ķ���Ϳ� ���ú����� ����ؾ� ��
+// Load thread 내부에서 호출되는 함수들 이므로 이 함수들
+// 안에서는 넘겨받은 파라메터와 로컬변수만 사용해야 함
 public:
 	void DoTLOADCMD_OBJ(
 		CD3DDevice *pDevice,

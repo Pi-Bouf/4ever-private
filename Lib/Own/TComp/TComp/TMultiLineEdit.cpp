@@ -1,4 +1,4 @@
-// TMultiLineEdit.cpp: implementation of the TMultiLineEdit class.
+ï»¿// TMultiLineEdit.cpp: implementation of the TMultiLineEdit class.
 //
 //////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
@@ -1050,8 +1050,8 @@ void TMultiLineEdit::_LOG_( LPCSTR func, LPCSTR file, LONG line )
 
 	TRACE("---------------------------------------------------\n");
 	TRACE("< %s [FILE:%s, LINE:%u] >\n" ,func,file,line);
-	TRACE("Ä³·µ:%d\n", m_nCaret);
-	TRACE("¿øº» ¹®ÀÚ¿­:%s\n", (LPCSTR)strTEMP);
+	TRACE("ìºëŸ¿:%d\n", m_nCaret);
+	TRACE("ì›ë³¸ ë¬¸ìì—´:%s\n", (LPCSTR)strTEMP);
 	for(size_t i=0; i<m_vLineInfos.size(); ++i)
 	{
 		const LineInfo& lfn = m_vLineInfos[i];
@@ -1060,7 +1060,7 @@ void TMultiLineEdit::_LOG_( LPCSTR func, LPCSTR file, LONG line )
 		strTEMP.Replace('\n','@');
 
 
-		TRACE("[#%u] [%d~%d, º£ÀÌ½º(%d,%d), [ÅØ½ºÆ®:%s]\n", 
+		TRACE("[#%u] [%d~%d, ë² ì´ìŠ¤(%d,%d), [í…ìŠ¤íŠ¸:%s]\n", 
 			lfn.nLineIdx, lfn.nStart, lfn.nEnd, lfn.ptBase.x, lfn.ptBase.y, (LPCSTR)strTEMP);
 
 		TRACE("    ->");

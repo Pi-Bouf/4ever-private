@@ -1,4 +1,4 @@
-// CastleSettingDlg.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// CastleSettingDlg.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -9,7 +9,7 @@
 #include ".\castlesettingdlg.h"
 
 
-// CCastleSettingDlg ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CCastleSettingDlg ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CCastleSettingDlg, CDialog)
 CCastleSettingDlg::CCastleSettingDlg(CWnd* pParent /*=NULL*/)
@@ -38,7 +38,7 @@ BEGIN_MESSAGE_MAP(CCastleSettingDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-// CCastleSettingDlg ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CCastleSettingDlg ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 void CCastleSettingDlg::Init()
 {
@@ -60,7 +60,7 @@ void CCastleSettingDlg::Init()
 
 void CCastleSettingDlg::InitCastleInfoListControl()
 {
-	// ¸®½ºÆ® ÄÁÆ®·ÑÀÇ ¸ğµç ÄÃ·³ »èÁ¦
+	// ë¦¬ìŠ¤íŠ¸ ì»¨íŠ¸ë¡¤ì˜ ëª¨ë“  ì»¬ëŸ¼ ì‚­ì œ
 	for(int i = 0; i < MAX_CASTLELIST_COLUMN ; i++)
         m_lcCastleInfo.DeleteColumn(0);
 
@@ -81,7 +81,7 @@ void CCastleSettingDlg::InitCastleInfoListControl()
 		//m_listctrPos.InsertColumn(0,"NAME",LVCFMT_CENTER,180);
 	}
 	
-	// ÇÏ³ªÀÇ ¶óÀÎ ÀüÃ¼°¡ ¼±ÅÃµÇµµ·Ï ¼³Á¤
+	// í•˜ë‚˜ì˜ ë¼ì¸ ì „ì²´ê°€ ì„ íƒë˜ë„ë¡ ì„¤ì •
 	m_lcCastleInfo.SetExtendedStyle(LVS_EX_FULLROWSELECT);
 }
 
@@ -97,7 +97,7 @@ void CCastleSettingDlg::InsertItemToListCtr(CASTLEINFO stCASTLEINFO, int _iRow)
 		iRowCount = m_lcCastleInfo.GetItemCount();
 	
 	lvItem.mask		= LVIF_TEXT;
-	lvItem.iItem	= iRowCount; // Row ÀÎµ¦½º
+	lvItem.iItem	= iRowCount; // Row ì¸ë±ìŠ¤
 	
 	for(int iCol = 0; iCol < MAX_CASTLELIST_COLUMN ; iCol++)
 	{
@@ -121,7 +121,7 @@ void CCastleSettingDlg::InsertItemToListCtr(CASTLEINFO stCASTLEINFO, int _iRow)
 		case 5 : strTmp.Format("%d-%d-%d %d:%d",t.GetYear(), t.GetMonth(), t.GetDay(), t.GetHour(), t.GetMinute() ); break;
 		}
 		
-		lvItem.iSubItem = iCol ; // ÄÃ·³ ÀÎµ¦½º
+		lvItem.iSubItem = iCol ; // ì»¬ëŸ¼ ì¸ë±ìŠ¤
 		lvItem.pszText	= strTmp.GetBuffer(0);
 		
 		if( iCol == 0 )
@@ -195,8 +195,8 @@ void CCastleSettingDlg::ClearListItem()
 
 void CCastleSettingDlg::OnBnClickedBtnCastleinfo()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -238,7 +238,7 @@ void CCastleSettingDlg::ClearCastleIDCombo()
 
 void CCastleSettingDlg::OnBnClickedBtnChgGuild()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
@@ -314,7 +314,7 @@ void CCastleSettingDlg::InsertCastleID(WORD wID)
 
 void CCastleSettingDlg::OnBnClickedBtnChgStatus()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -417,7 +417,7 @@ void CCastleSettingDlg::ChangeCastleInfo(WORD wCastleID,DWORD dwDefGuildID,CStri
 
 void CCastleSettingDlg::OnOK()
 {
-	// TODO: ¿©±â¿¡ Æ¯¼öÈ­µÈ ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº» Å¬·¡½º¸¦ È£ÃâÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— íŠ¹ìˆ˜í™”ëœ ì½”ë“œë¥¼ ì¶”ê°€ ë°/ë˜ëŠ” ê¸°ë³¸ í´ë˜ìŠ¤ë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
 
 	//CDialog::OnOK();
 }

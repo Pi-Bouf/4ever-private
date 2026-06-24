@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 
 class CTObjBase
@@ -175,7 +175,7 @@ public:
 	WORD GetGainExpBuff();
 
 	///////////////////////////////////////////////////
-	// º¯Àå
+	// ë³€ìž¥
 	BYTE HaveDisguiseBuff();
 	BYTE GetCountry();
 	///////////////////////////////////////////////////

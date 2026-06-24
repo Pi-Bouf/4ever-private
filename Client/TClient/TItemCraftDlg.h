@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 struct CRAFTMATERIAL
 {
@@ -25,8 +25,8 @@ protected:
 
 	TComponent*		m_pDlgTitle;			//DialogTitel Itemherstellung -> Item | 0013
 	TComponent*		m_pListTitle;			//Listentitel "Liste" ID = 27573   | 6BB5
-	TComponent*		m_pNeededTitle;			//Titel für die Gegenstände die benötigt werden "Begriff" <-- Deutsch Translate WTF?! ID = 26090 | 65EA
-	TComponent*		m_pNeededDesTitle;		//Titel der Beschreibung des Gegenstandes das benötigt wird "Zusammenfassung" ID = 27583 | 6BBF
+	TComponent*		m_pNeededTitle;			//Titel fÃ¼r die GegenstÃ¤nde die benÃ¶tigt werden "Begriff" <-- Deutsch Translate WTF?! ID = 26090 | 65EA
+	TComponent*		m_pNeededDesTitle;		//Titel der Beschreibung des Gegenstandes das benÃ¶tigt wird "Zusammenfassung" ID = 27583 | 6BBF
 
 	TButton*		m_pCatBtn[255];			//Kategorie Button  ID = 27927 | 6D17
 	TButton*		m_pCatBtnPressed[255];	//Depressiver Button ID = 27928 | 6D18
@@ -39,7 +39,7 @@ protected:
 	TButton*		m_pRewardBtn[255];		//Button der Rewardliste
 
 	TComponent*		m_pRewardTitle;			//Titel des Gegenstandes das erstellt wird "Ergebnis" ID = 27586
-	TImageList*		m_pRewardIcon;			//Liste für die Icons des erstellten Gegenstandes ID = 27588
+	TImageList*		m_pRewardIcon;			//Liste fÃ¼r die Icons des erstellten Gegenstandes ID = 27588
 	TComponent*		m_pRewardItemTitle;		//Name des Gegenstandes ID = 27589;
 	
 

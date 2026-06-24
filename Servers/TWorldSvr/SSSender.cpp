@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 #include "TWorldSvr.h"
 #include "TWorldSvrModule.h"
 CTWorldSvrModule Module;
@@ -839,7 +839,7 @@ void CTServer::SendMW_EVENTMSGLOTTERY_REQ(CString strTitle,
 
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
-// ±æµå
+// ê¸¸ë“œ
 void CTServer::SendMW_GUILDESTABLISH_REQ(DWORD dwCharID,
 										 DWORD dwKey,
 										 BYTE bRet,

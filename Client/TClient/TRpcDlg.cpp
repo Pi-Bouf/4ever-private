@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 
 #ifdef ADD_RPS
 
@@ -38,7 +38,7 @@ HRESULT CTRpsDlg::Render(DWORD dwTickCount)
 	{
 		CTClientGame* pTGAME = CTClientGame::GetInstance();
 
-		// NPC ·»´õ¸µ
+		// NPC ë Œë”ë§
 		if( m_pNPC )
 		{
 			if( !m_bSelectMode )
@@ -61,7 +61,7 @@ HRESULT CTRpsDlg::Render(DWORD dwTickCount)
 		else
 			m_pRPSNpc->ShowComponent(FALSE);
 
-		// ÇÃ·¹ÀÌ¾î ·»´õ¸µ
+		// í”Œë ˆì´ì–´ ë Œë”ë§
 		CTClientMoveObj* pTOBJ = pTGAME->GetCtrlHost();
 		if( pTOBJ )
 		{
@@ -92,7 +92,7 @@ HRESULT CTRpsDlg::Render(DWORD dwTickCount)
 
 BOOL CTRpsDlg::CanDisable()
 {
-	return !m_bSelectMode; // ¼±ÅÃ ÁßÀÏ¶© Ã¢À» ´İÀ» ¼ö ¾ø´Ù.
+	return !m_bSelectMode; // ì„ íƒ ì¤‘ì¼ë• ì°½ì„ ë‹«ì„ ìˆ˜ ì—†ë‹¤.
 }
 
 BOOL CTRpsDlg::CanWithItemUI()

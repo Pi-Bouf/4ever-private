@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+ï»¿#include "Stdafx.h"
 #include "TGuildExpDonDlg.h"
 #include "TClientGame.h"
 #include "Resource.h"
@@ -28,7 +28,7 @@ BOOL CTGuildExpDonDlg::InitValue(BYTE bMode)
 {
 	m_bMode = bMode;
 
-	if( bMode ) //°æÇèÄ¡ ±âºÎ
+	if( bMode ) //ê²½í—˜ì¹˜ ê¸°ë¶€
 	{
 		m_pTitle->m_strText = CTChart::LoadString( TSTR_GUILD_DONATE_EXP_TITLE );
 		m_pText1->m_strText = CTChart::LoadString( TSTR_GUILD_DONATE_EXP_MY );
@@ -72,7 +72,7 @@ BOOL CTGuildExpDonDlg::InitValue(BYTE bMode)
 		m_pMinExpTxt->m_strText = CTChart::Format( TSTR_FMT_NUMPERCENT, 1 );
 		m_pMaxExpTxt->m_strText = CTChart::Format( TSTR_FMT_NUMPERCENT, dwMaxRate);
 	}
-	else // °øÀû ±âºÎ
+	else // ê³µì  ê¸°ë¶€
 	{
 		m_pTitle->m_strText = CTChart::LoadString( TSTR_GUILD_DONATE_PVP_TITLE );
 		m_pText1->m_strText = CTChart::LoadString( TSTR_GUILD_DONATE_PVP_MY );
@@ -98,7 +98,7 @@ BOOL CTGuildExpDonDlg::InitValue(BYTE bMode)
 // --------------------------------------------------------------------
 void CTGuildExpDonDlg::UpdateValue()
 {
-	if( m_bMode ) //°æÇèÄ¡ ±âºÎ
+	if( m_bMode ) //ê²½í—˜ì¹˜ ê¸°ë¶€
 	{
 		int nRng, nPos;
 		m_pDonExpBar->GetScrollPos(nRng, nPos);
@@ -106,7 +106,7 @@ void CTGuildExpDonDlg::UpdateValue()
 		m_dwDonExp = max(m_dwDonExp, m_dwMinExp);
 		m_pDonExpTxt->m_strText = CTChart::Format( TSTR_FMT_NUMBER, m_dwDonExp);
 	}
-	else // °øÀû ±âºÎ
+	else // ê³µì  ê¸°ë¶€
 	{
 		int nRng, nPos;
 		m_pDonExpBar->GetScrollPos(nRng, nPos);

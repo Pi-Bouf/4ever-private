@@ -1,4 +1,4 @@
-// PrograssDlg.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// PrograssDlg.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -7,7 +7,7 @@
 #include ".\prograssdlg.h"
 
 
-// CPrograssDlg ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CPrograssDlg ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CPrograssDlg, CDialog)
 CPrograssDlg::CPrograssDlg(CWnd* pParent /*=NULL*/)

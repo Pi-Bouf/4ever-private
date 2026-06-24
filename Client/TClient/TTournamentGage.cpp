@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "TTournamentGage.h"
 #include "TClientGame.h"
 #include "TTournamentMode.h"
@@ -384,7 +384,7 @@ void CTTournamentGage::ResetTournamentINFO()
 
 			for( INT m=0; m < pTeam[t]->m_vMembers.size() ; ++m )
 			{
-				++bORDER; //1ºÎÅÍ ½ÃÀÛ
+				++bORDER; //1ë¶€í„° ì‹œìž‘
 
 				LPTTOURNAMENTPLAYER pTPlayer = pTeam[t]->m_vMembers[m];
 

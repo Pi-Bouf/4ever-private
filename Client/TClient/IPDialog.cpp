@@ -1,4 +1,4 @@
-// IPDialog.cpp : ���� �����Դϴ�.
+﻿// IPDialog.cpp : 구현 파일입니다.
 //
 
 #include "stdafx.h"
@@ -7,7 +7,7 @@
 #include ".\ipdialog.h"
 
 
-// CIPDialog ��ȭ �����Դϴ�.
+// CIPDialog 대화 상자입니다.
 
 IMPLEMENT_DYNAMIC(CIPDialog, CDialog)
 CIPDialog::CIPDialog(CWnd* pParent /*=NULL*/)
@@ -32,7 +32,7 @@ BEGIN_MESSAGE_MAP(CIPDialog, CDialog)
 END_MESSAGE_MAP()
 
 
-// CIPDialog �޽��� ó�����Դϴ�.
+// CIPDialog 메시지 처리기입니다.
 
 void CIPDialog::OnOK()
 {

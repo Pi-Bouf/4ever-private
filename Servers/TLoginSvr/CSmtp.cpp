@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////////
+﻿////////////////////////////////////////////////////////////////////////////////
 // Original class CFastSmtp written by 
 // christopher w. backen <immortal@cox.net>
 // More details at: http://www.codeproject.com/KB/IP/zsmtp.aspx
@@ -23,7 +23,7 @@
 // Revision History:
 // - Version 2.4: Updated with fixes reported as of 22 Oct 2015
 //     > Fixed issues with files being left opened and buffer not being deleted if an error occurs as discussed here: http://www.codeproject.com/Messages/4651730/Re-File-attachment.aspx
-//       - Thanks to Josep Sol�
+//       - Thanks to Josep Solà
 //     > Fixed issue with opening attachments as discussed here: http://www.codeproject.com/Messages/4640325/File-path-mistakenly-ommitted-from-file-name-when-.aspx
 //       - Thanks to Graham
 //     > Fixed potential memory leak as discussed here: http://www.codeproject.com/Messages/5010012/Memory-leaks.aspx

@@ -1,4 +1,4 @@
-// ChildFrm.cpp : CChildFrame Å¬·¡½ºÀÇ ±¸Çö
+ï»¿// ChildFrm.cpp : CChildFrame í´ë˜ìŠ¤ì˜ êµ¬í˜„
 //
 #include "stdafx.h"
 #include "Happy.h"
@@ -18,11 +18,11 @@ BEGIN_MESSAGE_MAP(CChildFrame, CMDIChildWnd)
 END_MESSAGE_MAP()
 
 
-// CChildFrame »ı¼º/¼Ò¸ê
+// CChildFrame ìƒì„±/ì†Œë©¸
 
 CChildFrame::CChildFrame()
 {
-	// TODO: ¿©±â¿¡ ¸â¹ö ÃÊ±âÈ­ ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ë©¤ë²„ ì´ˆê¸°í™” ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 }
 
 CChildFrame::~CChildFrame()
@@ -32,7 +32,7 @@ CChildFrame::~CChildFrame()
 
 BOOL CChildFrame::PreCreateWindow(CREATESTRUCT& cs)
 {
-	// TODO: CREATESTRUCT cs¸¦ ¼öÁ¤ÇÏ¿© ¿©±â¿¡¼­ Window Å¬·¡½º ¶Ç´Â ½ºÅ¸ÀÏÀ» ¼öÁ¤ÇÕ´Ï´Ù.
+	// TODO: CREATESTRUCT csë¥¼ ìˆ˜ì •í•˜ì—¬ ì—¬ê¸°ì—ì„œ Window í´ë˜ìŠ¤ ë˜ëŠ” ìŠ¤íƒ€ì¼ì„ ìˆ˜ì •í•©ë‹ˆë‹¤.
 	if( !CMDIChildWnd::PreCreateWindow(cs) )
 		return FALSE;
 
@@ -40,7 +40,7 @@ BOOL CChildFrame::PreCreateWindow(CREATESTRUCT& cs)
 }
 
 
-// CChildFrame Áø´Ü
+// CChildFrame ì§„ë‹¨
 
 #ifdef _DEBUG
 void CChildFrame::AssertValid() const
@@ -56,4 +56,4 @@ void CChildFrame::Dump(CDumpContext& dc) const
 #endif //_DEBUG
 
 
-// CChildFrame ¸Ş½ÃÁö Ã³¸®±â
+// CChildFrame ë©”ì‹œì§€ ì²˜ë¦¬ê¸°

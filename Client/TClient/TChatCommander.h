@@ -1,15 +1,15 @@
-#pragma once
+ï»¿#pragma once
 
 class CTChatCommander
 {
 public:
-	/// ¸í·É ¿­°Å
+	/// ëª…ë ¹ ì—´ê±°
 	enum CmdEnum
 	{
-		CMD_OPERATOR_CHAT_BAN,			///< Ã¤ÆÃ Â÷´Ü
+		CMD_OPERATOR_CHAT_BAN,			///< ì±„íŒ… ì°¨ë‹¨
 		CMD_OPERATOR_TELEPORT_POS,		///< Teleport
 		CMD_OPERATOR_TELEPORT_TARGET,
-		CMD_OPERATOR_GIFT,				///< GMÀÌ ¼±¹°ÁÖ±â.
+		CMD_OPERATOR_GIFT,				///< GMì´ ì„ ë¬¼ì£¼ê¸°.
 		CMD_MSG_COUNT
 	};
 
@@ -22,16 +22,16 @@ public:
 	static const DWORD CMD_STRING[];
 
 public:
-	/// Ã¤ÆÃ Ä¿¸Çµå ÀÎ½ºÅÏ½º¸¦ ¾ò´Â´Ù.
+	/// ì±„íŒ… ì»¤ë§¨ë“œ ì¸ìŠ¤í„´ìŠ¤ë¥¼ ì–»ëŠ”ë‹¤.
 	static CTChatCommander* GetInstance();
 
-	/// Ã¤ÆÃ ¸Þ½ÃÁö¿¡ ÀÇÇÑ ¸Þ½ÅÀú ¸í·É ÀÌº¥Æ®¸¦ Ã³¸®ÇÑ´Ù.
+	/// ì±„íŒ… ë©”ì‹œì§€ì— ì˜í•œ ë©”ì‹ ì € ëª…ë ¹ ì´ë²¤íŠ¸ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	static CString OnMessengerCmdByChatMsg(const CString& strCMD, const VECTORSTRING& vPARAM, DWORD dwUSER);
-	/// Ã¤ÆÃ ¸Þ½ÃÁö Ä¿¸Çµå¸¦ µî·ÏÇÑ´Ù.
+	/// ì±„íŒ… ë©”ì‹œì§€ ì»¤ë§¨ë“œë¥¼ ë“±ë¡í•œë‹¤.
 	static void RegChatCmds();
 
 public:
-	/// Ã¤ÆÃ °ü·Ã ¸í·ÉÀ» ³»¸°´Ù.
+	/// ì±„íŒ… ê´€ë ¨ ëª…ë ¹ì„ ë‚´ë¦°ë‹¤.
 	void DoMessengerCommand(CmdEnum eCmd, const VECTORSTRING& vPARAM);
 	void ChatSysMSG( const CString& strMSG);
 

@@ -1,4 +1,4 @@
-// ChatBanDlg.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// ChatBanDlg.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -9,7 +9,7 @@
 #include "MainFrm.h"
 #include "HappyDoc.h"
 
-// CChatBanDlg ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CChatBanDlg ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CChatBanDlg, CDialog)
 CChatBanDlg::CChatBanDlg(CWnd* pParent /*=NULL*/)
@@ -39,11 +39,11 @@ BEGIN_MESSAGE_MAP(CChatBanDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-// CChatBanDlg ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CChatBanDlg ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 void CChatBanDlg::OnBnClickedOk()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	UpdateData();
 	CString strMin=_T("");
 	CString strReason=_T("");
@@ -52,19 +52,19 @@ void CChatBanDlg::OnBnClickedOk()
 	
 	if( m_strChatBanName == _T(""))
 	{
-		AfxMessageBox(_T("You should enter the name"), MB_OK); // ÀÌ¸§À» ÀÔ·ÂÇØ¾ß ÇÕ´Ï´Ù
+		AfxMessageBox(_T("You should enter the name"), MB_OK); // ì´ë¦„ì„ ì…ë ¥í•´ì•¼ í•©ë‹ˆë‹¤
 		return;
 	}
 
 	if( strMin == _T("") )
 	{
-		AfxMessageBox(_T("You should enter the minute"), MB_OK); // ½Ã°£(ºĞ)À» ÀÔ·ÂÇØ¾ß ÇÕ´Ï´Ù
+		AfxMessageBox(_T("You should enter the minute"), MB_OK); // ì‹œê°„(ë¶„)ì„ ì…ë ¥í•´ì•¼ í•©ë‹ˆë‹¤
 		return;
 	}
 
 	if( strReason == _T(""))
 	{
-		AfxMessageBox(_T("You should enter the reason"), MB_OK); // »çÀ¯¸¦ ÀÔ·ÂÇØ¾ß ÇÕ´Ï´Ù
+		AfxMessageBox(_T("You should enter the reason"), MB_OK); // ì‚¬ìœ ë¥¼ ì…ë ¥í•´ì•¼ í•©ë‹ˆë‹¤
 		return;
 	}
 

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "HappyDoc.h"
 #include "Happy.h"
 #include "MainFrm.h"
@@ -20,7 +20,7 @@ void CHappyDoc::OnCT_OPLOGIN_ACK(CPacket * pPacket)
 		AfxMessageBox(IDS_CONNECT_FAIL);
 		m_session.End();
 		
-		// ¹Ú»ó¿¬ 06/02/02 ¿¬°á½Ã Compare¹öÆ° È°¼ºÈ­
+		// ë°•ìƒì—° 06/02/02 ì—°ê²°ì‹œ Compareë²„íŠ¼ í™œì„±í™”
 		//-------------------------------------------------
 		CMainFrame * pFrm = (CMainFrame *)AfxGetMainWnd();
 		pFrm->SetPatchBarCompareVisible(FALSE);
@@ -34,7 +34,7 @@ void CHappyDoc::OnCT_OPLOGIN_ACK(CPacket * pPacket)
 	CMainFrame * pFrm = (CMainFrame *)AfxGetMainWnd();
 
 	///////////////////////////////////////
-	// Çö½Â·æ ¹öÆ° È°¼ºÈ­/ºñÈ°¼ºÈ­
+	// í˜„ìŠ¹ë£¡ ë²„íŠ¼ í™œì„±í™”/ë¹„í™œì„±í™”
 	pFrm->SetGraphButton(TRUE); 
 	pFrm->SetAllView(TRUE);	
 	pFrm->SetAlertButton(TRUE);
@@ -50,7 +50,7 @@ void CHappyDoc::OnCT_OPLOGIN_ACK(CPacket * pPacket)
 		pFrm->SetChatBanList(TRUE);
 
 	case MANAGER_CONTROL:		
-		pFrm->SetPatchBarCompareVisible(TRUE); // ¹Ú»ó¿¬ 06/02/02 ¿¬°á½Ã Compare¹öÆ° È°¼ºÈ­
+		pFrm->SetPatchBarCompareVisible(TRUE); // ë°•ìƒì—° 06/02/02 ì—°ê²°ì‹œ Compareë²„íŠ¼ í™œì„±í™”
 	
 	case MANAGER_USER:
 		pFrm->SetServiceLog(TRUE);
@@ -67,7 +67,7 @@ void CHappyDoc::OnCT_OPLOGIN_ACK(CPacket * pPacket)
 	}
 	///////////////////////////////////////
 
-	// ¸ÞÀÎ À©µµ¿ì Å¸ÀÌÆ² ¹Ù²Ù±â	
+	// ë©”ì¸ ìœˆë„ìš° íƒ€ì´í‹€ ë°”ê¾¸ê¸°	
 	CString strTitle = _T(" - Happy ") + m_strIP;
 	CWnd* pWnd = AfxGetMainWnd();	
 	pWnd->SetWindowText(strTitle);
@@ -209,7 +209,7 @@ void CHappyDoc::OnCT_SERVICESTAT_ACK(CPacket * pPacket)
 
 		m_mapService.insert(MAPSERVICE::value_type(dwID, pService));
 
-		// Çö½Â·æ Service Graph
+		// í˜„ìŠ¹ë£¡ Service Graph
 		SERVICEGRAPH sGraph;
 		sGraph.m_dwID = pService->m_dwID;
 		sGraph.m_strWorld = pService->m_pGroup->m_strName;
@@ -254,7 +254,7 @@ void CHappyDoc::OnCT_SERVICESTAT_ACK(CPacket * pPacket)
 	CMainFrame * pFrm = (CMainFrame *)AfxGetMainWnd();
 	CServiceTree * pTree = (CServiceTree *)pFrm->m_wndSplitter.GetView(pFrm->m_nTree);
 	CServiceList * pList = (CServiceList *)pFrm->m_wndSplitter.GetView(pFrm->m_nList);	
-	CMachine * pMachine = (CMachine *)pFrm->m_wndSplitter.GetView(pFrm->m_nMachine); // Çö½Â·æ Machine
+	CMachine * pMachine = (CMachine *)pFrm->m_wndSplitter.GetView(pFrm->m_nMachine); // í˜„ìŠ¹ë£¡ Machine
 
 	pMachine->InsertInitData();
 	pTree->InsertInitData();
@@ -327,7 +327,7 @@ void CHappyDoc::OnCT_SERVICEDATA_ACK(CPacket * pPacket)
 		
 		pList->UpdateServiceList(dwID);
 
-		// Çö½Â·æ Service Graph
+		// í˜„ìŠ¹ë£¡ Service Graph
 		MAPSERVICEGRAPH::iterator itG = m_mapSERVICEGRAPH.find(dwID);
 		if(itG!=m_mapSERVICEGRAPH.end())
 		{
@@ -344,7 +344,7 @@ void CHappyDoc::OnCT_SERVICEDATA_ACK(CPacket * pPacket)
 		}
 	}
 
-	// Çö½Â·æ Service Graph
+	// í˜„ìŠ¹ë£¡ Service Graph
 	if( GetCurView() == 1 && pFrm->GetGraphCheck() )
 	{
 		CServiceGraph * pGraph = (CServiceGraph *)pFrm->m_wndSplitter.GetView(pFrm->m_nGraph);
@@ -384,13 +384,13 @@ void CHappyDoc::OnCT_UPDATEPATCH_ACK(CPacket * pPacket)
 	}
 }
 ////////////////////////////////////////////////////////////
-// Çö½Â·æ CT_AUTHORITY_ACK
+// í˜„ìŠ¹ë£¡ CT_AUTHORITY_ACK
 void CHappyDoc::OnCT_AUTHORITY_ACK(CPacket * pPacket)
 {
-	AfxMessageBox("You don't have the authority"); //±ÇÇÑÀÌ ¾Æ´Õ´Ï´Ù.
+	AfxMessageBox("You don't have the authority"); //ê¶Œí•œì´ ì•„ë‹™ë‹ˆë‹¤.
 }
 
-// Çö½Â·æ CT_PLATFORM_ACK
+// í˜„ìŠ¹ë£¡ CT_PLATFORM_ACK
 void CHappyDoc::OnCT_PLATFORM_ACK(CPacket * pPacket)
 {
 	BYTE bMachineID;
@@ -423,7 +423,7 @@ void CHappyDoc::OnCT_PLATFORM_ACK(CPacket * pPacket)
 	}
 }
 
-// Çö½Â·æ CT_MONSPAWNFIND_ACK
+// í˜„ìŠ¹ë£¡ CT_MONSPAWNFIND_ACK
 void CHappyDoc::OnCT_MONSPAWNFIND_ACK(CPacket * pPacket)
 {
 	WORD wMapID;
@@ -482,8 +482,8 @@ void CHappyDoc::OnCT_CHATBAN_ACK(CPacket* pPacket)
 	(*pPacket)
 		>> bRet;
 
-	// ¿©±â¼­ AfxMessageBox ¸¦ ¶ç¿ì¸é ÀÌ ÇÔ¼ö(OnCT_CHATBAN_ACK())°¡ ¹«ÇÑ ½ÇÇàµÊ.
-	// ¸Þ¼¼Áö Ã³¸®Áß¿¡ MessageBox ³ª DialogBox ¸¦ ¶Ù¿ì¸é ¶È°°Àº ¸Þ¼¼Áö¸¦ ¹«ÇÑÈ£ÃâÇÔ.
+	// ì—¬ê¸°ì„œ AfxMessageBox ë¥¼ ë„ìš°ë©´ ì´ í•¨ìˆ˜(OnCT_CHATBAN_ACK())ê°€ ë¬´í•œ ì‹¤í–‰ë¨.
+	// ë©”ì„¸ì§€ ì²˜ë¦¬ì¤‘ì— MessageBox ë‚˜ DialogBox ë¥¼ ë›°ìš°ë©´ ë˜‘ê°™ì€ ë©”ì„¸ì§€ë¥¼ ë¬´í•œí˜¸ì¶œí•¨.
 	//if(!bRet)
 	//	AfxMessageBox(_T("Invalid User"), MB_OK);
 	//else
@@ -491,7 +491,7 @@ void CHappyDoc::OnCT_CHATBAN_ACK(CPacket* pPacket)
 
 	ShowRetDlg(SW_SHOW,bRet,_T(""));
 
-	// view ¾ò±â
+	// view ì–»ê¸°
 	CHappyView* pView = (CHappyView*)(((CMainFrame *)AfxGetMainWnd())->GetActiveFrame())->GetActiveView();
 	if(pView && pView->m_dlgGMTool && bRet)	
 		pView->m_dlgGMTool->m_dlgChatBan->Init();
@@ -574,7 +574,7 @@ void CHappyDoc::OnCT_CHATBANLIST_ACK(CPacket* pPacket)
 			>> strReason
 			>> strOPName;
 
-		// View ¾ò±â
+		// View ì–»ê¸°
 		CHappyView* pView = (CHappyView*)(((CMainFrame *)AfxGetMainWnd())->GetActiveFrame())->GetActiveView();
 		if(pView)
             pView->m_dlgChatBanList->InsertToListCtrl(dwID,strName,dBanTime,wMin,strReason,strOPName);
@@ -1126,7 +1126,7 @@ void CHappyDoc::OnCT_PREVERSIONTABLE_ACK(CPacket* pPacket)
 
 void CHappyDoc::OnCT_CMGIFT_ACK(CPacket* pPacket)
 {	
-	// View ¾ò±â
+	// View ì–»ê¸°
 	CHappyView* pView = (CHappyView*)(((CMainFrame *)AfxGetMainWnd())->GetActiveFrame())->GetActiveView();
 	if(!pView || !pView->m_dlgGMTool)
 		return;
@@ -1140,7 +1140,7 @@ void CHappyDoc::OnCT_CMGIFT_ACK(CPacket* pPacket)
 
 void CHappyDoc::OnCT_CMGIFTLIST_ACK(CPacket* pPacket) 
 {
-	// View ¾ò±â
+	// View ì–»ê¸°
 	CHappyView* pView = (CHappyView*)(((CMainFrame *)AfxGetMainWnd())->GetActiveFrame())->GetActiveView();
 	if(!pView || !pView->m_dlgGMTool)
 		return;

@@ -1,4 +1,4 @@
-#ifdef ENGLISH
+Ôªø#ifdef ENGLISH
 
 // Microsoft Visual C++ generated resource script.
 //
@@ -15,12 +15,12 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// «—±πæÓ resources
+// ÌïúÍµ≠Ïñ¥ resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
 #ifdef _WIN32
 LANGUAGE LANG_KOREAN, SUBLANG_DEFAULT
-#pragma code_page(949)
+#pragma code_page(65001)
 #endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
@@ -57,7 +57,7 @@ BEGIN
     "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)\r\n"
     "#ifdef _WIN32\r\n"
     "LANGUAGE 18, 1\r\n"
-    "#pragma code_page(949)\r\n"
+    "#pragma code_page(65001)\r\n"
     "#endif //_WIN32\r\n"
     "#include ""res\\TClient.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
     "#include ""l.kor\\afxres.rc""          // Standard components\r\n"
@@ -76,24 +76,24 @@ END
 ID_ERROR_DIALOG DIALOGEX 0, 0, 251, 197
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | 
     WS_CAPTION | WS_SYSMENU
-CAPTION "ø¿∑˘"
+CAPTION "Ïò§Î•ò"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     LISTBOX         IDC_LIST_ERROR,7,40,237,69,LBS_NOINTEGRALHEIGHT | 
                     LBS_NOSEL | WS_VSCROLL | WS_TABSTOP
-    DEFPUSHBUTTON   "ø¿∑˘≥ªøÎ ∫∏∞Ì",IDOK,7,176,182,14
-    PUSHBUTTON      "¥›±‚",IDCANCEL,194,176,50,14
-    LTEXT           "Ω««‡ ¡ﬂ øπªÛƒ° ∏¯«— ø¿∑˘∏¶ πﬂ∞ﬂ«œø¥Ω¿¥œ¥Ÿ.\n∫“∆Ì¿ª ≥¢√ƒµÂ∑¡ ¥Î¥‹»˜ ¡Àº€«’¥œ¥Ÿ.",
+    DEFPUSHBUTTON   "Ïò§Î•òÎÇ¥Ïö© Î≥¥Í≥†",IDOK,7,176,182,14
+    PUSHBUTTON      "Îã´Í∏∞",IDCANCEL,194,176,50,14
+    LTEXT           "Ïã§Ìñâ Ï§ë ÏòàÏÉÅÏπò Î™ªÌïú Ïò§Î•òÎ•º Î∞úÍ≤¨ÌïòÏòÄÏäµÎãàÎã§.\nÎ∂àÌé∏ÏùÑ ÎÅºÏ≥êÎìúÎ†§ ÎåÄÎã®Ìûà Ï£ÑÏÜ°Ìï©ÎãàÎã§.",
                     IDC_STATIC_MESSAGE,7,7,237,20
-    LTEXT           "∫∏∞Ì≥ªøÎ",IDC_STATIC_CONTENTS,7,30,32,8
-    LTEXT           "«ÿ¥Á ø¿∑˘∏¶ ∫∏∞Ì «œø© πÆ¡¶ «ÿ∞·ø° µµøÚ¿ª ¡÷Ω« ºˆ ¿÷Ω¿¥œ¥Ÿ.\n\nºˆ¡˝µ» µ•¿Ã≈Õ¥¬ ø¿¡˜ πÆ¡¶∏¶ «ÿ∞·«œ¥¬µ• ∏∏ ªÁøÎµÀ¥œ¥Ÿ. ¿Ã ø¿∑˘ ∫∏∞Ì¥¬ ø¿∑˘ «ÿ∞· ø‹ø° ∏∂ƒ…∆√ µÓ¿« ¥Ÿ∏• ∏Ò¿˚¿∏∑Œ ªÁøÎµ«¡ˆ æ Ω¿¥œ¥Ÿ. »®∆‰¿Ã¡ˆ∏¶ ≈Î«ÿ ø¿∑˘≥ªøÎ¿ª ªÛºº»˜ ±‚º˙«ÿ ¡÷Ω√∏È ∫¸∏• πÆ¡¶«ÿ∞·ø° ≈´ µµøÚ¿Ã µÀ¥œ¥Ÿ.",
+    LTEXT           "Î≥¥Í≥†ÎÇ¥Ïö©",IDC_STATIC_CONTENTS,7,30,32,8
+    LTEXT           "Ìï¥Îãπ Ïò§Î•òÎ•º Î≥¥Í≥† ÌïòÏó¨ Î¨∏Ï†ú Ìï¥Í≤∞Ïóê ÎèÑÏõÄÏùÑ Ï£ºÏã§ Ïàò ÏûàÏäµÎãàÎã§.\n\nÏàòÏßëÎêú Îç∞Ïù¥ÌÑ∞Îäî Ïò§ÏßÅ Î¨∏Ï†úÎ•º Ìï¥Í≤∞ÌïòÎäîÎç∞ Îßå ÏÇ¨Ïö©Îê©ÎãàÎã§. Ïù¥ Ïò§Î•ò Î≥¥Í≥†Îäî Ïò§Î•ò Ìï¥Í≤∞ Ïô∏Ïóê ÎßàÏºÄÌåÖ Îì±Ïùò Îã§Î•∏ Î™©Ï†ÅÏúºÎ°ú ÏÇ¨Ïö©ÎêòÏßÄ ÏïäÏäµÎãàÎã§. ÌôàÌéòÏù¥ÏßÄÎ•º ÌÜµÌï¥ Ïò§Î•òÎÇ¥Ïö©ÏùÑ ÏÉÅÏÑ∏Ìûà Í∏∞Ïà†Ìï¥ Ï£ºÏãúÎ©¥ Îπ†Î•∏ Î¨∏Ï†úÌï¥Í≤∞Ïóê ÌÅ∞ ÎèÑÏõÄÏù¥ Îê©ÎãàÎã§.",
                     IDC_STATIC_MESSAGE2,7,115,237,57
 END
 
 ID_PACKET_DIALOG DIALOGEX 0, 0, 529, 354
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_MINIMIZEBOX | 
     WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "∆–≈∂ ∞®Ω√±‚"
+CAPTION "Ìå®ÌÇ∑ Í∞êÏãúÍ∏∞"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     LISTBOX         IDC_LIST_PACKET,7,43,257,54,LBS_SORT | 
@@ -102,16 +102,16 @@ BEGIN
     CONTROL         "",IDC_LIST_CAPTURED,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_ALIGNLEFT | LVS_NOSORTHEADER | 
                     WS_BORDER | WS_TABSTOP,7,113,257,230
-    LTEXT           "∞®Ω√µ» ∆–≈∂",IDC_STATIC,7,102,71,8
-    LTEXT           "∆–≈∂ ≥ªøÎ",IDC_STATIC,268,7,71,8
-    LTEXT           "∞®Ω√¡ﬂ¿Œ ∆–≈∂",IDC_STATIC,7,34,242,8
-    LTEXT           "∆–≈∂ ≈∏¿‘¡æ∑˘",IDC_STATIC,7,7,40,8
-    LTEXT           "∆–≈∂",IDC_STATIC,63,7,40,8
+    LTEXT           "Í∞êÏãúÎêú Ìå®ÌÇ∑",IDC_STATIC,7,102,71,8
+    LTEXT           "Ìå®ÌÇ∑ ÎÇ¥Ïö©",IDC_STATIC,268,7,71,8
+    LTEXT           "Í∞êÏãúÏ§ëÏù∏ Ìå®ÌÇ∑",IDC_STATIC,7,34,242,8
+    LTEXT           "Ìå®ÌÇ∑ ÌÉÄÏûÖÏ¢ÖÎ•ò",IDC_STATIC,7,7,40,8
+    LTEXT           "Ìå®ÌÇ∑",IDC_STATIC,63,7,40,8
     COMBOBOX        IDC_COMBO1,7,17,54,48,CBS_DROPDOWNLIST | CBS_SORT | 
                     WS_VSCROLL | WS_TABSTOP
     COMBOBOX        IDC_COMBO2,62,18,155,195,CBS_DROPDOWNLIST | CBS_SORT | 
                     WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "µÓ∑œ",IDC_BUTTON_ADD,219,17,46,15
+    PUSHBUTTON      "Îì±Î°ù",IDC_BUTTON_ADD,219,17,46,15
     CONTROL         "",IDC_EDIT_OUTPUT,"RichEdit20A",ES_MULTILINE | 
                     ES_AUTOHSCROLL | ES_READONLY | ES_WANTRETURN | WS_BORDER | 
                     WS_VSCROLL | WS_HSCROLL | WS_TABSTOP,267,17,255,326
@@ -812,7 +812,7 @@ BEGIN
     IDS_CMSG_NOMENYPORTAL   "You do not have enough money to move to the designated location."
     IDS_FMT_MSGSENDER_ME    "My Message:"
     IDS_FMT_MSGSENDER       "[ %s ]'s Message:"
-    IDS_MPOPUP_MOVEGROUP    "Move Group ¢∫"
+    IDS_MPOPUP_MOVEGROUP    "Move Group ‚ñ∂"
     IDS_MPOPUP_BLOCK        "Block"
     IDS_MPOPUP_DELETE       "Delete"
 END
@@ -1060,14 +1060,14 @@ BEGIN
     IDS_VK_SPACE            "Space"
     IDS_VK_END              "End"
     IDS_VK_HOME             "Home"
-    IDS_VK_LEFT             "°Á"
-    IDS_VK_UP               "°Ë"
-    IDS_VK_RIGHT            "°Ê"
+    IDS_VK_LEFT             "‚Üê"
+    IDS_VK_UP               "‚Üë"
+    IDS_VK_RIGHT            "‚Üí"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_VK_DOWN             "°È"
+    IDS_VK_DOWN             "‚Üì"
     IDS_VK_INSERT           "Ins."
     IDS_VK_DELETE           "Del."
     IDS_VK_NUMPAD0          "NUM0"
@@ -1372,7 +1372,7 @@ BEGIN
                             "Your soul was deserted by your mate and you is going through a period of silence. I'm sorry, but I cannot help you at this moment. Come back to me after one day and night."
     IDS_ERR_SOULMATE_NEEDMONEY 
                             "What? You want it for free? Are you making fun of this poor blind? If you don't have money, get out of my sight before you get what you deserve."
-    IDS_ERR_SOULMATE_FAIL   "I can hear the voice of the goddess. Hmm°¶I think he/she is not meant for you. Don't be so sad though. Althought this is not the time, the goddess will some day allow it."
+    IDS_ERR_SOULMATE_FAIL   "I can hear the voice of the goddess. Hmm‚Ä¶I think he/she is not meant for you. Don't be so sad though. Althought this is not the time, the goddess will some day allow it."
 END
 
 STRINGTABLE 
@@ -1386,9 +1386,9 @@ BEGIN
     IDS_ITRF_ERR_DUPLICATE  "This item is already listed."
     IDS_DETMSG_SEALEDITEM   "This item is sealed. Show it to the Elf Sorcerer , and you will know what it is."
     IDS_SOULMATEEND_SUCCESS "You're not a soulmate with %s anymore. Also, you cannot choose a new soulmate for one day from now."
-    IDS_SOULMATE_MARK       "¢æ"
+    IDS_SOULMATE_MARK       "‚ô•"
     IDS_GAMBLE_NO           "Sometimes you need to discard something valuable  before going on an adventure in order to obtain something precious. Come back to me whenever you need me."
-    IDS_GAMBLE_ASK          "Hmm°¶This will cost you at least %s  to see the original shape of something like this. You won't regret it. Do you believe my sorcery skill? But do you know that the item may)disappear if my sorcery fails?"
+    IDS_GAMBLE_ASK          "Hmm‚Ä¶This will cost you at least %s  to see the original shape of something like this. You won't regret it. Do you believe my sorcery skill? But do you know that the item may)disappear if my sorcery fails?"
     IDS_GAMBLE_SUCC         "Oh, the item regained its original shape at last. I hope you like it."
     IDS_GAMBLE_FAIL_NEEDMONEY 
                             "It's difficult for someone without money to be welcomed. Carry some money on you."
@@ -1467,7 +1467,7 @@ STRINGTABLE
 BEGIN
     IDS_ERR_REFINE_NOMONEY  "I'm sorry, but I cannot fix it for free. Don't forget to come back to me when you have the money."
     IDS_ERR_REFINE_MAXREFINE 
-                            "Hmm°¶This cannot be refined anymore. Give me something else."
+                            "Hmm‚Ä¶This cannot be refined anymore. Give me something else."
     IDS_ERR_REFINE_LEVELDIFF 
                             "It cannot be refined because the items to be used in the refine are of very different level."
     IDS_ERR_REFINE_FAIL     "Oh no, I blew it. Don't feel too bad. I promise I'll succeed next time, so come back to me again."
@@ -1507,19 +1507,19 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_FCEVENT_D           "40 years of long lasting war with Craxion°¶. Most of the people in town were sacrificed due to this endless war.\n I can't just leave this. I am applying to Legion of great DeFugel to put my life behind and free myself from the dreadful fact that I was born in the Village of the Devil. \n Hoping to find the meaning of my life after putting an end to this hideous war with my own hands°¶."
-    IDS_FCEVENT_C           "DeFugel's soldiers led by Neban Maha have ruined Queen's Sanctuary, and the invasion of Lahoor Tribe is continuous. Besides, emperor Luad has been acting strange recently°¶.\n I can't just sit and watch. For the sake of my friends at Magic School who were sacrificed in this meaningless war, I got to find the truth behind the veil of history and clean this mess up.\n To do so, I'll have to throw myself into this chaos of history°¶."
+    IDS_FCEVENT_D           "40 years of long lasting war with Craxion‚Ä¶. Most of the people in town were sacrificed due to this endless war.\n I can't just leave this. I am applying to Legion of great DeFugel to put my life behind and free myself from the dreadful fact that I was born in the Village of the Devil. \n Hoping to find the meaning of my life after putting an end to this hideous war with my own hands‚Ä¶."
+    IDS_FCEVENT_C           "DeFugel's soldiers led by Neban Maha have ruined Queen's Sanctuary, and the invasion of Lahoor Tribe is continuous. Besides, emperor Luad has been acting strange recently‚Ä¶.\n I can't just sit and watch. For the sake of my friends at Magic School who were sacrificed in this meaningless war, I got to find the truth behind the veil of history and clean this mess up.\n To do so, I'll have to throw myself into this chaos of history‚Ä¶."
     IDS_ERR_CASHSHOP_NOTARGET "Unable to find the designated target."
     IDS_ERR_CASHSHOP_NOCASHINFO "Unable to find the user's cash information."
     IDS_ITEM_CANNOT_CABINET "Unable to store this item."
     IDS_FILE_JOINTCHART     ".\\Tcd\\TJoint.tcd"
     IDS_FILE_GRADEVISUALCHART ".\\Tcd\\TItemGradeVisual.tcd"
     IDS_FMT_BUYITEM_AS_PRICE "Buy [%s] item as (%s) price."
-    IDS_REFINE_COST_SALE    "I'll cut this off by %d%% for ya! So, it'll be %s°¶. Let me see°¶"
+    IDS_REFINE_COST_SALE    "I'll cut this off by %d%% for ya! So, it'll be %s‚Ä¶. Let me see‚Ä¶"
     IDS_TKEY_CHAR_ROT180    "Rotate character by 180 degrees"
     IDS_DURATIONREP_COST_SALE 
                             "I can make it as brand new with %s. It is %d%% discounted."
-    IDS_GAMBLE_ASK_SALE     "Hmm°¶ You have to pay %s to see it's original shape. It is %d%% discounted! You will never regret. Believe my sorcery skills. Did you know that the item could be disapeared if the sorcery fails?"
+    IDS_GAMBLE_ASK_SALE     "Hmm‚Ä¶ You have to pay %s to see it's original shape. It is %d%% discounted! You will never regret. Believe my sorcery skills. Did you know that the item could be disapeared if the sorcery fails?"
     IDS_SHOPTITLE_ITEM_SALE "%d%% discount Shop."
     IDS_SHOPTITLE_PORTAL_SALE "%d%% discount portal"
     IDS_SKILLNEXTPRICE_SALE " (%d%% discounted)"
@@ -1636,17 +1636,17 @@ BEGIN
     IDS_KEYWORD_CHAT_TITLE  "/comment"
 END
 
-#endif    // «—±πæÓ resources
+#endif    // ÌïúÍµ≠Ïñ¥ resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// øµæÓ(πÃ±π) resources
+// ÏòÅÏñ¥(ÎØ∏Íµ≠) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 #ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
+#pragma code_page(65001)
 #endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1739,7 +1739,7 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\TClient.ico"
-#endif    // øµæÓ(πÃ±π) resources
+#endif    // ¬ø¬µ¬æ√Æ(¬π√å¬±¬π) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1757,7 +1757,7 @@ IDR_MAINFRAME           ICON                    "res\\TClient.ico"
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
 #ifdef _WIN32
 LANGUAGE 18, 1
-#pragma code_page(949)
+#pragma code_page(65001)
 #endif //_WIN32
 #include "res\TClient.rc2"  // non-Microsoft Visual C++ edited resources
 #include "l.kor\afxres.rc"          // Standard components

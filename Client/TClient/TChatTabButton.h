@@ -1,41 +1,41 @@
-#pragma once
+ï»¿#pragma once
 
 class CTChatTabButton : public TButton
 {
 protected:
-	static const DWORD FONT_COLOR_NORMAL;		///< ÅÇÀÌ ¼±ÅÃµÇÁö ¾ÊÀ»À» ¶§ÀÇ ÆùÆ® »ö
-	static const DWORD FONT_COLOR_PUSH;			///< ÅÇÀÌ ¼±ÅÃ‰çÀ»¶§ÀÇ ÆùÆ® »ö
-	static const DWORD FONT_COLOR_HOVER;		///< ÅÇÀ§·Î Ä¿¼­°¡ ¿Ã¶ó¿ÔÀ»¶§ÀÇ ÆùÆ® »ö
+	static const DWORD FONT_COLOR_NORMAL;		///< íƒ­ì´ ì„ íƒë˜ì§€ ì•Šì„ì„ ë•Œì˜ í°íŠ¸ ìƒ‰
+	static const DWORD FONT_COLOR_PUSH;			///< íƒ­ì´ ì„ íƒë¬ì„ë•Œì˜ í°íŠ¸ ìƒ‰
+	static const DWORD FONT_COLOR_HOVER;		///< íƒ­ìœ„ë¡œ ì»¤ì„œê°€ ì˜¬ë¼ì™”ì„ë•Œì˜ í°íŠ¸ ìƒ‰
 
-	CTChatFrame*	m_pHost;					///< ÀÌ ÅÇÀÌ ¼ÓÇÑ ÇÁ·¹ÀÓ
-	CTChatList*		m_pList;					///< ÀÌ ÅÇ°ú ¸µÅ©µÈ ¸®½ºÆ®
-	INT				m_iSlot;					///< ÀÌ ÅÇÀÇ ½½·Ô ¹øÈ£ ( ÀÌ ¹øÈ£¿¡ µû¶ó ÅÇÀÇ À§Ä¡°¡ °áÁ¤µÈ´Ù )
-	BOOL			m_bSelect;					///< ÀÌ ÅÇÀÌ ¼±ÅÃµÇ¾ú´ÂÁö ¿©ºÎ
+	CTChatFrame*	m_pHost;					///< ì´ íƒ­ì´ ì†í•œ í”„ë ˆìž„
+	CTChatList*		m_pList;					///< ì´ íƒ­ê³¼ ë§í¬ëœ ë¦¬ìŠ¤íŠ¸
+	INT				m_iSlot;					///< ì´ íƒ­ì˜ ìŠ¬ë¡¯ ë²ˆí˜¸ ( ì´ ë²ˆí˜¸ì— ë”°ë¼ íƒ­ì˜ ìœ„ì¹˜ê°€ ê²°ì •ëœë‹¤ )
+	BOOL			m_bSelect;					///< ì´ íƒ­ì´ ì„ íƒë˜ì—ˆëŠ”ì§€ ì—¬ë¶€
 	
-	DWORD			m_dwTotalTick;				///< °æ°ú ½Ã°£
-	BOOL			m_bHovering;				///< ÅÇ À§·Î Ä¿¼­°¡ ¿Ã¶ó¿Ô´ÂÁö ¿©ºÎ
-	BOOL			m_bNewMsg;					///< ÇØ´ç ÅÇ°ú ¿¬°áµÈ ¸®½ºÆ®·Î »õ·Î¿î ¸Þ½ÃÁö°¡ µµÂøÇß´ÂÁö ¿©ºÎ
+	DWORD			m_dwTotalTick;				///< ê²½ê³¼ ì‹œê°„
+	BOOL			m_bHovering;				///< íƒ­ ìœ„ë¡œ ì»¤ì„œê°€ ì˜¬ë¼ì™”ëŠ”ì§€ ì—¬ë¶€
+	BOOL			m_bNewMsg;					///< í•´ë‹¹ íƒ­ê³¼ ì—°ê²°ëœ ë¦¬ìŠ¤íŠ¸ë¡œ ìƒˆë¡œìš´ ë©”ì‹œì§€ê°€ ë„ì°©í–ˆëŠ”ì§€ ì—¬ë¶€
 
 
 public:
-	/// ÁÖ¾îÁø ½½·Ô¹øÈ£¿¡ ¸Â´Â ÅÇÀÇ À§Ä¡Á¤º¸¸¦ ¾ò´Â´Ù.
+	/// ì£¼ì–´ì§„ ìŠ¬ë¡¯ë²ˆí˜¸ì— ë§žëŠ” íƒ­ì˜ ìœ„ì¹˜ì •ë³´ë¥¼ ì–»ëŠ”ë‹¤.
 	static void SetTabSlotRect(INT iSlot, const CRect& rcTab);
 
 public:
 		BOOL				m_bHideBackground;
-	/// ÅÇ ÃÊ±âÈ­. ½½·ÔÀ» Á¤ÇÏ°í ¸®½ºÆ®¿Í ¿¬°áÇÑ´Ù.
+	/// íƒ­ ì´ˆê¸°í™”. ìŠ¬ë¡¯ì„ ì •í•˜ê³  ë¦¬ìŠ¤íŠ¸ì™€ ì—°ê²°í•œë‹¤.
 	void Init(INT iSlot, CTChatList* pList);
-	/// ÅÇÀ» °»½Å½ÃÅ²´Ù. Àü´ÞÀÎÀÚ´Â ÀÌÀü °»½ÅºÎÅÍ Áö±Ý±îÁö °æ°úÇÑ ½Ã°£À» ÀÇ¹ÌÇÑ´Ù.
+	/// íƒ­ì„ ê°±ì‹ ì‹œí‚¨ë‹¤. ì „ë‹¬ì¸ìžëŠ” ì´ì „ ê°±ì‹ ë¶€í„° ì§€ê¸ˆê¹Œì§€ ê²½ê³¼í•œ ì‹œê°„ì„ ì˜ë¯¸í•œë‹¤.
 	void Update(DWORD dwTick);
 
-	/// ÁÖ¾îÁø ¸®½ºÆ®¿Í ¸µÅ©ÇÑ´Ù.
+	/// ì£¼ì–´ì§„ ë¦¬ìŠ¤íŠ¸ì™€ ë§í¬í•œë‹¤.
 	void LinkWithList(CTChatList* pList);
-	/// ½½·ÔÀ» Á¤ÇÑ´Ù.
+	/// ìŠ¬ë¡¯ì„ ì •í•œë‹¤.
 	void SetSlot(INT iSlot);
-	/// ÀÌ ÅÇÀ» ¼±ÅÃÇÏ°Å³ª ¼±ÅÃÇØÁ¦ ÇÑ´Ù.
+	/// ì´ íƒ­ì„ ì„ íƒí•˜ê±°ë‚˜ ì„ íƒí•´ì œ í•œë‹¤.
 	void SetSelect(BOOL bSel);
 	
-	/// »õ·Î¿î ¸Þ½ÃÁöÀÇ µµÂøÀ» ÅÇ¿¡ Åëº¸ÇÑ´Ù.
+	/// ìƒˆë¡œìš´ ë©”ì‹œì§€ì˜ ë„ì°©ì„ íƒ­ì— í†µë³´í•œë‹¤.
 	void NotifyNewMsg();
 	void SetHideBackground(BOOL bHide);
 	
@@ -56,7 +56,7 @@ public:
 	virtual void OnLButtonDblClk(UINT nFlags, CPoint pt)		{ TComponent::OnLButtonDblClk(nFlags,pt); }
 
 protected:
-	/// ÇöÀç »óÅÂ¿¡ ¸Â°Ô ÆùÆ® Ä®¶ó¸¦ Àç¼³Á¤ÇÑ´Ù.
+	/// í˜„ìž¬ ìƒíƒœì— ë§žê²Œ í°íŠ¸ ì¹¼ë¼ë¥¼ ìž¬ì„¤ì •í•œë‹¤.
 	void ResetFontColor();
 
 public:

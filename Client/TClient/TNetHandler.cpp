@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "TClient.h"
 #include "TClientWnd.h"
 #include "TMiniDump.h"
@@ -70,7 +70,7 @@ int CTClientWnd::OnCS_LOGIN_ACK( CTachyonSession *pSession, CPacket *pPacket)
 #endif
 
 #ifdef USE_GG
-		// °ÔÀÓ°¡µå.
+		// ê²Œìž„ê°€ë“œ.
 	
 			theApp.m_pNpgl->Send( (CHAR*)(LPCSTR)pEditID->m_strText );
 #endif

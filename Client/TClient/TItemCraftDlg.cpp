@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+﻿#include "StdAfx.h"
 #include "TItemCraftDlg.h"
 #include "TClientGame.h"
 
@@ -18,7 +18,7 @@
 #define ID_CTRLINST_IC_REWARDLISTBTN		(0x00006BB9)
 
 #define ID_CTRLINST_IC_CATBTN				(0x00006D17) 
-#define ID_CTRLINST_IC_CATBTNPRESSED		(0x00006D18) //GEDR�CKTER(Deppresiver) CATBTN
+#define ID_CTRLINST_IC_CATBTNPRESSED		(0x00006D18) //GEDRÜCKTER(Deppresiver) CATBTN
 
 CTItemCraftDlg::CTItemCraftDlg( TComponent *pParent, FRAMEDESC_SHAREDPTR pDesc )
 	: CTClientUIBase(pParent, pDesc)

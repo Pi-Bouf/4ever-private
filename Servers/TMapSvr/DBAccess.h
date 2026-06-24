@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 class CTBLChannelList : public CSqlQuery
 {
@@ -6223,7 +6223,7 @@ END_PARAM()
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ���
+// 길드
 class CSPGuildItemPutIn : public CSqlQuery
 {
 public:

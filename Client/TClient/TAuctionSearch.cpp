@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "TAuctionSearch.h"
 
 
@@ -24,7 +24,7 @@ void	CTSearchItem::ReflectSlot( CTCtrlListSlot* pSlot )
 
 	DWORD dwTreeLevel = GetEntity()->GetLevel();
 
-	// Ȯ���ư.
+	// 확장버튼.
 	if( m_pEntity->GetChildSize() )
 	{
 		BOOL bExpand = m_pEntity->IsExpand();
@@ -48,13 +48,13 @@ void	CTSearchItem::ReflectSlot( CTCtrlListSlot* pSlot )
 	pSearchSlot->m_pPlusBtn->MoveComponent( ptBase + ptBtn_Offset );
 	pSearchSlot->m_pMinusBtn->MoveComponent( ptBase + ptBtn_Offset );
 
-	// üũ��ư.
+	// 체크버튼.
 	BOOL bCheck = m_pEntity->GetCheckState();
 	pSearchSlot->m_pCheckBtn->Select( bCheck );
 	pSearchSlot->m_pCheckBtn->ShowComponent( TRUE );
 	pSearchSlot->m_pCheckBtn->EnableComponent( TRUE );
 
-	// �̸�.
+	// 이름.
 	pSearchSlot->m_pText->m_strText = m_pEntity->GetName();
 	pSearchSlot->m_pText->ShowComponent( TRUE );
 	pSearchSlot->m_pText->EnableComponent( TRUE );

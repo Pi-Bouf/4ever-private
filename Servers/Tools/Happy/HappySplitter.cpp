@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 #include ".\happysplitter.h"
 
 CHappySplitter::CHappySplitter(void)
@@ -136,5 +136,5 @@ void CHappySplitter::OnSize(UINT nType, int cx, int cy)
 {
 	CSplitterWnd::OnSize(nType, cx, cy);
 
-	// TODO: ¿©±â¿¡ ¸Ş½ÃÁö Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ë©”ì‹œì§€ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 }

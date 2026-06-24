@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 #include ".\tchart.h"
 
 #define MODIFY_ITEM_EFFECT
@@ -378,74 +378,74 @@ CString CTChart::Format( TSTRING v, ... )
 //        BYTE unused;
 //
 
-//		ar	>> pTSKILL->m_wSkillID									///½ºÅ³ID
-//			>> pTSKILL->m_strNAME									///½ºÅ³ÀÌ¸§
-//			>> pTSKILL->m_wActSkillID								///ÀÌÀü¼º°ø½ºÅ³
-//			>> pTSKILL->m_wNeedItemID								///¼Ò¸ğ¾ÆÀÌÅÛ
-//			>> pTSKILL->m_wDefSkillID								///´ë»óÀÌ°É¸°¹öÇÁ
-//			>> pTSKILL->m_dwClassID									///Á÷¾÷ÄÚµå
-//			>> pTSKILL->m_bKind										///Æ¯¼º±¸ºĞ
-//			>> pTSKILL->m_bPositive									///ÀÌ·Î¿ò ÇØ·Î¿ò
-//			>> pTSKILL->m_bLevel									///¿ä±¸·¹º§
-//			>> pTSKILL->m_bLevelInc									///¿ä±¸·¹º§Áõ°¡
-//			>> pTSKILL->m_bMaxLevel									///ÃÖ´ë½ºÅ³·¹º§
-//			>> pTSKILL->m_fPrice									///°¡°İºñÀ²
-//			>> pTSKILL->m_bDuraSlot									///³»±¸°¨¼Ò½½·Ô(Ãß°¡)
-//			>> pTSKILL->m_dwWeaponID								///»ç¿ë¹«±â
-//			>> pTSKILL->m_wUseHP									///HP¼Ò¸ğºñÀ²
-//			>> pTSKILL->m_wUseMP									///MP¼Ò¸ğºñÀ²
-//			>> pTSKILL->m_bHitInit									///¼º°øÀ²ÃÊ±â°ª(Ãß°¡)
-//			>> pTSKILL->m_bHitInc									///¼º°øÀ²Áõ°¡°ª(Ãß°¡)
-//			>> pTSKILL->m_dwSpellTick								///¹ßµ¿½Ã°£
-//			>> pTSKILL->m_bIsRide									///¹öÇÁÁß Å» ¼ö ¾ø´Â ½ºÅ³
+//		ar	>> pTSKILL->m_wSkillID									///ìŠ¤í‚¬ID
+//			>> pTSKILL->m_strNAME									///ìŠ¤í‚¬ì´ë¦„
+//			>> pTSKILL->m_wActSkillID								///ì´ì „ì„±ê³µìŠ¤í‚¬
+//			>> pTSKILL->m_wNeedItemID								///ì†Œëª¨ì•„ì´í…œ
+//			>> pTSKILL->m_wDefSkillID								///ëŒ€ìƒì´ê±¸ë¦°ë²„í”„
+//			>> pTSKILL->m_dwClassID									///ì§ì—…ì½”ë“œ
+//			>> pTSKILL->m_bKind										///íŠ¹ì„±êµ¬ë¶„
+//			>> pTSKILL->m_bPositive									///ì´ë¡œì›€ í•´ë¡œì›€
+//			>> pTSKILL->m_bLevel									///ìš”êµ¬ë ˆë²¨
+//			>> pTSKILL->m_bLevelInc									///ìš”êµ¬ë ˆë²¨ì¦ê°€
+//			>> pTSKILL->m_bMaxLevel									///ìµœëŒ€ìŠ¤í‚¬ë ˆë²¨
+//			>> pTSKILL->m_fPrice									///ê°€ê²©ë¹„ìœ¨
+//			>> pTSKILL->m_bDuraSlot									///ë‚´êµ¬ê°ì†ŒìŠ¬ë¡¯(ì¶”ê°€)
+//			>> pTSKILL->m_dwWeaponID								///ì‚¬ìš©ë¬´ê¸°
+//			>> pTSKILL->m_wUseHP									///HPì†Œëª¨ë¹„ìœ¨
+//			>> pTSKILL->m_wUseMP									///MPì†Œëª¨ë¹„ìœ¨
+//			>> pTSKILL->m_bHitInit									///ì„±ê³µìœ¨ì´ˆê¸°ê°’(ì¶”ê°€)
+//			>> pTSKILL->m_bHitInc									///ì„±ê³µìœ¨ì¦ê°€ê°’(ì¶”ê°€)
+//			>> pTSKILL->m_dwSpellTick								///ë°œë™ì‹œê°„
+//			>> pTSKILL->m_bIsRide									///ë²„í”„ì¤‘ íƒˆ ìˆ˜ ì—†ëŠ” ìŠ¤í‚¬
 
-//			>> pTSKILL->m_dwDelay									///Àç»ç¿ë´ë±â
-//			>> pTSKILL->m_nDelayInc									///Àç»ç¿ë ´ë±â Áõ°¨ºñÀ²
-//			>> pTSKILL->m_dwGroupTick								///°è¿­´ë±â
-//			>> pTSKILL->m_dwInterval								///¹İº¹½Ã°£
-//			>> pTSKILL->m_bDelayType								///°ø¼ÓÀû¿ë
-//			>> pTSKILL->m_wModeID									///ÅÂ¼¼
-//			>> pTSKILL->m_bTargetType								///»ç¿ë´ë»ó ÇÇ¾Æ
-//			>> pTSKILL->m_bRangeType								///´ë»óÆÇº°
-//			>> pTSKILL->m_fMinRange									///ÃÖ¼Ò»çÁ¤°Å¸®
-//			>> pTSKILL->m_fMaxRange									///ÃÖ´ë»çÁ¤±â¸®
-//			>> pTSKILL->m_fAtkRange									///ÀÎ½Ä Æø,¹İ°æ
-//			>> pTSKILL->m_fBufRange									///¿À¶ó¹üÀ§
-//			>> pTSKILL->m_dwDuration								///Àû¿ë½Ã°£ÃÊ±â°ª
-//			>> pTSKILL->m_dwDurationInc								///Àû¿ë½Ã°£Áõ°¡ºñÀ²	stupid Konst stupid Konst 
+//			>> pTSKILL->m_dwDelay									///ì¬ì‚¬ìš©ëŒ€ê¸°
+//			>> pTSKILL->m_nDelayInc									///ì¬ì‚¬ìš© ëŒ€ê¸° ì¦ê°ë¹„ìœ¨
+//			>> pTSKILL->m_dwGroupTick								///ê³„ì—´ëŒ€ê¸°
+//			>> pTSKILL->m_dwInterval								///ë°˜ë³µì‹œê°„
+//			>> pTSKILL->m_bDelayType								///ê³µì†ì ìš©
+//			>> pTSKILL->m_wModeID									///íƒœì„¸
+//			>> pTSKILL->m_bTargetType								///ì‚¬ìš©ëŒ€ìƒ í”¼ì•„
+//			>> pTSKILL->m_bRangeType								///ëŒ€ìƒíŒë³„
+//			>> pTSKILL->m_fMinRange									///ìµœì†Œì‚¬ì •ê±°ë¦¬
+//			>> pTSKILL->m_fMaxRange									///ìµœëŒ€ì‚¬ì •ê¸°ë¦¬
+//			>> pTSKILL->m_fAtkRange									///ì¸ì‹ í­,ë°˜ê²½
+//			>> pTSKILL->m_fBufRange									///ì˜¤ë¼ë²”ìœ„
+//			>> pTSKILL->m_dwDuration								///ì ìš©ì‹œê°„ì´ˆê¸°ê°’
+//			>> pTSKILL->m_dwDurationInc								///ì ìš©ì‹œê°„ì¦ê°€ë¹„ìœ¨	stupid Konst stupid Konst 
 //		
 //
 
 
-//			>> pTSKILL->m_bCanCancel								///»ç¿ëÀÚ Ãë¼Ò °¡´É ¿©ºÎ(Ãß°¡)
+//			>> pTSKILL->m_bCanCancel								///ì‚¬ìš©ì ì·¨ì†Œ ê°€ëŠ¥ ì—¬ë¶€(ì¶”ê°€)
 
-//			>> pTSKILL->m_bContinue									///µ¿ÀÛÁö¼Ó¿©ºÎ
-//			>> pTSKILL->m_wIconID									///¾ÆÀÌÄÜID
-//			>> pTSKILL->m_wItemID[0]								///¹ß»ç¾ÆÀÌÅÛ1
-//			>> pTSKILL->m_wItemID[1]								///¹ß»ç¾ÆÀÌÅÛ2
-//			>> pTSKILL->m_bActive									///ÆĞ½Ãºê=0 ¾×Æ¼ºê=1stupid stupid Konst 
+//			>> pTSKILL->m_bContinue									///ë™ì‘ì§€ì†ì—¬ë¶€
+//			>> pTSKILL->m_wIconID									///ì•„ì´ì½˜ID
+//			>> pTSKILL->m_wItemID[0]								///ë°œì‚¬ì•„ì´í…œ1
+//			>> pTSKILL->m_wItemID[1]								///ë°œì‚¬ì•„ì´í…œ2
+//			>> pTSKILL->m_bActive									///íŒ¨ì‹œë¸Œ=0 ì•¡í‹°ë¸Œ=1stupid stupid Konst 
 //
 
-//			>> pTSKILL->m_bLoop										///ÀÚµ¿¹İº¹¿©ºÎ
-//			>> pTSKILL->m_bActionID[TSKILLACTION_SPELL]				///ÁÖ¹®µ¿ÀÛ
-//			>> pTSKILL->m_bActionID[TSKILLACTION_ACTIVATE]			///¹ßµ¿µ¿ÀÛ
-//			>> pTSKILL->m_bActionID[TSKILLACTION_MOVEACTIVATE]		///ÀÌµ¿¹ßµ¿µ¿ÀÛ
-//			>> pTSKILL->m_bActionID[TSKILLACTION_DEFEND]			///¹æ¾îµ¿ÀÛ
-//			>> pTSKILL->m_dwInfoID									///ÅøÆÁID
-//			>> pTSKILL->m_dwSFX[TSKILLSFX_SPELL]					///½ÃÀüÀÌÆåÆ®
-//			>> pTSKILL->m_dwSFX[TSKILLSFX_ACT]						///¹ßµ¿ÀÌÆåÆ®
-//			>> pTSKILL->m_dwSFX[TSKILLSFX_DEFEND]					///Å¸°ÙÀÌÆåÆ®
-//			>> pTSKILL->m_dwSFX[TSKILLSFX_DEFENDACT]				///Å¸°Ù¹ßµ¿ÀÌÆåÆ®
-//			>> pTSKILL->m_dwSFX[TSKILLSFX_LOOP]						///À¯ÁöÀÌÆåÆ®
-//			>> pTSKILL->m_dwSFX[TSKILLSFX_END]						///ÇØÁ¦ÀÌÆåÆ®
-//			>> pTSKILL->m_dwSFX[TSKILLSFX_ARROW]					///¹ß»çÃ¼ÀÌÆåÆ®
-//			>> pTSKILL->m_bShowIcon									///¾ÆÀÌÄÜº¸ÀÓ
+//			>> pTSKILL->m_bLoop										///ìë™ë°˜ë³µì—¬ë¶€
+//			>> pTSKILL->m_bActionID[TSKILLACTION_SPELL]				///ì£¼ë¬¸ë™ì‘
+//			>> pTSKILL->m_bActionID[TSKILLACTION_ACTIVATE]			///ë°œë™ë™ì‘
+//			>> pTSKILL->m_bActionID[TSKILLACTION_MOVEACTIVATE]		///ì´ë™ë°œë™ë™ì‘
+//			>> pTSKILL->m_bActionID[TSKILLACTION_DEFEND]			///ë°©ì–´ë™ì‘
+//			>> pTSKILL->m_dwInfoID									///íˆ´íŒID
+//			>> pTSKILL->m_dwSFX[TSKILLSFX_SPELL]					///ì‹œì „ì´í™íŠ¸
+//			>> pTSKILL->m_dwSFX[TSKILLSFX_ACT]						///ë°œë™ì´í™íŠ¸
+//			>> pTSKILL->m_dwSFX[TSKILLSFX_DEFEND]					///íƒ€ê²Ÿì´í™íŠ¸
+//			>> pTSKILL->m_dwSFX[TSKILLSFX_DEFENDACT]				///íƒ€ê²Ÿë°œë™ì´í™íŠ¸
+//			>> pTSKILL->m_dwSFX[TSKILLSFX_LOOP]						///ìœ ì§€ì´í™íŠ¸
+//			>> pTSKILL->m_dwSFX[TSKILLSFX_END]						///í•´ì œì´í™íŠ¸
+//			>> pTSKILL->m_dwSFX[TSKILLSFX_ARROW]					///ë°œì‚¬ì²´ì´í™íŠ¸
+//			>> pTSKILL->m_bShowIcon									///ì•„ì´ì½˜ë³´ì„
 //			>> pTSKILL->m_bShowTime		
-//			>> pTSKILL->m_bShowCritical								///Å©¸®Æ¼ÄÃÀû¿ë
-//			>> pTSKILL->m_bUseInHold								///°¤Èû »óÅÂ¿¡¼­ »ç¿ë °¡´É¿©ºÎ
+//			>> pTSKILL->m_bShowCritical								///í¬ë¦¬í‹°ì»¬ì ìš©
+//			>> pTSKILL->m_bUseInHold								///ê°‡í˜ ìƒíƒœì—ì„œ ì‚¬ìš© ê°€ëŠ¥ì—¬ë¶€
 
-//			>> pTSKILL->m_bStaticWhenDie							///»ç¸Á½Ã ¹öÇÁ À¯Áö
-//			>> pTSKILL->m_fMoveDist								///¼ø°£ÀÌµ¿ °Å¸®
+//			>> pTSKILL->m_bStaticWhenDie							///ì‚¬ë§ì‹œ ë²„í”„ ìœ ì§€
+//			>> pTSKILL->m_fMoveDist								///ìˆœê°„ì´ë™ ê±°ë¦¬
 //			>> unused
 //			>> unused
 //			>> pTSKILL->m_bPremIconID
@@ -497,68 +497,68 @@ void CTChart::InitTSKILLTEMP( CString strPath )
 		LPTSKILL pTSKILL = new TSKILL();
 
 		ar	>> pTSKILL->m_strNAME
-			>> pTSKILL->m_wSkillID									///½ºÅ³ID									///½ºÅ³ÀÌ¸§
-			>> pTSKILL->m_wActSkillID								///ÀÌÀü¼º°ø½ºÅ³
+			>> pTSKILL->m_wSkillID									///ìŠ¤í‚¬ID									///ìŠ¤í‚¬ì´ë¦„
+			>> pTSKILL->m_wActSkillID								///ì´ì „ì„±ê³µìŠ¤í‚¬
 			>> pTSKILL->m_wNeedItemID
-			>> pTSKILL->m_dwClassID						///¼Ò¸ğ¾ÆÀÌÅÛ
-			>> pTSKILL->m_wDefSkillID								///´ë»óÀÌ°É¸°¹öÇÁ								///Á÷¾÷ÄÚµå
-			>> pTSKILL->m_bKind										///Æ¯¼º±¸ºĞ
-			>> pTSKILL->m_bPositive									///ÀÌ·Î¿ò ÇØ·Î¿ò
-			>> pTSKILL->m_bLevel									///¿ä±¸·¹º§
-			>> pTSKILL->m_bLevelInc									///¿ä±¸·¹º§Áõ°¡
-			>> pTSKILL->m_bMaxLevel									///ÃÖ´ë½ºÅ³·¹º§
-			>> pTSKILL->m_fPrice									///°¡°İºñÀ²
-			>> pTSKILL->m_bDuraSlot									///³»±¸°¨¼Ò½½·Ô(Ãß°¡)
-			>> pTSKILL->m_dwWeaponID								///»ç¿ë¹«±â
-			>> pTSKILL->m_wUseHP									///HP¼Ò¸ğºñÀ²
+			>> pTSKILL->m_dwClassID						///ì†Œëª¨ì•„ì´í…œ
+			>> pTSKILL->m_wDefSkillID								///ëŒ€ìƒì´ê±¸ë¦°ë²„í”„								///ì§ì—…ì½”ë“œ
+			>> pTSKILL->m_bKind										///íŠ¹ì„±êµ¬ë¶„
+			>> pTSKILL->m_bPositive									///ì´ë¡œì›€ í•´ë¡œì›€
+			>> pTSKILL->m_bLevel									///ìš”êµ¬ë ˆë²¨
+			>> pTSKILL->m_bLevelInc									///ìš”êµ¬ë ˆë²¨ì¦ê°€
+			>> pTSKILL->m_bMaxLevel									///ìµœëŒ€ìŠ¤í‚¬ë ˆë²¨
+			>> pTSKILL->m_fPrice									///ê°€ê²©ë¹„ìœ¨
+			>> pTSKILL->m_bDuraSlot									///ë‚´êµ¬ê°ì†ŒìŠ¬ë¡¯(ì¶”ê°€)
+			>> pTSKILL->m_dwWeaponID								///ì‚¬ìš©ë¬´ê¸°
+			>> pTSKILL->m_wUseHP									///HPì†Œëª¨ë¹„ìœ¨
 			>> dwNIU
-			>> pTSKILL->m_wUseMP							///MP¼Ò¸ğºñÀ²
-			>> pTSKILL->m_bHitInit									///¼º°øÀ²ÃÊ±â°ª(Ãß°¡)
-			>> pTSKILL->m_bHitInc									///¼º°øÀ²Áõ°¡°ª(Ãß°¡)
-			>> pTSKILL->m_dwSpellTick								///¹ßµ¿½Ã°£
-			>> pTSKILL->m_bIsRide									///¹öÇÁÁß Å» ¼ö ¾ø´Â ½ºÅ³
-			>> pTSKILL->m_dwDelay									///Àç»ç¿ë´ë±â
-			>> pTSKILL->m_nDelayInc									///Àç»ç¿ë ´ë±â Áõ°¨ºñÀ²
-			>> pTSKILL->m_dwGroupTick								///°è¿­´ë±â
-			>> pTSKILL->m_dwInterval								///¹İº¹½Ã°£
-			>> pTSKILL->m_bDelayType								///°ø¼ÓÀû¿ë
-			>> pTSKILL->m_wModeID									///ÅÂ¼¼
+			>> pTSKILL->m_wUseMP							///MPì†Œëª¨ë¹„ìœ¨
+			>> pTSKILL->m_bHitInit									///ì„±ê³µìœ¨ì´ˆê¸°ê°’(ì¶”ê°€)
+			>> pTSKILL->m_bHitInc									///ì„±ê³µìœ¨ì¦ê°€ê°’(ì¶”ê°€)
+			>> pTSKILL->m_dwSpellTick								///ë°œë™ì‹œê°„
+			>> pTSKILL->m_bIsRide									///ë²„í”„ì¤‘ íƒˆ ìˆ˜ ì—†ëŠ” ìŠ¤í‚¬
+			>> pTSKILL->m_dwDelay									///ì¬ì‚¬ìš©ëŒ€ê¸°
+			>> pTSKILL->m_nDelayInc									///ì¬ì‚¬ìš© ëŒ€ê¸° ì¦ê°ë¹„ìœ¨
+			>> pTSKILL->m_dwGroupTick								///ê³„ì—´ëŒ€ê¸°
+			>> pTSKILL->m_dwInterval								///ë°˜ë³µì‹œê°„
+			>> pTSKILL->m_bDelayType								///ê³µì†ì ìš©
+			>> pTSKILL->m_wModeID									///íƒœì„¸
 			>> dwNIU
-			>> pTSKILL->m_bTargetType								///»ç¿ë´ë»ó ÇÇ¾Æ
-			>> pTSKILL->m_bRangeType								///´ë»óÆÇº°
-			>> pTSKILL->m_fMinRange									///ÃÖ¼Ò»çÁ¤°Å¸®
-			>> pTSKILL->m_fMaxRange									///ÃÖ´ë»çÁ¤±â¸®
+			>> pTSKILL->m_bTargetType								///ì‚¬ìš©ëŒ€ìƒ í”¼ì•„
+			>> pTSKILL->m_bRangeType								///ëŒ€ìƒíŒë³„
+			>> pTSKILL->m_fMinRange									///ìµœì†Œì‚¬ì •ê±°ë¦¬
+			>> pTSKILL->m_fMaxRange									///ìµœëŒ€ì‚¬ì •ê¸°ë¦¬
 			>> pTSKILL->m_fAtkRange
-			>> dwNIU								///ÀÎ½Ä Æø,¹İ°æ
-			>> pTSKILL->m_fBufRange									///¿À¶ó¹üÀ§
-			>> pTSKILL->m_dwDuration								///Àû¿ë½Ã°£ÃÊ±â°ª
-			>> pTSKILL->m_dwDurationInc								///Àû¿ë½Ã°£Áõ°¡ºñÀ²	
-			>> pTSKILL->m_bCanCancel								///»ç¿ëÀÚ Ãë¼Ò °¡´É ¿©ºÎ(Ãß°¡)
-			>> pTSKILL->m_bContinue									///µ¿ÀÛÁö¼Ó¿©ºÎ
+			>> dwNIU								///ì¸ì‹ í­,ë°˜ê²½
+			>> pTSKILL->m_fBufRange									///ì˜¤ë¼ë²”ìœ„
+			>> pTSKILL->m_dwDuration								///ì ìš©ì‹œê°„ì´ˆê¸°ê°’
+			>> pTSKILL->m_dwDurationInc								///ì ìš©ì‹œê°„ì¦ê°€ë¹„ìœ¨	
+			>> pTSKILL->m_bCanCancel								///ì‚¬ìš©ì ì·¨ì†Œ ê°€ëŠ¥ ì—¬ë¶€(ì¶”ê°€)
+			>> pTSKILL->m_bContinue									///ë™ì‘ì§€ì†ì—¬ë¶€
 			>> dwNIU
-			>> pTSKILL->m_wIconID									///¾ÆÀÌÄÜID
-			>> pTSKILL->m_wItemID[0]								///¹ß»ç¾ÆÀÌÅÛ1
-			>> pTSKILL->m_wItemID[1]								///¹ß»ç¾ÆÀÌÅÛ2
-			>> pTSKILL->m_bActive									///ÆĞ½Ãºê=0 ¾×Æ¼ºê=1
-			>> pTSKILL->m_bLoop										///ÀÚµ¿¹İº¹¿©ºÎ
-			>> pTSKILL->m_bActionID[TSKILLACTION_SPELL]				///ÁÖ¹®µ¿ÀÛ
-			>> pTSKILL->m_bActionID[TSKILLACTION_ACTIVATE]			///¹ßµ¿µ¿ÀÛ
-			>> pTSKILL->m_bActionID[TSKILLACTION_MOVEACTIVATE]		///ÀÌµ¿¹ßµ¿µ¿ÀÛ
-			>> pTSKILL->m_bActionID[TSKILLACTION_DEFEND]			///¹æ¾îµ¿ÀÛ
-			>> pTSKILL->m_dwInfoID									///ÅøÆÁID
+			>> pTSKILL->m_wIconID									///ì•„ì´ì½˜ID
+			>> pTSKILL->m_wItemID[0]								///ë°œì‚¬ì•„ì´í…œ1
+			>> pTSKILL->m_wItemID[1]								///ë°œì‚¬ì•„ì´í…œ2
+			>> pTSKILL->m_bActive									///íŒ¨ì‹œë¸Œ=0 ì•¡í‹°ë¸Œ=1
+			>> pTSKILL->m_bLoop										///ìë™ë°˜ë³µì—¬ë¶€
+			>> pTSKILL->m_bActionID[TSKILLACTION_SPELL]				///ì£¼ë¬¸ë™ì‘
+			>> pTSKILL->m_bActionID[TSKILLACTION_ACTIVATE]			///ë°œë™ë™ì‘
+			>> pTSKILL->m_bActionID[TSKILLACTION_MOVEACTIVATE]		///ì´ë™ë°œë™ë™ì‘
+			>> pTSKILL->m_bActionID[TSKILLACTION_DEFEND]			///ë°©ì–´ë™ì‘
+			>> pTSKILL->m_dwInfoID									///íˆ´íŒID
 			>> dwNIU
-			>> pTSKILL->m_dwSFX[TSKILLSFX_SPELL]					///½ÃÀüÀÌÆåÆ®
-			>> pTSKILL->m_dwSFX[TSKILLSFX_ACT]						///¹ßµ¿ÀÌÆåÆ®
-			>> pTSKILL->m_dwSFX[TSKILLSFX_DEFEND]					///Å¸°ÙÀÌÆåÆ®
-			>> pTSKILL->m_dwSFX[TSKILLSFX_DEFENDACT]				///Å¸°Ù¹ßµ¿ÀÌÆåÆ®
-			>> pTSKILL->m_dwSFX[TSKILLSFX_LOOP]						///À¯ÁöÀÌÆåÆ®
-			>> pTSKILL->m_dwSFX[TSKILLSFX_END]						///ÇØÁ¦ÀÌÆåÆ®
-			>> pTSKILL->m_dwSFX[TSKILLSFX_ARROW]					///¹ß»çÃ¼ÀÌÆåÆ®
-			>> pTSKILL->m_bShowIcon									///¾ÆÀÌÄÜº¸ÀÓ
-			>> pTSKILL->m_bShowTime									///³²Àº½Ã°£º¸ÀÓ
-			>> pTSKILL->m_bShowCritical								///Å©¸®Æ¼ÄÃÀû¿ë
-			>> pTSKILL->m_bUseInHold								///°¤Èû »óÅÂ¿¡¼­ »ç¿ë °¡´É¿©ºÎ
-			>> pTSKILL->m_bStaticWhenDie							///»ç¸Á½Ã ¹öÇÁ À¯Áö
+			>> pTSKILL->m_dwSFX[TSKILLSFX_SPELL]					///ì‹œì „ì´í™íŠ¸
+			>> pTSKILL->m_dwSFX[TSKILLSFX_ACT]						///ë°œë™ì´í™íŠ¸
+			>> pTSKILL->m_dwSFX[TSKILLSFX_DEFEND]					///íƒ€ê²Ÿì´í™íŠ¸
+			>> pTSKILL->m_dwSFX[TSKILLSFX_DEFENDACT]				///íƒ€ê²Ÿë°œë™ì´í™íŠ¸
+			>> pTSKILL->m_dwSFX[TSKILLSFX_LOOP]						///ìœ ì§€ì´í™íŠ¸
+			>> pTSKILL->m_dwSFX[TSKILLSFX_END]						///í•´ì œì´í™íŠ¸
+			>> pTSKILL->m_dwSFX[TSKILLSFX_ARROW]					///ë°œì‚¬ì²´ì´í™íŠ¸
+			>> pTSKILL->m_bShowIcon									///ì•„ì´ì½˜ë³´ì„
+			>> pTSKILL->m_bShowTime									///ë‚¨ì€ì‹œê°„ë³´ì„
+			>> pTSKILL->m_bShowCritical								///í¬ë¦¬í‹°ì»¬ì ìš©
+			>> pTSKILL->m_bUseInHold								///ê°‡í˜ ìƒíƒœì—ì„œ ì‚¬ìš© ê°€ëŠ¥ì—¬ë¶€
+			>> pTSKILL->m_bStaticWhenDie							///ì‚¬ë§ì‹œ ë²„í”„ ìœ ì§€
 			>> pTSKILL->m_fMoveDist
 			>> dwNIU
 			
@@ -647,64 +647,64 @@ void CTChart::InitTSKILLTEMP( CString strPath )
 
 		ar  
 		>> pTSKILL->m_wSkillID         ///?sLlID
-		>> pTSKILL->m_strNAME         ///?sLlRE¸§
+		>> pTSKILL->m_strNAME         ///?sLlREë¦„
 		>> pTSKILL->m_wActSkillID        ///RER?s??sLl
 		>> pTSKILL->m_wNeedItemID        ///LN?lCRELU
-		>> pTSKILL->m_wDefSkillID        ///´ë»óRE°É¸°aöÇ?
-		>> pTSKILL->m_dwClassID         ///Á÷l÷ÄÚµl
-		>> pTSKILL->m_bKind          ///CZLs±¸s?
-		>> pTSKILL->m_bPositive         ///RE·Îzn ?·Îzn
-		>> pTSKILL->m_bLevel         ///zä±¸·as?
-		>> pTSKILL->m_bLevelInc         ///zä±¸·as§Áo?
-		>> pTSKILL->m_bMaxLevel         ///AÖ´?sLl?s?
-		>> pTSKILL->m_fPrice         ///?°İsnR?
-		>> pTSKILL->m_bDuraSlot         ///l»±¸°?N??·Ô(Aß°?)
-		>> pTSKILL->m_dwWeaponID        ///»çz?«±?
+		>> pTSKILL->m_wDefSkillID        ///ëŒ€ìƒREê±¸ë¦°aç½®?
+		>> pTSKILL->m_dwClassID         ///ì§lè‹”æ¹„l
+		>> pTSKILL->m_bKind          ///CZLsêµ¬s?
+		>> pTSKILL->m_bPositive         ///REë¡œzn ?ë¡œzn
+		>> pTSKILL->m_bLevel         ///zå³¨ë§‰as?
+		>> pTSKILL->m_bLevelInc         ///zå³¨ë§‰asã²o?
+		>> pTSKILL->m_bMaxLevel         ///Açµ?sLl?s?
+		>> pTSKILL->m_fPrice         ///?ê²©snR?
+		>> pTSKILL->m_bDuraSlot         ///lëº‘ë¦°?N??ë¡¯(Aç…?)
+		>> pTSKILL->m_dwWeaponID        ///ì‚¬z?ã‚±?
 		>> pTSKILL->m_wUseHP         ///HPLN?snR?
 		>> pTSKILL->m_wUseMP         ///MPLN?snR?
-		>> pTSKILL->m_bHitInit         ///Ls?R?AE±â?(Aß°?)
-		>> pTSKILL->m_bHitInc         ///Ls?R????(Aß°?)
-		>> pTSKILL->m_dwSpellTick        ///aßµz?A?
-		>> pTSKILL->m_bIsRide         ///aöÇÁÁ?L?L?lr´Â ?sLl
-		>> pTSKILL->m_dwDelay         ///Rç»?ë´ë±?
-		>> pTSKILL->m_nDelayInc         ///Rç»??´ë±â ?°¨snR?
-		>> pTSKILL->m_dwGroupTick        ///?z­´ë±â
+		>> pTSKILL->m_bHitInit         ///Ls?R?AEê¸°?(Aç…?)
+		>> pTSKILL->m_bHitInc         ///Ls?R????(Aç…?)
+		>> pTSKILL->m_dwSpellTick        ///aæ£®z?A?
+		>> pTSKILL->m_bIsRide         ///aç½®ì¢‹?L?L?lrëŠ” ?sLl
+		>> pTSKILL->m_dwDelay         ///Rç€¯?éŠè«­?
+		>> pTSKILL->m_nDelayInc         ///Rç€¯??ëŒ€ê¸° ?ê°snR?
+		>> pTSKILL->m_dwGroupTick        ///?zÂ­ëŒ€ê¸°
 		>> pTSKILL->m_dwInterval        ///a?a?A?
 		>> pTSKILL->m_bDelayType        ///?L?uz?
 		>> pTSKILL->m_wModeID         ///L?L
-		>> pTSKILL->m_bTargetType        ///»çzë´ë»?ÇÇlC
-		>> pTSKILL->m_bRangeType        ///´ë»óC??
-		>> pTSKILL->m_fMinRange         ///A?N»çÁ¤?¸®
-		>> pTSKILL->m_fMaxRange         ///AÖ´ë»çÁ¤±â¸®
-		>> pTSKILL->m_fAtkRange         ///R??Cr,aİ°c
-		>> pTSKILL->m_fBufRange         ///zR¶óa??
-		>> pTSKILL->m_dwDuration        ///Ruz?A?AE±â?
+		>> pTSKILL->m_bTargetType        ///ì‚¬zéŠï§‘?í”¼lC
+		>> pTSKILL->m_bRangeType        ///ëŒ€ìƒC??
+		>> pTSKILL->m_fMinRange         ///A?Nì‚¬ì •?ë¦¬
+		>> pTSKILL->m_fMaxRange         ///Açµï§‘ï¦®ã…ç¶¬Â®
+		>> pTSKILL->m_fAtkRange         ///R??Cr,aè…‘c
+		>> pTSKILL->m_fBufRange         ///zRë¼a??
+		>> pTSKILL->m_dwDuration        ///Ruz?A?AEê¸°?
 		>> pTSKILL->m_dwDurationInc        ///Ruz?A???snR? 
-		>> pTSKILL->m_bCanCancel        ///»çz??A?N ?´É z??Aß°?)
-		>> pTSKILL->m_bContinue         ///?RUÁöL???
-		>> pTSKILL->m_wIconID         ///lCREÄÜID
-		>> pTSKILL->m_wItemID[0]        ///aß»?CRELU1
-		>> pTSKILL->m_wItemID[1]        ///aß»?CRELU2
+		>> pTSKILL->m_bCanCancel        ///ì‚¬z??A?N ?ëŠ¥ z??Aç…?)
+		>> pTSKILL->m_bContinue         ///?RUì§€L???
+		>> pTSKILL->m_wIconID         ///lCREì½˜ID
+		>> pTSKILL->m_wItemID[0]        ///aæ¾?CRELU1
+		>> pTSKILL->m_wItemID[1]        ///aæ¾?CRELU2
 		>> pTSKILL->m_bActive         ///C?Ase=0 l?Lse=1
-		>> pTSKILL->m_bLoop          ///RÚµza?az??
-		>> pTSKILL->m_bActionID[TSKILLACTION_SPELL]    ///ÁÖa®?RU
-		>> pTSKILL->m_bActionID[TSKILLACTION_ACTIVATE]   ///aßµz?RU
-		>> pTSKILL->m_bActionID[TSKILLACTION_MOVEACTIVATE]  ///RE?aßµz?RU
-		>> pTSKILL->m_bActionID[TSKILLACTION_DEFEND]   ///aclîµzRU
+		>> pTSKILL->m_bLoop          ///Ræ¹„za?az??
+		>> pTSKILL->m_bActionID[TSKILLACTION_SPELL]    ///ì£¼aÂ®?RU
+		>> pTSKILL->m_bActionID[TSKILLACTION_ACTIVATE]   ///aæ£®z?RU
+		>> pTSKILL->m_bActionID[TSKILLACTION_MOVEACTIVATE]  ///RE?aæ£®z?RU
+		>> pTSKILL->m_bActionID[TSKILLACTION_DEFEND]   ///aclè«zRU
 		>> pTSKILL->m_dwInfoID         ///LrC?D
-		>> pTSKILL->m_dwSFX[TSKILLSFX_SPELL]     ///?AR?EClC®
-		>> pTSKILL->m_dwSFX[TSKILLSFX_ACT]      ///aßµzREClC®
-		>> pTSKILL->m_dwSFX[TSKILLSFX_DEFEND]     ///L¸°UREClC®
-		>> pTSKILL->m_dwSFX[TSKILLSFX_DEFENDACT]    ///L¸°UaßµzREClC®
-		>> pTSKILL->m_dwSFX[TSKILLSFX_LOOP]      ///RZÁöREClC®
-		>> pTSKILL->m_dwSFX[TSKILLSFX_END]      ///?Á¦REClC®
-		>> pTSKILL->m_dwSFX[TSKILLSFX_ARROW]     ///aß»?LREClC®
-		>> pTSKILL->m_bShowIcon         ///lCREÄÜs??
+		>> pTSKILL->m_dwSFX[TSKILLSFX_SPELL]     ///?AR?EClCÂ®
+		>> pTSKILL->m_dwSFX[TSKILLSFX_ACT]      ///aæ£®zREClCÂ®
+		>> pTSKILL->m_dwSFX[TSKILLSFX_DEFEND]     ///Lë¦°UREClCÂ®
+		>> pTSKILL->m_dwSFX[TSKILLSFX_DEFENDACT]    ///Lë¦°Uaæ£®zREClCÂ®
+		>> pTSKILL->m_dwSFX[TSKILLSFX_LOOP]      ///RZì§€REClCÂ®
+		>> pTSKILL->m_dwSFX[TSKILLSFX_END]      ///?ì œREClCÂ®
+		>> pTSKILL->m_dwSFX[TSKILLSFX_ARROW]     ///aæ¾?LREClCÂ®
+		>> pTSKILL->m_bShowIcon         ///lCREì½˜s??
 		>> pTSKILL->m_bShowTime         ///l?Rs?A?s??
-		>> pTSKILL->m_bShowCritical        ///L©¸®CL?Ruz?
-		>> pTSKILL->m_bUseInHold        ///°¤Cu »óL??L­ »çz??´Éz??
-		>> pTSKILL->m_bStaticWhenDie       ///»ç¸Á?A aöÇ?RZÁö
-		>> pTSKILL->m_fMoveDist        ///Lr?RE? ?¸®
+		>> pTSKILL->m_bShowCritical        ///Lãˆ‡ì·ˆL?Ruz?
+		>> pTSKILL->m_bUseInHold        ///ê°‡Cu ìƒL??LÂ­ ì‚¬z??ëŠ¥z??
+		>> pTSKILL->m_bStaticWhenDie       ///ì‚¬ë§?A aç½®?RZì§€
+		>> pTSKILL->m_fMoveDist        ///Lr?RE? ?ë¦¬
 		>> unused
 		>> unused
 		>> unused
@@ -761,15 +761,15 @@ void CTChart::InitTSKILLFUNCTION( CString strPath )
 		LPTSKILLFUNCTION pTFUNCTION = new TSKILLFUNCTION();
 		WORD wSkillID;
 
-		ar	>> wSkillID						///ÀÏ·Ã¹øÈ£
+		ar	>> wSkillID						///ì¼ë ¨ë²ˆí˜¸
 
-			>> pTFUNCTION->m_bMethodID		///Àû¿ë¹æ½Ä
-			>> pTFUNCTION->m_bType			///È¿°úÁ¾·ù
-			>> pTFUNCTION->m_bFunctionID	///È¿°ú³»¿ë
-			>> pTFUNCTION->m_bOPCode		///¼öÄ¡Àû¿ë
-			>> pTFUNCTION->m_bCalc			///¼º´É°è»ê(Ãß°¡)
-			>> pTFUNCTION->m_wValue			///ÃÊ±â°ª
-			>> pTFUNCTION->m_wInc;			///Áõ°¡°ª
+			>> pTFUNCTION->m_bMethodID		///ì ìš©ë°©ì‹
+			>> pTFUNCTION->m_bType			///íš¨ê³¼ì¢…ë¥˜
+			>> pTFUNCTION->m_bFunctionID	///íš¨ê³¼ë‚´ìš©
+			>> pTFUNCTION->m_bOPCode		///ìˆ˜ì¹˜ì ìš©
+			>> pTFUNCTION->m_bCalc			///ì„±ëŠ¥ê³„ì‚°(ì¶”ê°€)
+			>> pTFUNCTION->m_wValue			///ì´ˆê¸°ê°’
+			>> pTFUNCTION->m_wInc;			///ì¦ê°€ê°’
 
 		LPTSKILL pTSKILL = CTChart::FindTSKILLTEMP(wSkillID);
 		if(pTSKILL)
@@ -1619,7 +1619,7 @@ void CTChart::InitTPOPUPITEM( CString strPath )
 		else
 		{
 			delete pTITEM;
-			TRACE("°æ°í : %s¿¡ Áßº¹µÈ ¾ÆÀÌµğ°¡ Á¸ÀçÇÕ´Ï´Ù. (ID:%u)\n", strPath, dwID);
+			TRACE("ê²½ê³  : %sì— ì¤‘ë³µëœ ì•„ì´ë””ê°€ ì¡´ì¬í•©ë‹ˆë‹¤. (ID:%u)\n", strPath, dwID);
 		}
 	}
 }
@@ -2162,60 +2162,60 @@ void CTChart::InitTITEMTEMP( CString strPath )
 	{
 		LPTITEM pTITEM = new TITEM();
 
-		ar	>> pTITEM->m_wItemID				///ÀÏ·Ã¹øÈ£
-			>> pTITEM->m_bType					///Á¾·ù
-			>> pTITEM->m_bKind					///±¸ºĞ
-			>> pTITEM->m_wAttrID				///¼º´ÉÀÏ·Ã¹øÈ£
-			>> pTITEM->m_strNAME				///ÀÌ¸§
-			>> pTITEM->m_wUseValue				///»ç¿ëÈ¿°ú°ª
-			>> pTITEM->m_dwSlotID				///ÀåÂøÀ§Ä¡
-			>> pTITEM->m_dwClassID				///»ç¿ëÁ÷¾÷
-			>> pTITEM->m_bPrmSlotID				///ÁÖ¹«±âÀåÂøÀ§Ä¡
-			>> pTITEM->m_bSubSlotID				///º¸Á¶¹«±âÀåÂøÀ§Ä¡
-			>> pTITEM->m_bLevel					///ÇÊ¿ä·¹º§
-			>> pTITEM->m_bCanRepair				///¼ö¸®¿©ºÎ(Ãß°¡)
-			>> pTITEM->m_dwDuraMax				///ÃÖ´ë³»±¸(Ãß°¡)
-			>> pTITEM->m_bRefineMax				///Á¦·ÃÈ½¼ö(Ãß°¡)
-			>> pTITEM->m_fPriceRate				///°¡°İºñÀ²
-			>> pTITEM->m_dwPrice				///±âÁØ°¡°İ
-			>> pTITEM->m_bMinRange				///ÃÖ¼Ò»çÁ¤°Å¸®
-			>> pTITEM->m_bMaxRange				///ÃÖ´ë»çÁ¤°Å¸®
-			>> pTITEM->m_bStack							///ÃÖ´ë¼ö·®
-			>> pTITEM->m_bSlotCount				///½½·Ô°¹¼ö
-			>> pTITEM->m_bCanGamble				///ºÀÀÎ »ı¼º¿©ºÎ
-			>> pTITEM->m_bGambleProb			///Ä¡È¯¿©ºÎ(Ãß°¡)
+		ar	>> pTITEM->m_wItemID				///ì¼ë ¨ë²ˆí˜¸
+			>> pTITEM->m_bType					///ì¢…ë¥˜
+			>> pTITEM->m_bKind					///êµ¬ë¶„
+			>> pTITEM->m_wAttrID				///ì„±ëŠ¥ì¼ë ¨ë²ˆí˜¸
+			>> pTITEM->m_strNAME				///ì´ë¦„
+			>> pTITEM->m_wUseValue				///ì‚¬ìš©íš¨ê³¼ê°’
+			>> pTITEM->m_dwSlotID				///ì¥ì°©ìœ„ì¹˜
+			>> pTITEM->m_dwClassID				///ì‚¬ìš©ì§ì—…
+			>> pTITEM->m_bPrmSlotID				///ì£¼ë¬´ê¸°ì¥ì°©ìœ„ì¹˜
+			>> pTITEM->m_bSubSlotID				///ë³´ì¡°ë¬´ê¸°ì¥ì°©ìœ„ì¹˜
+			>> pTITEM->m_bLevel					///í•„ìš”ë ˆë²¨
+			>> pTITEM->m_bCanRepair				///ìˆ˜ë¦¬ì—¬ë¶€(ì¶”ê°€)
+			>> pTITEM->m_dwDuraMax				///ìµœëŒ€ë‚´êµ¬(ì¶”ê°€)
+			>> pTITEM->m_bRefineMax				///ì œë ¨íšŸìˆ˜(ì¶”ê°€)
+			>> pTITEM->m_fPriceRate				///ê°€ê²©ë¹„ìœ¨
+			>> pTITEM->m_dwPrice				///ê¸°ì¤€ê°€ê²©
+			>> pTITEM->m_bMinRange				///ìµœì†Œì‚¬ì •ê±°ë¦¬
+			>> pTITEM->m_bMaxRange				///ìµœëŒ€ì‚¬ì •ê±°ë¦¬
+			>> pTITEM->m_bStack							///ìµœëŒ€ìˆ˜ëŸ‰
+			>> pTITEM->m_bSlotCount				///ìŠ¬ë¡¯ê°¯ìˆ˜
+			>> pTITEM->m_bCanGamble				///ë´‰ì¸ ìƒì„±ì—¬ë¶€
+			>> pTITEM->m_bGambleProb			///ì¹˜í™˜ì—¬ë¶€(ì¶”ê°€)
 			>> pTITEM->m_bDestoryProb
 			>> bla1
-			>> bla1								///¼Ò¸ê¿©ºÎ(Ãß°¡)
+			>> bla1								///ì†Œë©¸ì—¬ë¶€(ì¶”ê°€)
 
-			>> pTITEM->m_bCanGrade				///µî±Ş °¡´É¿©ºÎ
-			>> pTITEM->m_bCanMagic				///¸¶¹ı »ı¼º¿©ºÎ
-			>> pTITEM->m_bCanRare				///Èñ±Í »ı¼º¿©ºÎ
-			>> pTITEM->m_wDelayGroupID			///Àç»ç¿ë´ë±â±×·ì
-			>> pTITEM->m_dwDelay				///Àç»ç¿ë´ë±â½Ã°£
-			>> pTITEM->m_bCanTrade				///°Å·¡,ÆÇ¸Å °¡´É ¿©ºÎ
+			>> pTITEM->m_bCanGrade				///ë“±ê¸‰ ê°€ëŠ¥ì—¬ë¶€
+			>> pTITEM->m_bCanMagic				///ë§ˆë²• ìƒì„±ì—¬ë¶€
+			>> pTITEM->m_bCanRare				///í¬ê·€ ìƒì„±ì—¬ë¶€
+			>> pTITEM->m_wDelayGroupID			///ì¬ì‚¬ìš©ëŒ€ê¸°ê·¸ë£¹
+			>> pTITEM->m_dwDelay				///ì¬ì‚¬ìš©ëŒ€ê¸°ì‹œê°„
+			>> pTITEM->m_bCanTrade				///ê±°ë˜,íŒë§¤ ê°€ëŠ¥ ì—¬ë¶€
 			>> bla1
-			>> pTITEM->m_bIsSpecial				///Ä³½¬ ¾ÆÀÌÅÛ ¿©ºÎ
-			>> pTITEM->m_wUseTime				///»ç¿ë ±â°£(ÀÏ/½Ã°£)
+			>> pTITEM->m_bIsSpecial				///ìºì‰¬ ì•„ì´í…œ ì—¬ë¶€
+			>> pTITEM->m_wUseTime				///ì‚¬ìš© ê¸°ê°„(ì¼/ì‹œê°„)
 			>> pTITEM->m_bUseType
 
-			//>> bla1								///»ç¿ë Å¸ÀÔ
+			//>> bla1								///ì‚¬ìš© íƒ€ì…
 
 			>> pTITEM->m_bWeaponID				///WEAPON ID
 			>> pTITEM->m_fShotSpeed				///SHOT SPEED
 			>> pTITEM->m_fGravity				///GRAVITY
 			>> pTITEM->m_dwInfoID				///INFO ID
-			>> pTITEM->m_bSkillItemType			///¹ß»çÅ¸ÀÔ
-			>> pTITEM->m_wVisual[0]				///0´Ü°è ºñÁÖ¾ó(Ãß°¡)
-			>> pTITEM->m_wVisual[1]				///1´Ü°è ºñÁÖ¾ó(Ãß°¡)
-			>> pTITEM->m_wVisual[2]				///2´Ü°è ºñÁÖ¾ó(Ãß°¡)
-			>> pTITEM->m_wVisual[3]				///3´Ü°è ºñÁÖ¾ó(Ãß°¡)
-			>> pTITEM->m_wVisual[4]				///4´Ü°è ºñÁÖ¾ó(Ãß°¡)
-			>> pTITEM->m_wGradeSFX				///µî±Ş ÀÌÆåÆ®(Ãß°¡)
-			>> pTITEM->m_wOptionSFX[0]			///0´Ü°è ¿É¼Ç ÀÌÆåÆ®(Ãß°¡)
-			>> pTITEM->m_wOptionSFX[1]			///1´Ü°è ¿É¼Ç ÀÌÆåÆ®(Ãß°¡)
-			>> pTITEM->m_wOptionSFX[2]			///2´Ü°è ¿É¼Ç ÀÌÆåÆ®(Ãß°¡)
-			>> pTITEM->m_bCanWrap				/// ¹Ğ¶ø °¡´É
+			>> pTITEM->m_bSkillItemType			///ë°œì‚¬íƒ€ì…
+			>> pTITEM->m_wVisual[0]				///0ë‹¨ê³„ ë¹„ì£¼ì–¼(ì¶”ê°€)
+			>> pTITEM->m_wVisual[1]				///1ë‹¨ê³„ ë¹„ì£¼ì–¼(ì¶”ê°€)
+			>> pTITEM->m_wVisual[2]				///2ë‹¨ê³„ ë¹„ì£¼ì–¼(ì¶”ê°€)
+			>> pTITEM->m_wVisual[3]				///3ë‹¨ê³„ ë¹„ì£¼ì–¼(ì¶”ê°€)
+			>> pTITEM->m_wVisual[4]				///4ë‹¨ê³„ ë¹„ì£¼ì–¼(ì¶”ê°€)
+			>> pTITEM->m_wGradeSFX				///ë“±ê¸‰ ì´í™íŠ¸(ì¶”ê°€)
+			>> pTITEM->m_wOptionSFX[0]			///0ë‹¨ê³„ ì˜µì…˜ ì´í™íŠ¸(ì¶”ê°€)
+			>> pTITEM->m_wOptionSFX[1]			///1ë‹¨ê³„ ì˜µì…˜ ì´í™íŠ¸(ì¶”ê°€)
+			>> pTITEM->m_wOptionSFX[2]			///2ë‹¨ê³„ ì˜µì…˜ ì´í™íŠ¸(ì¶”ê°€)
+			>> pTITEM->m_bCanWrap				/// ë°€ë ê°€ëŠ¥
 			>> pTITEM->m_dwAuctionCode
 			>> pTITEM->m_bCanColor
 			>> dwNIU
@@ -2233,7 +2233,7 @@ void CTChart::InitTITEMTEMP( CString strPath )
 		MAPTITEMTEMP::iterator _itr = CTChart::m_mapTITEMTEMP.find(pTITEM->m_wItemID);
 		if( _itr != CTChart::m_mapTITEMTEMP.end() )
 		{
-			TRACE("°æ°í : %s¿¡ Áßº¹µÈ ¾ÆÀÌµğ°¡ Á¸ÀçÇÕ´Ï´Ù. (ID:%u)\n", strPath, pTITEM->m_wItemID);
+			TRACE("ê²½ê³  : %sì— ì¤‘ë³µëœ ì•„ì´ë””ê°€ ì¡´ì¬í•©ë‹ˆë‹¤. (ID:%u)\n", strPath, pTITEM->m_wItemID);
 
 			delete pTITEM;
 			continue;
@@ -2254,7 +2254,7 @@ void CTChart::InitTITEMTEMP( CString strPath )
 
 
 		if( pTITEM->m_bCanTrade & 1 ||
-			pTITEM->m_bCanWrap == 1 ) // 1 = °Å·¡°¡´É
+			pTITEM->m_bCanWrap == 1 ) // 1 = ê±°ë˜ê°€ëŠ¥
 			CTChart::m_mapTCANTRADETEMP.insert( MAPTITEMTEMP::value_type( pTITEM->m_wItemID, pTITEM ) );
 	}
 
@@ -2503,7 +2503,7 @@ void CTChart::InitTITEMVISUAL( CString strPath )
 		MAPTITEMVISUAL::iterator _itr = CTChart::m_mapTITEMVISUAL.find(pTITEM->m_wID);
 		if( _itr != CTChart::m_mapTITEMVISUAL.end() )
 		{
-			TRACE("°æ°í : %s¿¡ Áßº¹µÈ ¾ÆÀÌµğ°¡ Á¸ÀçÇÕ´Ï´Ù. (ID:%u)\n", strPath, pTITEM->m_wID);
+			TRACE("ê²½ê³  : %sì— ì¤‘ë³µëœ ì•„ì´ë””ê°€ ì¡´ì¬í•©ë‹ˆë‹¤. (ID:%u)\n", strPath, pTITEM->m_wID);
 
 			delete pTITEM;
 			continue;
@@ -3033,7 +3033,7 @@ void CTChart::InitTNPCTEMP( CString strPath )
 		MAPNPCTEMP::iterator _itr = CTChart::m_mapTNPCTEMP.find(pTNPC->m_wID);
 		if( _itr != CTChart::m_mapTNPCTEMP.end() )
 		{
-			TRACE("°æ°í : %s¿¡ Áßº¹µÈ ¾ÆÀÌµğ°¡ Á¸ÀçÇÕ´Ï´Ù. (ID:%u)\n", strPath, pTNPC->m_wID);
+			TRACE("ê²½ê³  : %sì— ì¤‘ë³µëœ ì•„ì´ë””ê°€ ì¡´ì¬í•©ë‹ˆë‹¤. (ID:%u)\n", strPath, pTNPC->m_wID);
 
 			delete pTNPC;
 			continue;
@@ -3207,7 +3207,7 @@ void CTChart::InitTFORMULA( CString strPath )
 		MAPTFORMULA::iterator _itr = CTChart::m_mapTFORMULA.find(bID);
 		if( _itr != CTChart::m_mapTFORMULA.end() )
 		{
-			TRACE("°æ°í : %s¿¡ Áßº¹µÈ ¾ÆÀÌµğ°¡ Á¸ÀçÇÕ´Ï´Ù. (ID:%u)\n", strPath, bID);
+			TRACE("ê²½ê³  : %sì— ì¤‘ë³µëœ ì•„ì´ë””ê°€ ì¡´ì¬í•©ë‹ˆë‹¤. (ID:%u)\n", strPath, bID);
 
 			delete pTFORMULA;
 			continue;
@@ -3270,7 +3270,7 @@ void CTChart::InitTSKYBOX( CString strPath )
 		MAPTSKYBOX::iterator _itr = CTChart::m_mapTSKYBOX.find(dwID);
 		if( _itr != CTChart::m_mapTSKYBOX.end() )
 		{
-			TRACE("°æ°í : %s¿¡ Áßº¹µÈ ¾ÆÀÌµğ°¡ Á¸ÀçÇÕ´Ï´Ù. (ID:%u)\n", strPath, dwID);
+			TRACE("ê²½ê³  : %sì— ì¤‘ë³µëœ ì•„ì´ë””ê°€ ì¡´ì¬í•©ë‹ˆë‹¤. (ID:%u)\n", strPath, dwID);
 
 			delete pTSKYBOX;
 			continue;
@@ -3367,7 +3367,7 @@ void CTChart::InitTSWITCH( CString strPath )
 		MAPTSWITCHDATA::iterator _itr = CTChart::m_mapTSWITCH.find(pTSWITCH->m_dwID);
 		if( _itr != CTChart::m_mapTSWITCH.end() )
 		{
-			TRACE("°æ°í : %s¿¡ Áßº¹µÈ ¾ÆÀÌµğ°¡ Á¸ÀçÇÕ´Ï´Ù. (ID:%u)\n", strPath, pTSWITCH->m_dwID);
+			TRACE("ê²½ê³  : %sì— ì¤‘ë³µëœ ì•„ì´ë””ê°€ ì¡´ì¬í•©ë‹ˆë‹¤. (ID:%u)\n", strPath, pTSWITCH->m_dwID);
 
 			delete pTSWITCH;
 			continue;
@@ -3475,7 +3475,7 @@ void CTChart::InitTLIGHT( CString strPath )
 		MAPTLIGHT::iterator _itr = CTChart::m_mapTLIGHT.find(dwLightID);
 		if( _itr != CTChart::m_mapTLIGHT.end() )
 		{
-			TRACE("°æ°í : %s¿¡ Áßº¹µÈ ¾ÆÀÌµğ°¡ Á¸ÀçÇÕ´Ï´Ù. (ID:%u)\n", strPath, dwLightID);
+			TRACE("ê²½ê³  : %sì— ì¤‘ë³µëœ ì•„ì´ë””ê°€ ì¡´ì¬í•©ë‹ˆë‹¤. (ID:%u)\n", strPath, dwLightID);
 
 			delete pTLIGHT;
 			continue;
@@ -4334,7 +4334,7 @@ void CTChart::InitTHelpLink( CString strPath )
 
 		if( bTrigger < 0 || bTrigger >= THELPLINK_TRIGGER_COUNT )
 		{
-			TRACE("°æ°í : THelpLink Â÷Æ® - Àß¸øµÈ Æ®¸®°Å °ª dwQuestID(%d) bTrigger(%d) dwHelpID(%d)\n", dwQuestID, (DWORD) bTrigger, dwHelpID );
+			TRACE("ê²½ê³  : THelpLink ì°¨íŠ¸ - ì˜ëª»ëœ íŠ¸ë¦¬ê±° ê°’ dwQuestID(%d) bTrigger(%d) dwHelpID(%d)\n", dwQuestID, (DWORD) bTrigger, dwHelpID );
 			continue;
 		}
 
@@ -10681,7 +10681,7 @@ void CTChart::InitTMANTLEINFO( CString strPath, CString strPath2 )
 				mapSTRtoID.insert( make_pair( strMeshName, dwMesh ) );
 			}
 			else
-				TRACE("°æ°í : MantleÂ÷Æ® dwDetailTextureID Áßº¹(%u)\n", dwMesh);
+				TRACE("ê²½ê³  : Mantleì°¨íŠ¸ dwDetailTextureID ì¤‘ë³µ(%u)\n", dwMesh);
 		}
 	}
 

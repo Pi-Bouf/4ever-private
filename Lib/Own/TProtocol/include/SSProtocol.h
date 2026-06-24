@@ -1,4 +1,4 @@
-#pragma once
+Ôªø#pragma once
 
 #include "ProtocolBase.h"
 
@@ -50,7 +50,7 @@
 #define SM_POSTBILL_ACK						(SM_BASE + 0x000E)
 #define SM_POSTBILLERASE_REQ				(SM_BASE + 0x000F)
 
-// ∞·≈ı
+// Í≤∞Ìà¨
 #define SM_DUELSTART_REQ					(SM_BASE + 0x0010)
 #define SM_DUELSTART_ACK					(SM_BASE + 0x0011)
 #define SM_DUELEND_REQ						(SM_BASE + 0x0012)

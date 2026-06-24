@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+Ôªø#include "StdAfx.h"
 #include ".\tnpc.h"
 #include <SvrInc.h> 
 #include "TMapSvrModule.h"
@@ -110,7 +110,7 @@ BYTE CTNpc::AddAuction(DWORD dwAuctionID, LPTAUCTION pAuction)
 	else
 		return FALSE;
 
-	// ¡˜æ˜ ºº∫–»≠
+	// ÏßÅÏóÖ ÏÑ∏Î∂ÑÌôî
 	BYTE bType  = AUCTIONTREE1(pAuction->m_dwCode);
 	BYTE bClass = AUCTIONTREE2(pAuction->m_dwCode);
 	BYTE bKind  = AUCTIONTREE3(pAuction->m_dwCode);
@@ -154,7 +154,7 @@ void CTNpc::DelAuction(DWORD dwAuctionID,DWORD dwCode)
 	if(!dwAuctionID)
 		return;
 
-	// ¡˜æ˜ ºº∫–»≠
+	// ÏßÅÏóÖ ÏÑ∏Î∂ÑÌôî
 	BYTE bType  = AUCTIONTREE1(dwCode);
 	BYTE bClass = AUCTIONTREE2(dwCode);
 	BYTE bKind  = AUCTIONTREE3(dwCode);

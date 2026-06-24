@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+ï»¿#include "Stdafx.h"
 #include "TClientGame.h"
 
 #define TINSTALL_ALPHA( dwColor, bAlpha)			DWORD(((DWORD(bAlpha) << 24) & 0xFF000000) | (DWORD(dwColor) & 0x00FFFFFF))
@@ -240,7 +240,7 @@ void CTChatList::MoveComponent( CPoint pt )
 
 	CPoint vCenter(
 		m_rc.left + m_rc.Width()/2 + rcDrag.left,
-		m_rc.top + m_rc.Height()/2 + rcDrag.top ); // rcDrag ÁÂÇ¥°è¿¡¼­ Çö ÄÄÆ÷³ÍÆ®ÀÇ Áß¾ÓÁ¡ À§Ä¡°ª.
+		m_rc.top + m_rc.Height()/2 + rcDrag.top ); // rcDrag ì¢Œí‘œê³„ì—ì„œ í˜„ ì»´í¬ë„ŒíŠ¸ì˜ ì¤‘ì•™ì  ìœ„ì¹˜ê°’.
 
 	FLOAT unit_w = rcDrag.Width() / 3.0f;
 	FLOAT unit_h = rcDrag.Height() / 3.0f;
@@ -941,7 +941,7 @@ void CTChatList::MoveComponent( CPoint pt )
 
 	CPoint vCenter(
 		m_rc.left + m_rc.Width()/2 + rcDrag.left,
-		m_rc.top + m_rc.Height()/2 + rcDrag.top ); // rcDrag ÁÂÇ¥°è¿¡¼­ Çö ÄÄÆ÷³ÍÆ®ÀÇ Áß¾ÓÁ¡ À§Ä¡°ª.
+		m_rc.top + m_rc.Height()/2 + rcDrag.top ); // rcDrag ì¢Œí‘œê³„ì—ì„œ í˜„ ì»´í¬ë„ŒíŠ¸ì˜ ì¤‘ì•™ì  ìœ„ì¹˜ê°’.
 
 	FLOAT unit_w = rcDrag.Width() / 3.0f;
 	FLOAT unit_h = rcDrag.Height() / 3.0f;

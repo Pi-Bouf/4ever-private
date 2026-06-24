@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "TItemSlotBaseDlg.h"
 #include "Resource.h"
 #include "TClientGame.h"
@@ -114,7 +114,7 @@ BOOL CTItemSlotBaseDlg::SetItem(BYTE bSlotID, LPTITEM pItem, BYTE bInven, BYTE b
 			else
 				return FALSE;
 
-			// ¾ÆÀÌÅÛÀÌ ¸ğµç ½½·Ô¿¡ ¿Ã¶ó°¡¸é È®ÀÎ ¹öÆ° È°¼ºÈ­..
+			// ì•„ì´í…œì´ ëª¨ë“  ìŠ¬ë¡¯ì— ì˜¬ë¼ê°€ë©´ í™•ì¸ ë²„íŠ¼ í™œì„±í™”..
 			UpdateState_ButtonOK();
 
 			return TRUE;
@@ -194,7 +194,7 @@ ITDetailInfoPtr CTItemSlotBaseDlg::GetTInfoKey( const CPoint& point )
 		if( m_pSlotImage[i] && 
 			m_pSlotImage[i]->HitTest( point ) &&
 			!m_ItemSlot[i].pItem &&
-			!m_pToolTips[i].IsEmpty() )	// ¾ÆÀÌÅÛÀÌ ¾È¿Ã¶ó°¬À»¶§ ÅøÆÁÇ¥½Ã.
+			!m_pToolTips[i].IsEmpty() )	// ì•„ì´í…œì´ ì•ˆì˜¬ë¼ê°”ì„ë•Œ íˆ´íŒí‘œì‹œ.
 		{
 			return CTDetailInfoManager::NewDefTooltipInst( m_pTitles[i], m_pToolTips[i], rc );
 		}
@@ -213,7 +213,7 @@ ITDetailInfoPtr CTItemSlotBaseDlg::GetTInfoKey( const CPoint& point )
 			}
 		}
 
-		if( bFrame_Tooltip ) // ¾ÆÀÌÅÛ & ºó ½½·ÔÀÌ ¾Æ´Ñ ÇÁ·¹ÀÓ À§¿¡ mouse over µÇ¾úÀ»¶§ Tooltip.
+		if( bFrame_Tooltip ) // ì•„ì´í…œ & ë¹ˆ ìŠ¬ë¡¯ì´ ì•„ë‹Œ í”„ë ˆì„ ìœ„ì— mouse over ë˜ì—ˆì„ë•Œ Tooltip.
 			return CTDetailInfoManager::NewDefTooltipInst( m_pTitles[i], m_pToolTips[m_nSlotCount], rc );
 	}
 

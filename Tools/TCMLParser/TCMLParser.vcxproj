@@ -70,7 +70,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <AdditionalOptions>/Zo %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:.949 /Zo %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>Engine Libd.lib;TCMLd.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -91,6 +91,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:.949 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\Lib\3rdParty\DirectX9 (June 2010)\Include;$(ProjectDir)..\..\Lib\Own\TComp\TComp;$(ProjectDir)..\..\Lib\Own\TCML\TCML;$(ProjectDir)..\..\Lib\Own\Engine Lib\Engine Lib</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>

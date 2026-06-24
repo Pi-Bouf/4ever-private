@@ -1,4 +1,4 @@
-// PosListDlg.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// PosListDlg.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -9,7 +9,7 @@
 #include "HappyDoc.h"
 #include ".\poslistdlg.h"
 
-// CPosListDlg ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CPosListDlg ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CPosListDlg, CDialog)
 CPosListDlg::CPosListDlg(CWnd* pParent /*=NULL*/)
@@ -38,13 +38,13 @@ BEGIN_MESSAGE_MAP(CPosListDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-// CPosListDlg ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CPosListDlg ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 
-// ¸®½ºÆ® ÄÁÆ®·Ñ ÃÊ±â ¼ÂÆÃ
+// ë¦¬ìŠ¤íŠ¸ ì»¨íŠ¸ë¡¤ ì´ˆê¸° ì…‹íŒ…
 void CPosListDlg::Init()
 {
-	// ¸®½ºÆ® ÄÁÆ®·ÑÀÇ ¸ğµç ÄÃ·³ »èÁ¦
+	// ë¦¬ìŠ¤íŠ¸ ì»¨íŠ¸ë¡¤ì˜ ëª¨ë“  ì»¬ëŸ¼ ì‚­ì œ
 	for(int i = 0; i < MAX_POSLIST_COLUMN ; i++)
         m_listctrPos.DeleteColumn(0);
 
@@ -65,7 +65,7 @@ void CPosListDlg::Init()
 		//m_listctrPos.InsertColumn(0,"NAME",LVCFMT_CENTER,180);
 	}
 	
-	// ÇÏ³ªÀÇ ¶óÀÎ ÀüÃ¼°¡ ¼±ÅÃµÇµµ·Ï ¼³Á¤
+	// í•˜ë‚˜ì˜ ë¼ì¸ ì „ì²´ê°€ ì„ íƒë˜ë„ë¡ ì„¤ì •
 	m_listctrPos.SetExtendedStyle(LVS_EX_FULLROWSELECT);
 }
 
@@ -75,7 +75,7 @@ void CPosListDlg::InsertItemToListCtr(int _iRow, LPUSERPOS _USERPOS)
 	LV_ITEM lvItem;
 
 	lvItem.mask		= LVIF_TEXT;
-	lvItem.iItem	= _iRow; // Row ÀÎµ¦½º	
+	lvItem.iItem	= _iRow; // Row ì¸ë±ìŠ¤	
 	
 	for(int iCol = 0; iCol < MAX_POSLIST_COLUMN ; iCol++)
 	{
@@ -89,7 +89,7 @@ void CPosListDlg::InsertItemToListCtr(int _iRow, LPUSERPOS _USERPOS)
 		case 5 : strTmp.Format("%.2f",_USERPOS->PosZ );		break;
 		}
 		
-		lvItem.iSubItem = iCol ; // ÄÃ·³ ÀÎµ¦½º
+		lvItem.iSubItem = iCol ; // ì»¬ëŸ¼ ì¸ë±ìŠ¤
 		lvItem.pszText	= strTmp.GetBuffer(0);
 		
 		if( iCol == 0 )
@@ -127,11 +127,11 @@ void CPosListDlg::LoadPosListFromData()
 
 void CPosListDlg::ItemDelete()
 {
-	if(AfxMessageBox("Are you sure you want to delete?",MB_YESNO) == IDNO ) //ÁøÁ¤ »èÁ¦ÇÏ½Ã°Ú½À´Ï±î
+	if(AfxMessageBox("Are you sure you want to delete?",MB_YESNO) == IDNO ) //ì§„ì • ì‚­ì œí•˜ì‹œê² ìŠµë‹ˆê¹Œ
 		return;
 	
 
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -141,7 +141,7 @@ void CPosListDlg::ItemDelete()
 			return;
 	}	
 
-	// ¼±ÅÃµÈ ¾ÆÀÌÅÛ Ã£±â	
+	// ì„ íƒëœ ì•„ì´í…œ ì°¾ê¸°	
 	int iCount = m_listctrPos.GetItemCount();
 	for(int i = 0; i < iCount; i++)
 	{
@@ -155,7 +155,7 @@ void CPosListDlg::ItemDelete()
 
 bool CPosListDlg::ItemSelect()
 {
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -165,13 +165,13 @@ bool CPosListDlg::ItemSelect()
 			return false;
 	}
 
-	// ¼±ÅÃµÈ ¾ÆÀÌÅÛ Ã£±â
+	// ì„ íƒëœ ì•„ì´í…œ ì°¾ê¸°
 	int iCount = m_listctrPos.GetItemCount();
 	for(int i = 0; i < iCount; i++)
 	{
 		if( m_listctrPos.GetItemState(i, LVIS_SELECTED) != 0 )
 		{
-			// ¼±ÅÃµÈ ¾ÆÀÌÅÛ Á¶ÀÛ
+			// ì„ íƒëœ ì•„ì´í…œ ì¡°ì‘
 			
 			CString strTemp;
 			USERPOS UserPos;
@@ -205,7 +205,7 @@ bool CPosListDlg::ItemSelect()
 }
 void CPosListDlg::OnBnClickedOk()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 
 	ItemSelect();
 
@@ -217,7 +217,7 @@ void CPosListDlg::OnBnClickedOk()
 
 void CPosListDlg::OnBnClickedDelete()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	ItemDelete();
 }
 
@@ -234,17 +234,17 @@ void CPosListDlg::ClearListItem()
 }
 void CPosListDlg::OnBnClickedCancel()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 
 	ShowWindow(SW_HIDE);
 	//ClearListItem();
 	//OnCancel();
 }
 
-// ¾ÆÀÌÅÛÀ» ´õºíÅ¬¸¯ÇßÀ» ¶§
+// ì•„ì´í…œì„ ë”ë¸”í´ë¦­í–ˆì„ ë•Œ
 void CPosListDlg::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	*pResult = 0;
 
 	bool bFind = ItemSelect();
@@ -260,13 +260,13 @@ void CPosListDlg::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CPosListDlg::OnBnClickedPosfind()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	CString strTemp;
 	GetDlgItemText(IDC_EDIT_POSFIND,strTemp);
 	if (strTemp.IsEmpty() )
 		return;
 
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -317,7 +317,7 @@ BYTE CPosListDlg::FindListData(LPUSERPOS pPos)
 	if(!pPos)
 		return FALSE;
 
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -341,7 +341,7 @@ void CPosListDlg::DeleteListData(LPUSERPOS pPos)
 	if(!pPos)
 		return ;
 
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)

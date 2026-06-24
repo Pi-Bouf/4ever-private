@@ -1,23 +1,23 @@
-#pragma once
+ï»¿#pragma once
 #include "afxcmn.h"
 #include "afxwin.h"
 
 
-// CLuckyEventDlg ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CLuckyEventDlg ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 class CLuckyEventDlg : public CDialog
 {
 	DECLARE_DYNAMIC(CLuckyEventDlg)
 
 public:
-	CLuckyEventDlg(CWnd* pParent = NULL);   // Ç¥ÁØ »ı¼ºÀÚÀÔ´Ï´Ù.
+	CLuckyEventDlg(CWnd* pParent = NULL);   // í‘œì¤€ ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CLuckyEventDlg();
 
-// ´ëÈ­ »óÀÚ µ¥ÀÌÅÍÀÔ´Ï´Ù.
+// ëŒ€í™” ìƒì ë°ì´í„°ì…ë‹ˆë‹¤.
 	enum { IDD = IDD_LUCKYEVENT };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 public:

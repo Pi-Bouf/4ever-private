@@ -1,19 +1,19 @@
-#pragma once
+ï»¿#pragma once
 #include "afxwin.h"
 #include "afxcmn.h"
 
-// CServiceList Æû ºäÀÔ´Ï´Ù.
+// CServiceList í¼ ë·°ì…ë‹ˆë‹¤.
 
 class CServiceList : public CFormView
 {
 	DECLARE_DYNCREATE(CServiceList)
 
 protected:
-	CServiceList();           // µ¿Àû ¸¸µé±â¿¡ »ç¿ëµÇ´Â protected »ı¼ºÀÚÀÔ´Ï´Ù.
+	CServiceList();           // ë™ì  ë§Œë“¤ê¸°ì— ì‚¬ìš©ë˜ëŠ” protected ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CServiceList();
 
 void AddItemData(LPHAPPYSERVICE pService);
-void AddItemDataUpdate(LPHAPPYSERVICE pService, int listCnt); // 06/4/14 Çö½Â·æ List Data Update
+void AddItemDataUpdate(LPHAPPYSERVICE pService, int listCnt); // 06/4/14 í˜„ìŠ¹ë£¡ List Data Update
 
 public:
 	void UpdateServiceList(DWORD dwID);	
@@ -25,7 +25,7 @@ public:
 #endif
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 public:

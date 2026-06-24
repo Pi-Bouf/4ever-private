@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 class CSPLogin : public CSqlQuery
 {
@@ -362,7 +362,7 @@ BEGIN_COLUMN(2)
 END_COL()
 };
 
-// Çö½Â·æ CS_TESTLOGIN_REQ 
+// í˜„ìŠ¹ë£¡ CS_TESTLOGIN_REQ 
 class CSPTestLogin : public CSqlQuery
 {
 public:	

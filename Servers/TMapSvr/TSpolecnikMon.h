@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "tmonster.h"
 
 class CTSpolecnikMon :
@@ -13,7 +13,7 @@ public:
 	DWORD m_dwDieTick;
 	BYTE m_bHit;
 
-	DWORD m_dwMaxHP;		//s�?L
+	DWORD m_dwMaxHP;		//sÐ?L
 	DWORD m_dwMaxMP;
 	BYTE m_bAtkLevel;
 	BYTE m_bAtkSkillLevel;

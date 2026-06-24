@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 #include "TClientGame.h"
 #include "TClient.h"
 #include "Resource.h"
@@ -21,7 +21,7 @@ m_pSubInvenPos( NULL )
 {
 	m_id = MAKELONG( WORD(m_id), wFrameID);
 	m_pTINVEN = NULL;
-	// ±â°£¿¬Àå¿ë °¡¹æ ÄÄÆ÷³ÍÆ®µé
+	// ê¸°ê°„ì—°ì¥ìš© ê°€ë°© ì»´í¬ë„ŒíŠ¸ë“¤
 	m_pEXTPERIOD = FindKid( ID_CTRLINST_EXT_TEXT);
 	TComponent* pBTN = FindKid( ID_CTRLINST_EXT_BTN);
 
@@ -251,7 +251,7 @@ TDROPINFO CTInvenDlg::OnDrop( CPoint point)
 			}
 		}
 
-		// ¸ø Ã£¾Ò´Ù¸é ÀÌ ÀÎº¥ÀÇ ºóÄ­À» Ã£¾Æ¼­ ±×°÷¿¡ ³ÖÀÚ.
+		// ëª» ì°¾ì•˜ë‹¤ë©´ ì´ ì¸ë²¤ì˜ ë¹ˆì¹¸ì„ ì°¾ì•„ì„œ ê·¸ê³³ì— ë„£ì.
 		for( BYTE i=0; i<MAX_DRAGSLOT; i++)
 		{
 			TImageList* pDROP;

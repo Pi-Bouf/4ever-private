@@ -1,4 +1,4 @@
-
+ï»¿
 // XListCtrl.cpp  Version 1.3
 //
 // Author:  Hans Dietrich
@@ -1027,7 +1027,7 @@ BOOL CXDateBox::PreTranslateMessage(MSG* pMsg)
 	return CDateTimeCtrl::PreTranslateMessage(pMsg);
 }
 
-// ³¯Â¥ Æ÷¸ËÀ¸·Î ºÎÅÍ ³¯Â¥ ¹®ÀÚ¿­ È¹µæ
+// ë‚ ì§œ í¬ë§·ìœ¼ë¡œ ë¶€í„° ë‚ ì§œ ë¬¸ìì—´ íšë“
 CString CXDateBox::GetDate(CTime &time, CString &sDateFormat)
 {
 	int nStart=0, nFind=0;
@@ -1195,7 +1195,7 @@ void CXSpinBox::DeleteInstance()
 void CXSpinBox::OnDeltapos(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 
 	*pResult = 1;
 
@@ -1392,7 +1392,7 @@ void CXListCtrl::SubclassHeaderControl()
 	// if the list control has a header control window, then
 	// subclass it
 
-	// Thanks to Alberto Gattegno and Alon Peleg  and their article
+	// Thanks to Alberto Gattegno and Alon Pelegì ¨and their article
 	// "A Multiline Header Control Inside a CListCtrl" for easy way
 	// to determine if the header control exists.
 
@@ -1503,7 +1503,7 @@ void CXListCtrl::DrawProgress(int nItem,
 	CPen newPen(PS_SOLID, 1, m_crUnderLine);
 	CPen *pOldPen = pDC->SelectObject(&newPen);	
 
-	// Progress ÀüÃ¼(¿ÜºÎ/³»ºÎ) ¹ÙÅÁ»ö Ä¥ÇÏ±â
+	// Progress ì „ì²´(ì™¸ë¶€/ë‚´ë¶€) ë°”íƒ•ìƒ‰ ì¹ í•˜ê¸°
 	COLORREF crWindow = m_crWindow;
 	COLORREF crWindowText = m_crWindowText;
 	GetDrawColors(nItem, nSubItem, crWindowText, crWindow);
@@ -1526,10 +1526,10 @@ void CXListCtrl::DrawProgress(int nItem,
 	InteriorRect.left += 2;
 	InteriorRect.right -= 1;
 
-	// Progress ³»ºÎ ¹è°æ Ä¥ÇÏ±â
+	// Progress ë‚´ë¶€ ë°°ê²½ ì¹ í•˜ê¸°
 	pDC->FillSolidRect(InteriorRect, m_crBgProgress);
 
-	// Progress Å×µÎ¸® ±×¸®±â
+	// Progress í…Œë‘ë¦¬ ê·¸ë¦¬ê¸°
 	pDC->Draw3dRect(InteriorRect, RGB(200,200,200), RGB(200,200,200));
 
 	if (pXLCD[nSubItem].nProgressPercent >= 0)
@@ -1893,7 +1893,7 @@ void CXListCtrl::GetDrawColors(int nItem,
 			// has focus?  if not, draw gray background
 			if (m_hWnd != ::GetFocus())
 			{
-				if (dwStyle & LVS_SHOWSELALWAYS) // LVS_SHOWSELALWAYS : ¾ÆÀÌÅÛÀ» ¼±ÅÃÈÄ ´Ù¸¥ ÄÁÆ®·Ñ¿¡ Æ÷Ä¿½º°¡ ¿Å°Ü°¡µµ ¼±ÅÃµÈ°ÍÀ» Ç¥½ÃÇÏ´Â ÇÃ·¡±×.
+				if (dwStyle & LVS_SHOWSELALWAYS) // LVS_SHOWSELALWAYS : ì•„ì´í…œì„ ì„ íƒí›„ ë‹¤ë¥¸ ì»¨íŠ¸ë¡¤ì— í¬ì»¤ìŠ¤ê°€ ì˜®ê²¨ê°€ë„ ì„ íƒëœê²ƒì„ í‘œì‹œí•˜ëŠ” í”Œë˜ê·¸.
 				{
 					if(m_bSelAlwaysColor)
 					{
@@ -1915,7 +1915,7 @@ void CXListCtrl::GetDrawColors(int nItem,
 		}
 	}
 
-	// ÇØ´ç ItemÀÌ Tracking Item°ú µ¿ÀÏÇÏ¸é ¹è°æ »öÀ» Tracking Color·Î ÀúÀåÇÑ´Ù.
+	// í•´ë‹¹ Itemì´ Tracking Itemê³¼ ë™ì¼í•˜ë©´ ë°°ê²½ ìƒ‰ì„ Tracking Colorë¡œ ì €ì¥í•œë‹¤.
 	if( m_nTrackingItem >= 0 && m_bUseTracking)
 	{
 		if( nItem == m_nTrackingItem )
@@ -2116,7 +2116,7 @@ BOOL CXListCtrl::GetSubItemRect(int nItem,
 		}
 	}
 
-	// ¸¶¿ì½º°¡ ¿Ã¶ó¿ÔÀ»¶§ Grid lineÀÌ Áö¿öÁö´Â ¹®Á¦¸¦ º¸¿Ï
+	// ë§ˆìš°ìŠ¤ê°€ ì˜¬ë¼ì™”ì„ë•Œ Grid lineì´ ì§€ì›Œì§€ëŠ” ë¬¸ì œë¥¼ ë³´ì™„
 	rect.bottom -= 1;
 
 	return bRC;
@@ -2444,7 +2444,7 @@ BOOL CXListCtrl::SetItemImage(int nItem, int nSubItem, int nImage, BOOL bImageCe
 	XLISTCTRLDATA *pXLCD = (XLISTCTRLDATA *) CListCtrl::GetItemData(nItem);
 	if (pXLCD)
 	{
-		// ±âÁ¸ µ¥ÀÌÅÍ¿Í ºñ±³ÈÄ Æ²¸®¸é ¾÷µ¥ÀÌÆ®
+		// ê¸°ì¡´ ë°ì´í„°ì™€ ë¹„êµí›„ í‹€ë¦¬ë©´ ì—…ë°ì´íŠ¸
 		if( pXLCD[nSubItem].nImage == nImage && 
 			pXLCD[nSubItem].bImageCenter == bImageCenter )
 			return rc;
@@ -2513,7 +2513,7 @@ BOOL CXListCtrl::SetItemText(int nItem, int nSubItem, LPCTSTR lpszText)
 
 	XLISTCTRLDATA *pXLCD = (XLISTCTRLDATA *) CListCtrl::GetItemData(nItem);
 
-	// ±âÁ¸ µ¥ÀÌÅÍ¿Í ºñ±³ÈÄ Æ²¸®¸é ¾÷µ¥ÀÌÆ®
+	// ê¸°ì¡´ ë°ì´í„°ì™€ ë¹„êµí›„ í‹€ë¦¬ë©´ ì—…ë°ì´íŠ¸
 	if( !pXLCD[nSubItem].strProgressMessage.Compare( lpszText ))
 		return FALSE;
 
@@ -2553,7 +2553,7 @@ BOOL CXListCtrl::SetItemText(int nItem, int nSubItem, LPCTSTR lpszText,
 
 	XLISTCTRLDATA *pXLCD = (XLISTCTRLDATA *) CListCtrl::GetItemData(nItem);
 
-	// ±âÁ¸ µ¥ÀÌÅÍ¿Í ºñ±³ÈÄ Æ²¸®¸é ¾÷µ¥ÀÌÆ®
+	// ê¸°ì¡´ ë°ì´í„°ì™€ ë¹„êµí›„ í‹€ë¦¬ë©´ ì—…ë°ì´íŠ¸
 	if( !pXLCD[nSubItem].strProgressMessage.Compare( lpszText ) && 
 		pXLCD[nSubItem].crBackground == crBackground &&
 		pXLCD[nSubItem].crText == crText )
@@ -2594,7 +2594,7 @@ BOOL CXListCtrl::SetItemTextColor(int nItem, int nSubItem, COLORREF crText, COLO
 
 	XLISTCTRLDATA *pXLCD = (XLISTCTRLDATA *) CListCtrl::GetItemData(nItem);
 
-	// ±âÁ¸ µ¥ÀÌÅÍ¿Í ºñ±³ÈÄ Æ²¸®¸é ¾÷µ¥ÀÌÆ®
+	// ê¸°ì¡´ ë°ì´í„°ì™€ ë¹„êµí›„ í‹€ë¦¬ë©´ ì—…ë°ì´íŠ¸
 	if( pXLCD[nSubItem].crBackground == crBackground &&
 		pXLCD[nSubItem].crText == crText )
 		return FALSE;
@@ -2610,7 +2610,7 @@ BOOL CXListCtrl::SetItemTextColor(int nItem, int nSubItem, COLORREF crText, COLO
 	return TRUE;
 }
 
-// ¾ÆÀÌÅÛÀ» ¼±ÅÃÈÄ ´Ù¸¥ ÄÁÆ®·Ñ¿¡ Æ÷Ä¿½º°¡ ¿Å°Ü°¡µµ ¼±ÅÃµÈ ¾ÆÀÌÅÛÀÇ ÅØ½ºÆ®¸¦ ÁöÁ¤.
+// ì•„ì´í…œì„ ì„ íƒí›„ ë‹¤ë¥¸ ì»¨íŠ¸ë¡¤ì— í¬ì»¤ìŠ¤ê°€ ì˜®ê²¨ê°€ë„ ì„ íƒëœ ì•„ì´í…œì˜ í…ìŠ¤íŠ¸ë¥¼ ì§€ì •.
 BOOL CXListCtrl::SetItemTextSelAlwaysColor(COLORREF crText, COLORREF crBackground)
 {
 	m_bSelAlwaysColor = TRUE;
@@ -2752,7 +2752,7 @@ void CXListCtrl::UpdateProgress(int nItem, int nSubItem, int nPercent, COLORREF 
 	if (!pXLCD)
 		return;
 
-	// ±âÁ¸ µ¥ÀÌÅÍ¿Í ºñ±³ÈÄ Æ²¸®¸é ¾÷µ¥ÀÌÆ®
+	// ê¸°ì¡´ ë°ì´í„°ì™€ ë¹„êµí›„ í‹€ë¦¬ë©´ ì—…ë°ì´íŠ¸
 	if( ! pXLCD[nSubItem].strProgressMessage.Compare( ProgressText ) && 
 		  pXLCD[nSubItem].nProgressPercent == nPercent &&
 		  pXLCD[nSubItem].crBar == crBar )
@@ -2785,7 +2785,7 @@ void CXListCtrl::UpdateProgressLeftText(int nItem, int nSubItem, int nPercent, C
 	if (!pXLCD)
 		return;
 
-	// ±âÁ¸ µ¥ÀÌÅÍ¿Í ºñ±³ÈÄ Æ²¸®¸é ¾÷µ¥ÀÌÆ®
+	// ê¸°ì¡´ ë°ì´í„°ì™€ ë¹„êµí›„ í‹€ë¦¬ë©´ ì—…ë°ì´íŠ¸
 	if( ! pXLCD[nSubItem].strProgressMessage.Compare( ProgressText ) && 
 		  pXLCD[nSubItem].nProgressPercent == nPercent &&
 		  pXLCD[nSubItem].crBar == crBar )
@@ -3035,7 +3035,7 @@ void CXListCtrl::UpdateDate(int nItem, int nSubItem, CTime time, COLORREF crText
 	if( !pXLCD[nSubItem].bDateBox )
 		return;
 
-	// ±âÁ¸ µ¥ÀÌÅÍ¿Í ºñ±³ÈÄ Æ²¸®¸é ¾÷µ¥ÀÌÆ®
+	// ê¸°ì¡´ ë°ì´í„°ì™€ ë¹„êµí›„ í‹€ë¦¬ë©´ ì—…ë°ì´íŠ¸
 	if( pXLCD[nSubItem].date.GetTime() == time.GetTime() &&
 		pXLCD[nSubItem].crBackground == crBackground &&
 		pXLCD[nSubItem].crText == crText )
@@ -3491,14 +3491,14 @@ void CXListCtrl::ResizeListColumn(int arPercent[])
 	GetWindowRect(&rc);
 	int nMargin=0;
 
-	// ½ºÅ©·Ñ À¯¹«¿¡ µû¸¥ ¸¶Áø Ãß°¡
+	// ìŠ¤í¬ë¡¤ ìœ ë¬´ì— ë”°ë¥¸ ë§ˆì§„ ì¶”ê°€
 	GetScrollInfo(SB_VERT, &si);	
 	if( si.nPage && si.nPage <= (UINT)si.nMax ) 
 	{
 		nMargin = ::GetSystemMetrics(SM_CXVSCROLL);
 	}
 
-	// º¸´õ À¯¹«¿¡ µû¸¥ ¸¶Áø Ãß°¡
+	// ë³´ë” ìœ ë¬´ì— ë”°ë¥¸ ë§ˆì§„ ì¶”ê°€
 	DWORD dwExStyle = GetExStyle();
 	if( dwExStyle&WS_EX_STATICEDGE || 
 		dwExStyle&WS_EX_CLIENTEDGE )
@@ -3510,7 +3510,7 @@ void CXListCtrl::ResizeListColumn(int arPercent[])
 	int nLastWidth = rc.Width()-nMargin;
 	for( int i=0; ; i++ )
 	{
-		// ¸¶Áö¸· ÄÃ·³ÀÏ °æ¿ì
+		// ë§ˆì§€ë§‰ ì»¬ëŸ¼ì¼ ê²½ìš°
 		if( arPercent[i] == 0 )
 		{
 			SetColumnWidth(i, nLastWidth);
@@ -3818,7 +3818,7 @@ LRESULT CXListCtrl::OnEditChange(WPARAM wParam, LPARAM lParam)
 		if( nEditNum < pXLCD[m_nEditSubItem].nEditMinNum )
 		{
 			CString sMsg(_T(""));
-			sMsg.Format(_T("ÀÔ·Â°ªÀÌ %d ÀÌ»ó ÀÌ¾î¾ß ÇÕ´Ï´Ù."), pXLCD[m_nEditSubItem].nEditMinNum);
+			sMsg.Format(_T("ì…ë ¥ê°’ì´ %d ì´ìƒ ì´ì–´ì•¼ í•©ë‹ˆë‹¤."), pXLCD[m_nEditSubItem].nEditMinNum);
 			AfxMessageBox(sMsg);
 			return 0L;
 			
@@ -3826,7 +3826,7 @@ LRESULT CXListCtrl::OnEditChange(WPARAM wParam, LPARAM lParam)
 		else if( nEditNum > pXLCD[m_nEditSubItem].nEditMaxNum )
 		{
 			CString sMsg(_T(""));
-			sMsg.Format(_T("ÀÔ·Â°ªÀÌ %d ÀÌÇÏ ÀÌ¾î¾ß ÇÕ´Ï´Ù."), pXLCD[m_nEditSubItem].nEditMaxNum);
+			sMsg.Format(_T("ì…ë ¥ê°’ì´ %d ì´í•˜ ì´ì–´ì•¼ í•©ë‹ˆë‹¤."), pXLCD[m_nEditSubItem].nEditMaxNum);
 			AfxMessageBox(sMsg);
 			return 0L;
 		}
@@ -3852,7 +3852,7 @@ LRESULT CXListCtrl::OnEditChange(WPARAM wParam, LPARAM lParam)
 		pWnd->PostMessage(WM_XLISTCTRL_CHANGE, (WPARAM)MAKELONG(m_nEditSubItem, m_nEditItem), (LPARAM)m_hWnd);
 	}
 
-	// Edit Box¿¡¼­ ÅÇ¹öÆ°À» Å¬¸¯ÇßÀ¸¸é ¸®½ºÆ®ÀÇ ´ÙÀ½ ÄÁÆ®·Ñ(EditBox,ComboBox,DateBox)À» È°¼ºÈ­ ½ÃÅ²´Ù.
+	// Edit Boxì—ì„œ íƒ­ë²„íŠ¼ì„ í´ë¦­í–ˆìœ¼ë©´ ë¦¬ìŠ¤íŠ¸ì˜ ë‹¤ìŒ ì»¨íŠ¸ë¡¤(EditBox,ComboBox,DateBox)ì„ í™œì„±í™” ì‹œí‚¨ë‹¤.
 	if( wParam == VK_TAB )
 		SetLButtonDown(m_nEditItem, m_nEditSubItem);
 
@@ -3913,7 +3913,7 @@ LRESULT CXListCtrl::OnDateChange(WPARAM wParam, LPARAM lParam)
 		pWnd->PostMessage(WM_XLISTCTRL_CHANGE, (WPARAM)MAKELONG(m_nDateSubItem, m_nDateItem), (LPARAM)m_hWnd);
 	}
 
-	// Date Box¿¡¼­ ÅÇ¹öÆ°À» Å¬¸¯ÇßÀ¸¸é ¸®½ºÆ®ÀÇ ´ÙÀ½ ÄÁÆ®·Ñ(EditBox,ComboBox,DateBox)À» È°¼ºÈ­ ½ÃÅ²´Ù.
+	// Date Boxì—ì„œ íƒ­ë²„íŠ¼ì„ í´ë¦­í–ˆìœ¼ë©´ ë¦¬ìŠ¤íŠ¸ì˜ ë‹¤ìŒ ì»¨íŠ¸ë¡¤(EditBox,ComboBox,DateBox)ì„ í™œì„±í™” ì‹œí‚¨ë‹¤.
 	if( wParam == VK_TAB )
 		SetLButtonDown(m_nDateItem, m_nDateSubItem);
 
@@ -3967,7 +3967,7 @@ LRESULT CXListCtrl::OnComboChange(WPARAM wParam, LPARAM lParam)
 		pWnd->PostMessage(WM_XLISTCTRL_CHANGE, (WPARAM)MAKELONG(m_nComboSubItem, m_nComboItem), (LPARAM)m_hWnd);
 	}
 
-	// Combo Box¿¡¼­ ÅÇ¹öÆ°À» Å¬¸¯ÇßÀ¸¸é ¸®½ºÆ®ÀÇ ´ÙÀ½ ÄÁÆ®·Ñ(EditBox,ComboBox,DateBox)À» È°¼ºÈ­ ½ÃÅ²´Ù.
+	// Combo Boxì—ì„œ íƒ­ë²„íŠ¼ì„ í´ë¦­í–ˆìœ¼ë©´ ë¦¬ìŠ¤íŠ¸ì˜ ë‹¤ìŒ ì»¨íŠ¸ë¡¤(EditBox,ComboBox,DateBox)ì„ í™œì„±í™” ì‹œí‚¨ë‹¤.
 	if( wParam == VK_TAB )
 		SetLButtonDown(m_nComboItem, m_nComboSubItem);
 
@@ -4190,7 +4190,7 @@ BOOL CXListCtrl::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 
 	HD_NOTIFY *pHDN = (HD_NOTIFY*)lParam;
 
-	// ÄÃ·³ »çÀÌÁî°¡ 20 ÀÌÇÏ°¡ ¾ÈµÇ°Ô ÇÑ´Ù.
+	// ì»¬ëŸ¼ ì‚¬ì´ì¦ˆê°€ 20 ì´í•˜ê°€ ì•ˆë˜ê²Œ í•œë‹¤.
 	if( (pHDN->hdr.code == HDN_ITEMCHANGINGW || pHDN->hdr.code == HDN_ITEMCHANGINGA) 
 		&& pHDN->pitem->cxy < 20 )		
     {		
@@ -4210,7 +4210,7 @@ BOOL CXListCtrl::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 
 	if( m_bHeaderTracking )
 	{
-		// ¸¶¿ì½ºÀÇ Æ®·¡Å· ¹æÁö
+		// ë§ˆìš°ìŠ¤ì˜ íŠ¸ë˜í‚¹ ë°©ì§€
 		if( !m_bResize )
 		{
 			*pResult = TRUE;							
@@ -4304,7 +4304,7 @@ void CXListCtrl::Sort(int nSubItem, BOOL bSort)
 
 int CALLBACK CXListCtrl::CompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
 {
-	// XLIST »ç¿ë½Ã Ä³½ºÆÃ
+	// XLIST ì‚¬ìš©ì‹œ ìºìŠ¤íŒ…
 	XLISTCTRLDATA *pXLCD1 = (XLISTCTRLDATA *)lParam1;
 	XLISTCTRLDATA *pXLCD2 = (XLISTCTRLDATA *)lParam2;
 	if(!pXLCD1 || !pXLCD2)
@@ -4330,25 +4330,25 @@ BOOL CXListCtrl::PreTranslateMessage(MSG* pMsg)
 
 	if (pMsg->message == WM_MOUSEMOVE && GetFocus() == this )
 	{
-		// ÇöÀç ¸¶¿ì½º À§Ä¡¸¦ °¡Á®¿Â´Ù.
+		// í˜„ì¬ ë§ˆìš°ìŠ¤ ìœ„ì¹˜ë¥¼ ê°€ì ¸ì˜¨ë‹¤.
 		CRect rect;
 		POINT point;
 		::GetCursorPos(&point);
 		::ScreenToClient(m_hWnd, &point);	
 
-		// ÇöÀç ¸¶¿ì½º À§Ä¡¿¡ ÇØ´çÇÏ´Â ItemÀ» °¡Á®¿Â´Ù.
+		// í˜„ì¬ ë§ˆìš°ìŠ¤ ìœ„ì¹˜ì— í•´ë‹¹í•˜ëŠ” Itemì„ ê°€ì ¸ì˜¨ë‹¤.
 		LVHITTESTINFO lvhitTestInfo;	
 		lvhitTestInfo.pt = point;	
 		int nItem = SubItemHitTest(&lvhitTestInfo);
 		int nSubItem = lvhitTestInfo.iSubItem;
 
-		// nItem°ú nSubItemÀÇ °ªÀÌ Á¤»óÀÌ°í ÇöÀç Ä¿¼­°¡ ÀÏ¹İÄ¿¼­ÀÌ¸é ´ÙÀ½À» ¼öÇàÇÑ´Ù.
+		// nItemê³¼ nSubItemì˜ ê°’ì´ ì •ìƒì´ê³  í˜„ì¬ ì»¤ì„œê°€ ì¼ë°˜ì»¤ì„œì´ë©´ ë‹¤ìŒì„ ìˆ˜í–‰í•œë‹¤.
 		if( nItem >= 0 && nSubItem >= 0 &&
 			nItem != m_nTrackingItem &&
 			GetCursor() == AfxGetApp()->LoadStandardCursor(IDC_ARROW) )
 		{			
-			// Tracking ÇÃ·¡±×¸¦ ¼³Á¤ÇÏ°í ¸¶¿ì½º Æ÷ÀÎÅÍ°¡ À©µµ¿ì¸¦ ¹ş¾î³µÀ»¶§
-			// WM_MOUSELEAVE ÀÌº¥Æ®°¡ ¹ß»ıÇÏµµ·Ï ¼³Á¤ÇÑ´Ù.
+			// Tracking í”Œë˜ê·¸ë¥¼ ì„¤ì •í•˜ê³  ë§ˆìš°ìŠ¤ í¬ì¸í„°ê°€ ìœˆë„ìš°ë¥¼ ë²—ì–´ë‚¬ì„ë•Œ
+			// WM_MOUSELEAVE ì´ë²¤íŠ¸ê°€ ë°œìƒí•˜ë„ë¡ ì„¤ì •í•œë‹¤.
 			if(!m_bTracking) 
 			{
 				TRACKMOUSEEVENT t = { sizeof(TRACKMOUSEEVENT), TME_LEAVE, m_hWnd, 0 };
@@ -4358,14 +4358,14 @@ BOOL CXListCtrl::PreTranslateMessage(MSG* pMsg)
 				}
 			}
 			
-			// ÀÌÀü Tracking ItemÀ» Invalidate ÇÑ´Ù.		
+			// ì´ì „ Tracking Itemì„ Invalidate í•œë‹¤.		
 			if( m_nTrackingItem >= 0 && m_bUseTracking )
 			{				
 				GetItemRect(m_nTrackingItem, &rect, LVIR_BOUNDS);
 				InvalidateRect(&rect, FALSE);
 			}			
 
-			// »õ·Î¿î Tracking ItemÀ» ÀúÀåÇÏ°í Invalite ÇÑ´Ù.
+			// ìƒˆë¡œìš´ Tracking Itemì„ ì €ì¥í•˜ê³  Invalite í•œë‹¤.
 			m_nTrackingItem = nItem;
 			GetItemRect(nItem, &rect, LVIR_BOUNDS);			
 			InvalidateRect(&rect, FALSE);
@@ -4380,9 +4380,9 @@ BOOL CXListCtrl::PreTranslateMessage(MSG* pMsg)
 
 LRESULT CXListCtrl::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 {
-	// Tracking ÇÃ·¡±×¸¦ Å¬¸®¾îÇÑ´Ù.
-	// Tracking ItemÀ» InvalidateÇÑ´Ù.
-	// Tracking ItemÀ» Å¬¸®¾îÇÑ´Ù.
+	// Tracking í”Œë˜ê·¸ë¥¼ í´ë¦¬ì–´í•œë‹¤.
+	// Tracking Itemì„ Invalidateí•œë‹¤.
+	// Tracking Itemì„ í´ë¦¬ì–´í•œë‹¤.
 	CRect rect;
 	m_bTracking = FALSE;	
 	if( m_nTrackingItem >= 0 && m_bUseTracking )
@@ -4405,7 +4405,7 @@ void CXListCtrl::OnNcPaint()
 		CRect rc;
 		GetWindowRect(&rc);
 
-		//Non-Client ¿µ¿ªÀÇ DC¸¦ ¾ò¾î¿Â´Ù.
+		//Non-Client ì˜ì—­ì˜ DCë¥¼ ì–»ì–´ì˜¨ë‹¤.
 		CWindowDC dc(this);
 		dc.Draw3dRect(0, 0, rc.Width(), rc.Height(), m_crBorder, m_crBorder);
 	}

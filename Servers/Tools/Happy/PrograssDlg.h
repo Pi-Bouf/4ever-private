@@ -1,18 +1,18 @@
-#pragma once
+ï»¿#pragma once
 #include "afxcmn.h"
 
 
-// CPrograssDlg ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CPrograssDlg ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 class CPrograssDlg : public CDialog
 {
 	DECLARE_DYNAMIC(CPrograssDlg)
 
 public:
-	CPrograssDlg(CWnd* pParent = NULL);   // Ç¥ÁØ »ı¼ºÀÚÀÔ´Ï´Ù.
+	CPrograssDlg(CWnd* pParent = NULL);   // í‘œì¤€ ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CPrograssDlg();
 
-// ´ëÈ­ »óÀÚ µ¥ÀÌÅÍÀÔ´Ï´Ù.
+// ëŒ€í™” ìƒì ë°ì´í„°ì…ë‹ˆë‹¤.
 	enum { IDD = IDD_DIALOG_INSTALL };
 protected:
 	DWORD m_dwTotal;
@@ -29,7 +29,7 @@ public:
 	void AddProgressVal(DWORD dwAdd)	{	SetProgressVal(m_dwCurrent + dwAdd);}
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 public:

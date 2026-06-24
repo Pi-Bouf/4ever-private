@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 
 void CTUser::SendCT_SERVICEMONITOR_REQ(DWORD dwTick,
 										 DWORD dwSession,
@@ -54,7 +54,7 @@ void CTUser::SendCS_LOGIN_ACK( BYTE bResult,
 	Say(pMSG);
 }
 
-// Çö½Â·æ CS_TESTVERSION_ACK
+// í˜„ìŠ¹ë£¡ CS_TESTVERSION_ACK
 void CTUser::SendCS_TESTVERSION_ACK( WORD wVersion)
 {
 	CPacket *pMSG = new CPacket();

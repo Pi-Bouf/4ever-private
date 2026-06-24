@@ -1,4 +1,4 @@
-// SSHandler.cpp : S/S Protocol Handler ÇÔ¼öÀÇ ±¸ÇöÀÔ´Ï´Ù.
+ï»¿// SSHandler.cpp : S/S Protocol Handler í•¨ìˆ˜ì˜ êµ¬í˜„ì…ë‹ˆë‹¤.
 
 #include "StdAfx.h"
 #include <SvrInc.h>
@@ -2118,7 +2118,7 @@ DWORD CTMapSvrModule::OnMW_CHARINFO_REQ( LPPACKETBUF pBUF)
 		pPlayer->m_pTPREVLEVEL->m_dwEXP,
 		pPlayer->m_pTLEVEL->m_dwEXP);
 
-	pPlayer->SendCS_QUESTLIST_ACK(m_dwTick); //CHARINFO_ACK ÀÌÀü¿¡ º¸³»¾ß ÇÔ
+	pPlayer->SendCS_QUESTLIST_ACK(m_dwTick); //CHARINFO_ACK ì´ì „ì— ë³´ë‚´ì•¼ í•¨
 	pPlayer->SendQuestTimer(m_dwTick);
 
 	pPlayer->SendCS_CHARSTATINFO_ACK(pPlayer);
@@ -2164,7 +2164,7 @@ DWORD CTMapSvrModule::OnMW_CHARINFO_REQ( LPPACKETBUF pBUF)
 		pPlayer->m_pTPREVLEVEL->m_dwEXP,
 		pPlayer->m_pTLEVEL->m_dwEXP);
 
-	pPlayer->SendCS_QUESTLIST_ACK(m_dwTick); //CHARINFO_ACK ÀÌÀü¿¡ º¸³»¾ß ÇÔ
+	pPlayer->SendCS_QUESTLIST_ACK(m_dwTick); //CHARINFO_ACK ì´ì „ì— ë³´ë‚´ì•¼ í•¨
 	pPlayer->SendQuestTimer(m_dwTick);
 
 	pPlayer->SendCS_CHARSTATINFO_ACK(pPlayer);
@@ -4916,7 +4916,7 @@ DWORD CTMapSvrModule::OnDM_LOADCHAR_ACK( LPPACKETBUF pBUF)
 
 
 
-			//1oA3 1o¢¬¡¾¢Ò¡× m_vRemainSkill?!1¡© CO¢¥c 1oA3 2A ¡í¡ş¡ÆI
+			//1oA3 1oÂ¸Â±Â¶Â§ m_vRemainSkill?!1Â­ COÂ´c 1oA3 2A â‰«ï¿¢Â°I
 			if(pSkill->m_pTSKILL->IsRemainType())
 				pPlayer->m_vRemainSkill.push_back(pSkill);
 			pPlayer->m_mapTSKILL.insert( MAPTSKILL::value_type( wSkillID, pSkill));
@@ -5306,7 +5306,7 @@ DWORD CTMapSvrModule::OnDM_LOADCHAR_ACK( LPPACKETBUF pBUF)
 			{
 				for( WORD ms=31; ms<=34; ms++)
 				{
-					//¡¾ao¡í1oA3
+					//Â±aoâ‰«1oA3
 					CTSkill * pMy = pPlayer->FindTSkill(ms);
 					if(pMy && pPlayer->IsEquipSkillItem(pMy))
 						vSkill.push_back(ms);
@@ -6754,7 +6754,7 @@ DWORD CTMapSvrModule::OnDM_TELEPORT_ACK( LPPACKETBUF pBUF)
 #ifdef	DEF_UDPLOG
 
 /*
- * MemoryÈ®ÀÎ ÀÛ¾÷ÀÌ ÇÊ¿ä ÇÔ
+ * Memoryí™•ì¸ ì‘ì—…ì´ í•„ìš” í•¨
 
 
 
@@ -7290,7 +7290,7 @@ DWORD CTMapSvrModule::OnDM_SAVECHAR_REQ( LPPACKETBUF pBUF)
 	query->m_dwTick = 0;
 	query->m_bEffect = 0;
 
-	query->Call();	//1OE?1o 1oCA1AA3 ¡íeA|
+	query->Call();	//1OE?1o 1oCA1AA3 â‰«eA|
 
 	WORD wCount;
 	pBUF->m_packet
@@ -8087,7 +8087,7 @@ DWORD CTMapSvrModule::OnMW_LEVELUP_REQ(LPPACKETBUF pBUF)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ±æµå
+// ê¸¸ë“œ
 
 
 
@@ -8869,7 +8869,7 @@ DWORD CTMapSvrModule::OnDM_GUILDCABINETTAKEOUT_ACK(LPPACKETBUF pBUF)
 			dwItemID,
 			pItem->m_bCount);
 
-		SendDM_SAVEITEM_REQ(pPlayer); // ÀÎº¥-¾ÆÀÌÅÆ µğºñ ¿Ã¸²
+		SendDM_SAVEITEM_REQ(pPlayer); // ì¸ë²¤-ì•„ì´íƒ¬ ë””ë¹„ ì˜¬ë¦¼
 	}
 	else
 	{
@@ -8889,7 +8889,7 @@ DWORD CTMapSvrModule::OnDM_GUILDCABINETTAKEOUT_ACK(LPPACKETBUF pBUF)
 				dwItemID,
 				bItemCount);
 
-			SendDM_SAVEITEM_REQ(pPlayer); // ÀÎº¥-¾ÆÀÌÅÆ µğºñ ¿Ã¸²
+			SendDM_SAVEITEM_REQ(pPlayer); // ì¸ë²¤-ì•„ì´íƒ¬ ë””ë¹„ ì˜¬ë¦¼
 		}
 		else
 		{
@@ -10269,7 +10269,7 @@ DWORD CTMapSvrModule::OnMW_FRIENDASK_REQ(LPPACKETBUF pBUF)
 	CTPlayer * pPlayer = FindPlayer(dwCharID, dwKey);
 	if(pPlayer)
 	{
-		// Â÷´Ü°Ë»ç
+		// ì°¨ë‹¨ê²€ì‚¬
 
 
 
@@ -12793,7 +12793,7 @@ DWORD CTMapSvrModule::OnDM_PROTECTEDADD_ACK(LPPACKETBUF pBUF)
 		pPT->m_strName = strName;
 
 		pPlayer->m_mapTPROTECTED.insert(MAPTPROTECTED::value_type(dwProtected, pPT));
-		// Â÷´Ü¿¡ °ü·ÃµÈ off-lineÇ¥½Ã
+		// ì°¨ë‹¨ì— ê´€ë ¨ëœ off-lineí‘œì‹œ
 
 
 
@@ -16304,7 +16304,7 @@ DWORD CTMapSvrModule::OnDM_AUCTIONREG_ACK(LPPACKETBUF pBUF)
 	CTItem* pAuctionItem = CreateItem(&(pBUF->m_packet));
 	CTPlayer* pPlayer = FindPlayer(dwSeller,dwKEY);
 
-	//µ¹·ÁÁÖ±â
+	//ëŒë ¤ì£¼ê¸°
 
 
 
@@ -16463,7 +16463,7 @@ DWORD CTMapSvrModule::OnDM_AUCTIONEND_ACK(LPPACKETBUF pBUF)
 		dwCode = (*itA).second->m_dwCode;
 	}
 	
-	if(!dwBuyer) //À¯Âû
+	if(!dwBuyer) //ìœ ì°°
 	{
 		CTTextLinker* pTextLinker = CTTextLinker::GetInstance();
 		CTTextLinkData* pData;
@@ -16486,7 +16486,7 @@ DWORD CTMapSvrModule::OnDM_AUCTIONEND_ACK(LPPACKETBUF pBUF)
 		m_pUdpSocket->LogAuctionBid(LOGMAP_AUCTIONBIDFAIL,NULL,dwAuctionID,0,pItem,pItem->m_bCount,dwSeller,strSeller);
 #endif
 	}
-	else //³«Âû
+	else //ë‚™ì°°
 
 
 
@@ -16511,7 +16511,7 @@ DWORD CTMapSvrModule::OnDM_AUCTIONEND_ACK(LPPACKETBUF pBUF)
 		DWORD dwGold,dwSilver,dwCooper;
 		CalcMoney(ldwPrice, dwGold, dwSilver, dwCooper);
 
-		// µî·ÏÀÚ¿¡°Ô µ·º¸³»±â
+		// ë“±ë¡ìì—ê²Œ ëˆë³´ë‚´ê¸°
 
 
 
@@ -16524,7 +16524,7 @@ DWORD CTMapSvrModule::OnDM_AUCTIONEND_ACK(LPPACKETBUF pBUF)
 
 
 
-		// ³«ÂûÀÚ¿¡°Ô ¾ÆÀÌÅÛ º¸³»±â
+		// ë‚™ì°°ìì—ê²Œ ì•„ì´í…œ ë³´ë‚´ê¸°
 
 
 
@@ -16650,7 +16650,7 @@ DWORD CTMapSvrModule::OnDM_AUCTIONREGCANCEL_ACK(LPPACKETBUF pBUF)
 	strMSG2 = GetSvrMsg(MSG_AUCTION_DROP_BODY);	
 	strMSG2 = pTextLinker->MakeItemNetText(strMSG2, vItemID);	
 
-	// µî·ÏÀÚ¿¡°Ô ¾ÆÀÌÅÛ º¸³»±â
+	// ë“±ë¡ìì—ê²Œ ì•„ì´í…œ ë³´ë‚´ê¸°
 
 
 
@@ -16675,7 +16675,7 @@ DWORD CTMapSvrModule::OnDM_AUCTIONREGCANCEL_ACK(LPPACKETBUF pBUF)
 		return EC_NOERROR;
 	
 	
-	// ÀÔÂûÀÚ¿¡°Ô µ· º¸³»±â
+	// ì…ì°°ìì—ê²Œ ëˆ ë³´ë‚´ê¸°
 
 
 
@@ -16800,7 +16800,7 @@ DWORD CTMapSvrModule::OnDM_AUCTIONBID_ACK(LPPACKETBUF pBUF)
 		}
 	}
 
-	if(bResult) //ÀÔÂû ½ÇÆĞ
+	if(bResult) //ì…ì°° ì‹¤íŒ¨
 	{
 		DWORD dwGold,dwSilver,dwCooper;
 		CalcMoney(ldwBidPrice, dwGold, dwSilver, dwCooper);
@@ -16855,7 +16855,7 @@ DWORD CTMapSvrModule::OnDM_AUCTIONBID_ACK(LPPACKETBUF pBUF)
 	strOtherBidderMsg = GetSvrMsg(MSG_AUCTION_OTHERBIDDER_BODY);
 	strOtherBidderMsg = pTextLinker->MakeItemNetText(strOtherBidderMsg, vItemID);	
 	
-	//ÀÔÂû¼º°ø.ÀÌÀü ÀÔÂûÀÚ¿¡°Ô µ· µ¹·ÁÁÖ±â
+	//ì…ì°°ì„±ê³µ.ì´ì „ ì…ì°°ìì—ê²Œ ëˆ ëŒë ¤ì£¼ê¸°
 
 
 
@@ -16971,7 +16971,7 @@ DWORD CTMapSvrModule::OnDM_AUCTIONBUYDIRECT_ACK(LPPACKETBUF pBUF)
 	if(pPlayer)
 		pPlayer->SendCS_AUCTIONBUYDIRECT_ACK(bResult);
 
-	if(bResult) // ½ÇÆĞ.µ¹·ÁÁÖ±â
+	if(bResult) // ì‹¤íŒ¨.ëŒë ¤ì£¼ê¸°
 	{
 		ldwTotalBidPrice = ldwBidPrice * bCount;
 		CalcMoney(ldwTotalBidPrice, dwGold, dwSilver, dwCooper);
@@ -17032,7 +17032,7 @@ DWORD CTMapSvrModule::OnDM_AUCTIONBUYDIRECT_ACK(LPPACKETBUF pBUF)
 	ldwTotalBidPrice = ldwBidPrice * bCount - __int64(ldwBidPrice * bCount * AUCTIONSUCCESSFEE);
 	CalcMoney(ldwTotalBidPrice, dwGold, dwSilver, dwCooper);
 
-	// µî·ÏÀÚ¿¡°Ô µ· º¸³»±â
+	// ë“±ë¡ìì—ê²Œ ëˆ ë³´ë‚´ê¸°
 
 
 
@@ -17040,7 +17040,7 @@ DWORD CTMapSvrModule::OnDM_AUCTIONBUYDIRECT_ACK(LPPACKETBUF pBUF)
 		BuildNetString(NAME_NULL, GetSvrMsg(MSG_AUCTION_PRICE)), strPriceMSG, POST_NORMAL,
 		dwGold,dwSilver,dwCooper, NULL);
 
-	// ³«ÂûÀÚ¿¡°Ô ¹°ÇÄ º¸³»±â
+	// ë‚™ì°°ìì—ê²Œ ë¬¼í”” ë³´ë‚´ê¸°
 
 
 
@@ -17053,7 +17053,7 @@ DWORD CTMapSvrModule::OnDM_AUCTIONBUYDIRECT_ACK(LPPACKETBUF pBUF)
 	m_pUdpSocket->LogAuctionBid(LOGMAP_AUCTIONSUCCESSMONEY,NULL,dwAuctionID,ldwBidPrice,pItem,bCount,dwSeller,strSeller);	
 #endif
 
-	// Å»¶ôÇÑ ÀÔÂûÀÚ¿¡°Ô µ· º¸³»±â
+	// íƒˆë½í•œ ì…ì°°ìì—ê²Œ ëˆ ë³´ë‚´ê¸°
 
 
 
@@ -17162,7 +17162,7 @@ DWORD CTMapSvrModule::OnMW_WORLDPOSTSEND_REQ(LPPACKETBUF pBUF)
 				>> bItemNum
 				>> wUseTime;
 
-			//	¾ÆÀÌÅÛ »ı¼º
+			//	ì•„ì´í…œ ìƒì„±
 
 
 

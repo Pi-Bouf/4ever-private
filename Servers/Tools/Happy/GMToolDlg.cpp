@@ -1,4 +1,4 @@
-// GMToolDlg.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// GMToolDlg.cpp : êµ¬í˜„ íŒŒì¼ìž…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -9,7 +9,7 @@
 #include "HappyDoc.h"
 
 
-// CGMToolDlg ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CGMToolDlg ëŒ€í™” ìƒìžìž…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CGMToolDlg, CDialog)
 CGMToolDlg::CGMToolDlg(CWnd* pParent /*=NULL*/)
@@ -235,11 +235,11 @@ BEGIN_MESSAGE_MAP(CGMToolDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-// CGMToolDlg ¸Þ½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CGMToolDlg ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ìž…ë‹ˆë‹¤.
 
 void CGMToolDlg::OnBnClickedOk()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	OnOK();
 }
 
@@ -315,7 +315,7 @@ void CGMToolDlg::OnBnClickedBtnChatban()
 
 void CGMToolDlg::OnBnClickedBtnItemState()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
@@ -338,7 +338,7 @@ void CGMToolDlg::OnBnClickedBtnItemState()
 
 void CGMToolDlg::OnBnClickedBtnCastle()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	m_dlgCastleSetting->Init();
 	m_dlgCastleSetting->SetWorld();
 	m_dlgCastleSetting->ShowWindow(SW_SHOW);	
@@ -346,7 +346,7 @@ void CGMToolDlg::OnBnClickedBtnCastle()
 
 void CGMToolDlg::OnBnClickedBtnEvent()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	m_dlgEvent->ShowWindow(SW_SHOW);
 	m_dlgEvent->Init();
 
@@ -365,14 +365,14 @@ void CGMToolDlg::OnBnClickedBtnEvent()
 
 void CGMToolDlg::OnBnClickedBtnLuckyevent()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	m_dlgLuckyEvent->ShowWindow(SW_SHOW);
 	m_dlgLuckyEvent->Init();
 }
 
 void CGMToolDlg::OnBnClickedBtnTonament()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	m_dlgTournament->ShowWindow(SW_SHOW);
 
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();

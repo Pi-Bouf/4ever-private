@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 // define
 #define T_INVALID						(-1)
@@ -1799,7 +1799,7 @@ typedef enum TSTRING
 	TSTR_FMT_ASK_EXTEND_PERIOD,
 	TSTR_CHAT_WORLD_ERROR_MIN_LEVEL,
 
-	// ºê·Î¾î ÀÌÈÄ
+	// ë¸Œë¡œì–´ ì´í›„
 	TSTR_CCB_PARTY,
 	TSTR_CCB_TACTICS,
 	TSTR_CCB_GUILD,
@@ -2368,13 +2368,13 @@ typedef set<DWORD>					SETDWORD, *LPSETDWORD;
 // struct
 struct tagTSKILLFUNCTION
 {
-	BYTE m_bMethodID;		///Àû¿ë¹æ½Ä
-	BYTE m_bType;			///È¿°úÁ¾·ù
-	BYTE m_bFunctionID;		///È¿°ú³»¿ë
-	BYTE m_bOPCode;			///¼öÄ¡Àû¿ë
-	BYTE m_bCalc;			///¼º´É°è»ê
-	WORD m_wValue;			///ÃÊ±â°ª
-	WORD m_wInc;			///Áõ°¡°ª
+	BYTE m_bMethodID;		///ì ìš©ë°©ì‹
+	BYTE m_bType;			///íš¨ê³¼ì¢…ë¥˜
+	BYTE m_bFunctionID;		///íš¨ê³¼ë‚´ìš©
+	BYTE m_bOPCode;			///ìˆ˜ì¹˜ì ìš©
+	BYTE m_bCalc;			///ì„±ëŠ¥ê³„ì‚°
+	WORD m_wValue;			///ì´ˆê¸°ê°’
+	WORD m_wInc;			///ì¦ê°€ê°’
 };
 
 struct tagTSKILLUPGRADEINFO
@@ -2386,64 +2386,64 @@ struct tagTSKILLUPGRADEINFO
 
 struct tagTSKILL
 {
-	WORD m_wSkillID;						///½ºÅ³ID
-	CString m_strNAME;						///½ºÅ³ÀÌ¸§
-	WORD m_wActSkillID;						///ÀÌÀü¼º°ø½ºÅ³
-	WORD m_wDefSkillID;						///´ë»óÀÌ°É¸°¹öÇÁ
-	WORD m_wModeID;							///ÅÂ¼¼
-	DWORD m_dwClassID;						///Á÷¾÷ÄÚµå
-	BYTE m_bKind;							///Æ¯¼º±¸ºÐ
-	DWORD m_dwWeaponID;						///»ç¿ë¹«±â
-	DWORD m_dwDuration;						///Àû¿ë½Ã°£ÃÊ±â°ª
-	DWORD m_dwDurationInc;					///Àû¿ë½Ã°£Áõ°¡ºñÀ²
-	WORD m_wUseHP;							///HP¼Ò¸ðºñÀ²
-	WORD m_wUseMP;							///MP¼Ò¸ðºñÀ²
-	WORD m_wIconID;							///¾ÆÀÌÄÜID
-	BYTE m_bLevel;							///¿ä±¸·¹º§
-	BYTE m_bLevelInc;						///¿ä±¸·¹º§Áõ°¡
-	BYTE m_bMaxLevel;						///ÃÖ´ë½ºÅ³·¹º§
-	FLOAT m_fPrice;							///°¡°ÝºñÀ²
+	WORD m_wSkillID;						///ìŠ¤í‚¬ID
+	CString m_strNAME;						///ìŠ¤í‚¬ì´ë¦„
+	WORD m_wActSkillID;						///ì´ì „ì„±ê³µìŠ¤í‚¬
+	WORD m_wDefSkillID;						///ëŒ€ìƒì´ê±¸ë¦°ë²„í”„
+	WORD m_wModeID;							///íƒœì„¸
+	DWORD m_dwClassID;						///ì§ì—…ì½”ë“œ
+	BYTE m_bKind;							///íŠ¹ì„±êµ¬ë¶„
+	DWORD m_dwWeaponID;						///ì‚¬ìš©ë¬´ê¸°
+	DWORD m_dwDuration;						///ì ìš©ì‹œê°„ì´ˆê¸°ê°’
+	DWORD m_dwDurationInc;					///ì ìš©ì‹œê°„ì¦ê°€ë¹„ìœ¨
+	WORD m_wUseHP;							///HPì†Œëª¨ë¹„ìœ¨
+	WORD m_wUseMP;							///MPì†Œëª¨ë¹„ìœ¨
+	WORD m_wIconID;							///ì•„ì´ì½˜ID
+	BYTE m_bLevel;							///ìš”êµ¬ë ˆë²¨
+	BYTE m_bLevelInc;						///ìš”êµ¬ë ˆë²¨ì¦ê°€
+	BYTE m_bMaxLevel;						///ìµœëŒ€ìŠ¤í‚¬ë ˆë²¨
+	FLOAT m_fPrice;							///ê°€ê²©ë¹„ìœ¨
 
-	WORD m_wItemID[TSHOTTYPE_COUNT];		///¹ß»ç¾ÆÀÌÅÛ
-	WORD m_wNeedItemID;						///¼Ò¸ð¾ÆÀÌÅÛ
+	WORD m_wItemID[TSHOTTYPE_COUNT];		///ë°œì‚¬ì•„ì´í…œ
+	WORD m_wNeedItemID;						///ì†Œëª¨ì•„ì´í…œ
 
-	FLOAT m_fMoveDist;						///°­Á¦ÀÌµ¿ °Å¸®
-	FLOAT m_fAtkRange;						///ÀÎ½Ä Æø,¹Ý°æ
-	FLOAT m_fBufRange;						///¿À¶ó¹üÀ§
-	FLOAT m_fMinRange;						///ÃÖ¼Ò»çÁ¤°Å¸®
-	FLOAT m_fMaxRange;						///ÃÖ´ë»çÁ¤°Å¸®
-	DWORD m_dwSpellTick;					///¹ßµ¿½Ã°£
-	BYTE m_bIsRide;							///¹öÇÁÁß Å» ¼ö ¾ø´Â ½ºÅ³
-	DWORD m_dwDelay;						///Àç»ç¿ë´ë±â
-	INT m_nDelayInc;						///Àç»ç¿ë ´ë±â Áõ°¨ºñÀ²
-	DWORD m_dwGroupTick;					///°è¿­´ë±â
-	DWORD m_dwInterval;						///¹Ýº¹½Ã°£
+	FLOAT m_fMoveDist;						///ê°•ì œì´ë™ ê±°ë¦¬
+	FLOAT m_fAtkRange;						///ì¸ì‹ í­,ë°˜ê²½
+	FLOAT m_fBufRange;						///ì˜¤ë¼ë²”ìœ„
+	FLOAT m_fMinRange;						///ìµœì†Œì‚¬ì •ê±°ë¦¬
+	FLOAT m_fMaxRange;						///ìµœëŒ€ì‚¬ì •ê±°ë¦¬
+	DWORD m_dwSpellTick;					///ë°œë™ì‹œê°„
+	BYTE m_bIsRide;							///ë²„í”„ì¤‘ íƒˆ ìˆ˜ ì—†ëŠ” ìŠ¤í‚¬
+	DWORD m_dwDelay;						///ìž¬ì‚¬ìš©ëŒ€ê¸°
+	INT m_nDelayInc;						///ìž¬ì‚¬ìš© ëŒ€ê¸° ì¦ê°ë¹„ìœ¨
+	DWORD m_dwGroupTick;					///ê³„ì—´ëŒ€ê¸°
+	DWORD m_dwInterval;						///ë°˜ë³µì‹œê°„
 	WORD m_wUseMedals;
-	BYTE m_bPositive;						///ÀÌ·Î¿ò ÇØ·Î¿ò
-	BYTE m_bActive;							///ÆÐ½Ãºê=0 ¾×Æ¼ºê=1
-	BYTE m_bDelayType;						///°ø¼ÓÀû¿ë
-	BYTE m_bLoop;							///ÀÚµ¿¹Ýº¹¿©ºÎ
-	BYTE m_bContinue;						///µ¿ÀÛÁö¼Ó¿©ºÎ
-	BYTE m_bActionID[TSKILLACTION_COUNT];	///µ¿ÀÛ
+	BYTE m_bPositive;						///ì´ë¡œì›€ í•´ë¡œì›€
+	BYTE m_bActive;							///íŒ¨ì‹œë¸Œ=0 ì•¡í‹°ë¸Œ=1
+	BYTE m_bDelayType;						///ê³µì†ì ìš©
+	BYTE m_bLoop;							///ìžë™ë°˜ë³µì—¬ë¶€
+	BYTE m_bContinue;						///ë™ìž‘ì§€ì†ì—¬ë¶€
+	BYTE m_bActionID[TSKILLACTION_COUNT];	///ë™ìž‘
 
-	DWORD m_dwSFX[TSKILLSFX_COUNT];			///ÀÌÆåÆ®
-	DWORD m_dwInfoID;						///ÅøÆÁID
+	DWORD m_dwSFX[TSKILLSFX_COUNT];			///ì´íŽ™íŠ¸
+	DWORD m_dwInfoID;						///íˆ´íŒID
 	
-	BYTE m_bTargetType;						///»ç¿ë´ë»ó ÇÇ¾Æ
-	BYTE m_bRangeType;						///´ë»óÆÇº°
-	BYTE m_bShowIcon;						///¾ÆÀÌÄÜº¸ÀÓ
+	BYTE m_bTargetType;						///ì‚¬ìš©ëŒ€ìƒ í”¼ì•„
+	BYTE m_bRangeType;						///ëŒ€ìƒíŒë³„
+	BYTE m_bShowIcon;						///ì•„ì´ì½˜ë³´ìž„
 
 	BYTE m_bPremIconID;
 
-	BYTE m_bShowTime;						///³²Àº½Ã°£º¸ÀÓ
-	BYTE m_bShowCritical;					///Å©¸®Æ¼ÄÃÀû¿ë
-	BYTE m_bUseInHold;						///°¤Èû »óÅÂ¿¡¼­ »ç¿ë °¡´É¿©ºÎ	
+	BYTE m_bShowTime;						///ë‚¨ì€ì‹œê°„ë³´ìž„
+	BYTE m_bShowCritical;					///í¬ë¦¬í‹°ì»¬ì ìš©
+	BYTE m_bUseInHold;						///ê°‡íž˜ ìƒíƒœì—ì„œ ì‚¬ìš© ê°€ëŠ¥ì—¬ë¶€	
 
-	BYTE m_bDuraSlot;						///³»±¸°¨¼Ò½½·Ô
-	BYTE m_bHitInit;						///¼º°øÀ²ÃÊ±â°ª
-	BYTE m_bHitInc;							///¼º°øÀ²Áõ°¡°ª
-	BYTE m_bCanCancel;						///»ç¿ëÀÚ Ãë¼Ò °¡´É ¿©ºÎ
-	BYTE m_bStaticWhenDie;					/// »ç¸Á½Ã ¹öÇÁ À¯Áö
+	BYTE m_bDuraSlot;						///ë‚´êµ¬ê°ì†ŒìŠ¬ë¡¯
+	BYTE m_bHitInit;						///ì„±ê³µìœ¨ì´ˆê¸°ê°’
+	BYTE m_bHitInc;							///ì„±ê³µìœ¨ì¦ê°€ê°’
+	BYTE m_bCanCancel;						///ì‚¬ìš©ìž ì·¨ì†Œ ê°€ëŠ¥ ì—¬ë¶€
+	BYTE m_bStaticWhenDie;					/// ì‚¬ë§ì‹œ ë²„í”„ ìœ ì§€
 
 	LPTSKILLUPGRADEINFO m_vTUPGRADEINFO;
 	VTSKILLFUNCTION m_vTFUNCTION;
@@ -2825,47 +2825,47 @@ struct tagTPORTAL
 
 struct tagTITEM
 {
-	WORD	m_wItemID;							///ÀÏ·Ã¹øÈ£
-	BYTE	m_bType;							///Á¾·ù
-	BYTE	m_bKind;							///±¸ºÐ
-	WORD	m_wAttrID;							///¼º´ÉÀÏ·Ã¹øÈ£
-	CString	m_strNAME;							///ÀÌ¸§
-	WORD	m_wUseValue;						///»ç¿ëÈ¿°ú°ª
-	DWORD	m_dwSlotID;							///ÀåÂøÀ§Ä¡
-	DWORD	m_dwClassID;						///»ç¿ëÁ÷¾÷
-	BYTE	m_bPrmSlotID;						///ÁÖ¹«±âÀåÂøÀ§Ä¡
-	BYTE	m_bSubSlotID;						///º¸Á¶¹«±âÀåÂøÀ§Ä¡
-	BYTE	m_bLevel;							///ÇÊ¿ä·¹º§
-	BYTE	m_bCanRepair;						///¼ö¸®¿©ºÎ(Ãß°¡)
-	DWORD	m_dwDuraMax;						///ÃÖ´ë³»±¸(Ãß°¡)
-	BYTE	m_bRefineMax;						///Á¦·ÃÈ½¼ö(Ãß°¡)
-	FLOAT	m_fPriceRate;						///°¡°ÝºñÀ²
-	DWORD	m_dwPrice;							///±âÁØ°¡°Ý
-	BYTE	m_bMinRange;						///ÃÖ¼Ò»çÁ¤°Å¸®
-	BYTE	m_bMaxRange;						///ÃÖ´ë»çÁ¤°Å¸®
-	BYTE	m_bStack;							///ÃÖ´ë¼ö·®
-	BYTE	m_bSlotCount;						///½½·Ô°¹¼ö
-	BYTE	m_bCanGamble;						///ºÀÀÎ »ý¼º¿©ºÎ
-	BYTE	m_bGambleProb;						///Ä¡È¯¿©ºÎ(Ãß°¡)
-	BYTE	m_bDestoryProb;						///¼Ò¸ê¿©ºÎ(Ãß°¡)
-	BYTE	m_bCanGrade;						///µî±Þ °¡´É¿©ºÎ
-	BYTE	m_bCanMagic;						///¸¶¹ý »ý¼º¿©ºÎ
-	BYTE	m_bCanRare;							///Èñ±Í »ý¼º¿©ºÎ
-	WORD	m_wDelayGroupID;					///µô·¹ÀÌ ±×·ì ID
-	DWORD	m_dwDelay;							///Àç»ç¿ë´ë±â½Ã°£
-	BYTE	m_bCanTrade;						///°Å·¡,ÆÇ¸Å °¡´É ¿©ºÎ
-	BYTE	m_bIsSpecial;						///Ä³½¬ ¾ÆÀÌÅÛ ¿©ºÎ
-	WORD	m_wUseTime;							///»ç¿ë ±â°£(ÀÏ/½Ã°£)
-	BYTE m_bUseType;									///»ç¿ë Å¸ÀÔ
+	WORD	m_wItemID;							///ì¼ë ¨ë²ˆí˜¸
+	BYTE	m_bType;							///ì¢…ë¥˜
+	BYTE	m_bKind;							///êµ¬ë¶„
+	WORD	m_wAttrID;							///ì„±ëŠ¥ì¼ë ¨ë²ˆí˜¸
+	CString	m_strNAME;							///ì´ë¦„
+	WORD	m_wUseValue;						///ì‚¬ìš©íš¨ê³¼ê°’
+	DWORD	m_dwSlotID;							///ìž¥ì°©ìœ„ì¹˜
+	DWORD	m_dwClassID;						///ì‚¬ìš©ì§ì—…
+	BYTE	m_bPrmSlotID;						///ì£¼ë¬´ê¸°ìž¥ì°©ìœ„ì¹˜
+	BYTE	m_bSubSlotID;						///ë³´ì¡°ë¬´ê¸°ìž¥ì°©ìœ„ì¹˜
+	BYTE	m_bLevel;							///í•„ìš”ë ˆë²¨
+	BYTE	m_bCanRepair;						///ìˆ˜ë¦¬ì—¬ë¶€(ì¶”ê°€)
+	DWORD	m_dwDuraMax;						///ìµœëŒ€ë‚´êµ¬(ì¶”ê°€)
+	BYTE	m_bRefineMax;						///ì œë ¨íšŸìˆ˜(ì¶”ê°€)
+	FLOAT	m_fPriceRate;						///ê°€ê²©ë¹„ìœ¨
+	DWORD	m_dwPrice;							///ê¸°ì¤€ê°€ê²©
+	BYTE	m_bMinRange;						///ìµœì†Œì‚¬ì •ê±°ë¦¬
+	BYTE	m_bMaxRange;						///ìµœëŒ€ì‚¬ì •ê±°ë¦¬
+	BYTE	m_bStack;							///ìµœëŒ€ìˆ˜ëŸ‰
+	BYTE	m_bSlotCount;						///ìŠ¬ë¡¯ê°¯ìˆ˜
+	BYTE	m_bCanGamble;						///ë´‰ì¸ ìƒì„±ì—¬ë¶€
+	BYTE	m_bGambleProb;						///ì¹˜í™˜ì—¬ë¶€(ì¶”ê°€)
+	BYTE	m_bDestoryProb;						///ì†Œë©¸ì—¬ë¶€(ì¶”ê°€)
+	BYTE	m_bCanGrade;						///ë“±ê¸‰ ê°€ëŠ¥ì—¬ë¶€
+	BYTE	m_bCanMagic;						///ë§ˆë²• ìƒì„±ì—¬ë¶€
+	BYTE	m_bCanRare;							///í¬ê·€ ìƒì„±ì—¬ë¶€
+	WORD	m_wDelayGroupID;					///ë”œë ˆì´ ê·¸ë£¹ ID
+	DWORD	m_dwDelay;							///ìž¬ì‚¬ìš©ëŒ€ê¸°ì‹œê°„
+	BYTE	m_bCanTrade;						///ê±°ëž˜,íŒë§¤ ê°€ëŠ¥ ì—¬ë¶€
+	BYTE	m_bIsSpecial;						///ìºì‰¬ ì•„ì´í…œ ì—¬ë¶€
+	WORD	m_wUseTime;							///ì‚¬ìš© ê¸°ê°„(ì¼/ì‹œê°„)
+	BYTE m_bUseType;									///ì‚¬ìš© íƒ€ìž…
 	BYTE	m_bWeaponID;						///WEAPON ID
 	FLOAT	m_fShotSpeed;						///SHOT SPEED
 	FLOAT	m_fGravity;							///GRAVITY
 	DWORD	m_dwInfoID;							///INFO ID
-	BYTE	m_bSkillItemType;					///¹ß»çÅ¸ÀÔ
-	WORD	m_wVisual[TGRADE_LEVEL_COUNT];		///´Ü°èº° ºñÁÖ¾ó(Ãß°¡)
-	WORD	m_wGradeSFX;						///µî±Þ ÀÌÆåÆ®(Ãß°¡)
-	WORD	m_wOptionSFX[TMAGIC_LEVEL_COUNT];	///´Ü°èº° ¿É¼Ç ÀÌÆåÆ®(Ãß°¡)
-	BYTE	m_bCanWrap; ///¹Ð³³°¡´É
+	BYTE	m_bSkillItemType;					///ë°œì‚¬íƒ€ìž…
+	WORD	m_wVisual[TGRADE_LEVEL_COUNT];		///ë‹¨ê³„ë³„ ë¹„ì£¼ì–¼(ì¶”ê°€)
+	WORD	m_wGradeSFX;						///ë“±ê¸‰ ì´íŽ™íŠ¸(ì¶”ê°€)
+	WORD	m_wOptionSFX[TMAGIC_LEVEL_COUNT];	///ë‹¨ê³„ë³„ ì˜µì…˜ ì´íŽ™íŠ¸(ì¶”ê°€)
+	BYTE	m_bCanWrap; ///ë°€ë‚©ê°€ëŠ¥
 	DWORD	m_dwAuctionCode;
 	WORD    m_wUseBP;
 	BYTE	m_bCanColor;
@@ -3238,10 +3238,10 @@ struct tagTLIGHT
 
 struct tagTLEVEL
 {
-	BYTE m_bLevel;			/// ·¹º§
-	DWORD m_dwCost;			/// ±âÁØ °ñµå
-	DWORD m_dwRegCost;		/// µî·Ï ºñ¿ë
-	DWORD m_dwSearchCost;	/// °Ë»ö ºñ¿ë
+	BYTE m_bLevel;			/// ë ˆë²¨
+	DWORD m_dwCost;			/// ê¸°ì¤€ ê³¨ë“œ
+	DWORD m_dwRegCost;		/// ë“±ë¡ ë¹„ìš©
+	DWORD m_dwSearchCost;	/// ê²€ìƒ‰ ë¹„ìš©
 };
 
 struct tagTFOG
@@ -3327,9 +3327,9 @@ struct tagTITEMMAGIC
 {
 	WORD	m_wID;
 	CString	m_strNAME;
-	BYTE	m_bSecOption;	///< º¸Á¶¿É¼Ç ¿©ºÎ
-	FLOAT	m_fUtil;		///< À¯Æ¿°ª (¿É¼Ç ·©Å·À» Á¤ÇÒ¶§ »ç¿ë)
-	BYTE	m_bSFX;			///< ÀÌÆåÆ® ±×·ì
+	BYTE	m_bSecOption;	///< ë³´ì¡°ì˜µì…˜ ì—¬ë¶€
+	FLOAT	m_fUtil;		///< ìœ í‹¸ê°’ (ì˜µì…˜ ëž­í‚¹ì„ ì •í• ë•Œ ì‚¬ìš©)
+	BYTE	m_bSFX;			///< ì´íŽ™íŠ¸ ê·¸ë£¹
 
 	tagTITEMMAGIC()
 	:	m_wID(0),
@@ -3597,8 +3597,8 @@ struct tagTAUCTIONTREE
 
 struct tagTFAMETITLE
 {
-	CString		m_strFameName;		// ÄªÈ£
-	BYTE		m_bSFX;				// SFX »ç¿ë ¿©ºÎ
+	CString		m_strFameName;		// ì¹­í˜¸
+	BYTE		m_bSFX;				// SFX ì‚¬ìš© ì—¬ë¶€
 	BYTE		m_bSFXID;			// SFX ID
 };
 
@@ -3618,12 +3618,12 @@ struct tagTEQUIPCREATECHAR
 		TE_COUNT
 	};
 
-	BYTE		m_bCountry;					// ±¹°¡
-	BYTE		m_bClass;					// Á÷¾÷
-	BYTE		m_bSex;						// ¼ºº°
-	WORD		m_wItemID[ TE_COUNT ];		// ¾ÆÀÌÅÛ¾ÆÀÌµð
-	WORD		m_wGrade[ TE_COUNT ];		// °­È­´Ü°è
-	BYTE		m_bGradeEffect[ TE_COUNT ];	// °­È­ÀÌÆåÆ®
+	BYTE		m_bCountry;					// êµ­ê°€
+	BYTE		m_bClass;					// ì§ì—…
+	BYTE		m_bSex;						// ì„±ë³„
+	WORD		m_wItemID[ TE_COUNT ];		// ì•„ì´í…œì•„ì´ë””
+	WORD		m_wGrade[ TE_COUNT ];		// ê°•í™”ë‹¨ê³„
+	BYTE		m_bGradeEffect[ TE_COUNT ];	// ê°•í™”ì´íŽ™íŠ¸
 };
 
 struct tagTRPS

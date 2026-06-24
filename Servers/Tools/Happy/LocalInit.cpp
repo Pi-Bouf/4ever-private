@@ -1,4 +1,4 @@
-// LocalInit.cpp : ���� �����Դϴ�.
+﻿// LocalInit.cpp : 구현 파일입니다.
 //
 
 #include "stdafx.h"
@@ -6,7 +6,7 @@
 #include "LocalInit.h"
 
 
-// CLocalInit ��ȭ �����Դϴ�.
+// CLocalInit 대화 상자입니다.
 
 IMPLEMENT_DYNAMIC(CLocalInit, CDialog)
 CLocalInit::CLocalInit(CWnd* pParent /*=NULL*/)
@@ -28,4 +28,4 @@ BEGIN_MESSAGE_MAP(CLocalInit, CDialog)
 END_MESSAGE_MAP()
 
 
-// CLocalInit �޽��� ó�����Դϴ�.
+// CLocalInit 메시지 처리기입니다.

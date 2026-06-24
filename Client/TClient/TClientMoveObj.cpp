@@ -1,4 +1,4 @@
-#include "stdafx.h"
+Ôªø#include "stdafx.h"
 #include "TClient.h"
 #include "TClientGame.h"
 
@@ -1000,7 +1000,7 @@ void CTClientMoveObj::DoTRANS( CD3DDevice *pDevice,
 			pTMON->m_fSize,
 			0.0f, 0.0f);
 
-		// 08.10.31 ±«º∫«ı
+		// 08.10.31 Í∂åÏÑ±ÌòÅ
 		m_vPreScale = m_vScale;
 
 		D3DXMatrixScaling(

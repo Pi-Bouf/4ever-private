@@ -1,4 +1,4 @@
-// RetDlg.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// RetDlg.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -6,7 +6,7 @@
 #include "RetDlg.h"
 
 
-// CRetDlg ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CRetDlg ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CRetDlg, CDialog)
 CRetDlg::CRetDlg(CWnd* pParent /*=NULL*/)
@@ -29,7 +29,7 @@ BEGIN_MESSAGE_MAP(CRetDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-// CRetDlg ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CRetDlg ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 
 void CRetDlg::SetMsg(CString str)

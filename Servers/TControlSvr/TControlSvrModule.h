@@ -1,18 +1,18 @@
-#pragma once
+ï»¿#pragma once
 
 #include <TServerSystem.h>
 
 #define ON_RECEIVE(p)							case p : return On##p(pBUF);
 
-////////////////////// ¸Å¿ì¸Å¿ì Áß¿ä - ¼ÒÄÏ Á¾·á¿ä·É /////////////////////////////////////
+////////////////////// ë§¤ìš°ë§¤ìš° ì¤‘ìš” - ì†Œì¼“ ì¢…ë£Œìš”ë ¹ /////////////////////////////////////
 //
-// 1. ÀÚ±âÀÚ½ÅÀ» Á¾·á ÇÏ·Á¸é ÇÚµé·¯ÇÔ¼ö¿¡¼­ EC_SESSION_INVALIDCHAR¸¦ ¸®ÅÏÇÑ´Ù.
-//    (ÇÚµé·¯ ÇÔ¼öÀÇ ÆÄ¶ó¸ÞÅÍ·Î ³Ñ¾î¿Â ¼ÒÄÏ pBUF->m_pSESSIONÀÌ Á¾·á)
+// 1. ìžê¸°ìžì‹ ì„ ì¢…ë£Œ í•˜ë ¤ë©´ í•¸ë“¤ëŸ¬í•¨ìˆ˜ì—ì„œ EC_SESSION_INVALIDCHARë¥¼ ë¦¬í„´í•œë‹¤.
+//    (í•¸ë“¤ëŸ¬ í•¨ìˆ˜ì˜ íŒŒë¼ë©”í„°ë¡œ ë„˜ì–´ì˜¨ ì†Œì¼“ pBUF->m_pSESSIONì´ ì¢…ë£Œ)
 //
-// 2. ´Ù¸¥ ¼ÒÄÏÀ» Á¾·á ÇÏ·Á¸é Á¾·á´ë»óÀ» ÆÄ¶ó¸ÞÅÍ·Î ÇÏ¿© CloseSession()À» È£ÃâÇÑ´Ù.
-//    (¿¹ : CloseSession(pTarget); pTargetÀÌ ½º½º·Î Á¾·áÇÏµµ·Ï À¯µµµÈ´Ù)
+// 2. ë‹¤ë¥¸ ì†Œì¼“ì„ ì¢…ë£Œ í•˜ë ¤ë©´ ì¢…ë£ŒëŒ€ìƒì„ íŒŒë¼ë©”í„°ë¡œ í•˜ì—¬ CloseSession()ì„ í˜¸ì¶œí•œë‹¤.
+//    (ì˜ˆ : CloseSession(pTarget); pTargetì´ ìŠ¤ìŠ¤ë¡œ ì¢…ë£Œí•˜ë„ë¡ ìœ ë„ëœë‹¤)
 //
-// 3. ÀÌ ÀÌ¿ÜÀÇ ¹æ¹ýÀ¸·Î Àý´ë ¼ÒÄÏÀ» Á¾·áÇÏ¸é ¾ÈµÈ´Ù.
+// 3. ì´ ì´ì™¸ì˜ ë°©ë²•ìœ¼ë¡œ ì ˆëŒ€ ì†Œì¼“ì„ ì¢…ë£Œí•˜ë©´ ì•ˆëœë‹¤.
 //
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -25,8 +25,8 @@ protected:
 	MAPTSVRTEMP m_mapTSVRTEMP;				// Server template data
 	MAPTMANAGER m_mapSESSION;				// all session pool
 	MAPTMANAGER m_mapMANAGER;				// valid manager pool
-	//MAPTMANAGERTEMP m_mapMANTEMP;			// Çö½Â·æ ¸Å´ÏÀú ±ÇÇÑ
-	MAPPLATFORM m_mapPLATFORM;				// Çö½Â·æ Performance
+	//MAPTMANAGERTEMP m_mapMANTEMP;			// í˜„ìŠ¹ë£¡ ë§¤ë‹ˆì € ê¶Œí•œ
+	MAPPLATFORM m_mapPLATFORM;				// í˜„ìŠ¹ë£¡ Performance
 
 	MAPTMACHINE m_mapTMachine;
 	MAPTGROUP m_mapTGroup;
@@ -77,7 +77,7 @@ protected:
 	COverlappedEx m_ovAccept;
 	CPacket m_vAccept;
 
-	BYTE m_bAutoStart; // ¼­ºñ½º ÁßÁöµÆÀ» ¶§ ÀÚµ¿À¸·Î ´Ù½Ã ½ÃÀÛÇÏ±â.
+	BYTE m_bAutoStart; // ì„œë¹„ìŠ¤ ì¤‘ì§€ëì„ ë•Œ ìžë™ìœ¼ë¡œ ë‹¤ì‹œ ì‹œìž‘í•˜ê¸°.
 	DWORD m_dwManagerSeq;
 	DWORD m_dwChatBanSeq;
 	DWORD m_dwSendCount;
@@ -110,21 +110,21 @@ protected:
 	DWORD OnCT_SERVICEUPLOADSTART_REQ(LPPACKETBUF pBUF);
 	DWORD OnCT_SERVICEUPLOAD_REQ(LPPACKETBUF pBUF);
 	DWORD OnCT_SERVICEUPLOADEND_REQ(LPPACKETBUF	pBUF);
-	DWORD OnCT_UPDATEPATCH_REQ(LPPACKETBUF pBUF); // Çö½Â·æ CT_UPDATEPATCH_REQ
-	DWORD OnCT_ANNOUNCEMENT_REQ(LPPACKETBUF pBUF); // Çö½Â·æ CT_ANNOUNCEMENT_REQ
-	DWORD OnCT_USERKICKOUT_REQ(LPPACKETBUF pBUF); // Çö½Â·æ CT_USERKICKOUT_REQ
-	DWORD OnCT_USERMOVE_REQ(LPPACKETBUF pBUF); // Çö½Â·æ CT_USERMOVE_REQ
-	DWORD OnCT_USERPOSITION_REQ(LPPACKETBUF pBUF); // Çö½Â·æ CT_USERPOSITION_REQ
-	DWORD OnCT_MONSPAWNFIND_REQ(LPPACKETBUF pBUF); // Çö½Â·æ CT_MONSPAWNFIND_REQ
-	DWORD OnCT_MONSPAWNFIND_ACK(LPPACKETBUF pBUF); // Çö½Â·æ CT_MONSPAWNFIND_ACK
-	DWORD OnCT_MONACTION_REQ(LPPACKETBUF pBUF); // Çö½Â·æ CT_MONACTION_REQ
-	DWORD OnCT_STLOGIN_REQ(LPPACKETBUF pBUF); // Çö½Â·æ CT_STLOGIN_REQ
-	DWORD OnCT_PLATFORM_REQ(LPPACKETBUF pBUF); // Çö½Â·æ CT_PLATFORM_REQ
-	DWORD OnCT_USERPROTECTED_REQ(LPPACKETBUF pBUF); // Çö½Â·æ CT_USERPROTECTED_REQ
-	DWORD OnCT_CHARMSG_REQ(LPPACKETBUF pBUF); // Çö½Â·æ CT_CHARMSG_REQ
+	DWORD OnCT_UPDATEPATCH_REQ(LPPACKETBUF pBUF); // í˜„ìŠ¹ë£¡ CT_UPDATEPATCH_REQ
+	DWORD OnCT_ANNOUNCEMENT_REQ(LPPACKETBUF pBUF); // í˜„ìŠ¹ë£¡ CT_ANNOUNCEMENT_REQ
+	DWORD OnCT_USERKICKOUT_REQ(LPPACKETBUF pBUF); // í˜„ìŠ¹ë£¡ CT_USERKICKOUT_REQ
+	DWORD OnCT_USERMOVE_REQ(LPPACKETBUF pBUF); // í˜„ìŠ¹ë£¡ CT_USERMOVE_REQ
+	DWORD OnCT_USERPOSITION_REQ(LPPACKETBUF pBUF); // í˜„ìŠ¹ë£¡ CT_USERPOSITION_REQ
+	DWORD OnCT_MONSPAWNFIND_REQ(LPPACKETBUF pBUF); // í˜„ìŠ¹ë£¡ CT_MONSPAWNFIND_REQ
+	DWORD OnCT_MONSPAWNFIND_ACK(LPPACKETBUF pBUF); // í˜„ìŠ¹ë£¡ CT_MONSPAWNFIND_ACK
+	DWORD OnCT_MONACTION_REQ(LPPACKETBUF pBUF); // í˜„ìŠ¹ë£¡ CT_MONACTION_REQ
+	DWORD OnCT_STLOGIN_REQ(LPPACKETBUF pBUF); // í˜„ìŠ¹ë£¡ CT_STLOGIN_REQ
+	DWORD OnCT_PLATFORM_REQ(LPPACKETBUF pBUF); // í˜„ìŠ¹ë£¡ CT_PLATFORM_REQ
+	DWORD OnCT_USERPROTECTED_REQ(LPPACKETBUF pBUF); // í˜„ìŠ¹ë£¡ CT_USERPROTECTED_REQ
+	DWORD OnCT_CHARMSG_REQ(LPPACKETBUF pBUF); // í˜„ìŠ¹ë£¡ CT_CHARMSG_REQ
 	DWORD OnCT_RECONNECT_REQ(LPPACKETBUF pBUF);
-	DWORD OnCT_SERVICEAUTOSTART_REQ(LPPACKETBUF pBUF); //¼­ºñ½º ÀÚµ¿½ÃÀÛ ±â´É ¿äÃ».
-	DWORD OnCT_CHATBAN_REQ(LPPACKETBUF pBUF); //Ã¤ÆÃ±ÝÁö¿äÃ».
+	DWORD OnCT_SERVICEAUTOSTART_REQ(LPPACKETBUF pBUF); //ì„œë¹„ìŠ¤ ìžë™ì‹œìž‘ ê¸°ëŠ¥ ìš”ì²­.
+	DWORD OnCT_CHATBAN_REQ(LPPACKETBUF pBUF); //ì±„íŒ…ê¸ˆì§€ìš”ì²­.
 	DWORD OnCT_CHATBAN_ACK(LPPACKETBUF pBUF);
 	DWORD OnCT_SERVICEDATACLEAR_REQ(LPPACKETBUF pBUF); 
 	DWORD OnCT_ITEMFIND_REQ(LPPACKETBUF pBUF);
@@ -159,20 +159,20 @@ protected:
 	DWORD OnCT_RPSGAMEDATA_REQ(LPPACKETBUF pBUF);
 	DWORD OnCT_RPSGAMECHANGE_REQ(LPPACKETBUF pBUF);
 	DWORD OnCT_RPSGAMEDATA_ACK(LPPACKETBUF pBUF);	
-	DWORD OnCT_CMGIFT_REQ(LPPACKETBUF pBUF);	// ¿ùµå·Î Àü¼Û
-	DWORD OnCT_CMGIFT_ACK(LPPACKETBUF pBUF);	// ÇØÇÇ·Î ¸®ÅÏ
-	DWORD OnCT_CMGIFTLIST_REQ(LPPACKETBUF pBUF);	// ÇØÇÇ·Î ¸®½ºÆ® Àü¼Û
-	DWORD OnCT_CMGIFTLIST_ACK(LPPACKETBUF pBUF);	// ÇØÇÇ·Î ¸®½ºÆ® Àü¼Û
-	DWORD OnCT_CMGIFTCHARTUPDATE_REQ(LPPACKETBUF pBUF);	// db¾÷µ¥ÀÌÆ®ÈÄ, ¿ùµåµ¥ÀÌÅÍ ¾÷µ¥ÀÌÆ®
+	DWORD OnCT_CMGIFT_REQ(LPPACKETBUF pBUF);	// ì›”ë“œë¡œ ì „ì†¡
+	DWORD OnCT_CMGIFT_ACK(LPPACKETBUF pBUF);	// í•´í”¼ë¡œ ë¦¬í„´
+	DWORD OnCT_CMGIFTLIST_REQ(LPPACKETBUF pBUF);	// í•´í”¼ë¡œ ë¦¬ìŠ¤íŠ¸ ì „ì†¡
+	DWORD OnCT_CMGIFTLIST_ACK(LPPACKETBUF pBUF);	// í•´í”¼ë¡œ ë¦¬ìŠ¤íŠ¸ ì „ì†¡
+	DWORD OnCT_CMGIFTCHARTUPDATE_REQ(LPPACKETBUF pBUF);	// dbì—…ë°ì´íŠ¸í›„, ì›”ë“œë°ì´í„° ì—…ë°ì´íŠ¸
 
 protected:
 	void ProcessSession( CTControlSession *pSession, DWORD dwIoBytes);
 	void OnSendComplete( CTControlSession *pSession, DWORD dwIoBytes);
 
-	void OnInvalidSession( CTControlSession *pServer);			// »ç¿ë ±ÝÁö
-	void OnCloseSession( CTControlSession *pServer);			// »ç¿ë ±ÝÁö
-	void ClosingSession( CTControlSession *pServer);			// »ç¿ë ±ÝÁö
-	void CloseSession( CTControlSession *pServer);				// ¼¼¼ÇÀ» Á¾·áÇÏ·Á¸é ÀÌ ÇÔ¼ö¸¦ È£Ãâ
+	void OnInvalidSession( CTControlSession *pServer);			// ì‚¬ìš© ê¸ˆì§€
+	void OnCloseSession( CTControlSession *pServer);			// ì‚¬ìš© ê¸ˆì§€
+	void ClosingSession( CTControlSession *pServer);			// ì‚¬ìš© ê¸ˆì§€
+	void CloseSession( CTControlSession *pServer);				// ì„¸ì…˜ì„ ì¢…ë£Œí•˜ë ¤ë©´ ì´ í•¨ìˆ˜ë¥¼ í˜¸ì¶œ
 
 	void SayToBATCH( LPPACKETBUF pBUF);
 	void SayToSM( LPPACKETBUF pBUF);
@@ -233,11 +233,11 @@ public:
 	DECLARE_REGISTRY_APPID_RESOURCEID(IDR_TCONTROLSVR, "{A666C778-2308-47B0-A6F4-AAE1B0BB50D8}")
 	HRESULT InitializeSecurity() throw()
 	{
-		// TODO : CoInitializeSecurity¸¦ È£ÃâÇÏ°í ¼­ºñ½º¿¡ 
-		// ¿Ã¹Ù¸¥ º¸¾È ¼³Á¤À»
-		// Àû¿ëÇÏ½Ê½Ã¿À. PKT ¼öÁØ ÀÎÁõ, 
-		// RPC_C_IMP_LEVEL_IDENTIFY °¡Àå ¼öÁØ ÀÎÁõ 
-		// ¹× NullÀÌ ¾Æ´Ñ ÀûÀýÇÑ º¸¾È ¼³¸íÀÚ µîÀ» Àû¿ëÇÏ¸é µË´Ï´Ù.
+		// TODO : CoInitializeSecurityë¥¼ í˜¸ì¶œí•˜ê³  ì„œë¹„ìŠ¤ì— 
+		// ì˜¬ë°”ë¥¸ ë³´ì•ˆ ì„¤ì •ì„
+		// ì ìš©í•˜ì‹­ì‹œì˜¤. PKT ìˆ˜ì¤€ ì¸ì¦, 
+		// RPC_C_IMP_LEVEL_IDENTIFY ê°€ìž¥ ìˆ˜ì¤€ ì¸ì¦ 
+		// ë° Nullì´ ì•„ë‹Œ ì ì ˆí•œ ë³´ì•ˆ ì„¤ëª…ìž ë“±ì„ ì ìš©í•˜ë©´ ë©ë‹ˆë‹¤.
 
 		return S_OK;
 	}

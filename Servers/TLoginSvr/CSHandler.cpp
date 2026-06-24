@@ -1,5 +1,5 @@
-
-// CSHandler.cpp : C/S Protocol Handler ÇÔ¼öÀÇ ±¸ÇöÀÔ´Ï´Ù.
+ï»¿
+// CSHandler.cpp : C/S Protocol Handler í•¨ìˆ˜ì˜ êµ¬í˜„ìž…ë‹ˆë‹¤.
 
 #include "stdafx.h"
 #include "TLoginSvr.h"
@@ -425,7 +425,7 @@ DWORD CTLoginSvrModule::OnCS_LOGIN_REQ(CSqlDatabase *pDB, LPMAPTGROUP pGROUP, CT
 	return EC_NOERROR;
 }
 
-// Çö½Â·æ CS_TESTLOGIN_REQ
+// í˜„ìŠ¹ë£¡ CS_TESTLOGIN_REQ
 DWORD CTLoginSvrModule::OnCS_TESTLOGIN_REQ( CSqlDatabase *pDB, LPMAPTGROUP pGROUP, CTUser *pUser, CPacket& packet)
 {	
 	DEFINE_QUERY( pDB, CSPTestLogin)
@@ -440,7 +440,7 @@ DWORD CTLoginSvrModule::OnCS_TESTLOGIN_REQ( CSqlDatabase *pDB, LPMAPTGROUP pGROU
 
 	ATLTRACE(_T("nRet:%d dwUserID:%d, UserID:%s, Passwd=%s\n"), query->m_nRET, query->m_dwID, pUser->m_strUserID, pUser->m_strPasswd);
 
-	// Login ÇÒ ¼ö ÀÖ´Â ID°¡ ¾øÀ» °æ¿ì
+	// Login í•  ìˆ˜ ìžˆëŠ” IDê°€ ì—†ì„ ê²½ìš°
 	if( query->m_nRET == 1 )
 	{
 		pUser->SendCS_LOGIN_ACK(10, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -481,7 +481,7 @@ DWORD CTLoginSvrModule::OnCS_TESTLOGIN_REQ( CSqlDatabase *pDB, LPMAPTGROUP pGROU
 	return EC_NOERROR;
 }
 
-// Çö½Â·æ CS_TESTVERSION_REQ
+// í˜„ìŠ¹ë£¡ CS_TESTVERSION_REQ
 DWORD CTLoginSvrModule::OnCS_TESTVERSION_REQ( CSqlDatabase *pDB, LPMAPTGROUP pGROUP, CTUser *pUser, CPacket& packet)
 {
 	pUser->SendCS_TESTVERSION_ACK(TVERSION);
@@ -1020,7 +1020,7 @@ DWORD CTLoginSvrModule::OnCS_CREATECHAR_REQ( CSqlDatabase *pDB, LPMAPTGROUP pGRO
 
 	if(pGroup)
 	{
-		// ÀÌ¸§ ±æÀÌ Á¦ÇÑ ÇÑ±Û8ÀÚ
+		// ì´ë¦„ ê¸¸ì´ ì œí•œ í•œê¸€8ìž
 		if(strNAME.GetLength() > 16 || strNAME.GetLength() < 3)
 		{
 			pUser->SendCS_CREATECHAR_ACK(
@@ -1043,7 +1043,7 @@ DWORD CTLoginSvrModule::OnCS_CREATECHAR_REQ( CSqlDatabase *pDB, LPMAPTGROUP pGRO
 			return EC_NOERROR;
 		}
 
-		// a-z A-Z 0-9 ¹®ÀÚ¸¸ Çã¿ë (ÇÑ¹®, ½ºÆäÀÌ½º ±ÝÁö)
+		// a-z A-Z 0-9 ë¬¸ìžë§Œ í—ˆìš© (í•œë¬¸, ìŠ¤íŽ˜ì´ìŠ¤ ê¸ˆì§€)
 		if(!CheckCharName(strNAME))
 		{
 			pUser->SendCS_CREATECHAR_ACK(

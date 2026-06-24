@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+ï»¿#include "Stdafx.h"
 #include "TMessengerChat.h"
 #include "TClientGame.h"
 #include "TMessengerBase.h"
@@ -334,7 +334,7 @@ void CTMessengerChat::TryChatMsgInEdit()
 	m_pChatEdit->ClearText();
 	m_pChatEdit->ResetTextSetting();
 
-	//!! ¸Þ½ÅÀú ÀÛ¾÷Áß (X)
+	//!! ë©”ì‹ ì € ìž‘ì—…ì¤‘ (X)
 	// -------------------------------
 	DoChat(this, strMSG);
 	// -------------------------------

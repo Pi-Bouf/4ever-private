@@ -1,21 +1,21 @@
-#pragma once
+ï»¿#pragma once
 
 
 // =====================================================================
 /**	@class		CTDetailInfoManager
-	@brief		»ó¼¼Á¤º¸Ã¢¿¡ °üÇÑ Á¤º¸ À¯Áö, °Ë»ö ¹× È­¸é Ãâ·ÂÀ» ´ã´çÇÑ´Ù.
+	@brief		ìƒì„¸ì •ë³´ì°½ì— ê´€í•œ ì •ë³´ ìœ ì§€, ê²€ìƒ‰ ë° í™”ë©´ ì¶œë ¥ì„ ë‹´ë‹¹í•œë‹¤.
 	
 */// ===================================================================
 class CTDetailInfoManager
 {
 public:
-	/// °¡Àå ÃÖ±Ù¿¡ Ç¥½ÃÇÑ »ó¼¼Á¤º¸
+	/// ê°€ìž¥ ìµœê·¼ì— í‘œì‹œí•œ ìƒì„¸ì •ë³´
 	static ITDetailInfoPtr	m_pLastInfo;
 
-	/// »ó¼¼Á¤º¸Ã¢À» Ç¥½ÃÇÏ±âÀ§ÇØ ±â´Ù¸° ½Ã°£.
+	/// ìƒì„¸ì •ë³´ì°½ì„ í‘œì‹œí•˜ê¸°ìœ„í•´ ê¸°ë‹¤ë¦° ì‹œê°„.
 	static DWORD			m_dwInfoTick;
 
-	/// »ó¼¼Á¤º¸Ã¢À» ¸¶¿ì½ºÀÇ À§Ä¡¿¡ »ó°ü¾øÀÌ ÀÏÁ¤½Ã°£ µ¿¾È º¸¿©ÁÖ±â À§ÇÑ ½Ã°£.
+	/// ìƒì„¸ì •ë³´ì°½ì„ ë§ˆìš°ìŠ¤ì˜ ìœ„ì¹˜ì— ìƒê´€ì—†ì´ ì¼ì •ì‹œê°„ ë™ì•ˆ ë³´ì—¬ì£¼ê¸° ìœ„í•œ ì‹œê°„.
 	static DWORD			m_dwInfoStaticTick;
 
 public:
@@ -25,32 +25,32 @@ public:
 		DWORD dwTitleColor,
 		const CRect& rc = CRect(0,0,0,0) );
 
-	/// »ó¼¼Á¤º¸ ÀÎ½ºÅÏ½º¸¦ »ý¼ºÇÑ´Ù.
+	/// ìƒì„¸ì •ë³´ ì¸ìŠ¤í„´ìŠ¤ë¥¼ ìƒì„±í•œë‹¤.
 	static ITDetailInfoPtr NewNorInst(
 		const CString& strTitle,
 		DWORD dwInfoID, 
 		WORD wImgID, 
 		const CRect& rc = CRect(0,0,0,0));
 
-	/// ½ºÅ³ »ó¼¼Á¤º¸ ÀÎ½ºÅÏ½º¸¦ »ý¼ºÇÑ´Ù.
+	/// ìŠ¤í‚¬ ìƒì„¸ì •ë³´ ì¸ìŠ¤í„´ìŠ¤ë¥¼ ìƒì„±í•œë‹¤.
 	static ITDetailInfoPtr NewSkillInst(
 		LPTSKILL pTSkill,
 		BYTE bLevel,
 		BOOL bSkillReq,
 		const CRect& rc = CRect(0,0,0,0));
 
-	/// ÀÏ¹Ý ¾ÆÀÌÅÛ »ó¼¼Á¤º¸ ÀÎ½ºÅÏ½º¸¦ »ý¼ºÇÑ´Ù.
+	/// ì¼ë°˜ ì•„ì´í…œ ìƒì„¸ì •ë³´ ì¸ìŠ¤í„´ìŠ¤ë¥¼ ìƒì„±í•œë‹¤.
 	static ITDetailInfoPtr NewItemInst(
 		LPTITEM pItem, 
 		const CRect& rc = CRect(0,0,0,0));
 
-	/// ÁÖ¾îÁø ¾ÆÀÌÅÛ¿¡ ¸Â´Â »ó¼¼Á¤º¸ ÀÎ½ºÅÏ½º¸¦ »ý¼ºÇÑ´Ù.
+	/// ì£¼ì–´ì§„ ì•„ì´í…œì— ë§žëŠ” ìƒì„¸ì •ë³´ ì¸ìŠ¤í„´ìŠ¤ë¥¼ ìƒì„±í•œë‹¤.
 	static ITDetailInfoPtr NewItemInst(
 		CTClientItem* pItem,
 		const CRect& rc = CRect(0,0,0,0),
 		BYTE bSecondInfo = FALSE);
 
-	/// ¼ºÁ¤º¸¿¡ ¸Â´Â »ó¼¼Á¤º¸ ÀÎ½ºÅÏ½º¸¦ »ý¼ºÇÑ´Ù.
+	/// ì„±ì •ë³´ì— ë§žëŠ” ìƒì„¸ì •ë³´ ì¸ìŠ¤í„´ìŠ¤ë¥¼ ìƒì„±í•œë‹¤.
 	static ITDetailInfoPtr NewTerritoryInst(
 		CString strCastle,
 		CTime timeNext,
@@ -70,7 +70,7 @@ public:
 #endif
 		const CRect& rc = CRect(0,0,0,0));
 
-	/// Áö¿ªÁ¤º¸¿¡ ¸Â´Â »ó¼¼Á¤º¸ ÀÎ½ºÅÏ½º¸¦ »ý¼ºÇÑ´Ù.
+	/// ì§€ì—­ì •ë³´ì— ë§žëŠ” ìƒì„¸ì •ë³´ ì¸ìŠ¤í„´ìŠ¤ë¥¼ ìƒì„±í•œë‹¤.
 	static ITDetailInfoPtr NewTerritoryInst(
 		CString strTerritory,
 		CTime timeNext,

@@ -1,4 +1,4 @@
-// ItemChgState.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// ItemChgState.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -9,7 +9,7 @@
 #include ".\itemchgstate.h"
 
 
-// CItemChgState ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CItemChgState ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CItemChgState, CDialog)
 CItemChgState::CItemChgState(CWnd* pParent /*=NULL*/)
@@ -39,26 +39,26 @@ BEGIN_MESSAGE_MAP(CItemChgState, CDialog)
 END_MESSAGE_MAP()
 
 
-// CItemChgState ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CItemChgState ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 
 void CItemChgState::OnBnClickedRaItid()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	m_bFindType = FALSE;
 	SetDlgItemText(IDC_SAVE_POS,_T("Item ID"));
 }
 
 void CItemChgState::OnBnClickedRbItname()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	m_bFindType = TRUE;
 	SetDlgItemText(IDC_SAVE_POS,_T("Item Name"));
 }
 
 void CItemChgState::OnBnClickedOk() //ChangeState
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 		
 	ItemMultiSelect();
 	//OnOK();
@@ -66,7 +66,7 @@ void CItemChgState::OnBnClickedOk() //ChangeState
 
 void CItemChgState::OnBnClickedBtnFinditem()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	ClearListItem();
 
 	CString strItemName;
@@ -101,7 +101,7 @@ void CItemChgState::OnBnClickedBtnFinditem()
 			return;
 	}
 
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -116,7 +116,7 @@ void CItemChgState::OnBnClickedBtnFinditem()
 
 void CItemChgState::Init()
 {
-	// ID ¸¦ ±âº»¼±ÅÃÀ¸·Î
+	// ID ë¥¼ ê¸°ë³¸ì„ íƒìœ¼ë¡œ
 	CButton* pBtn1 = (CButton*)GetDlgItem(IDC_RA_ITID);
 	pBtn1->SetCheck(TRUE);
 
@@ -134,7 +134,7 @@ void CItemChgState::Init()
 
 void CItemChgState::InitFindListCtrl()
 {
-		// ¸®½ºÆ® ÄÁÆ®·ÑÀÇ ¸ğµç ÄÃ·³ »èÁ¦
+		// ë¦¬ìŠ¤íŠ¸ ì»¨íŠ¸ë¡¤ì˜ ëª¨ë“  ì»¬ëŸ¼ ì‚­ì œ
 	for(int i = 0; i < MAX_ITEMFIND_COLUMN ; i++)
         m_lcFindList.DeleteColumn(0);
 
@@ -155,7 +155,7 @@ void CItemChgState::InitFindListCtrl()
 		//m_listctrPos.InsertColumn(0,"NAME",LVCFMT_CENTER,180);
 	}
 	
-	// ÇÏ³ªÀÇ ¶óÀÎ ÀüÃ¼°¡ ¼±ÅÃµÇµµ·Ï ¼³Á¤
+	// í•˜ë‚˜ì˜ ë¼ì¸ ì „ì²´ê°€ ì„ íƒë˜ë„ë¡ ì„¤ì •
 	m_lcFindList.SetExtendedStyle(LVS_EX_FULLROWSELECT);
 }
 
@@ -169,7 +169,7 @@ void CItemChgState::InsertItemToListCtr(ITEMSTATE* pITEMSTATE, int _iRow)
 		iRowCount = m_lcFindList.GetItemCount();
 	
 	lvItem.mask		= LVIF_TEXT;
-	lvItem.iItem	= iRowCount; // Row ÀÎµ¦½º
+	lvItem.iItem	= iRowCount; // Row ì¸ë±ìŠ¤
 	
 	for(int iCol = 0; iCol < MAX_ITEMFIND_COLUMN ; iCol++)
 	{
@@ -180,7 +180,7 @@ void CItemChgState::InsertItemToListCtr(ITEMSTATE* pITEMSTATE, int _iRow)
 		case 2 : strTmp.Format("%s",pITEMSTATE->m_strName );	break;		
 		}
 		
-		lvItem.iSubItem = iCol ; // ÄÃ·³ ÀÎµ¦½º
+		lvItem.iSubItem = iCol ; // ì»¬ëŸ¼ ì¸ë±ìŠ¤
 		lvItem.pszText	= strTmp.GetBuffer(0);
 		
 		if( iCol == 0 )
@@ -192,7 +192,7 @@ void CItemChgState::InsertItemToListCtr(ITEMSTATE* pITEMSTATE, int _iRow)
 
 bool CItemChgState::ItemSelect()
 {
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -205,13 +205,13 @@ bool CItemChgState::ItemSelect()
 
 	VITEMSTATE vItemState;
 	CString strMsg;
-	// ¼±ÅÃµÈ ¾ÆÀÌÅÛ Ã£±â
+	// ì„ íƒëœ ì•„ì´í…œ ì°¾ê¸°
 	int iCount = m_lcFindList.GetItemCount();
 	for(int i = 0; i < iCount; i++)
 	{
 		if( m_lcFindList.GetItemState(i, LVIS_SELECTED) != 0 )
 		{			
-			// ¼±ÅÃµÈ ¾ÆÀÌÅÛ Á¶ÀÛ
+			// ì„ íƒëœ ì•„ì´í…œ ì¡°ì‘
 			CString strTemp;
 			ITEMSTATE ItemState;
 
@@ -271,7 +271,7 @@ void CItemChgState::ChangeItemState(WORD wItemID, BYTE bInitState)
 
 void CItemChgState::ItemMultiSelect()
 {
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -284,22 +284,22 @@ void CItemChgState::ItemMultiSelect()
 
 	VITEMSTATE vItemState;
 
-	// ¼±ÅÃµÈ ¾ÆÀÌÅÛÀÌ ¸î°³ÀÎÁö ¹Ş¾Æ¿Â´Ù.
+	// ì„ íƒëœ ì•„ì´í…œì´ ëª‡ê°œì¸ì§€ ë°›ì•„ì˜¨ë‹¤.
     int count = m_lcFindList.GetSelectedCount();
 
-    // °¡Àå Ã³À½ ¼±ÅÃµÈ ¾ÆÀÌÅÛÀÇ À§Ä¡°ªÀ» ¾ò´Â´Ù.
+    // ê°€ì¥ ì²˜ìŒ ì„ íƒëœ ì•„ì´í…œì˜ ìœ„ì¹˜ê°’ì„ ì–»ëŠ”ë‹¤.
     POSITION pos = m_lcFindList.GetFirstSelectedItemPosition();
     int index = 0; 
 
     for (int i = 0; i < count; i++)
     {
-        // ´ÙÀ½ ¼±ÅÃµÈ ¾ÆÀÌÃÀÀÇ Æ÷Áö¼ÇÀ» ¾ò´Â´Ù.
+        // ë‹¤ìŒ ì„ íƒëœ ì•„ì´ì³„ì˜ í¬ì§€ì…˜ì„ ì–»ëŠ”ë‹¤.
         index = m_lcFindList.GetNextSelectedItem(pos); 
 
-       // ÇØ´ç ¾ÆÀÌÅÛ¿¡ ´ëÇÑ Ã³¸® 
+       // í•´ë‹¹ ì•„ì´í…œì— ëŒ€í•œ ì²˜ë¦¬ 
 		if( m_lcFindList.GetItemState(index, LVIS_SELECTED) != 0 )
 		{			
-			// ¼±ÅÃµÈ ¾ÆÀÌÅÛ Á¶ÀÛ
+			// ì„ íƒëœ ì•„ì´í…œ ì¡°ì‘
 			CString strTemp;
 			ITEMSTATE ItemState;
 
@@ -357,7 +357,7 @@ void CItemChgState::SetWorld()
 	while(m_cbWorld.GetCount())
 		m_cbWorld.DeleteString(0);
 
-	m_cbWorld.AddString(_T("Choose Server"));//ÀüÃ¼
+	m_cbWorld.AddString(_T("Choose Server"));//ì „ì²´
 	MAPGROUP::iterator itG;
 	for(itG=pDoc->m_mapGroup.begin(); itG!=pDoc->m_mapGroup.end(); itG++)
 		if( (*itG).second->m_bID != 0 )

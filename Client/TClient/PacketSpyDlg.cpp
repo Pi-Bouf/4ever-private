@@ -1,4 +1,4 @@
-// PacketSpyDlg.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// PacketSpyDlg.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -16,8 +16,8 @@ const CString CPacketSpyDlg::PACKTYPE_STRS[PACKTYPE_CNT] =
 
 const CString CPacketSpyDlg::COL_STRS[COL_CNT] =
 {
-	"½Ã°¢",
-	"ÆĞÅ¶"
+	"ì‹œê°",
+	"íŒ¨í‚·"
 };
 
 const FLOAT CPacketSpyDlg::SIZE_RATES[COL_CNT] =
@@ -26,7 +26,7 @@ const FLOAT CPacketSpyDlg::SIZE_RATES[COL_CNT] =
 	0.79f
 };
 
-// CPacketSpyDlg ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CPacketSpyDlg ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CPacketSpyDlg, CDialog)
 CPacketSpyDlg::CPacketSpyDlg(CWnd* pParent /*=NULL*/)

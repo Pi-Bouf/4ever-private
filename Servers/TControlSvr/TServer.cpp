@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 
 
 CTServer::CTServer()
@@ -23,7 +23,7 @@ void CTServer::SendCT_SERVICEMONITOR_ACK(DWORD dwTick)
 }
 
 //////////////////////////////////////////////////////////////
-// Çö½Â·æ CT_ANNOUNCEMENT_ACK
+// í˜„ìŠ¹ë£¡ CT_ANNOUNCEMENT_ACK
 void CTServer::SendCT_ANNOUNCEMENT_ACK(CString strAnnounce)
 {
 	CPacket * pMsg = new CPacket();
@@ -32,7 +32,7 @@ void CTServer::SendCT_ANNOUNCEMENT_ACK(CString strAnnounce)
 
 	Say(pMsg);
 }
-// Çö½Â·æ CT_USERKICKOUT_ACK
+// í˜„ìŠ¹ë£¡ CT_USERKICKOUT_ACK
 void CTServer::SendCT_USERKICKOUT_ACK(CString strUser)
 {
 	CPacket * pMsg = new CPacket();
@@ -41,7 +41,7 @@ void CTServer::SendCT_USERKICKOUT_ACK(CString strUser)
 
 	Say(pMsg);
 }
-// Çö½Â·æ CT_USERMOVE_ACK
+// í˜„ìŠ¹ë£¡ CT_USERMOVE_ACK
 void CTServer::SendCT_USERMOVE_ACK(CString strUser, BYTE bChannel, WORD wMapID, FLOAT fPosX, FLOAT fPosY, FLOAT fPosZ)
 {
 	CPacket * pMsg = new CPacket();
@@ -55,7 +55,7 @@ void CTServer::SendCT_USERMOVE_ACK(CString strUser, BYTE bChannel, WORD wMapID, 
 
 	Say(pMsg);
 }
-// Çö½Â·æ CT_USERPOSITION_ACK
+// í˜„ìŠ¹ë£¡ CT_USERPOSITION_ACK
 void CTServer::SendCT_USERPOSITION_ACK(CString strUser, CString strTarget)
 {
 	CPacket * pMsg = new CPacket();
@@ -65,7 +65,7 @@ void CTServer::SendCT_USERPOSITION_ACK(CString strUser, CString strTarget)
 
 	Say(pMsg);
 }
-// Çö½Â·æ CT_MONSPAWNFIND_ACK
+// í˜„ìŠ¹ë£¡ CT_MONSPAWNFIND_ACK
 void CTServer::SendCT_MONSPAWNFIND_ACK(DWORD dwManager, BYTE bChannel, WORD wMapID, WORD wSpawnID)
 {
 	CPacket * pMsg = new CPacket();
@@ -77,7 +77,7 @@ void CTServer::SendCT_MONSPAWNFIND_ACK(DWORD dwManager, BYTE bChannel, WORD wMap
 
 	Say(pMsg);
 }
-// Çö½Â·æ CT_MONACTION_ACK
+// í˜„ìŠ¹ë£¡ CT_MONACTION_ACK
 void CTServer::SendCT_MONACTION_ACK(BYTE bChannel, WORD wMapID, DWORD dwMonID, BYTE bAction, DWORD dwTriggerID, DWORD dwHostID, DWORD dwRHID, BYTE bRHType,WORD wSpawnID)
 {
 	CPacket * pMsg = new CPacket();

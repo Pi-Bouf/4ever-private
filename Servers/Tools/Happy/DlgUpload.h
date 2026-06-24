@@ -1,25 +1,25 @@
-#pragma once
+ï»¿#pragma once
 #include "afxwin.h"
 
-// CDlgUpload ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CDlgUpload ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 class CDlgUpload : public CDialog
 {
 	DECLARE_DYNAMIC(CDlgUpload)
 
 public:
-	CDlgUpload(CWnd* pParent = NULL);   // Ç¥ÁØ »ı¼ºÀÚÀÔ´Ï´Ù.
+	CDlgUpload(CWnd* pParent = NULL);   // í‘œì¤€ ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CDlgUpload();
 
 	CString m_strFile;
 	BYTE m_bMachine;
 
 	void UploadService();
-// ´ëÈ­ »óÀÚ µ¥ÀÌÅÍÀÔ´Ï´Ù.
+// ëŒ€í™” ìƒì ë°ì´í„°ì…ë‹ˆë‹¤.
 	enum { IDD = IDD_DIALOG_UPLOAD };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 public:

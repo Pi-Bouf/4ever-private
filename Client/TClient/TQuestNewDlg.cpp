@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "Resource.h"
 #include "TClientGame.h"
 #include "TClientWnd.h"
@@ -1380,7 +1380,7 @@ void CQuestNewDlg::ResetTQUEST(LPTQUEST pTQUEST, CQuest* Quest)
 
 	if (!bCanPerf)
 	{
-	// ÇNLölr´ÂÄu?sC®
+	// Ã‡NLÃ¶lrëŠ”í›§?sCÂ®
 	CString strCANNOTMSG;
 	strCANNOTMSG = CTChart::LoadString(TSTR_QUEST_CANNOTPERF);
 
@@ -1388,7 +1388,7 @@ void CQuestNewDlg::ResetTQUEST(LPTQUEST pTQUEST, CQuest* Quest)
 	}
 	else
 	{
-	// ¸nÇAÁ¤s¸
+	// í‡ºÃ‡Aì •sÂ¸
 	INT nTermLine = 0;
 	INT nNumber = 1;
 	for (BYTE i = 0; i<INT(pTMISSION->m_vTTERM.size()); i++)
@@ -1427,10 +1427,10 @@ void CQuestNewDlg::ResetTQUEST(LPTQUEST pTQUEST, CQuest* Quest)
 	}
 	}
 
-	// zälrÁ¤s¸
+	// zÃ¤lrì •sÂ¸
 	SummaryMessage(pTMISSION->m_strSummaryMSG);
 
-	// ´ëC­l»zë
+	// ëŒ€Cì¶í‰Ã«
 	if (m_bPrintMSG)
 	{
 	CString strHeader = GetSpeakerString(m_strNPCTitle);
@@ -1445,7 +1445,7 @@ void CQuestNewDlg::ResetTQUEST(LPTQUEST pTQUEST, CQuest* Quest)
 
 	INT nRewardItemCount = 0;
 
-	// s¸»ó¸n·D
+	// së§çª„ní…±
 	for (auto i = 0; i<INT(pTMISSION->m_vTREWARD.size()); i++)
 	{
 	CString strREWARD;
@@ -1499,7 +1499,7 @@ void CQuestNewDlg::ResetTQUEST(LPTQUEST pTQUEST, CQuest* Quest)
 	case RT_GOLD:
 	{
 	//strREWARD = CTClientGame::MakeMoneyStr(pTMISSION->m_vTREWARD[i]->m_dwID);
-	// s¸»ó¸n·DRE lC´D¶ó µu·Î lÖlîÁÖ´ÂµA°? RÖ´U.
+	// së§çª„ní…±RE lCí€±ë¼ íƒ’ë¡œ lÃ–læ²®çµì¨‰AÂ°? RçµU.
 
 	DWORD dwMONEY[3] = { 0, 0, 0 };
 
@@ -1561,7 +1561,7 @@ void CQuestNewDlg::ResetTQUEST(LPTQUEST pTQUEST, CQuest* Quest)
 	nLine = m_pReward->AddString(strREWARD);
 	else
 	{
-	nLine = m_pReward->GetItemCount() - 1; // ¸¶Áö¸· ¶óRÎ
+	nLine = m_pReward->GetItemCount() - 1; // ë§ˆì§€ë§‰ ë¼RÃ
 	nCol = 1;
 
 	m_pReward->SetItemString(nLine, nCol, (LPCTSTR)strREWARD);
@@ -1577,7 +1577,7 @@ void CQuestNewDlg::ResetTQUEST(LPTQUEST pTQUEST, CQuest* Quest)
 	m_pTSELREWARD = NULL;
 	}
 
-	if (m_bPrintMSG == FALSE) // NPC´ëC­A?RE¸é
+	if (m_bPrintMSG == FALSE) // NPCëŒ€Cìµ¡?REë©´
 	{
 	if (m_strAnswerWhenNPCTalk.GetLength())
 	{

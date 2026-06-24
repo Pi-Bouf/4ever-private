@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "Announce.h"
 #include "MonsterSpawn.h"
@@ -20,21 +20,21 @@
 #include "afxwin.h"
 
 
-// CGMToolDlg ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CGMToolDlg ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 class CGMToolDlg : public CDialog
 {
 	DECLARE_DYNAMIC(CGMToolDlg)
 
 public:
-	CGMToolDlg(CWnd* pParent = NULL);   // Ç¥ÁØ »ı¼ºÀÚÀÔ´Ï´Ù.
+	CGMToolDlg(CWnd* pParent = NULL);   // í‘œì¤€ ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CGMToolDlg();
 
-// ´ëÈ­ »óÀÚ µ¥ÀÌÅÍÀÔ´Ï´Ù.
+// ëŒ€í™” ìƒì ë°ì´í„°ì…ë‹ˆë‹¤.
 	enum { IDD = IDD_GMTOOLDLG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+Ôªø#include "StdAfx.h"
 #include <SvrInc.h>
 #include "TMapSvrModule.h"
 
@@ -204,7 +204,7 @@ BYTE CTMonster::SetAggro(DWORD dwHostID,
 
 	if(nAggro < 0 && m_bMode == MT_BATTLE)
 	{
-		// Aggro ∞®º“
+		// Aggro Í∞êÏÜå
 		DWORD dwAggro=0;
 		TAGGRO aggro;
 
@@ -227,7 +227,7 @@ BYTE CTMonster::SetAggro(DWORD dwHostID,
 	}
 	else
 	{
-		// Aggro ¡ı∞°
+		// Aggro Ï¶ùÍ∞Ä
 		if((dwNew && m_bMode != MT_BATTLE) ||
 			((m_bTargetType != bAttackType ||
 			m_dwTargetID != dwAttackID ) &&
@@ -398,7 +398,7 @@ DWORD CTMonster::OnDamage( DWORD dwHostID,
 		else
 			m_mapDamage.insert(MAPINT64::value_type(nKey, nValue));
 
-		// ±ÊµÂ µ•πÃ¡ˆ ¿˙¿Â
+		// Í∏∏Îìú Îç∞ÎØ∏ÏßÄ Ï†ÄÏû•
 		DWORD dwGuildID = 0;		
 		MAPDWORD::iterator itG;
 		CTPlayer* pPlayer = _AtlModule.FindChar(dwHostID);
@@ -1332,7 +1332,7 @@ void CTMonster::SetMagicOpt(CTItem * pItem, BYTE bOptType)
 		return;
 	}
 
-	// m_wValue √÷¡æø…º«∫Ò¿≤
+	// m_wValue ÏµúÏ¢ÖÏòµÏÖòÎπÑÏú®
 	LPTMAGIC pTMAGIC = new TMAGIC();
 	pTMAGIC->m_pMagic = vItemMagic[sel];
 
@@ -1959,7 +1959,7 @@ void CTMonster::Recover(DWORD dwTick)
 					itDg++;
 			}
 
-			// ±ÊµÂµ•πÃ¡ˆ
+			// Í∏∏ÎìúÎç∞ÎØ∏ÏßÄ
 			MAPDWORD::iterator itGu;
 			for(itGu = m_mapGuildDamage.begin(); itGu != m_mapGuildDamage.end(); )
 			{

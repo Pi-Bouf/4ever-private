@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 class CTMessengerChat : public CTClientUIBase
 {
@@ -11,31 +11,31 @@ protected:
 	static BOOL				ms_bShow;
 
 public:
-	/// »õ·Î¿î ¸Ş½ÅÀú Ã¤ÆÃÃ¢À» »ı¼ºÇÑ´Ù.
+	/// ìƒˆë¡œìš´ ë©”ì‹ ì € ì±„íŒ…ì°½ì„ ìƒì„±í•œë‹¤.
 	static CTMessengerChat* NewInstance(DWORD dwTmsID = 0);
-	/// ±âÁ¸ÀÇ ¸Ş½ÅÀú Ã¤ÆÃÃ¢À» Á¦°ÅÇÑ´Ù.
+	/// ê¸°ì¡´ì˜ ë©”ì‹ ì € ì±„íŒ…ì°½ì„ ì œê±°í•œë‹¤.
 	static BOOL DeleteInstance(CTMessengerChat* pChat);
-	/// ÇöÀç ¶° ÀÖ´Â ¸ğµç ¸Ş½ÅÀú Ã¤ÆÃÃ¢À» Á¦°ÅÇÑ´Ù.
+	/// í˜„ì¬ ë–  ìˆëŠ” ëª¨ë“  ë©”ì‹ ì € ì±„íŒ…ì°½ì„ ì œê±°í•œë‹¤.
 	static void DeleteAllInstance();
 
-	/// ÁÖ¾îÁø TMS ID ¸¦ °¡Áø Ã¤ÆÃÃ¢À» ¾ò´Â´Ù.
+	/// ì£¼ì–´ì§„ TMS ID ë¥¼ ê°€ì§„ ì±„íŒ…ì°½ì„ ì–»ëŠ”ë‹¤.
 	static CTMessengerChat* GetChat(DWORD dwTmsID);
-	/// Ã¤ÆÃ ¸Ş½ÃÁö¸¦ Àü¼ÛÇÑ´Ù.
+	/// ì±„íŒ… ë©”ì‹œì§€ë¥¼ ì „ì†¡í•œë‹¤.
 	static BOOL DoChat(CTMessengerChat* pChat, const CString& strMsg);
-	/// ÁÖ¾îÁø Ã¤ÆÃÃ¢¿¡¼­ÀÇ ÇØ´ç Å¸°Ù ÅğÀåÀ» Ã³¸®ÇÑ´Ù.
+	/// ì£¼ì–´ì§„ ì±„íŒ…ì°½ì—ì„œì˜ í•´ë‹¹ íƒ€ê²Ÿ í‡´ì¥ì„ ì²˜ë¦¬í•œë‹¤.
 	static BOOL OnOutChatTarget(CTMessengerChat* pChat, const CString& strOutTarget);
 
-	/// ÇöÀç È°¼º Ã¢ÀÌ º¸ÀÌ´ÂÁö ¿©ºÎ¸¦ ¾ò´Â´Ù.
+	/// í˜„ì¬ í™œì„± ì°½ì´ ë³´ì´ëŠ”ì§€ ì—¬ë¶€ë¥¼ ì–»ëŠ”ë‹¤.
 	static BOOL IsAllVisible()	{ return ms_bShow; }
-	/// ¸ğµç È°¼º Ã¢À» º¸ÀÌ°Å³ª ¾Èº¸ÀÌ°Ô ÇÑ´Ù.
+	/// ëª¨ë“  í™œì„± ì°½ì„ ë³´ì´ê±°ë‚˜ ì•ˆë³´ì´ê²Œ í•œë‹¤.
 	static void ShowAll(BOOL bShow);
 	
-	/// ÇöÀç È°¼ºÈ­µÈ Ã¤ÆÃÃ¢À» ¾ò´Â´Ù.
+	/// í˜„ì¬ í™œì„±í™”ëœ ì±„íŒ…ì°½ì„ ì–»ëŠ”ë‹¤.
 	static CTMessengerChat* GetCurMsgChat();
-	/// ¸ğµç Ã¤ÆÃÃ¢ Áß¿¡¼­ ÇöÀç È°¼ºÈ­µÈ ¿¡µğÅÍ¸¦ ¾ò´Â´Ù.
+	/// ëª¨ë“  ì±„íŒ…ì°½ ì¤‘ì—ì„œ í˜„ì¬ í™œì„±í™”ëœ ì—ë””í„°ë¥¼ ì–»ëŠ”ë‹¤.
 	static TEdit* GetCurMsgChatEdit();
     
-	/// P2P Çü½ÄÀÇ Ã¤ÆÃÃ¢Áß ÇØ´ç Å¸°ÙÀ» °¡Áø Ã¢À» ¾ò´Â´Ù.
+	/// P2P í˜•ì‹ì˜ ì±„íŒ…ì°½ì¤‘ í•´ë‹¹ íƒ€ê²Ÿì„ ê°€ì§„ ì°½ì„ ì–»ëŠ”ë‹¤.
 	static CTMessengerChat* FindInP2PByTarget(const CString& strTarget);
 
 protected:
@@ -59,45 +59,45 @@ protected:
 	TMultiLineEdit*			m_pChatEdit;
 
 public:
-	/// ÇöÀç Æ÷Ä¿½ºµÈ ¿¡µğÆ® ÄÁÆ®·ÑÀ» ¾ò´Â´Ù.
+	/// í˜„ì¬ í¬ì»¤ìŠ¤ëœ ì—ë””íŠ¸ ì»¨íŠ¸ë¡¤ì„ ì–»ëŠ”ë‹¤.
 	TEdit* GetCurEdit();
 
-	/// Å¸°ÙµéÀ» ¼³Á¤ÇÑ´Ù.
+	/// íƒ€ê²Ÿë“¤ì„ ì„¤ì •í•œë‹¤.
 	void SetTargets(LPMCTARGET_ARRAY pTargets);
-	/// Å¸°ÙÀ» ÇÏ³ª ¼³Á¤ÇÑ´Ù.
+	/// íƒ€ê²Ÿì„ í•˜ë‚˜ ì„¤ì •í•œë‹¤.
 	void SetTarget(LPMSGCHAT_TARGET pTarget);
-	/// Å¸°ÙÀ» Ãß°¡ÇÑ´Ù.
+	/// íƒ€ê²Ÿì„ ì¶”ê°€í•œë‹¤.
 	void AddTarget(LPMSGCHAT_TARGET pTarget);
-	/// Å¸°ÙÀ» ÇÏ³ª Á¦°ÅÇÑ´Ù.
+	/// íƒ€ê²Ÿì„ í•˜ë‚˜ ì œê±°í•œë‹¤.
 	BOOL RemoveTarget(const CString& strTargetName);
-	/// ÀüÃ¼ Å¸°ÙÀ» Á¦°ÅÇÑ´Ù.
+	/// ì „ì²´ íƒ€ê²Ÿì„ ì œê±°í•œë‹¤.
 	void RemoveAllTargets();
 
-	/// º¯°æµÈ Å¸°Ù Á¤º¸¸¦ ¹İ¿µ½ÃÅ²´Ù.
+	/// ë³€ê²½ëœ íƒ€ê²Ÿ ì •ë³´ë¥¼ ë°˜ì˜ì‹œí‚¨ë‹¤.
 	void UpdateTarget();
 
-	/// Å¸°ÙÀÇ ¼ö¸¦ ¾ò´Â´Ù.
+	/// íƒ€ê²Ÿì˜ ìˆ˜ë¥¼ ì–»ëŠ”ë‹¤.
 	INT GetTargetCount() const					{ return (INT)m_vChatTargets.size(); }
-	/// ÁÖ¾îÁø ÀÎµ¦½ºÀÇ Å¸°ÙÀ» ¾ò´Â´Ù.
+	/// ì£¼ì–´ì§„ ì¸ë±ìŠ¤ì˜ íƒ€ê²Ÿì„ ì–»ëŠ”ë‹¤.
 	LPMSGCHAT_TARGET GetTarget(INT nIdx) const	{ return const_cast<MSGCHAT_TARGET*>(&m_vChatTargets[nIdx]); }
-	/// Å¸°Ù ¹è¿­À» ¾ò´Â´Ù.
+	/// íƒ€ê²Ÿ ë°°ì—´ì„ ì–»ëŠ”ë‹¤.
 	LPMCTARGET_ARRAY GetTargets() const			{ return const_cast<LPMCTARGET_ARRAY>(&m_vChatTargets); }
 	
-	/// ÀÌ¸§À¸·Î Å¸°ÙÁ¤º¸¸¦ ¾ò´Â´Ù.
+	/// ì´ë¦„ìœ¼ë¡œ íƒ€ê²Ÿì •ë³´ë¥¼ ì–»ëŠ”ë‹¤.
 	LPMSGCHAT_TARGET FindTargetByName(const CString& strName);
 
-	/// Ã¤ÆÃ Å¸ÀÌÆ²À» ¼³Á¤ÇÑ´Ù.
+	/// ì±„íŒ… íƒ€ì´í‹€ì„ ì„¤ì •í•œë‹¤.
 	void SetChatTitle(const CString& strTarget, UINT nCnt);
 
 	DWORD GetTmsID() const						{ return m_dwTmsID; }
 	const CString& GetMyName() const			{ return m_strMyName; }
 
-	/// ¿¡µğÅÍ¿¡ ÀÔ·ÂµÈ ³»¿ë¿¡ ´ëÇÑ Àü¼ÛÀ» ½ÃµµÇÑ´Ù.
+	/// ì—ë””í„°ì— ì…ë ¥ëœ ë‚´ìš©ì— ëŒ€í•œ ì „ì†¡ì„ ì‹œë„í•œë‹¤.
 	void TryChatMsgInEdit();
-	/// ¼ö½ÅµÈ Ã¤Æ® ¸Ş½ÃÁö¸¦ Ãâ·ÂÇÑ´Ù.
+	/// ìˆ˜ì‹ ëœ ì±„íŠ¸ ë©”ì‹œì§€ë¥¼ ì¶œë ¥í•œë‹¤.
 	void OnChatMsg(const CString& strSender, const CString& strMessage);
 
-	/// Ä£±¸ ¸ñ·Ï¿¡¼­ ¼±ÅÃµÈ Ä£±¸¸¦ ÃÊ´ëÇÑ´Ù.
+	/// ì¹œêµ¬ ëª©ë¡ì—ì„œ ì„ íƒëœ ì¹œêµ¬ë¥¼ ì´ˆëŒ€í•œë‹¤.
 	BOOL InviteSelectedFriendInList();
 
 public:

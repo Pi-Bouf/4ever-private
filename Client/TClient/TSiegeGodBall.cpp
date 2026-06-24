@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "TSiegeGodBall.h"
 
 CTGodBall::MAP_RESOURCE_BALL CTGodBall::m_mapResBall;
@@ -35,7 +35,7 @@ CTGodBall::~CTGodBall()
 LPOBJECT	CTGodBall::FindObject( DWORD dwObjID, CTachyonRes* pResource )
 {
 	MAP_BALL_ITOR itor = m_mapResBall.find( dwObjID );
-	if( itor != m_mapResBall.end() )	//!< ÀÌ¹Ì ÇÑ¹øÃ£¾Ò´ø ¿ÀºêÁ§Æ®¸é..
+	if( itor != m_mapResBall.end() )	//!< ì´ë¯¸ í•œë²ˆì°¾ì•˜ë˜ ì˜¤ë¸Œì íŠ¸ë©´..
 	{
 		return (*itor).second;
 	}
@@ -142,9 +142,9 @@ void	CTGodBall::DelGodBall()
 
 void	CTGodBall::StartBallAction()
 {
-	/*! ¼ö¼ºÃø. ÀÓ½Ã..
-	*	Ä³¸¯ÅÍGSF¿¡¼­ °ø°Ý, ¼öºñ ¿ÀºêÁ§Æ®¿¡¼­
-	*	¼­·Î ¾×¼ÇID°¡ ´Ù¸£°Ô µÇ¾îÀÖ±â¶§¹®¿¡.. ³ªÁß¿¡ ¼öÁ¤ÇØ¾ßÇÔ.
+	/*! ìˆ˜ì„±ì¸¡. ìž„ì‹œ..
+	*	ìºë¦­í„°GSFì—ì„œ ê³µê²©, ìˆ˜ë¹„ ì˜¤ë¸Œì íŠ¸ì—ì„œ
+	*	ì„œë¡œ ì•¡ì…˜IDê°€ ë‹¤ë¥´ê²Œ ë˜ì–´ìžˆê¸°ë•Œë¬¸ì—.. ë‚˜ì¤‘ì— ìˆ˜ì •í•´ì•¼í•¨.
 	*/
 	if( m_wBallID >= 1 && m_wBallID <= 4 )
 	{

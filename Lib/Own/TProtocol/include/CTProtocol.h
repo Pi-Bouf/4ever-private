@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "ProtocolBase.h"
 
@@ -64,33 +64,33 @@ typedef enum SERVER_MESSAGE
 	MSG_PRESENT_MESSAGE,
 	MSG_ITEMERROR_TITLE,
 	MSG_ITEMERROR_MESSAGE,
-	MSG_AUCTION_OPERATOR,	 // °æ¸Å Áß°³ÀÎ
-	MSG_AUCTION_FAIL,		 // °Å·¡°¡ ÀÌ·ç¾îÁöÁö ¾Ê¾Ò½À´Ï´Ù.
-	MSG_AUCTION_BIDSUCCESS,  // ÀÔÂûÇÏ½Å ¹°Ç°ÀÌ µµÂøÇß½À´Ï´Ù.
-	MSG_AUCTION_PRICE,		 // °Å·¡°¡ ¼º°øÀûÀ¸·Î ÀÌ·ç¾îÁ³½À´Ï´Ù.
-	MSG_AUCTION_REGCANCEL,	 // µî·ÏÀÌ Ãë¼ÒµÈ ¹°Ç°ÀÔ´Ï´Ù.
-	MSG_AUCTION_BIDFAIL,	 // ÀÔÂû¿¡ ½ÇÆÐÇÏ¿´½À´Ï´Ù.
-	MSG_AUCTION_OTHERBIDDER, // »óÀ§ ÀÔÂûÀÚ°¡ ³ªÅ¸³µ½À´Ï´Ù.
-	MSG_AUCTION_OTHERWIN,	 // ¹°Ç°ÀÌ ´Ù¸¥ ºÐ¿¡°Ô ³«ÂûµÇ¾ú½À´Ï´Ù
-	MSG_AUCTION_FAIL_BODY,			// Á¤ÇØÁø ±â°£ ³»¿¡ %s¿¡ ´ëÇÑ ÀÔÂûÀÚ°¡ ³ªÅ¸³ªÁö ¾Ê¾Æ °Å·¡°¡ ÀÌ·ç¾îÁöÁö ¸øÇß½À´Ï´Ù.¹Ý¼ÛµÈ ¹°Ç°À» È®ÀÎÇØÁÖ½Ã±â ¹Ù¶ø´Ï´Ù. 
-	MSG_AUCTION_BIDSUCCESS_BODY,	// %s¿¡ ³«ÂûµÇ¼Ì½À´Ï´Ù. ÆíÁö¿¡ µ¿ºÀµÇ¾î ÀÖ´Â ¹°Ç°À» È®ÀÎÇØÁÖ½Ã±â ¹Ù¶ø´Ï´Ù.
-	MSG_AUCTION_PRICE_BODY,			// %s ¹°Ç°ÀÌ ¼º°øÀûÀ¸·Î ÆÇ¸ÅµÇ¾ú½À´Ï´Ù. ÆíÁö¿¡ µ¿ºÀµÇ¾î ÀÖ´Â ±Ý¾×À» È®ÀÎÇØÁÖ½Ã±â ¹Ù¶ø´Ï´Ù.(°æ¸ÅÀå ÀÌ¿ë ¼ö¼ö·á´Â Â÷°¨µË´Ï´Ù)
-	MSG_AUCTION_REGCANCEL_BODY,		// °æ¸ÅÀå¿¡¼­ µî·ÏÀÌ Ãë¼ÒµÈ %sÀÔ´Ï´Ù. ÆíÁö¿¡ µ¿ºÀµÇ¾î ÀÖ´Â ¹°Ç°À» È®ÀÎÇØÁÖ½Ã±â ¹Ù¶ø´Ï´Ù.
-	MSG_AUCTION_BIDFAIL_BODY,		// °æ¸ÅÀå ÀÌ¿ë¿¡ ºÒÆíÀ» µå·Á ÁË¼ÛÇÕ´Ï´Ù. %s¿¡ ÀÔÂûÇÏ¼Ì´ø ±Ý¾×Àº ÆíÁö¿¡ µ¿ºÀµÇ¾î ÀÖÀ¸´Ï È®ÀÎÇØÁÖ½Ã±â ¹Ù¶ø´Ï´Ù.
-	MSG_AUCTION_OTHERBIDDER_BODY,	// ÀÔÂûÇÏ½Å %s¿¡ »óÀ§ ÀÔÂûÀÚ°¡ ³ªÅ¸³µ½À´Ï´Ù.¿øÇÏ½Ç °æ¿ì °æ¸Å ´ã´çÀÚ¸¦ ÅëÇØ »óÀ§ ±Ý¾×À¸·Î ´Ù½Ã ÀÔÂûÇÏ½Ç ¼ö ÀÖ½À´Ï´Ù.	
-	MSG_AUCTION_OTHERBUY_BODY,		// %s ¹°Ç°ÀÌ ´Ù¸¥ ºÐ¿¡°Ô ³«ÂûµÇ¾ú½À´Ï´Ù.
-	MSG_AUCTION_DROP_BODY,			// %s ¹°Ç°ÀÇ µî·ÏÀÌ Ãë¼ÒµÇ¾ú½À´Ï´Ù. ÀÔÂûÇÏ¼Ì´ø ±Ý¾×Àº ÆíÁö¿¡ µ¿ºÀµÇ¾î ÀÖÀ¸´Ï È®ÀÎÇØÁÖ½Ã±â ¹Ù¶ø´Ï´Ù.
-	MSG_AUCTION_REGCANCEL_DROP,		// ÀÔÂûÇÏ½Å ¹°Ç°ÀÇ µî·ÏÀÌ Ãë¼ÒµÇ¾ú½À´Ï´Ù.
-	MSG_TACTICS_TITLE,				// ¿ëº´ °è¾à±ÝÀÌ Áö±ÞµÇ¾ú½À´Ï´Ù.
-	MSG_TACTICS_MESSAGE,			// [%s]±æµåÀÇ ¿ëº´À¸·Î °í¿ëµÇ¼Ì½À´Ï´Ù. °è¾à ¸¸·áÀü¿¡ ÇØ°í ´çÇÒ °æ¿ì °øÀûÀ» ¹ÞÀ» ¼ö ¾ø½À´Ï´Ù. ¸¹Àº È°µ¿ ºÎÅ¹µå¸³´Ï´Ù.
-	MSG_TACTICSKICK_TITLE,			// ¿ëº´ ÇØ°í
-	MSG_TACTICSKICK_MESSAGE,		// ¿ëº´À¸·Î½áÀÇ ÀÚ°Ý »ó½Ç·Î ÇØ°íÇÏ¿´½À´Ï´Ù. °è¾à °øÀûÀº Áö±ÞÇÒ ¼ö ¾ø½À´Ï´Ù.
-	MSG_TACTICSEND_TITLE,			// ¿ëº´ °è¾à °øÀûÀÌ Áö±ÞµÇ¾ú½À´Ï´Ù.
-	MSG_TACTICSEND_MESSAGE,			// [%d] °øÀûÀÌ Áö±ÞµÇ¾ú½À´Ï´Ù. Àû±ØÀûÀÎ È°µ¿¿¡ °¨»çµå¸®¸ç ¾ÕÀ¸·Îµµ ¸¹Àº ¼º¿ø ºÎÅ¹µå¸³´Ï´Ù.
+	MSG_AUCTION_OPERATOR,	 // ê²½ë§¤ ì¤‘ê°œì¸
+	MSG_AUCTION_FAIL,		 // ê±°ëž˜ê°€ ì´ë£¨ì–´ì§€ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.
+	MSG_AUCTION_BIDSUCCESS,  // ìž…ì°°í•˜ì‹  ë¬¼í’ˆì´ ë„ì°©í–ˆìŠµë‹ˆë‹¤.
+	MSG_AUCTION_PRICE,		 // ê±°ëž˜ê°€ ì„±ê³µì ìœ¼ë¡œ ì´ë£¨ì–´ì¡ŒìŠµë‹ˆë‹¤.
+	MSG_AUCTION_REGCANCEL,	 // ë“±ë¡ì´ ì·¨ì†Œëœ ë¬¼í’ˆìž…ë‹ˆë‹¤.
+	MSG_AUCTION_BIDFAIL,	 // ìž…ì°°ì— ì‹¤íŒ¨í•˜ì˜€ìŠµë‹ˆë‹¤.
+	MSG_AUCTION_OTHERBIDDER, // ìƒìœ„ ìž…ì°°ìžê°€ ë‚˜íƒ€ë‚¬ìŠµë‹ˆë‹¤.
+	MSG_AUCTION_OTHERWIN,	 // ë¬¼í’ˆì´ ë‹¤ë¥¸ ë¶„ì—ê²Œ ë‚™ì°°ë˜ì—ˆìŠµë‹ˆë‹¤
+	MSG_AUCTION_FAIL_BODY,			// ì •í•´ì§„ ê¸°ê°„ ë‚´ì— %sì— ëŒ€í•œ ìž…ì°°ìžê°€ ë‚˜íƒ€ë‚˜ì§€ ì•Šì•„ ê±°ëž˜ê°€ ì´ë£¨ì–´ì§€ì§€ ëª»í–ˆìŠµë‹ˆë‹¤.ë°˜ì†¡ëœ ë¬¼í’ˆì„ í™•ì¸í•´ì£¼ì‹œê¸° ë°”ëžë‹ˆë‹¤. 
+	MSG_AUCTION_BIDSUCCESS_BODY,	// %sì— ë‚™ì°°ë˜ì…¨ìŠµë‹ˆë‹¤. íŽ¸ì§€ì— ë™ë´‰ë˜ì–´ ìžˆëŠ” ë¬¼í’ˆì„ í™•ì¸í•´ì£¼ì‹œê¸° ë°”ëžë‹ˆë‹¤.
+	MSG_AUCTION_PRICE_BODY,			// %s ë¬¼í’ˆì´ ì„±ê³µì ìœ¼ë¡œ íŒë§¤ë˜ì—ˆìŠµë‹ˆë‹¤. íŽ¸ì§€ì— ë™ë´‰ë˜ì–´ ìžˆëŠ” ê¸ˆì•¡ì„ í™•ì¸í•´ì£¼ì‹œê¸° ë°”ëžë‹ˆë‹¤.(ê²½ë§¤ìž¥ ì´ìš© ìˆ˜ìˆ˜ë£ŒëŠ” ì°¨ê°ë©ë‹ˆë‹¤)
+	MSG_AUCTION_REGCANCEL_BODY,		// ê²½ë§¤ìž¥ì—ì„œ ë“±ë¡ì´ ì·¨ì†Œëœ %sìž…ë‹ˆë‹¤. íŽ¸ì§€ì— ë™ë´‰ë˜ì–´ ìžˆëŠ” ë¬¼í’ˆì„ í™•ì¸í•´ì£¼ì‹œê¸° ë°”ëžë‹ˆë‹¤.
+	MSG_AUCTION_BIDFAIL_BODY,		// ê²½ë§¤ìž¥ ì´ìš©ì— ë¶ˆíŽ¸ì„ ë“œë ¤ ì£„ì†¡í•©ë‹ˆë‹¤. %sì— ìž…ì°°í•˜ì…¨ë˜ ê¸ˆì•¡ì€ íŽ¸ì§€ì— ë™ë´‰ë˜ì–´ ìžˆìœ¼ë‹ˆ í™•ì¸í•´ì£¼ì‹œê¸° ë°”ëžë‹ˆë‹¤.
+	MSG_AUCTION_OTHERBIDDER_BODY,	// ìž…ì°°í•˜ì‹  %sì— ìƒìœ„ ìž…ì°°ìžê°€ ë‚˜íƒ€ë‚¬ìŠµë‹ˆë‹¤.ì›í•˜ì‹¤ ê²½ìš° ê²½ë§¤ ë‹´ë‹¹ìžë¥¼ í†µí•´ ìƒìœ„ ê¸ˆì•¡ìœ¼ë¡œ ë‹¤ì‹œ ìž…ì°°í•˜ì‹¤ ìˆ˜ ìžˆìŠµë‹ˆë‹¤.	
+	MSG_AUCTION_OTHERBUY_BODY,		// %s ë¬¼í’ˆì´ ë‹¤ë¥¸ ë¶„ì—ê²Œ ë‚™ì°°ë˜ì—ˆìŠµë‹ˆë‹¤.
+	MSG_AUCTION_DROP_BODY,			// %s ë¬¼í’ˆì˜ ë“±ë¡ì´ ì·¨ì†Œë˜ì—ˆìŠµë‹ˆë‹¤. ìž…ì°°í•˜ì…¨ë˜ ê¸ˆì•¡ì€ íŽ¸ì§€ì— ë™ë´‰ë˜ì–´ ìžˆìœ¼ë‹ˆ í™•ì¸í•´ì£¼ì‹œê¸° ë°”ëžë‹ˆë‹¤.
+	MSG_AUCTION_REGCANCEL_DROP,		// ìž…ì°°í•˜ì‹  ë¬¼í’ˆì˜ ë“±ë¡ì´ ì·¨ì†Œë˜ì—ˆìŠµë‹ˆë‹¤.
+	MSG_TACTICS_TITLE,				// ìš©ë³‘ ê³„ì•½ê¸ˆì´ ì§€ê¸‰ë˜ì—ˆìŠµë‹ˆë‹¤.
+	MSG_TACTICS_MESSAGE,			// [%s]ê¸¸ë“œì˜ ìš©ë³‘ìœ¼ë¡œ ê³ ìš©ë˜ì…¨ìŠµë‹ˆë‹¤. ê³„ì•½ ë§Œë£Œì „ì— í•´ê³  ë‹¹í•  ê²½ìš° ê³µì ì„ ë°›ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤. ë§Žì€ í™œë™ ë¶€íƒë“œë¦½ë‹ˆë‹¤.
+	MSG_TACTICSKICK_TITLE,			// ìš©ë³‘ í•´ê³ 
+	MSG_TACTICSKICK_MESSAGE,		// ìš©ë³‘ìœ¼ë¡œì¨ì˜ ìžê²© ìƒì‹¤ë¡œ í•´ê³ í•˜ì˜€ìŠµë‹ˆë‹¤. ê³„ì•½ ê³µì ì€ ì§€ê¸‰í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.
+	MSG_TACTICSEND_TITLE,			// ìš©ë³‘ ê³„ì•½ ê³µì ì´ ì§€ê¸‰ë˜ì—ˆìŠµë‹ˆë‹¤.
+	MSG_TACTICSEND_MESSAGE,			// [%d] ê³µì ì´ ì§€ê¸‰ë˜ì—ˆìŠµë‹ˆë‹¤. ì ê·¹ì ì¸ í™œë™ì— ê°ì‚¬ë“œë¦¬ë©° ì•žìœ¼ë¡œë„ ë§Žì€ ì„±ì› ë¶€íƒë“œë¦½ë‹ˆë‹¤.
 	MSG_HALLOFHERO_TITLE,		
 	MSG_HALLOFHERO_MESSAGE,		
-	TNMT_PAYBACK_TITLE,				// Åä³Ê¸ÕÆ® ¼±¹ß Å»¶ô.
-	TNMT_PAYBACK_MESSAGE,			// Åä³Ê¸ÕÆ® ¼±¹ß¿¡¼­ Å»¶ôµÇ¾î È¯ºÒ±ÝÀÌ Áö±ÞµÇ¾ú½À´Ï´Ù. ´ÙÀ½±âÈ¸¸¦ ÀÌ¿ëÇØ ÁÖ½Ã±â ¹Ù¶ø´Ï´Ù.
+	TNMT_PAYBACK_TITLE,				// í† ë„ˆë¨¼íŠ¸ ì„ ë°œ íƒˆë½.
+	TNMT_PAYBACK_MESSAGE,			// í† ë„ˆë¨¼íŠ¸ ì„ ë°œì—ì„œ íƒˆë½ë˜ì–´ í™˜ë¶ˆê¸ˆì´ ì§€ê¸‰ë˜ì—ˆìŠµë‹ˆë‹¤. ë‹¤ìŒê¸°íšŒë¥¼ ì´ìš©í•´ ì£¼ì‹œê¸° ë°”ëžë‹ˆë‹¤.
 	TNMT_WIN_TITLE,
 	TNMT_WIN_MESSAGE,
 	TNMT_BATTING_TITLE,
@@ -131,42 +131,42 @@ typedef enum SERVER_MESSAGE
 #define CT_UPDATEPATCH_ACK					(CT_CONTROL + 0x0028)
 
 ////////////////////////////////////////////////////////////////
-////// Çö½Â·æ CT_ANNOUNCEMENT /////////////////////////////////
+////// í˜„ìŠ¹ë£¡ CT_ANNOUNCEMENT /////////////////////////////////
 #define CT_ANNOUNCEMENT_REQ					(CT_CONTROL + 0x0029)
 #define CT_ANNOUNCEMENT_ACK					(CT_CONTROL + 0x002A)
-////// Çö½Â·æ CT_USERKICKOUT //////////////////////////////////
+////// í˜„ìŠ¹ë£¡ CT_USERKICKOUT //////////////////////////////////
 #define CT_USERKICKOUT_REQ					(CT_CONTROL + 0x002B)
 #define CT_USERKICKOUT_ACK					(CT_CONTROL + 0x002C)
-////// Çö½Â·æ CT_USERMOVE /////////////////////////////////////
+////// í˜„ìŠ¹ë£¡ CT_USERMOVE /////////////////////////////////////
 #define CT_USERMOVE_REQ						(CT_CONTROL + 0x002D)
 #define CT_USERMOVE_ACK						(CT_CONTROL + 0x002E)
-////// Çö½Â·æ CT_AUTHORITY ////////////////////////////////////
+////// í˜„ìŠ¹ë£¡ CT_AUTHORITY ////////////////////////////////////
 #define CT_AUTHORITY_ACK					(CT_CONTROL + 0x002F)
-////// Çö½Â·æ CT_STLOGIN ////////////////////////////////////
+////// í˜„ìŠ¹ë£¡ CT_STLOGIN ////////////////////////////////////
 #define CT_STLOGIN_REQ						(CT_CONTROL + 0x0030)
 #define CT_STLOGIN_ACK						(CT_CONTROL + 0x0031)
-////// Çö½Â·æ CT_ACCOUNTINPUT ////////////////////////////////
+////// í˜„ìŠ¹ë£¡ CT_ACCOUNTINPUT ////////////////////////////////
 #define CT_ACCOUNTINPUT_REQ					(CT_CONTROL + 0x0032)
 #define CT_ACCOUNTINPUT_ACK					(CT_CONTROL + 0x0033)
-////// Çö½Â·æ CT_PLATFORM     ////////////////////////////////
+////// í˜„ìŠ¹ë£¡ CT_PLATFORM     ////////////////////////////////
 #define CT_PLATFORM_REQ						(CT_CONTROL + 0x0034)
 #define CT_PLATFORM_ACK						(CT_CONTROL + 0x0035)
-////// Çö½Â·æ CT_MONSPAWNFIND ////////////////////////////////
+////// í˜„ìŠ¹ë£¡ CT_MONSPAWNFIND ////////////////////////////////
 #define CT_MONSPAWNFIND_REQ					(CT_CONTROL + 0x0036)
 #define CT_MONSPAWNFIND_ACK					(CT_CONTROL + 0x0037)
-////// Çö½Â·æ CT_MONACTION    ////////////////////////////////
+////// í˜„ìŠ¹ë£¡ CT_MONACTION    ////////////////////////////////
 #define CT_MONACTION_REQ					(CT_CONTROL + 0x0038)
 #define CT_MONACTION_ACK					(CT_CONTROL + 0x0039)
-////// Çö½Â·æ CT_USERPROTECTED  //////////////////////////////
+////// í˜„ìŠ¹ë£¡ CT_USERPROTECTED  //////////////////////////////
 #define CT_USERPROTECTED_REQ				(CT_CONTROL + 0x003A)
 #define CT_USERPROTECTED_ACK				(CT_CONTROL + 0x003B)
-////// Çö½Â·æ CT_CHARMSG    ////////////////////////////////
+////// í˜„ìŠ¹ë£¡ CT_CHARMSG    ////////////////////////////////
 #define CT_CHARMSG_REQ						(CT_CONTROL + 0x003C)
 #define CT_CHARMSG_ACK						(CT_CONTROL + 0x003D)
-////// Çö½Â·æ CT_LOCALGUILDCHANGE    ////////////////////////////////
+////// í˜„ìŠ¹ë£¡ CT_LOCALGUILDCHANGE    ////////////////////////////////
 #define CT_LOCALGUILDCHANGE_REQ				(CT_CONTROL + 0x003E)
 #define CT_LOCALGUILDCHANGE_ACK				(CT_CONTROL + 0x003F)
-////// Çö½Â·æ CT_LOCALINIT    ////////////////////////////////
+////// í˜„ìŠ¹ë£¡ CT_LOCALINIT    ////////////////////////////////
 #define CT_LOCALINIT_REQ					(CT_CONTROL + 0x0040)
 #define CT_LOCALINIT_ACK					(CT_CONTROL + 0x0041)
 

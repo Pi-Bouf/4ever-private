@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #ifdef NEW_IF
 class CTChatFrame : public CTClientUIBase
@@ -13,14 +13,14 @@ public:
 	};
 
 public:
-	static const LONG		SNAP_REACT_VALUE;					///< Ã¤ÆÃ ¸®½ºÆ®ÀÇ ½º³À ¹ÝÀÀ °Å¸®
-	static const CHAR		CHAT_CMD_MARK;						///< Ã¤ÆÃ Ä¿¸Çµå ¸¶Å©
-	static const DWORD		CHAT_FLAGS[TCHAT_FLAG_COUNT];		///< Ã¤ÆÃ ÇÃ·¡±× ¹è¿­
-	static const DWORD		CHAT_FLAG_STRINGS[TCHAT_FLAG_COUNT];///< Ã¤ÆÃ ÇÃ·¡±× ÀÌ¸§ ¹è¿­
-	static const DWORD		DEFAULT_CHAT_FLAGS[];				///< ¸®½ºÆ®¿¡ ¹èÁ¤µÉ ±âº» Ã¤ÆÃ ÇÃ·¡±×
-	static const BYTE		CHAT_SHOW_NEWMSG[];					///< »õ·Î¿î Ã¤ÆÃ ¸Þ½ÃÁöÀÇ µµÂø ¿©ºÎ¸¦ ¾Ë¸±Áö ¿©ºÎ
-	static const INT		POPUP_TO_LIST[];					///< ÆË¾÷ ÀÎµ¦½º -  ¸®½ºÆ® ÀÎµ¦½º Å×ÀÌºí
-	static const DWORD		CHAT_MODE_CMD[];					///< Ã¤ÆÃ ¸ðµå ¸í·É
+	static const LONG		SNAP_REACT_VALUE;					///< ì±„íŒ… ë¦¬ìŠ¤íŠ¸ì˜ ìŠ¤ëƒ… ë°˜ì‘ ê±°ë¦¬
+	static const CHAR		CHAT_CMD_MARK;						///< ì±„íŒ… ì»¤ë§¨ë“œ ë§ˆí¬
+	static const DWORD		CHAT_FLAGS[TCHAT_FLAG_COUNT];		///< ì±„íŒ… í”Œëž˜ê·¸ ë°°ì—´
+	static const DWORD		CHAT_FLAG_STRINGS[TCHAT_FLAG_COUNT];///< ì±„íŒ… í”Œëž˜ê·¸ ì´ë¦„ ë°°ì—´
+	static const DWORD		DEFAULT_CHAT_FLAGS[];				///< ë¦¬ìŠ¤íŠ¸ì— ë°°ì •ë  ê¸°ë³¸ ì±„íŒ… í”Œëž˜ê·¸
+	static const BYTE		CHAT_SHOW_NEWMSG[];					///< ìƒˆë¡œìš´ ì±„íŒ… ë©”ì‹œì§€ì˜ ë„ì°© ì—¬ë¶€ë¥¼ ì•Œë¦´ì§€ ì—¬ë¶€
+	static const INT		POPUP_TO_LIST[];					///< íŒì—… ì¸ë±ìŠ¤ -  ë¦¬ìŠ¤íŠ¸ ì¸ë±ìŠ¤ í…Œì´ë¸”
+	static const DWORD		CHAT_MODE_CMD[];					///< ì±„íŒ… ëª¨ë“œ ëª…ë ¹
 
 	typedef std::vector<CTChatList*>	ClientChatList;
 	ClientChatList	        m_vListArray;
@@ -30,60 +30,60 @@ public:
 
 protected:
 
-	CTClientGame*			m_pMainGame;						///< ¸ÞÀÎ °ÔÀÓ ÇÁ·¹ÀÓ
+	CTClientGame*			m_pMainGame;						///< ë©”ì¸ ê²Œìž„ í”„ë ˆìž„
 
-	TComponent*				m_pListTemplate;					///< Ã¤ÆÃ ¸®½ºÆ® »ý¼ºÀ» À§ÇÑ ÅÛÇÃ¸´ °´Ã¼
-	TComponent*				m_pListTemplate2;					///< °øÁö ¸®½ºÆ® »ý¼ºÀ» À§ÇÑ ÅÛÇÃ¸´ °´Ã¼
+	TComponent*				m_pListTemplate;					///< ì±„íŒ… ë¦¬ìŠ¤íŠ¸ ìƒì„±ì„ ìœ„í•œ í…œí”Œë¦¿ ê°ì²´
+	TComponent*				m_pListTemplate2;					///< ê³µì§€ ë¦¬ìŠ¤íŠ¸ ìƒì„±ì„ ìœ„í•œ í…œí”Œë¦¿ ê°ì²´
 	
 
 	
-	CRect					m_rcDefaultList;					///< Ã¤ÆÃ ¸®½ºÆ®ÀÇ ±âº» À§Ä¡¹× Å©±â
+	CRect					m_rcDefaultList;					///< ì±„íŒ… ë¦¬ìŠ¤íŠ¸ì˜ ê¸°ë³¸ ìœ„ì¹˜ë° í¬ê¸°
 
-	CTChatList*				m_pNotifyList;						///< ¿î¿µÀÚ °øÁö ¸Þ½ÃÁö Àü¿ë ¸®½ºÆ®
-	CTChatList*				m_pUpgradeShowList;				///< °­È­ ¼º°ø ¸Þ½ÃÁö Àü¿ë ¸®½ºÆ®
-	DWORD					m_dwNotifyTime;						///< °øÁö »çÇ×À» È­¸é¿¡ Ç¥½ÃÇÒ ³²Àº ½Ã°£
+	CTChatList*				m_pNotifyList;						///< ìš´ì˜ìž ê³µì§€ ë©”ì‹œì§€ ì „ìš© ë¦¬ìŠ¤íŠ¸
+	CTChatList*				m_pUpgradeShowList;				///< ê°•í™” ì„±ê³µ ë©”ì‹œì§€ ì „ìš© ë¦¬ìŠ¤íŠ¸
+	DWORD					m_dwNotifyTime;						///< ê³µì§€ ì‚¬í•­ì„ í™”ë©´ì— í‘œì‹œí•  ë‚¨ì€ ì‹œê°„
 	
-	//CTChatTabButton*		m_vTabs[255];			///< ÅÇ ¹è¿­
-	CRect					m_vTabRect[255];		///< ½½·Ô¿¡ µû¸¥ ÅÇÀÇ À§Ä¡ ¹è¿­
-	INT						m_iTabCount;						///< ÅÇÀÇ °¹¼ö
+	//CTChatTabButton*		m_vTabs[255];			///< íƒ­ ë°°ì—´
+	CRect					m_vTabRect[255];		///< ìŠ¬ë¡¯ì— ë”°ë¥¸ íƒ­ì˜ ìœ„ì¹˜ ë°°ì—´
+	INT						m_iTabCount;						///< íƒ­ì˜ ê°¯ìˆ˜
    
-	CTChatTabButton*		m_pSelectTab;						///< ¼±ÅÃµÈ ÅÇ
-	CTChatTabButton*		m_pHitTab;							///< °¡Àå ÃÖ±Ù¿¡ Å¬¸¯µÈ ÅÇ
+	CTChatTabButton*		m_pSelectTab;						///< ì„ íƒëœ íƒ­
+	CTChatTabButton*		m_pHitTab;							///< ê°€ìž¥ ìµœê·¼ì— í´ë¦­ëœ íƒ­
 
-	TComponent*				m_pChatTypeCtrl;					///< Ã¤ÆÃ Å¸ÀÔÀ» Ç¥½ÃÇÏ±âÀ§ÇÑ ÄÁÆ®·Ñ
-	TEdit*					m_pChatEditCtrl;					///< Ã¤ÆÃ ÀÔ·ÂÀ» ¹Þ±âÀ§ÇÑ ¿¡µðÅÍ ÄÁÆ®·Ñ
-	TEdit*					m_pChatWhisperTargetEditCtrl;	///< ±Ó¸» ´ë»ó ÀÔ·ÂÀ» ¹Þ±â À§ÇÑ ¿¡µðÅÍ ÄÁÆ®·Ñ
-	BOOL					m_bChatEditON;						///< ÇöÀç Ã¤ÆÃ ÀÔ·ÂÁßÀÎÁö ¿©ºÎ
-	TComponent*				m_pChatEditBack;					///< Ã¤ÆÃ ÀÔ·Â ¹è°æ
+	TComponent*				m_pChatTypeCtrl;					///< ì±„íŒ… íƒ€ìž…ì„ í‘œì‹œí•˜ê¸°ìœ„í•œ ì»¨íŠ¸ë¡¤
+	TEdit*					m_pChatEditCtrl;					///< ì±„íŒ… ìž…ë ¥ì„ ë°›ê¸°ìœ„í•œ ì—ë””í„° ì»¨íŠ¸ë¡¤
+	TEdit*					m_pChatWhisperTargetEditCtrl;	///< ê·“ë§ ëŒ€ìƒ ìž…ë ¥ì„ ë°›ê¸° ìœ„í•œ ì—ë””í„° ì»¨íŠ¸ë¡¤
+	BOOL					m_bChatEditON;						///< í˜„ìž¬ ì±„íŒ… ìž…ë ¥ì¤‘ì¸ì§€ ì—¬ë¶€
+	TComponent*				m_pChatEditBack;					///< ì±„íŒ… ìž…ë ¥ ë°°ê²½
 	TComponent*				m_pChatTabBack;
 	TComponent*				m_pChatMode;
 
-	//TButton*				m_pChatLockCtrl;					///< Ã¤ÆÃ ¸®½ºÆ® ¶ô/¾ð¶ô ¹öÆ°			
-	TButton*				m_pChatImeCtrl;						///< Ã¤ÆÃ ÀÔ·Â ¾ð¾î ¹öÆ°
+	//TButton*				m_pChatLockCtrl;					///< ì±„íŒ… ë¦¬ìŠ¤íŠ¸ ë½/ì–¸ë½ ë²„íŠ¼			
+	TButton*				m_pChatImeCtrl;						///< ì±„íŒ… ìž…ë ¥ ì–¸ì–´ ë²„íŠ¼
 
-	DWORD					m_dwTick;							///< Ã¤ÆÃÃ¢¿¡ ¾î¶°ÇÑ ÀÌº¥Æ®°¡ ¹ß»ý ÇÑ ÈÄºÎÅÍÀÇ °æ°ú½Ã°£.
+	DWORD					m_dwTick;							///< ì±„íŒ…ì°½ì— ì–´ë– í•œ ì´ë²¤íŠ¸ê°€ ë°œìƒ í•œ í›„ë¶€í„°ì˜ ê²½ê³¼ì‹œê°„.
 
-	BYTE					m_bChatMode;						///< ÇöÀç Ã¤ÆÃ ¸ðµå
-	CString					m_strChatTarget;					///< °¡Àå ÃÖ±ÙÀÇ ±Ó¸» Å¸°Ù ÀÌ¸§
-	DWORD					m_dwChatTargetID;					///< °¡Àå ÃÖ±ÙÀÇ ±Ó¸» Å¸°Ù ¾ÆÀÌµð
-	CString					m_strLastWhisper;					///< °¡Àå ¸¶Áö¸·À¸·Î ¹ÞÀº ±Ó¸» »ó´ë
-	CString					m_strCandiWhisper;				///< ±Ó¸» »ó´ë ¿¹ºñÀÚ (¿À¸¥ÂÊ ¹öÆ°À¸·Î ±Ó¸» »ó´ë ¼±ÅÃ½Ã »ç¿ë)
+	BYTE					m_bChatMode;						///< í˜„ìž¬ ì±„íŒ… ëª¨ë“œ
+	CString					m_strChatTarget;					///< ê°€ìž¥ ìµœê·¼ì˜ ê·“ë§ íƒ€ê²Ÿ ì´ë¦„
+	DWORD					m_dwChatTargetID;					///< ê°€ìž¥ ìµœê·¼ì˜ ê·“ë§ íƒ€ê²Ÿ ì•„ì´ë””
+	CString					m_strLastWhisper;					///< ê°€ìž¥ ë§ˆì§€ë§‰ìœ¼ë¡œ ë°›ì€ ê·“ë§ ìƒëŒ€
+	CString					m_strCandiWhisper;				///< ê·“ë§ ìƒëŒ€ ì˜ˆë¹„ìž (ì˜¤ë¥¸ìª½ ë²„íŠ¼ìœ¼ë¡œ ê·“ë§ ìƒëŒ€ ì„ íƒì‹œ ì‚¬ìš©)
 
-	CTMiniPopupDlg*			m_vPopup[POPUP_COUNT];				///< Ã¤ÆÃ °ü·Ã ÆË¾÷ ¸®½ºÆ®
+	CTMiniPopupDlg*			m_vPopup[POPUP_COUNT];				///< ì±„íŒ… ê´€ë ¨ íŒì—… ë¦¬ìŠ¤íŠ¸
 
 	/**
-		Ã¤ÆÃ ÇÁ·¹ÀÓÀÌ Àá°å´ÂÁö ¿©ºÎ.
-		ÇÁ·¹ÀÓÀÌ Àá°å´Ù´Â ÀÇ¹Ì´Â ¸®½ºÆ®¿Í ÅÇÀÇ ÀÌµ¿ÀÌ³ª Ãß°¡ Á¦°Å¸¦
-		ÇÒ ¼ö ¾ø°Ô ÇÑ´Ù´Â ¶æÀÌ´Ù. ¶ÇÇÑ ÇÁ·¹ÀÓÀÌ Àá±ä »óÅÂ¿¡¼­´Â Ã¤ÆÃ
-		¸®½ºÆ®´Â ¸ðµç HitTest ¸í·ÉÀ» ¹«½ÃÇÏ°Ô µÈ´Ù. Áï, ¸®½ºÆ®¸¦ Å¬¸¯
-		ÇÒ ¼ö ¾ø°Ô µÈ´Ù´Â ÀÇ¹ÌÀÌ´Ù.
+		ì±„íŒ… í”„ë ˆìž„ì´ ìž ê²¼ëŠ”ì§€ ì—¬ë¶€.
+		í”„ë ˆìž„ì´ ìž ê²¼ë‹¤ëŠ” ì˜ë¯¸ëŠ” ë¦¬ìŠ¤íŠ¸ì™€ íƒ­ì˜ ì´ë™ì´ë‚˜ ì¶”ê°€ ì œê±°ë¥¼
+		í•  ìˆ˜ ì—†ê²Œ í•œë‹¤ëŠ” ëœ»ì´ë‹¤. ë˜í•œ í”„ë ˆìž„ì´ ìž ê¸´ ìƒíƒœì—ì„œëŠ” ì±„íŒ…
+		ë¦¬ìŠ¤íŠ¸ëŠ” ëª¨ë“  HitTest ëª…ë ¹ì„ ë¬´ì‹œí•˜ê²Œ ëœë‹¤. ì¦‰, ë¦¬ìŠ¤íŠ¸ë¥¼ í´ë¦­
+		í•  ìˆ˜ ì—†ê²Œ ëœë‹¤ëŠ” ì˜ë¯¸ì´ë‹¤.
 	*/
 	BOOL					m_bLock;
 
-	/// Ã¤ÆÃ ÇÁ·¹ÀÓÀ» È­¸é¿¡ Ç¥½ÃÇÒÁö ¿©ºÎ
+	/// ì±„íŒ… í”„ë ˆìž„ì„ í™”ë©´ì— í‘œì‹œí• ì§€ ì—¬ë¶€
 	BOOL					m_bChatFrameVisible;
 
-	// ½º³À ¿©ºÎ ÆÇ´Ü¿¡ »ç¿ëµÇ´Â º¯¼öµé
+	// ìŠ¤ëƒ… ì—¬ë¶€ íŒë‹¨ì— ì‚¬ìš©ë˜ëŠ” ë³€ìˆ˜ë“¤
 	BOOL					m_bProcSnapLeft;
 	BOOL					m_bProcSnapTop;
 	BOOL					m_bProcSnapRight;
@@ -101,124 +101,124 @@ protected:
 	FRAMEDESC_SHAREDPTR m_pChatMenuFrame;
 
 public:
-	/// Ã¤ÆÃ Å¸ÀÔ¿¡ µû¸¥ »öÀ» ¾ò´Â´Ù.
+	/// ì±„íŒ… íƒ€ìž…ì— ë”°ë¥¸ ìƒ‰ì„ ì–»ëŠ”ë‹¤.
 	static DWORD GetChatTypeColor(BYTE bChatMode);
-	/// Ã¤ÆÃ Å¸ÀÔ¿¡ µû¸¥ ¸íÄªÀ» ¾ò´Â´Ù.
+	/// ì±„íŒ… íƒ€ìž…ì— ë”°ë¥¸ ëª…ì¹­ì„ ì–»ëŠ”ë‹¤.
 	static const CString& GetChatTypeString(BYTE bChatMode);
-	/// Ã¤ÆÃ Å¸ÀÔ¿¡ µû¸¥ ´ëÇ¥ ¸íÄªÀ» ¾ò´Â´Ù.
+	/// ì±„íŒ… íƒ€ìž…ì— ë”°ë¥¸ ëŒ€í‘œ ëª…ì¹­ì„ ì–»ëŠ”ë‹¤.
 	const CString& GetChatTypeRepresentation(BYTE bChatMode);
 
-	/// ÁÖ¾îÁø ¸®½ºÆ® ÀÎµ¦½º¿¡ ÇØ´çÇÏ´Â ÆË¾÷ ÀÎµ¦½º¸¦ ¾ò´Â´Ù.
+	/// ì£¼ì–´ì§„ ë¦¬ìŠ¤íŠ¸ ì¸ë±ìŠ¤ì— í•´ë‹¹í•˜ëŠ” íŒì—… ì¸ë±ìŠ¤ë¥¼ ì–»ëŠ”ë‹¤.
 	static INT GetPopupIndex(INT nListIndex);
 
 public:
-	/// ÁÖ¾îÁø ÆË¾÷ ´ëÈ­»óÀÚ¸¦ Ã¤ÆÃ ¸ðµå ¼±ÅÃ¿ëÀ¸·Î »ç¿ëÇÏµµ·Ï ¼³Á¤ÇÑ´Ù.
+	/// ì£¼ì–´ì§„ íŒì—… ëŒ€í™”ìƒìžë¥¼ ì±„íŒ… ëª¨ë“œ ì„ íƒìš©ìœ¼ë¡œ ì‚¬ìš©í•˜ë„ë¡ ì„¤ì •í•œë‹¤.
 	void SetPopup(PopupEnum ePopup, CTMiniPopupDlg* pPopup);
-	/// Ã¤ÆÃ ÆË¾÷À» È­¸é¿¡ ¶ç¿ì°Å³ª °¨Ãá´Ù.
+	/// ì±„íŒ… íŒì—…ì„ í™”ë©´ì— ë„ìš°ê±°ë‚˜ ê°ì¶˜ë‹¤.
 	void ShowPopup(PopupEnum ePopup, BOOL bShow);
-	/// ¸ðµç Ã¤ÆÃ ÆË¾÷À» È­¸é¿¡¼­ °¨Ãá´Ù.
+	/// ëª¨ë“  ì±„íŒ… íŒì—…ì„ í™”ë©´ì—ì„œ ê°ì¶˜ë‹¤.
 	void HideAllPopup();
-	/// Ã¤ÆÃ ÆË¾÷ÀÌ º¸¿©Áö´ÂÁö ¿©ºÎ¸¦ ¾ò´Â´Ù.
+	/// ì±„íŒ… íŒì—…ì´ ë³´ì—¬ì§€ëŠ”ì§€ ì—¬ë¶€ë¥¼ ì–»ëŠ”ë‹¤.
 	BOOL IsVisiblePopup(PopupEnum ePopup);
 
-	/// Ã¤ÆÃ ÇÃ·¡±×ÀÇ °»½ÅÀ» ÆË¾÷¿¡ ¹Ý¿µ½ÃÅ²´Ù.
+	/// ì±„íŒ… í”Œëž˜ê·¸ì˜ ê°±ì‹ ì„ íŒì—…ì— ë°˜ì˜ì‹œí‚¨ë‹¤.
 	void UpdateChatFlagToPopup();
 	void SetHeightAllInnerChatList( INT nHeight );
 
 	/**
-		Ã¤ÆÃ ÇÁ·¹ÀÓÀ» °»½ÅÇÑ´Ù.
+		ì±„íŒ… í”„ë ˆìž„ì„ ê°±ì‹ í•œë‹¤.
 
-		@param dwTick	°æ°ú ½Ã°£
+		@param dwTick	ê²½ê³¼ ì‹œê°„
 	*/
 	void Update(DWORD dwTick);
 
 	/**
-		¼±ÅÃ ÅÇÀ» º¯°æÇÑ´Ù. ÀÌ¶§ ÅÇ°ú ¸µÅ©µÈ ¸®½ºÆ®°¡ È­¸é¿¡ Ç¥½ÃµÈ´Ù.
+		ì„ íƒ íƒ­ì„ ë³€ê²½í•œë‹¤. ì´ë•Œ íƒ­ê³¼ ë§í¬ëœ ë¦¬ìŠ¤íŠ¸ê°€ í™”ë©´ì— í‘œì‹œëœë‹¤.
 
-		@warning	¸¸¾à ÅÇÀÌ ¹ÛÀ¸·Î ºüÁø »óÅÂ¶ó¸é ÇØ´ç ÅÇÀº ¼±ÅÃÇÒ ¼ö ¾ø´Ù.
+		@warning	ë§Œì•½ íƒ­ì´ ë°–ìœ¼ë¡œ ë¹ ì§„ ìƒíƒœë¼ë©´ í•´ë‹¹ íƒ­ì€ ì„ íƒí•  ìˆ˜ ì—†ë‹¤.
 	*/
 	void ChangeSelection(CTChatTabButton* pTab);
 	void ChangeSelection(TCHAT_SET);
 
-	/// ÁÖ¾îÁø µÎ ÅÇÀ» ±³È¯ÇÑ´Ù. ÅÇ ±³È¯Àº ½½·ÔÀÇ ±³È¯°ú ÇÔ²² À§Ä¡ ±³È¯À» ÀÇ¹ÌÇÑ´Ù.
+	/// ì£¼ì–´ì§„ ë‘ íƒ­ì„ êµí™˜í•œë‹¤. íƒ­ êµí™˜ì€ ìŠ¬ë¡¯ì˜ êµí™˜ê³¼ í•¨ê»˜ ìœ„ì¹˜ êµí™˜ì„ ì˜ë¯¸í•œë‹¤.
 	void SwapTab(CTChatTabButton* pTab1, CTChatTabButton* pTab2);
-	/// ÁÖ¾îÁø ÅÇ°ú ±×¿¡ ¸µÅ©µÈ ¸®½ºÆ®¸¦ ÇÁ·¹ÀÓ ¾ÈÀ¸·Î Ãß°¡ÇÑ´Ù.
+	/// ì£¼ì–´ì§„ íƒ­ê³¼ ê·¸ì— ë§í¬ëœ ë¦¬ìŠ¤íŠ¸ë¥¼ í”„ë ˆìž„ ì•ˆìœ¼ë¡œ ì¶”ê°€í•œë‹¤.
 	void AddTabAndList(CTChatTabButton* pTab);
-	/// ÁÖ¾îÁø ÅÇ°ú ±×¿¡ ¸µÅ©µÈ ¸®½ºÆ®¸¦ ÇÁ·¹ÀÓ ¹ÛÀ¸·Î »«´Ù.
+	/// ì£¼ì–´ì§„ íƒ­ê³¼ ê·¸ì— ë§í¬ëœ ë¦¬ìŠ¤íŠ¸ë¥¼ í”„ë ˆìž„ ë°–ìœ¼ë¡œ ëº€ë‹¤.
 	void RemoveTabAndList(CTChatTabButton* pTab);
 
 	/**
-		¸®½ºÆ®°¡ ÁÖº¯°ú ½º³ÀµÇ¾î¾ß ÇÏ´ÂÁö Á¶»çÇÏ°í ¸¸¾à ±×·¸´Ù¸é
-		½º³ÀÈÄ º¯°æµÉ À§Ä¡¸¦ ¹ÝÈ¯ÇÏ´Ù.
+		ë¦¬ìŠ¤íŠ¸ê°€ ì£¼ë³€ê³¼ ìŠ¤ëƒ…ë˜ì–´ì•¼ í•˜ëŠ”ì§€ ì¡°ì‚¬í•˜ê³  ë§Œì•½ ê·¸ë ‡ë‹¤ë©´
+		ìŠ¤ëƒ…í›„ ë³€ê²½ë  ìœ„ì¹˜ë¥¼ ë°˜í™˜í•˜ë‹¤.
 
-		@param pList		½º³À¿©ºÎ¸¦ Á¶»çÇÒ ¸®½ºÆ®
-		@param outRect		½º³À ÈÄ º¯°æµÉ À§Ä¡. ¹ÝÈ¯°ª¾Æ TRUE ÀÎ 
-							°æ¿ì¸¸ À¯È¿ÇÏ´Ù.
-		@return				½º³À ¹ß»ý ¿©ºÎ.
+		@param pList		ìŠ¤ëƒ…ì—¬ë¶€ë¥¼ ì¡°ì‚¬í•  ë¦¬ìŠ¤íŠ¸
+		@param outRect		ìŠ¤ëƒ… í›„ ë³€ê²½ë  ìœ„ì¹˜. ë°˜í™˜ê°’ì•„ TRUE ì¸ 
+							ê²½ìš°ë§Œ ìœ íš¨í•˜ë‹¤.
+		@return				ìŠ¤ëƒ… ë°œìƒ ì—¬ë¶€.
 	*/
 	BOOL SnapList(CTChatList* pList, CRect& outRect);
 
 	///
 	void ResetSetting();
 
-	/// ·¹Áî½ºÆ®¸®¿¡ ÀúÀåµÈ Ã¤ÆÃ ÇÁ·¹ÀÓÀÇ »óÅÂ·Î ÇöÀç »óÅÂ¸¦ º¯°æÇÑ´Ù.
+	/// ë ˆì¦ˆìŠ¤íŠ¸ë¦¬ì— ì €ìž¥ëœ ì±„íŒ… í”„ë ˆìž„ì˜ ìƒíƒœë¡œ í˜„ìž¬ ìƒíƒœë¥¼ ë³€ê²½í•œë‹¤.
 	void LoadSetting( BOOL bReset = FALSE);
-	/// ÇöÀç Ã¤ÆÃ ÇÁ·¹ÀÓÀÇ »óÅÂ¸¦ ·¹Áö½ºÆ®¸®¿¡ ÀúÀåÇÑ´Ù.
+	/// í˜„ìž¬ ì±„íŒ… í”„ë ˆìž„ì˜ ìƒíƒœë¥¼ ë ˆì§€ìŠ¤íŠ¸ë¦¬ì— ì €ìž¥í•œë‹¤.
 	void SaveSetting();
 
-	/// ÁÖ¾îÁø À§Ä¡¿¡ ÇØ´çÇÏ´Â ÅÇ ¹öÆ°À» ¾ò´Â´Ù.
+	/// ì£¼ì–´ì§„ ìœ„ì¹˜ì— í•´ë‹¹í•˜ëŠ” íƒ­ ë²„íŠ¼ì„ ì–»ëŠ”ë‹¤.
 	CTChatTabButton* GetHitTab(const CPoint& pt);
-	/// ÁÖ¾îÁø ¸®½ºÆ®¿Í ¸µÅ©µÈ ÅÇ ¹öÆ°À» ¾ò´Â´Ù.
+	/// ì£¼ì–´ì§„ ë¦¬ìŠ¤íŠ¸ì™€ ë§í¬ëœ íƒ­ ë²„íŠ¼ì„ ì–»ëŠ”ë‹¤.
 	CTChatTabButton* FindTab(CTChatList* pList);
 
-	/// ÁÖ¾îÁø À§Ä¡¿¡ ÇØ´çÇÏ´Â Ã¤ÆÃ ¸®½ºÆ®¸¦ ¾ò´Â´Ù.
+	/// ì£¼ì–´ì§„ ìœ„ì¹˜ì— í•´ë‹¹í•˜ëŠ” ì±„íŒ… ë¦¬ìŠ¤íŠ¸ë¥¼ ì–»ëŠ”ë‹¤.
 	CTChatList* GetHitList(const CPoint& pt);
 
-	/// ÁÖ¾îÁø ÆË¾÷°ú ¸µÅ©µÈ Ã¤ÆÃ ¸®½ºÆ®¸¦ ¾ò´Â´Ù.
+	/// ì£¼ì–´ì§„ íŒì—…ê³¼ ë§í¬ëœ ì±„íŒ… ë¦¬ìŠ¤íŠ¸ë¥¼ ì–»ëŠ”ë‹¤.
 	CTChatList* FindList(CTMiniPopupDlg* pPopup);
 
 	CTChatList* FindList( DWORD dwChatFlag );
 
-	/// ÇöÀç±îÁö ÀÔ·ÂµÈ Ã¤ÆÃ ¸Þ½ÃÁö¸¦ ÃÊ±âÈ­ÇÑ´Ù.
+	/// í˜„ìž¬ê¹Œì§€ ìž…ë ¥ëœ ì±„íŒ… ë©”ì‹œì§€ë¥¼ ì´ˆê¸°í™”í•œë‹¤.
 	void ResetChatMsg(BOOL bEnable);
-	/// ¸®½ºÆ®ÀÇ ¸ðµç Ã¤ÆÃ ±â·ÏÀ» ÃÊ±âÈ­ÇÑ´Ù.
+	/// ë¦¬ìŠ¤íŠ¸ì˜ ëª¨ë“  ì±„íŒ… ê¸°ë¡ì„ ì´ˆê¸°í™”í•œë‹¤.
 	void ResetChatList();
 	
-	/// ±Ó¸» ´ë»óÀ» ÀÔ·ÂÇÑ´Ù.
+	/// ê·“ë§ ëŒ€ìƒì„ ìž…ë ¥í•œë‹¤.
 	void ShowWhisperTargetInput( BOOL bShow );
 	void ProcWhisperTargetInput( BOOL bCancel );
 	void LoseFocusWhisperTargetInput( BOOL bCancel );
 
 	void AddWhisperList( CString strWhisperTarget );
 
-	/// Ã¤ÆÃ ¿¡µðÅÍ·Î Äù½ºÆ® ¸µÅ© µ¥ÀÌÅ¸¸¦ ³Ö´Â´Ù.
+	/// ì±„íŒ… ì—ë””í„°ë¡œ í€˜ìŠ¤íŠ¸ ë§í¬ ë°ì´íƒ€ë¥¼ ë„£ëŠ”ë‹¤.
 	void InsertInfoToChatEdit(LPTQUEST pQuest);
-	/// Ã¤ÆÃ ¿¡µðÅÍ·Î ¾ÆÀÌÅÛ ¸µÅ© µ¥ÀÌÅ¸¸¦ ³Ö´Â´Ù.
+	/// ì±„íŒ… ì—ë””í„°ë¡œ ì•„ì´í…œ ë§í¬ ë°ì´íƒ€ë¥¼ ë„£ëŠ”ë‹¤.
 	void InsertInfoToChatEdit(LPTITEM pItem, CTClientItem* pClientItem);
-	/// Ã¤ÆÃ ¿¡µðÅÍÀÇ ¸Ê ¾ÕÀ¸·Î ÁÖ¾îÁø ¹®ÀÚ¿­À» »ðÀÔÇÑ´Ù.
+	/// ì±„íŒ… ì—ë””í„°ì˜ ë§µ ì•žìœ¼ë¡œ ì£¼ì–´ì§„ ë¬¸ìžì—´ì„ ì‚½ìž…í•œë‹¤.
 	void PushFrontMsgToEdit(const CString& strMsg);
 
-	/// ÇöÀç ¿¡µðÅÍ¿¡ ÀÔ·ÂµÈ Ã¤ÆÃ ¸Þ½ÃÁö¸¦ Ã³¸®ÇÏ°í Àü¼ÛÇØ¾ßÇÒ ¸Þ½ÃÁö¸¦ ¾ò´Â´Ù.
+	/// í˜„ìž¬ ì—ë””í„°ì— ìž…ë ¥ëœ ì±„íŒ… ë©”ì‹œì§€ë¥¼ ì²˜ë¦¬í•˜ê³  ì „ì†¡í•´ì•¼í•  ë©”ì‹œì§€ë¥¼ ì–»ëŠ”ë‹¤.
 	CString ProcChatMsgInEdit();
 
-	/// ÇöÀç ¿¡µðÅÍ¿¡ ÀÔ·ÂµÈ ¸Þ½ÃÁöÀÇ ÁÂ¿ì °ø¹éÀ» Á¦°ÅÇÑ´Ù.	
+	/// í˜„ìž¬ ì—ë””í„°ì— ìž…ë ¥ëœ ë©”ì‹œì§€ì˜ ì¢Œìš° ê³µë°±ì„ ì œê±°í•œë‹¤.	
 	void TrimMsgInEdit();
-	/// ÇöÀç ¿¡µðÅÍ¿¡ ÀÔ·ÂµÈ ¸Þ½ÃÁö¸¦ ¸ðµÎ Á¦°ÅÇÑ´Ù.
+	/// í˜„ìž¬ ì—ë””í„°ì— ìž…ë ¥ëœ ë©”ì‹œì§€ë¥¼ ëª¨ë‘ ì œê±°í•œë‹¤.
 	void ClearMsgInEdit();
 
 	/**
-		Ã¤ÆÃ ¸Þ½ÃÁö¸¦ ÇÁ·¹ÀÓÀ¸·Î Àü´ÞÇÏ¿© ¸®½ºÆ®¿¡ ±× ³»¿ëÀ» Ç¥±âÇÏ°Ô ÇÑ´Ù.
+		ì±„íŒ… ë©”ì‹œì§€ë¥¼ í”„ë ˆìž„ìœ¼ë¡œ ì „ë‹¬í•˜ì—¬ ë¦¬ìŠ¤íŠ¸ì— ê·¸ ë‚´ìš©ì„ í‘œê¸°í•˜ê²Œ í•œë‹¤.
 
-		@param strTYPE		Ã¤ÆÃ Å¸ÀÔÀ» ³ªÅ¸³»´Â ¹®ÀÚ¿­
-		@param strNAME		¸Þ½ÃÁö¸¦ º¸³½ °÷ÀÇ ÀÌ¸§
-		@param strMSG		Ç¥½ÃÇÏ°íÀÚ ÇÏ´Â ¸Þ½ÃÁö
-		@param dwCOLOR		Ç¥½ÃÇÏ°íÀÚ ÇÏ´Â ¸Þ½ÃÁöÀÇ »ö
-		@param dwChatFlag	ÀÌ ¸Þ½ÃÁöÀÇ Å¸ÀÔ ÇÃ·¡±×
-		@param dwSoundID	ÀÌ ¸Þ½ÃÁö¸¦ ¸®½ºÆ®¿¡ Ç¥±âÇÒ¶§ ³¾ »ç¿îµå ID 
-							¾Æ¹« ¼Ò¸®µµ ¿øÇÏÁö ¾Ê´Â´Ù¸é 0 À» Àü´ÞÇÏ¸é µÈ´Ù.
-							±âº»°ªÀ» 0 ÀÌ´Ù.
-		@param bSoundType	À§¿¡ »ç¿îµå ID ÀÇ Å¸ÀÔ. (Only WAV:MEDIA_TSOUND)
-		@return				½ÇÁ¦·Î Ç¥½ÃµÇ´Â ¸Þ½ÃÁö
+		@param strTYPE		ì±„íŒ… íƒ€ìž…ì„ ë‚˜íƒ€ë‚´ëŠ” ë¬¸ìžì—´
+		@param strNAME		ë©”ì‹œì§€ë¥¼ ë³´ë‚¸ ê³³ì˜ ì´ë¦„
+		@param strMSG		í‘œì‹œí•˜ê³ ìž í•˜ëŠ” ë©”ì‹œì§€
+		@param dwCOLOR		í‘œì‹œí•˜ê³ ìž í•˜ëŠ” ë©”ì‹œì§€ì˜ ìƒ‰
+		@param dwChatFlag	ì´ ë©”ì‹œì§€ì˜ íƒ€ìž… í”Œëž˜ê·¸
+		@param dwSoundID	ì´ ë©”ì‹œì§€ë¥¼ ë¦¬ìŠ¤íŠ¸ì— í‘œê¸°í• ë•Œ ë‚¼ ì‚¬ìš´ë“œ ID 
+							ì•„ë¬´ ì†Œë¦¬ë„ ì›í•˜ì§€ ì•ŠëŠ”ë‹¤ë©´ 0 ì„ ì „ë‹¬í•˜ë©´ ëœë‹¤.
+							ê¸°ë³¸ê°’ì„ 0 ì´ë‹¤.
+		@param bSoundType	ìœ„ì— ì‚¬ìš´ë“œ ID ì˜ íƒ€ìž…. (Only WAV:MEDIA_TSOUND)
+		@return				ì‹¤ì œë¡œ í‘œì‹œë˜ëŠ” ë©”ì‹œì§€
 	*/
 	CString ChatSysMSG(
 		const CString& strTYPE,
@@ -239,33 +239,33 @@ public:
 		BYTE bSoundType,
 		DWORD dwSenderID );
 
-	/// Ã¤ÆÃ ÇÁ·¡ÀÓÀ¸·Î Æ÷Ä¿½º¸¦ °­Á¦ÇÑ´Ù.
+	/// ì±„íŒ… í”„ëž˜ìž„ìœ¼ë¡œ í¬ì»¤ìŠ¤ë¥¼ ê°•ì œí•œë‹¤.
 	void ForceFocus();
 
-	/// ¸ðµç Ã¤ÆÃ ¸®½ºÆ®ÀÇ ¹è°æÀ» º¸ÀÌ°Ô ÇÒÁö ¿©ºÎ¸¦ ¼³Á¤ÇÑ´Ù.
+	/// ëª¨ë“  ì±„íŒ… ë¦¬ìŠ¤íŠ¸ì˜ ë°°ê²½ì„ ë³´ì´ê²Œ í• ì§€ ì—¬ë¶€ë¥¼ ì„¤ì •í•œë‹¤.
 	void SetHideBackgroundOfList(BOOL bHide);
-	/// ÇÁ·¹ÀÓ Àá±Ý ¿©ºÎ¸¦ ¼³Á¤ÇÑ´Ù.
+	/// í”„ë ˆìž„ ìž ê¸ˆ ì—¬ë¶€ë¥¼ ì„¤ì •í•œë‹¤.
 	void SetLock(BOOL bLock);
 
-	/// IME ¾ð¾î ¸ðµå°¡ °»½ÅµÇ¾úÀ½À» Ã¤ÆÃ ÇÁ·¹ÀÓ¿¡ Åëº¸ÇÑ´Ù.
+	/// IME ì–¸ì–´ ëª¨ë“œê°€ ê°±ì‹ ë˜ì—ˆìŒì„ ì±„íŒ… í”„ë ˆìž„ì— í†µë³´í•œë‹¤.
 	void NotifyImeLocalModeChange();
 
-	/// ¿¡µðÅÍ¿¡ ÀÔ·ÂµÈ Á¤º¸¸¦ ÅëÇØ ÇöÀç Ã¤ÆÃ ¸ðµå¸¦ °Ë»çÇÑ´Ù.
+	/// ì—ë””í„°ì— ìž…ë ¥ëœ ì •ë³´ë¥¼ í†µí•´ í˜„ìž¬ ì±„íŒ… ëª¨ë“œë¥¼ ê²€ì‚¬í•œë‹¤.
 	void CheckChatMode();
-	/// ÇöÀç Ã¤ÆÃ ¸ðµå¸¦ º¯°æÇÑ´Ù.
+	/// í˜„ìž¬ ì±„íŒ… ëª¨ë“œë¥¼ ë³€ê²½í•œë‹¤.
 	void SetChatMode(BYTE bChatMode, CString strTarget = "");
-	/// ±Ó¸» ¸ðµå¿¡¼­ÀÇ Ã¤ÆÃ Å¸°ÙÀ» ¼³Á¤ÇÑ´Ù.
+	/// ê·“ë§ ëª¨ë“œì—ì„œì˜ ì±„íŒ… íƒ€ê²Ÿì„ ì„¤ì •í•œë‹¤.
 	void SetChatTarget(const CString& strTarget, DWORD dwTargetID=0);
 
-	/// Ã¤ÆÃ ¸ðµå º¯°æ Ä¿¸Çµå ÀÌº¥Æ®¸¦ Ã³¸®ÇÑ´Ù.
+	/// ì±„íŒ… ëª¨ë“œ ë³€ê²½ ì»¤ë§¨ë“œ ì´ë²¤íŠ¸ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	static CString OnChatModeCmd(const CString& strMSG, const VECTORSTRING& vPARAM, DWORD dwUSER);
 
-	/// È£Äª º¯°æ
+	/// í˜¸ì¹­ ë³€ê²½
 	static CString OnChatTitleCmd(const CString& strMSG, const VECTORSTRING& vPARAM, DWORD dwUSER);
 
-	/// ¸Þ½ÃÁö¿¡ µû¸¥ ÇÔ¼ö Æ÷ÀÎÅÍ¸¦ ¼³Á¤ÇÑ´Ù.
+	/// ë©”ì‹œì§€ì— ë”°ë¥¸ í•¨ìˆ˜ í¬ì¸í„°ë¥¼ ì„¤ì •í•œë‹¤.
 	void AddChatCmdProc(const CString& strCMD, FP_CHATCMDPROC fp, DWORD dwUSER=0);
-	/// ¼³Á¤µÈ ¸Þ½ÃÁö ÇÔ¼ö Æ÷ÀÎÅÍ Å×ÀÌºíÀ» ¸ðµÎ Á¦°ÅÇÑ´Ù.
+	/// ì„¤ì •ëœ ë©”ì‹œì§€ í•¨ìˆ˜ í¬ì¸í„° í…Œì´ë¸”ì„ ëª¨ë‘ ì œê±°í•œë‹¤.
 	void ClearChatCmdProc();
 
 	TListItem* HitTestChatList( CPoint pt );
@@ -278,11 +278,11 @@ public:
 	void SetInnerTextTab(CString strTitle);
 
 public:
-	/// ¾ÆÀÌÅÛ °ü·Ã Ã¢°ú °°ÀÌ ¶ç¿ï ¼ö ÀÖ´ÂÁö ¿©ºÎ¸¦ ¾ò´Â´Ù.
+	/// ì•„ì´í…œ ê´€ë ¨ ì°½ê³¼ ê°™ì´ ë„ìš¸ ìˆ˜ ìžˆëŠ”ì§€ ì—¬ë¶€ë¥¼ ì–»ëŠ”ë‹¤.
 	virtual BOOL CanWithItemUI();
-	/// ÇÁ·¹ÀÓÀ» È­¸é¿¡ ¶ç¿ì°Å³ª °¨Ãá´Ù.
+	/// í”„ë ˆìž„ì„ í™”ë©´ì— ë„ìš°ê±°ë‚˜ ê°ì¶˜ë‹¤.
 	virtual void ShowComponent(BOOL bVisible = TRUE);
-	/// ÀÌ ÇÁ·¹ÀÓÀÌ ÁÖ¾îÁø ÁÂÇ¥¸¦ Æ÷ÇÔÇÏ´ÂÁö °Ë»çÇÑ´Ù.
+	/// ì´ í”„ë ˆìž„ì´ ì£¼ì–´ì§„ ì¢Œí‘œë¥¼ í¬í•¨í•˜ëŠ”ì§€ ê²€ì‚¬í•œë‹¤.
 	virtual BOOL HitTest( CPoint pt);
 
 	virtual void ResetPosition();
@@ -296,35 +296,35 @@ protected:
 	virtual void OnRButtonUp(UINT nFlags, CPoint pt);
 	virtual void OnMouseMove(UINT nFlags, CPoint pt);
 	virtual void OnLoseFocus( TComponent* pSetFocus );
-	/// Ã¤ÆÃ ÀÔ·Â ¿¡µðÅÍ·Î Æ÷Ä¿½º¸¦ °­Á¦ÇÏ±â À§ÇØ Àç±¸Çö µÇ¾ú´Ù.
+	/// ì±„íŒ… ìž…ë ¥ ì—ë””í„°ë¡œ í¬ì»¤ìŠ¤ë¥¼ ê°•ì œí•˜ê¸° ìœ„í•´ ìž¬êµ¬í˜„ ë˜ì—ˆë‹¤.
     	
 public:
 	/**
-		Ã¤ÆÃÃ¢Àº ÀÌ ÇÔ¼ö È£Ãâ ÈÄºÎÅÍ TCHAT_TIMER ¿¡ Á¤ÀÇµÈ 
-		½Ã°£ °æ°úÈÄ ÀÚµ¿À¸·Î È­¸é¿¡¼­ »ç¶óÁö°Ô µÈ´Ù.
+		ì±„íŒ…ì°½ì€ ì´ í•¨ìˆ˜ í˜¸ì¶œ í›„ë¶€í„° TCHAT_TIMER ì— ì •ì˜ëœ 
+		ì‹œê°„ ê²½ê³¼í›„ ìžë™ìœ¼ë¡œ í™”ë©´ì—ì„œ ì‚¬ë¼ì§€ê²Œ ëœë‹¤.
 	*/
 	void ResetTick()								{ m_dwTick = 0; }
 
-	/// ÁÖ¾îÁø ÀÎµ¦½ºÀÇ Ã¤ÆÃ ¸®½ºÆ®¸¦ ¾ò´Â´Ù.
+	/// ì£¼ì–´ì§„ ì¸ë±ìŠ¤ì˜ ì±„íŒ… ë¦¬ìŠ¤íŠ¸ë¥¼ ì–»ëŠ”ë‹¤.
 	CTChatList* GetChatList(INT iIndex) const		{ return m_vListArray[iIndex]; }
 
-	/// Ã¤ÆÃ ¿¡µðÅÍ ÄÁÆ®·ÑÀ» ¾ò´Â´Ù.
+	/// ì±„íŒ… ì—ë””í„° ì»¨íŠ¸ë¡¤ì„ ì–»ëŠ”ë‹¤.
 	TEdit* GetChatEditCtrl() const					{ return m_pChatEditCtrl; }
-	/// ±Ó¸» ´ë»ó ÀÔ·Â ÄÁÆ®·Ñ ¾ò´Â´Ù.
+	/// ê·“ë§ ëŒ€ìƒ ìž…ë ¥ ì»¨íŠ¸ë¡¤ ì–»ëŠ”ë‹¤.
 	TEdit* GetWhisperTargetEditCtrl() const					{ return m_pChatWhisperTargetEditCtrl; }
-	/// Ã¤ÆÃ ÀÔ·ÂÁßÀÎÁö ¿©ºÎ¸¦ ¾ò´Â´Ù.
+	/// ì±„íŒ… ìž…ë ¥ì¤‘ì¸ì§€ ì—¬ë¶€ë¥¼ ì–»ëŠ”ë‹¤.
 	BOOL IsChatEditON() const						{ return m_bChatEditON; }
 
-	/// Ã¤ÆÃ ¸®½ºÆ®ÀÇ ±âº» À§Ä¡¸¦ ¾ò´Â´Ù.
+	/// ì±„íŒ… ë¦¬ìŠ¤íŠ¸ì˜ ê¸°ë³¸ ìœ„ì¹˜ë¥¼ ì–»ëŠ”ë‹¤.
 	const CRect& GetDefaultListRect() const			{ return m_rcDefaultList; }
 	const INT GetDefaultListHeight() const { return m_rcDefaultList.Height(); }
-	/// ÁÖ¾îÁø ½½·Ô¿¡ ÇØ´çÇÏ´Â ÅÇÀÇ À§Ä¡¸¦ ¾ò´Â´Ù.
+	/// ì£¼ì–´ì§„ ìŠ¬ë¡¯ì— í•´ë‹¹í•˜ëŠ” íƒ­ì˜ ìœ„ì¹˜ë¥¼ ì–»ëŠ”ë‹¤.
 	const CRect& GetTabSlotRect(INT iSlot) const	{ return m_vTabRect[iSlot]; }
 
-	/// ÇÁ·¹ÀÓÀÌ Àá°å´ÂÁö ¿©ºÎ¸¦ ¾ò´Â´Ù.
+	/// í”„ë ˆìž„ì´ ìž ê²¼ëŠ”ì§€ ì—¬ë¶€ë¥¼ ì–»ëŠ”ë‹¤.
 	BOOL IsLock() const								{ return m_bLock; }
 
-	/// ¸ÞÀÎ °ÔÀÓ ÇÁ·¹ÀÓÀ» ¾ò´Â´Ù.
+	/// ë©”ì¸ ê²Œìž„ í”„ë ˆìž„ì„ ì–»ëŠ”ë‹¤.
 	CTClientGame* GetMainGame() const				{ return m_pMainGame; }
 
 	BYTE GetChatMode() const						{ return m_bChatMode; }
@@ -333,7 +333,7 @@ public:
 
 	CTChatList* GetNotifyList() const				{ return m_pNotifyList; }
 
-	/// °¡Àå ¸¶Áö¸·¿¡ ¹ÞÀº ±Ó¸» »ó´ë¸¦ ¾ò´Â´Ù.
+	/// ê°€ìž¥ ë§ˆì§€ë§‰ì— ë°›ì€ ê·“ë§ ìƒëŒ€ë¥¼ ì–»ëŠ”ë‹¤.
 	const CString& GetLastWhisperTarget() const		{ return m_strLastWhisper; }
 
 	void SetCandiWhisperTarget( CString strCandiWhisper ) { m_strCandiWhisper = strCandiWhisper; }
@@ -346,18 +346,18 @@ public:
 	void ToggleTacticsChatMode( DWORD dwTactics );
 
 #ifdef DEBUG
-	/// ÇöÀç ÇÁ·¹ÀÓÀÇ ¼³Á¤À» Ãâ·ÂÇÑ´Ù.
+	/// í˜„ìž¬ í”„ë ˆìž„ì˜ ì„¤ì •ì„ ì¶œë ¥í•œë‹¤.
 	inline void _LOG(LPCSTR func);
 #endif
 
 protected:
-	/// ÀÌ ÇÁ·¹ÀÓ¿¡¼­ »ç¿ëÇÒ ¼ö ÀÖ´Â À¯ÀÏÇÑ ID ¸¦ ¾ò´Â´Ù.
+	/// ì´ í”„ë ˆìž„ì—ì„œ ì‚¬ìš©í•  ìˆ˜ ìžˆëŠ” ìœ ì¼í•œ ID ë¥¼ ì–»ëŠ”ë‹¤.
 	UINT GetUniqueID(TComponent* pParent);
 
-	/// rcFrom ¸®½ºÆ®¿Í rcTo ¸®½ºÆ®°¡ ½º³À µÅ´ÂÁö °Ë»çÇÏ°í ½º³À µÈ´Ù¸é º¯ÇÒ À§Ä¡¸¦ ¾ò´Â´Ù.
+	/// rcFrom ë¦¬ìŠ¤íŠ¸ì™€ rcTo ë¦¬ìŠ¤íŠ¸ê°€ ìŠ¤ëƒ… ë¼ëŠ”ì§€ ê²€ì‚¬í•˜ê³  ìŠ¤ëƒ… ëœë‹¤ë©´ ë³€í•  ìœ„ì¹˜ë¥¼ ì–»ëŠ”ë‹¤.
 	BOOL SnapList(const CRect& rcFrom, const CRect& rcTo, CRect& outRect);
 
-	// ½º³À °Ë»ç ÇÔ¼öµé..
+	// ìŠ¤ëƒ… ê²€ì‚¬ í•¨ìˆ˜ë“¤..
 	BOOL SnapList_LeftToRight(const CRect& rcFrom, const CRect& rcTo, CRect& outRect);
 	BOOL SnapList_RightToLeft(const CRect& rcFrom, const CRect& rcTo, CRect& outRect);
 	BOOL SnapList_UpToDown(const CRect& rcFrom, const CRect& rcTo, CRect& outRect);
@@ -383,69 +383,69 @@ public:
 	};
 
 public:
-	static const LONG		SNAP_REACT_VALUE;					///< Ã¤ÆÃ ¸®½ºÆ®ÀÇ ½º³À ¹ÝÀÀ °Å¸®
-	static const CHAR		CHAT_CMD_MARK;						///< Ã¤ÆÃ Ä¿¸Çµå ¸¶Å©
-	static const DWORD		CHAT_FLAGS[TCHAT_FLAG_COUNT];		///< Ã¤ÆÃ ÇÃ·¡±× ¹è¿­
-	static const DWORD		CHAT_FLAG_STRINGS[TCHAT_FLAG_COUNT];///< Ã¤ÆÃ ÇÃ·¡±× ÀÌ¸§ ¹è¿­
-	static const DWORD		DEFAULT_CHAT_FLAGS[];				///< ¸®½ºÆ®¿¡ ¹èÁ¤µÉ ±âº» Ã¤ÆÃ ÇÃ·¡±×
-	static const BYTE		CHAT_SHOW_NEWMSG[];					///< »õ·Î¿î Ã¤ÆÃ ¸Þ½ÃÁöÀÇ µµÂø ¿©ºÎ¸¦ ¾Ë¸±Áö ¿©ºÎ
-	static const INT		POPUP_TO_LIST[];					///< ÆË¾÷ ÀÎµ¦½º -  ¸®½ºÆ® ÀÎµ¦½º Å×ÀÌºí
-	static const DWORD		CHAT_MODE_CMD[];					///< Ã¤ÆÃ ¸ðµå ¸í·É
+	static const LONG		SNAP_REACT_VALUE;					///< ì±„íŒ… ë¦¬ìŠ¤íŠ¸ì˜ ìŠ¤ëƒ… ë°˜ì‘ ê±°ë¦¬
+	static const CHAR		CHAT_CMD_MARK;						///< ì±„íŒ… ì»¤ë§¨ë“œ ë§ˆí¬
+	static const DWORD		CHAT_FLAGS[TCHAT_FLAG_COUNT];		///< ì±„íŒ… í”Œëž˜ê·¸ ë°°ì—´
+	static const DWORD		CHAT_FLAG_STRINGS[TCHAT_FLAG_COUNT];///< ì±„íŒ… í”Œëž˜ê·¸ ì´ë¦„ ë°°ì—´
+	static const DWORD		DEFAULT_CHAT_FLAGS[];				///< ë¦¬ìŠ¤íŠ¸ì— ë°°ì •ë  ê¸°ë³¸ ì±„íŒ… í”Œëž˜ê·¸
+	static const BYTE		CHAT_SHOW_NEWMSG[];					///< ìƒˆë¡œìš´ ì±„íŒ… ë©”ì‹œì§€ì˜ ë„ì°© ì—¬ë¶€ë¥¼ ì•Œë¦´ì§€ ì—¬ë¶€
+	static const INT		POPUP_TO_LIST[];					///< íŒì—… ì¸ë±ìŠ¤ -  ë¦¬ìŠ¤íŠ¸ ì¸ë±ìŠ¤ í…Œì´ë¸”
+	static const DWORD		CHAT_MODE_CMD[];					///< ì±„íŒ… ëª¨ë“œ ëª…ë ¹
 
 protected:
-	CTClientGame*			m_pMainGame;						///< ¸ÞÀÎ °ÔÀÓ ÇÁ·¹ÀÓ
+	CTClientGame*			m_pMainGame;						///< ë©”ì¸ ê²Œìž„ í”„ë ˆìž„
 
-	TComponent*				m_pListTemplate;					///< Ã¤ÆÃ ¸®½ºÆ® »ý¼ºÀ» À§ÇÑ ÅÛÇÃ¸´ °´Ã¼
-	TComponent*				m_pListTemplate2;					///< °øÁö ¸®½ºÆ® »ý¼ºÀ» À§ÇÑ ÅÛÇÃ¸´ °´Ã¼
+	TComponent*				m_pListTemplate;					///< ì±„íŒ… ë¦¬ìŠ¤íŠ¸ ìƒì„±ì„ ìœ„í•œ í…œí”Œë¦¿ ê°ì²´
+	TComponent*				m_pListTemplate2;					///< ê³µì§€ ë¦¬ìŠ¤íŠ¸ ìƒì„±ì„ ìœ„í•œ í…œí”Œë¦¿ ê°ì²´
 	
-	CTChatList*				m_vLists[TCHAT_SET_COUNT];			///< Ã¤ÆÃ ¸®½ºÆ® ¹è¿­
-	CRect					m_rcDefaultList;					///< Ã¤ÆÃ ¸®½ºÆ®ÀÇ ±âº» À§Ä¡¹× Å©±â
+	CTChatList*				m_vLists[TCHAT_SET_COUNT];			///< ì±„íŒ… ë¦¬ìŠ¤íŠ¸ ë°°ì—´
+	CRect					m_rcDefaultList;					///< ì±„íŒ… ë¦¬ìŠ¤íŠ¸ì˜ ê¸°ë³¸ ìœ„ì¹˜ë° í¬ê¸°
 
-	CTChatList*				m_pNotifyList;						///< ¿î¿µÀÚ °øÁö ¸Þ½ÃÁö Àü¿ë ¸®½ºÆ®
-	CTChatList*				m_pUpgradeShowList;				///< °­È­ ¼º°ø ¸Þ½ÃÁö Àü¿ë ¸®½ºÆ®
-	DWORD					m_dwNotifyTime;						///< °øÁö »çÇ×À» È­¸é¿¡ Ç¥½ÃÇÒ ³²Àº ½Ã°£
+	CTChatList*				m_pNotifyList;						///< ìš´ì˜ìž ê³µì§€ ë©”ì‹œì§€ ì „ìš© ë¦¬ìŠ¤íŠ¸
+	CTChatList*				m_pUpgradeShowList;				///< ê°•í™” ì„±ê³µ ë©”ì‹œì§€ ì „ìš© ë¦¬ìŠ¤íŠ¸
+	DWORD					m_dwNotifyTime;						///< ê³µì§€ ì‚¬í•­ì„ í™”ë©´ì— í‘œì‹œí•  ë‚¨ì€ ì‹œê°„
 	
-	CTChatTabButton*		m_vTabs[TCHAT_SET_COUNT];			///< ÅÇ ¹è¿­
-	CRect					m_vTabRect[TCHAT_SET_COUNT];		///< ½½·Ô¿¡ µû¸¥ ÅÇÀÇ À§Ä¡ ¹è¿­
-	INT						m_iTabCount;						///< ÅÇÀÇ °¹¼ö
+	CTChatTabButton*		m_vTabs[TCHAT_SET_COUNT];			///< íƒ­ ë°°ì—´
+	CRect					m_vTabRect[TCHAT_SET_COUNT];		///< ìŠ¬ë¡¯ì— ë”°ë¥¸ íƒ­ì˜ ìœ„ì¹˜ ë°°ì—´
+	INT						m_iTabCount;						///< íƒ­ì˜ ê°¯ìˆ˜
    
-	CTChatTabButton*		m_pSelectTab;						///< ¼±ÅÃµÈ ÅÇ
-	CTChatTabButton*		m_pHitTab;							///< °¡Àå ÃÖ±Ù¿¡ Å¬¸¯µÈ ÅÇ
+	CTChatTabButton*		m_pSelectTab;						///< ì„ íƒëœ íƒ­
+	CTChatTabButton*		m_pHitTab;							///< ê°€ìž¥ ìµœê·¼ì— í´ë¦­ëœ íƒ­
 
-	TComponent*				m_pChatTypeCtrl;					///< Ã¤ÆÃ Å¸ÀÔÀ» Ç¥½ÃÇÏ±âÀ§ÇÑ ÄÁÆ®·Ñ
-	TEdit*					m_pChatEditCtrl;					///< Ã¤ÆÃ ÀÔ·ÂÀ» ¹Þ±âÀ§ÇÑ ¿¡µðÅÍ ÄÁÆ®·Ñ
-	TEdit*					m_pChatWhisperTargetEditCtrl;	///< ±Ó¸» ´ë»ó ÀÔ·ÂÀ» ¹Þ±â À§ÇÑ ¿¡µðÅÍ ÄÁÆ®·Ñ
-	BOOL					m_bChatEditON;						///< ÇöÀç Ã¤ÆÃ ÀÔ·ÂÁßÀÎÁö ¿©ºÎ
-	TComponent*				m_pChatEditBack;					///< Ã¤ÆÃ ÀÔ·Â ¹è°æ
+	TComponent*				m_pChatTypeCtrl;					///< ì±„íŒ… íƒ€ìž…ì„ í‘œì‹œí•˜ê¸°ìœ„í•œ ì»¨íŠ¸ë¡¤
+	TEdit*					m_pChatEditCtrl;					///< ì±„íŒ… ìž…ë ¥ì„ ë°›ê¸°ìœ„í•œ ì—ë””í„° ì»¨íŠ¸ë¡¤
+	TEdit*					m_pChatWhisperTargetEditCtrl;	///< ê·“ë§ ëŒ€ìƒ ìž…ë ¥ì„ ë°›ê¸° ìœ„í•œ ì—ë””í„° ì»¨íŠ¸ë¡¤
+	BOOL					m_bChatEditON;						///< í˜„ìž¬ ì±„íŒ… ìž…ë ¥ì¤‘ì¸ì§€ ì—¬ë¶€
+	TComponent*				m_pChatEditBack;					///< ì±„íŒ… ìž…ë ¥ ë°°ê²½
 	TComponent*				m_pChatTabBack;
 	TComponent*				m_pChatMode;
 
-	//TButton*				m_pChatLockCtrl;					///< Ã¤ÆÃ ¸®½ºÆ® ¶ô/¾ð¶ô ¹öÆ°			
-	TButton*				m_pChatImeCtrl;						///< Ã¤ÆÃ ÀÔ·Â ¾ð¾î ¹öÆ°
+	//TButton*				m_pChatLockCtrl;					///< ì±„íŒ… ë¦¬ìŠ¤íŠ¸ ë½/ì–¸ë½ ë²„íŠ¼			
+	TButton*				m_pChatImeCtrl;						///< ì±„íŒ… ìž…ë ¥ ì–¸ì–´ ë²„íŠ¼
 
-	DWORD					m_dwTick;							///< Ã¤ÆÃÃ¢¿¡ ¾î¶°ÇÑ ÀÌº¥Æ®°¡ ¹ß»ý ÇÑ ÈÄºÎÅÍÀÇ °æ°ú½Ã°£.
+	DWORD					m_dwTick;							///< ì±„íŒ…ì°½ì— ì–´ë– í•œ ì´ë²¤íŠ¸ê°€ ë°œìƒ í•œ í›„ë¶€í„°ì˜ ê²½ê³¼ì‹œê°„.
 
-	BYTE					m_bChatMode;						///< ÇöÀç Ã¤ÆÃ ¸ðµå
-	CString					m_strChatTarget;					///< °¡Àå ÃÖ±ÙÀÇ ±Ó¸» Å¸°Ù ÀÌ¸§
-	DWORD					m_dwChatTargetID;					///< °¡Àå ÃÖ±ÙÀÇ ±Ó¸» Å¸°Ù ¾ÆÀÌµð
-	CString					m_strLastWhisper;					///< °¡Àå ¸¶Áö¸·À¸·Î ¹ÞÀº ±Ó¸» »ó´ë
-	CString					m_strCandiWhisper;				///< ±Ó¸» »ó´ë ¿¹ºñÀÚ (¿À¸¥ÂÊ ¹öÆ°À¸·Î ±Ó¸» »ó´ë ¼±ÅÃ½Ã »ç¿ë)
+	BYTE					m_bChatMode;						///< í˜„ìž¬ ì±„íŒ… ëª¨ë“œ
+	CString					m_strChatTarget;					///< ê°€ìž¥ ìµœê·¼ì˜ ê·“ë§ íƒ€ê²Ÿ ì´ë¦„
+	DWORD					m_dwChatTargetID;					///< ê°€ìž¥ ìµœê·¼ì˜ ê·“ë§ íƒ€ê²Ÿ ì•„ì´ë””
+	CString					m_strLastWhisper;					///< ê°€ìž¥ ë§ˆì§€ë§‰ìœ¼ë¡œ ë°›ì€ ê·“ë§ ìƒëŒ€
+	CString					m_strCandiWhisper;				///< ê·“ë§ ìƒëŒ€ ì˜ˆë¹„ìž (ì˜¤ë¥¸ìª½ ë²„íŠ¼ìœ¼ë¡œ ê·“ë§ ìƒëŒ€ ì„ íƒì‹œ ì‚¬ìš©)
 
-	CTMiniPopupDlg*			m_vPopup[POPUP_COUNT];				///< Ã¤ÆÃ °ü·Ã ÆË¾÷ ¸®½ºÆ®
+	CTMiniPopupDlg*			m_vPopup[POPUP_COUNT];				///< ì±„íŒ… ê´€ë ¨ íŒì—… ë¦¬ìŠ¤íŠ¸
 
 	/**
-		Ã¤ÆÃ ÇÁ·¹ÀÓÀÌ Àá°å´ÂÁö ¿©ºÎ.
-		ÇÁ·¹ÀÓÀÌ Àá°å´Ù´Â ÀÇ¹Ì´Â ¸®½ºÆ®¿Í ÅÇÀÇ ÀÌµ¿ÀÌ³ª Ãß°¡ Á¦°Å¸¦
-		ÇÒ ¼ö ¾ø°Ô ÇÑ´Ù´Â ¶æÀÌ´Ù. ¶ÇÇÑ ÇÁ·¹ÀÓÀÌ Àá±ä »óÅÂ¿¡¼­´Â Ã¤ÆÃ
-		¸®½ºÆ®´Â ¸ðµç HitTest ¸í·ÉÀ» ¹«½ÃÇÏ°Ô µÈ´Ù. Áï, ¸®½ºÆ®¸¦ Å¬¸¯
-		ÇÒ ¼ö ¾ø°Ô µÈ´Ù´Â ÀÇ¹ÌÀÌ´Ù.
+		ì±„íŒ… í”„ë ˆìž„ì´ ìž ê²¼ëŠ”ì§€ ì—¬ë¶€.
+		í”„ë ˆìž„ì´ ìž ê²¼ë‹¤ëŠ” ì˜ë¯¸ëŠ” ë¦¬ìŠ¤íŠ¸ì™€ íƒ­ì˜ ì´ë™ì´ë‚˜ ì¶”ê°€ ì œê±°ë¥¼
+		í•  ìˆ˜ ì—†ê²Œ í•œë‹¤ëŠ” ëœ»ì´ë‹¤. ë˜í•œ í”„ë ˆìž„ì´ ìž ê¸´ ìƒíƒœì—ì„œëŠ” ì±„íŒ…
+		ë¦¬ìŠ¤íŠ¸ëŠ” ëª¨ë“  HitTest ëª…ë ¹ì„ ë¬´ì‹œí•˜ê²Œ ëœë‹¤. ì¦‰, ë¦¬ìŠ¤íŠ¸ë¥¼ í´ë¦­
+		í•  ìˆ˜ ì—†ê²Œ ëœë‹¤ëŠ” ì˜ë¯¸ì´ë‹¤.
 	*/
 	BOOL					m_bLock;
 
-	/// Ã¤ÆÃ ÇÁ·¹ÀÓÀ» È­¸é¿¡ Ç¥½ÃÇÒÁö ¿©ºÎ
+	/// ì±„íŒ… í”„ë ˆìž„ì„ í™”ë©´ì— í‘œì‹œí• ì§€ ì—¬ë¶€
 	BOOL					m_bChatFrameVisible;
 
-	// ½º³À ¿©ºÎ ÆÇ´Ü¿¡ »ç¿ëµÇ´Â º¯¼öµé
+	// ìŠ¤ëƒ… ì—¬ë¶€ íŒë‹¨ì— ì‚¬ìš©ë˜ëŠ” ë³€ìˆ˜ë“¤
 	BOOL					m_bProcSnapLeft;
 	BOOL					m_bProcSnapTop;
 	BOOL					m_bProcSnapRight;
@@ -456,124 +456,124 @@ protected:
 	BOOL					m_bInitialized;
 
 public:
-	/// Ã¤ÆÃ Å¸ÀÔ¿¡ µû¸¥ »öÀ» ¾ò´Â´Ù.
+	/// ì±„íŒ… íƒ€ìž…ì— ë”°ë¥¸ ìƒ‰ì„ ì–»ëŠ”ë‹¤.
 	static DWORD GetChatTypeColor(BYTE bChatMode);
-	/// Ã¤ÆÃ Å¸ÀÔ¿¡ µû¸¥ ¸íÄªÀ» ¾ò´Â´Ù.
+	/// ì±„íŒ… íƒ€ìž…ì— ë”°ë¥¸ ëª…ì¹­ì„ ì–»ëŠ”ë‹¤.
 	static const CString& GetChatTypeString(BYTE bChatMode);
-	/// Ã¤ÆÃ Å¸ÀÔ¿¡ µû¸¥ ´ëÇ¥ ¸íÄªÀ» ¾ò´Â´Ù.
+	/// ì±„íŒ… íƒ€ìž…ì— ë”°ë¥¸ ëŒ€í‘œ ëª…ì¹­ì„ ì–»ëŠ”ë‹¤.
 	const CString& GetChatTypeRepresentation(BYTE bChatMode);
 
-	/// ÁÖ¾îÁø ¸®½ºÆ® ÀÎµ¦½º¿¡ ÇØ´çÇÏ´Â ÆË¾÷ ÀÎµ¦½º¸¦ ¾ò´Â´Ù.
+	/// ì£¼ì–´ì§„ ë¦¬ìŠ¤íŠ¸ ì¸ë±ìŠ¤ì— í•´ë‹¹í•˜ëŠ” íŒì—… ì¸ë±ìŠ¤ë¥¼ ì–»ëŠ”ë‹¤.
 	static INT GetPopupIndex(INT nListIndex);
 
 public:
-	/// ÁÖ¾îÁø ÆË¾÷ ´ëÈ­»óÀÚ¸¦ Ã¤ÆÃ ¸ðµå ¼±ÅÃ¿ëÀ¸·Î »ç¿ëÇÏµµ·Ï ¼³Á¤ÇÑ´Ù.
+	/// ì£¼ì–´ì§„ íŒì—… ëŒ€í™”ìƒìžë¥¼ ì±„íŒ… ëª¨ë“œ ì„ íƒìš©ìœ¼ë¡œ ì‚¬ìš©í•˜ë„ë¡ ì„¤ì •í•œë‹¤.
 	void SetPopup(PopupEnum ePopup, CTMiniPopupDlg* pPopup);
-	/// Ã¤ÆÃ ÆË¾÷À» È­¸é¿¡ ¶ç¿ì°Å³ª °¨Ãá´Ù.
+	/// ì±„íŒ… íŒì—…ì„ í™”ë©´ì— ë„ìš°ê±°ë‚˜ ê°ì¶˜ë‹¤.
 	void ShowPopup(PopupEnum ePopup, BOOL bShow);
-	/// ¸ðµç Ã¤ÆÃ ÆË¾÷À» È­¸é¿¡¼­ °¨Ãá´Ù.
+	/// ëª¨ë“  ì±„íŒ… íŒì—…ì„ í™”ë©´ì—ì„œ ê°ì¶˜ë‹¤.
 	void HideAllPopup();
-	/// Ã¤ÆÃ ÆË¾÷ÀÌ º¸¿©Áö´ÂÁö ¿©ºÎ¸¦ ¾ò´Â´Ù.
+	/// ì±„íŒ… íŒì—…ì´ ë³´ì—¬ì§€ëŠ”ì§€ ì—¬ë¶€ë¥¼ ì–»ëŠ”ë‹¤.
 	BOOL IsVisiblePopup(PopupEnum ePopup);
 
-	/// Ã¤ÆÃ ÇÃ·¡±×ÀÇ °»½ÅÀ» ÆË¾÷¿¡ ¹Ý¿µ½ÃÅ²´Ù.
+	/// ì±„íŒ… í”Œëž˜ê·¸ì˜ ê°±ì‹ ì„ íŒì—…ì— ë°˜ì˜ì‹œí‚¨ë‹¤.
 	void UpdateChatFlagToPopup();
 	void SetHeightAllInnerChatList( INT nHeight );
 
 	/**
-		Ã¤ÆÃ ÇÁ·¹ÀÓÀ» °»½ÅÇÑ´Ù.
+		ì±„íŒ… í”„ë ˆìž„ì„ ê°±ì‹ í•œë‹¤.
 
-		@param dwTick	°æ°ú ½Ã°£
+		@param dwTick	ê²½ê³¼ ì‹œê°„
 	*/
 	void Update(DWORD dwTick);
 
 	/**
-		¼±ÅÃ ÅÇÀ» º¯°æÇÑ´Ù. ÀÌ¶§ ÅÇ°ú ¸µÅ©µÈ ¸®½ºÆ®°¡ È­¸é¿¡ Ç¥½ÃµÈ´Ù.
+		ì„ íƒ íƒ­ì„ ë³€ê²½í•œë‹¤. ì´ë•Œ íƒ­ê³¼ ë§í¬ëœ ë¦¬ìŠ¤íŠ¸ê°€ í™”ë©´ì— í‘œì‹œëœë‹¤.
 
-		@warning	¸¸¾à ÅÇÀÌ ¹ÛÀ¸·Î ºüÁø »óÅÂ¶ó¸é ÇØ´ç ÅÇÀº ¼±ÅÃÇÒ ¼ö ¾ø´Ù.
+		@warning	ë§Œì•½ íƒ­ì´ ë°–ìœ¼ë¡œ ë¹ ì§„ ìƒíƒœë¼ë©´ í•´ë‹¹ íƒ­ì€ ì„ íƒí•  ìˆ˜ ì—†ë‹¤.
 	*/
 	void ChangeSelection(CTChatTabButton* pTab);
 	void ChangeSelection(TCHAT_SET);
 
-	/// ÁÖ¾îÁø µÎ ÅÇÀ» ±³È¯ÇÑ´Ù. ÅÇ ±³È¯Àº ½½·ÔÀÇ ±³È¯°ú ÇÔ²² À§Ä¡ ±³È¯À» ÀÇ¹ÌÇÑ´Ù.
+	/// ì£¼ì–´ì§„ ë‘ íƒ­ì„ êµí™˜í•œë‹¤. íƒ­ êµí™˜ì€ ìŠ¬ë¡¯ì˜ êµí™˜ê³¼ í•¨ê»˜ ìœ„ì¹˜ êµí™˜ì„ ì˜ë¯¸í•œë‹¤.
 	void SwapTab(CTChatTabButton* pTab1, CTChatTabButton* pTab2);
-	/// ÁÖ¾îÁø ÅÇ°ú ±×¿¡ ¸µÅ©µÈ ¸®½ºÆ®¸¦ ÇÁ·¹ÀÓ ¾ÈÀ¸·Î Ãß°¡ÇÑ´Ù.
+	/// ì£¼ì–´ì§„ íƒ­ê³¼ ê·¸ì— ë§í¬ëœ ë¦¬ìŠ¤íŠ¸ë¥¼ í”„ë ˆìž„ ì•ˆìœ¼ë¡œ ì¶”ê°€í•œë‹¤.
 	void AddTabAndList(CTChatTabButton* pTab);
-	/// ÁÖ¾îÁø ÅÇ°ú ±×¿¡ ¸µÅ©µÈ ¸®½ºÆ®¸¦ ÇÁ·¹ÀÓ ¹ÛÀ¸·Î »«´Ù.
+	/// ì£¼ì–´ì§„ íƒ­ê³¼ ê·¸ì— ë§í¬ëœ ë¦¬ìŠ¤íŠ¸ë¥¼ í”„ë ˆìž„ ë°–ìœ¼ë¡œ ëº€ë‹¤.
 	void RemoveTabAndList(CTChatTabButton* pTab);
 
 	/**
-		¸®½ºÆ®°¡ ÁÖº¯°ú ½º³ÀµÇ¾î¾ß ÇÏ´ÂÁö Á¶»çÇÏ°í ¸¸¾à ±×·¸´Ù¸é
-		½º³ÀÈÄ º¯°æµÉ À§Ä¡¸¦ ¹ÝÈ¯ÇÏ´Ù.
+		ë¦¬ìŠ¤íŠ¸ê°€ ì£¼ë³€ê³¼ ìŠ¤ëƒ…ë˜ì–´ì•¼ í•˜ëŠ”ì§€ ì¡°ì‚¬í•˜ê³  ë§Œì•½ ê·¸ë ‡ë‹¤ë©´
+		ìŠ¤ëƒ…í›„ ë³€ê²½ë  ìœ„ì¹˜ë¥¼ ë°˜í™˜í•˜ë‹¤.
 
-		@param pList		½º³À¿©ºÎ¸¦ Á¶»çÇÒ ¸®½ºÆ®
-		@param outRect		½º³À ÈÄ º¯°æµÉ À§Ä¡. ¹ÝÈ¯°ª¾Æ TRUE ÀÎ 
-							°æ¿ì¸¸ À¯È¿ÇÏ´Ù.
-		@return				½º³À ¹ß»ý ¿©ºÎ.
+		@param pList		ìŠ¤ëƒ…ì—¬ë¶€ë¥¼ ì¡°ì‚¬í•  ë¦¬ìŠ¤íŠ¸
+		@param outRect		ìŠ¤ëƒ… í›„ ë³€ê²½ë  ìœ„ì¹˜. ë°˜í™˜ê°’ì•„ TRUE ì¸ 
+							ê²½ìš°ë§Œ ìœ íš¨í•˜ë‹¤.
+		@return				ìŠ¤ëƒ… ë°œìƒ ì—¬ë¶€.
 	*/
 	BOOL SnapList(CTChatList* pList, CRect& outRect);
 
 	///
 	void ResetSetting();
 
-	/// ·¹Áî½ºÆ®¸®¿¡ ÀúÀåµÈ Ã¤ÆÃ ÇÁ·¹ÀÓÀÇ »óÅÂ·Î ÇöÀç »óÅÂ¸¦ º¯°æÇÑ´Ù.
+	/// ë ˆì¦ˆìŠ¤íŠ¸ë¦¬ì— ì €ìž¥ëœ ì±„íŒ… í”„ë ˆìž„ì˜ ìƒíƒœë¡œ í˜„ìž¬ ìƒíƒœë¥¼ ë³€ê²½í•œë‹¤.
 	void LoadSetting( BOOL bReset = FALSE);
-	/// ÇöÀç Ã¤ÆÃ ÇÁ·¹ÀÓÀÇ »óÅÂ¸¦ ·¹Áö½ºÆ®¸®¿¡ ÀúÀåÇÑ´Ù.
+	/// í˜„ìž¬ ì±„íŒ… í”„ë ˆìž„ì˜ ìƒíƒœë¥¼ ë ˆì§€ìŠ¤íŠ¸ë¦¬ì— ì €ìž¥í•œë‹¤.
 	void SaveSetting();
 
-	/// ÁÖ¾îÁø À§Ä¡¿¡ ÇØ´çÇÏ´Â ÅÇ ¹öÆ°À» ¾ò´Â´Ù.
+	/// ì£¼ì–´ì§„ ìœ„ì¹˜ì— í•´ë‹¹í•˜ëŠ” íƒ­ ë²„íŠ¼ì„ ì–»ëŠ”ë‹¤.
 	CTChatTabButton* GetHitTab(const CPoint& pt);
-	/// ÁÖ¾îÁø ¸®½ºÆ®¿Í ¸µÅ©µÈ ÅÇ ¹öÆ°À» ¾ò´Â´Ù.
+	/// ì£¼ì–´ì§„ ë¦¬ìŠ¤íŠ¸ì™€ ë§í¬ëœ íƒ­ ë²„íŠ¼ì„ ì–»ëŠ”ë‹¤.
 	CTChatTabButton* FindTab(CTChatList* pList);
 
-	/// ÁÖ¾îÁø À§Ä¡¿¡ ÇØ´çÇÏ´Â Ã¤ÆÃ ¸®½ºÆ®¸¦ ¾ò´Â´Ù.
+	/// ì£¼ì–´ì§„ ìœ„ì¹˜ì— í•´ë‹¹í•˜ëŠ” ì±„íŒ… ë¦¬ìŠ¤íŠ¸ë¥¼ ì–»ëŠ”ë‹¤.
 	CTChatList* GetHitList(const CPoint& pt);
 
-	/// ÁÖ¾îÁø ÆË¾÷°ú ¸µÅ©µÈ Ã¤ÆÃ ¸®½ºÆ®¸¦ ¾ò´Â´Ù.
+	/// ì£¼ì–´ì§„ íŒì—…ê³¼ ë§í¬ëœ ì±„íŒ… ë¦¬ìŠ¤íŠ¸ë¥¼ ì–»ëŠ”ë‹¤.
 	CTChatList* FindList(CTMiniPopupDlg* pPopup);
 
 	CTChatList* FindList( DWORD dwChatFlag );
 
-	/// ÇöÀç±îÁö ÀÔ·ÂµÈ Ã¤ÆÃ ¸Þ½ÃÁö¸¦ ÃÊ±âÈ­ÇÑ´Ù.
+	/// í˜„ìž¬ê¹Œì§€ ìž…ë ¥ëœ ì±„íŒ… ë©”ì‹œì§€ë¥¼ ì´ˆê¸°í™”í•œë‹¤.
 	void ResetChatMsg(BOOL bEnable);
-	/// ¸®½ºÆ®ÀÇ ¸ðµç Ã¤ÆÃ ±â·ÏÀ» ÃÊ±âÈ­ÇÑ´Ù.
+	/// ë¦¬ìŠ¤íŠ¸ì˜ ëª¨ë“  ì±„íŒ… ê¸°ë¡ì„ ì´ˆê¸°í™”í•œë‹¤.
 	void ResetChatList();
 	
-	/// ±Ó¸» ´ë»óÀ» ÀÔ·ÂÇÑ´Ù.
+	/// ê·“ë§ ëŒ€ìƒì„ ìž…ë ¥í•œë‹¤.
 	void ShowWhisperTargetInput( BOOL bShow );
 	void ProcWhisperTargetInput( BOOL bCancel );
 	void LoseFocusWhisperTargetInput( BOOL bCancel );
 
 	void AddWhisperList( CString strWhisperTarget );
 
-	/// Ã¤ÆÃ ¿¡µðÅÍ·Î Äù½ºÆ® ¸µÅ© µ¥ÀÌÅ¸¸¦ ³Ö´Â´Ù.
+	/// ì±„íŒ… ì—ë””í„°ë¡œ í€˜ìŠ¤íŠ¸ ë§í¬ ë°ì´íƒ€ë¥¼ ë„£ëŠ”ë‹¤.
 	void InsertInfoToChatEdit(LPTQUEST pQuest);
-	/// Ã¤ÆÃ ¿¡µðÅÍ·Î ¾ÆÀÌÅÛ ¸µÅ© µ¥ÀÌÅ¸¸¦ ³Ö´Â´Ù.
+	/// ì±„íŒ… ì—ë””í„°ë¡œ ì•„ì´í…œ ë§í¬ ë°ì´íƒ€ë¥¼ ë„£ëŠ”ë‹¤.
 	void InsertInfoToChatEdit(LPTITEM pItem, CTClientItem* pClientItem);
-	/// Ã¤ÆÃ ¿¡µðÅÍÀÇ ¸Ê ¾ÕÀ¸·Î ÁÖ¾îÁø ¹®ÀÚ¿­À» »ðÀÔÇÑ´Ù.
+	/// ì±„íŒ… ì—ë””í„°ì˜ ë§µ ì•žìœ¼ë¡œ ì£¼ì–´ì§„ ë¬¸ìžì—´ì„ ì‚½ìž…í•œë‹¤.
 	void PushFrontMsgToEdit(const CString& strMsg);
 
-	/// ÇöÀç ¿¡µðÅÍ¿¡ ÀÔ·ÂµÈ Ã¤ÆÃ ¸Þ½ÃÁö¸¦ Ã³¸®ÇÏ°í Àü¼ÛÇØ¾ßÇÒ ¸Þ½ÃÁö¸¦ ¾ò´Â´Ù.
+	/// í˜„ìž¬ ì—ë””í„°ì— ìž…ë ¥ëœ ì±„íŒ… ë©”ì‹œì§€ë¥¼ ì²˜ë¦¬í•˜ê³  ì „ì†¡í•´ì•¼í•  ë©”ì‹œì§€ë¥¼ ì–»ëŠ”ë‹¤.
 	CString ProcChatMsgInEdit();
 
-	/// ÇöÀç ¿¡µðÅÍ¿¡ ÀÔ·ÂµÈ ¸Þ½ÃÁöÀÇ ÁÂ¿ì °ø¹éÀ» Á¦°ÅÇÑ´Ù.	
+	/// í˜„ìž¬ ì—ë””í„°ì— ìž…ë ¥ëœ ë©”ì‹œì§€ì˜ ì¢Œìš° ê³µë°±ì„ ì œê±°í•œë‹¤.	
 	void TrimMsgInEdit();
-	/// ÇöÀç ¿¡µðÅÍ¿¡ ÀÔ·ÂµÈ ¸Þ½ÃÁö¸¦ ¸ðµÎ Á¦°ÅÇÑ´Ù.
+	/// í˜„ìž¬ ì—ë””í„°ì— ìž…ë ¥ëœ ë©”ì‹œì§€ë¥¼ ëª¨ë‘ ì œê±°í•œë‹¤.
 	void ClearMsgInEdit();
 
 	/**
-		Ã¤ÆÃ ¸Þ½ÃÁö¸¦ ÇÁ·¹ÀÓÀ¸·Î Àü´ÞÇÏ¿© ¸®½ºÆ®¿¡ ±× ³»¿ëÀ» Ç¥±âÇÏ°Ô ÇÑ´Ù.
+		ì±„íŒ… ë©”ì‹œì§€ë¥¼ í”„ë ˆìž„ìœ¼ë¡œ ì „ë‹¬í•˜ì—¬ ë¦¬ìŠ¤íŠ¸ì— ê·¸ ë‚´ìš©ì„ í‘œê¸°í•˜ê²Œ í•œë‹¤.
 
-		@param strTYPE		Ã¤ÆÃ Å¸ÀÔÀ» ³ªÅ¸³»´Â ¹®ÀÚ¿­
-		@param strNAME		¸Þ½ÃÁö¸¦ º¸³½ °÷ÀÇ ÀÌ¸§
-		@param strMSG		Ç¥½ÃÇÏ°íÀÚ ÇÏ´Â ¸Þ½ÃÁö
-		@param dwCOLOR		Ç¥½ÃÇÏ°íÀÚ ÇÏ´Â ¸Þ½ÃÁöÀÇ »ö
-		@param dwChatFlag	ÀÌ ¸Þ½ÃÁöÀÇ Å¸ÀÔ ÇÃ·¡±×
-		@param dwSoundID	ÀÌ ¸Þ½ÃÁö¸¦ ¸®½ºÆ®¿¡ Ç¥±âÇÒ¶§ ³¾ »ç¿îµå ID 
-							¾Æ¹« ¼Ò¸®µµ ¿øÇÏÁö ¾Ê´Â´Ù¸é 0 À» Àü´ÞÇÏ¸é µÈ´Ù.
-							±âº»°ªÀ» 0 ÀÌ´Ù.
-		@param bSoundType	À§¿¡ »ç¿îµå ID ÀÇ Å¸ÀÔ. (Only WAV:MEDIA_TSOUND)
-		@return				½ÇÁ¦·Î Ç¥½ÃµÇ´Â ¸Þ½ÃÁö
+		@param strTYPE		ì±„íŒ… íƒ€ìž…ì„ ë‚˜íƒ€ë‚´ëŠ” ë¬¸ìžì—´
+		@param strNAME		ë©”ì‹œì§€ë¥¼ ë³´ë‚¸ ê³³ì˜ ì´ë¦„
+		@param strMSG		í‘œì‹œí•˜ê³ ìž í•˜ëŠ” ë©”ì‹œì§€
+		@param dwCOLOR		í‘œì‹œí•˜ê³ ìž í•˜ëŠ” ë©”ì‹œì§€ì˜ ìƒ‰
+		@param dwChatFlag	ì´ ë©”ì‹œì§€ì˜ íƒ€ìž… í”Œëž˜ê·¸
+		@param dwSoundID	ì´ ë©”ì‹œì§€ë¥¼ ë¦¬ìŠ¤íŠ¸ì— í‘œê¸°í• ë•Œ ë‚¼ ì‚¬ìš´ë“œ ID 
+							ì•„ë¬´ ì†Œë¦¬ë„ ì›í•˜ì§€ ì•ŠëŠ”ë‹¤ë©´ 0 ì„ ì „ë‹¬í•˜ë©´ ëœë‹¤.
+							ê¸°ë³¸ê°’ì„ 0 ì´ë‹¤.
+		@param bSoundType	ìœ„ì— ì‚¬ìš´ë“œ ID ì˜ íƒ€ìž…. (Only WAV:MEDIA_TSOUND)
+		@return				ì‹¤ì œë¡œ í‘œì‹œë˜ëŠ” ë©”ì‹œì§€
 	*/
 	CString ChatSysMSG(
 		const CString& strTYPE,
@@ -594,43 +594,43 @@ public:
 		BYTE bSoundType,
 		DWORD dwSenderID );
 
-	/// Ã¤ÆÃ ÇÁ·¡ÀÓÀ¸·Î Æ÷Ä¿½º¸¦ °­Á¦ÇÑ´Ù.
+	/// ì±„íŒ… í”„ëž˜ìž„ìœ¼ë¡œ í¬ì»¤ìŠ¤ë¥¼ ê°•ì œí•œë‹¤.
 	void ForceFocus();
 
-	/// ¸ðµç Ã¤ÆÃ ¸®½ºÆ®ÀÇ ¹è°æÀ» º¸ÀÌ°Ô ÇÒÁö ¿©ºÎ¸¦ ¼³Á¤ÇÑ´Ù.
+	/// ëª¨ë“  ì±„íŒ… ë¦¬ìŠ¤íŠ¸ì˜ ë°°ê²½ì„ ë³´ì´ê²Œ í• ì§€ ì—¬ë¶€ë¥¼ ì„¤ì •í•œë‹¤.
 	void SetHideBackgroundOfList(BOOL bHide);
-	/// ÇÁ·¹ÀÓ Àá±Ý ¿©ºÎ¸¦ ¼³Á¤ÇÑ´Ù.
+	/// í”„ë ˆìž„ ìž ê¸ˆ ì—¬ë¶€ë¥¼ ì„¤ì •í•œë‹¤.
 	void SetLock(BOOL bLock);
 
-	/// IME ¾ð¾î ¸ðµå°¡ °»½ÅµÇ¾úÀ½À» Ã¤ÆÃ ÇÁ·¹ÀÓ¿¡ Åëº¸ÇÑ´Ù.
+	/// IME ì–¸ì–´ ëª¨ë“œê°€ ê°±ì‹ ë˜ì—ˆìŒì„ ì±„íŒ… í”„ë ˆìž„ì— í†µë³´í•œë‹¤.
 	void NotifyImeLocalModeChange();
 
-	/// ¿¡µðÅÍ¿¡ ÀÔ·ÂµÈ Á¤º¸¸¦ ÅëÇØ ÇöÀç Ã¤ÆÃ ¸ðµå¸¦ °Ë»çÇÑ´Ù.
+	/// ì—ë””í„°ì— ìž…ë ¥ëœ ì •ë³´ë¥¼ í†µí•´ í˜„ìž¬ ì±„íŒ… ëª¨ë“œë¥¼ ê²€ì‚¬í•œë‹¤.
 	void CheckChatMode();
-	/// ÇöÀç Ã¤ÆÃ ¸ðµå¸¦ º¯°æÇÑ´Ù.
+	/// í˜„ìž¬ ì±„íŒ… ëª¨ë“œë¥¼ ë³€ê²½í•œë‹¤.
 	void SetChatMode(BYTE bChatMode, CString strTarget = "");
-	/// ±Ó¸» ¸ðµå¿¡¼­ÀÇ Ã¤ÆÃ Å¸°ÙÀ» ¼³Á¤ÇÑ´Ù.
+	/// ê·“ë§ ëª¨ë“œì—ì„œì˜ ì±„íŒ… íƒ€ê²Ÿì„ ì„¤ì •í•œë‹¤.
 	void SetChatTarget(const CString& strTarget, DWORD dwTargetID=0);
 
-	/// Ã¤ÆÃ ¸ðµå º¯°æ Ä¿¸Çµå ÀÌº¥Æ®¸¦ Ã³¸®ÇÑ´Ù.
+	/// ì±„íŒ… ëª¨ë“œ ë³€ê²½ ì»¤ë§¨ë“œ ì´ë²¤íŠ¸ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	static CString OnChatModeCmd(const CString& strMSG, const VECTORSTRING& vPARAM, DWORD dwUSER);
 
-	/// È£Äª º¯°æ
+	/// í˜¸ì¹­ ë³€ê²½
 	static CString OnChatTitleCmd(const CString& strMSG, const VECTORSTRING& vPARAM, DWORD dwUSER);
 
-	/// ¸Þ½ÃÁö¿¡ µû¸¥ ÇÔ¼ö Æ÷ÀÎÅÍ¸¦ ¼³Á¤ÇÑ´Ù.
+	/// ë©”ì‹œì§€ì— ë”°ë¥¸ í•¨ìˆ˜ í¬ì¸í„°ë¥¼ ì„¤ì •í•œë‹¤.
 	void AddChatCmdProc(const CString& strCMD, FP_CHATCMDPROC fp, DWORD dwUSER=0);
-	/// ¼³Á¤µÈ ¸Þ½ÃÁö ÇÔ¼ö Æ÷ÀÎÅÍ Å×ÀÌºíÀ» ¸ðµÎ Á¦°ÅÇÑ´Ù.
+	/// ì„¤ì •ëœ ë©”ì‹œì§€ í•¨ìˆ˜ í¬ì¸í„° í…Œì´ë¸”ì„ ëª¨ë‘ ì œê±°í•œë‹¤.
 	void ClearChatCmdProc();
 
 	TListItem* HitTestChatList( CPoint pt );
 
 public:
-	/// ¾ÆÀÌÅÛ °ü·Ã Ã¢°ú °°ÀÌ ¶ç¿ï ¼ö ÀÖ´ÂÁö ¿©ºÎ¸¦ ¾ò´Â´Ù.
+	/// ì•„ì´í…œ ê´€ë ¨ ì°½ê³¼ ê°™ì´ ë„ìš¸ ìˆ˜ ìžˆëŠ”ì§€ ì—¬ë¶€ë¥¼ ì–»ëŠ”ë‹¤.
 	virtual BOOL CanWithItemUI();
-	/// ÇÁ·¹ÀÓÀ» È­¸é¿¡ ¶ç¿ì°Å³ª °¨Ãá´Ù.
+	/// í”„ë ˆìž„ì„ í™”ë©´ì— ë„ìš°ê±°ë‚˜ ê°ì¶˜ë‹¤.
 	virtual void ShowComponent(BOOL bVisible = TRUE);
-	/// ÀÌ ÇÁ·¹ÀÓÀÌ ÁÖ¾îÁø ÁÂÇ¥¸¦ Æ÷ÇÔÇÏ´ÂÁö °Ë»çÇÑ´Ù.
+	/// ì´ í”„ë ˆìž„ì´ ì£¼ì–´ì§„ ì¢Œí‘œë¥¼ í¬í•¨í•˜ëŠ”ì§€ ê²€ì‚¬í•œë‹¤.
 	virtual BOOL HitTest( CPoint pt);
 
 	virtual void ResetPosition();
@@ -643,36 +643,36 @@ protected:
 	virtual void OnRButtonUp(UINT nFlags, CPoint pt);
 	virtual void OnMouseMove(UINT nFlags, CPoint pt);
 	virtual void OnLoseFocus( TComponent* pSetFocus );
-	/// Ã¤ÆÃ ÀÔ·Â ¿¡µðÅÍ·Î Æ÷Ä¿½º¸¦ °­Á¦ÇÏ±â À§ÇØ Àç±¸Çö µÇ¾ú´Ù.
+	/// ì±„íŒ… ìž…ë ¥ ì—ë””í„°ë¡œ í¬ì»¤ìŠ¤ë¥¼ ê°•ì œí•˜ê¸° ìœ„í•´ ìž¬êµ¬í˜„ ë˜ì—ˆë‹¤.
 	virtual void SwitchFocus(TComponent* pCandidate);
     	
 public:
 	/**
-		Ã¤ÆÃÃ¢Àº ÀÌ ÇÔ¼ö È£Ãâ ÈÄºÎÅÍ TCHAT_TIMER ¿¡ Á¤ÀÇµÈ 
-		½Ã°£ °æ°úÈÄ ÀÚµ¿À¸·Î È­¸é¿¡¼­ »ç¶óÁö°Ô µÈ´Ù.
+		ì±„íŒ…ì°½ì€ ì´ í•¨ìˆ˜ í˜¸ì¶œ í›„ë¶€í„° TCHAT_TIMER ì— ì •ì˜ëœ 
+		ì‹œê°„ ê²½ê³¼í›„ ìžë™ìœ¼ë¡œ í™”ë©´ì—ì„œ ì‚¬ë¼ì§€ê²Œ ëœë‹¤.
 	*/
 	void ResetTick()								{ m_dwTick = 0; }
 
-	/// ÁÖ¾îÁø ÀÎµ¦½ºÀÇ Ã¤ÆÃ ¸®½ºÆ®¸¦ ¾ò´Â´Ù.
+	/// ì£¼ì–´ì§„ ì¸ë±ìŠ¤ì˜ ì±„íŒ… ë¦¬ìŠ¤íŠ¸ë¥¼ ì–»ëŠ”ë‹¤.
 	CTChatList* GetChatList(INT iIndex) const		{ return m_vLists[iIndex]; }
 
-	/// Ã¤ÆÃ ¿¡µðÅÍ ÄÁÆ®·ÑÀ» ¾ò´Â´Ù.
+	/// ì±„íŒ… ì—ë””í„° ì»¨íŠ¸ë¡¤ì„ ì–»ëŠ”ë‹¤.
 	TEdit* GetChatEditCtrl() const					{ return m_pChatEditCtrl; }
-	/// ±Ó¸» ´ë»ó ÀÔ·Â ÄÁÆ®·Ñ ¾ò´Â´Ù.
+	/// ê·“ë§ ëŒ€ìƒ ìž…ë ¥ ì»¨íŠ¸ë¡¤ ì–»ëŠ”ë‹¤.
 	TEdit* GetWhisperTargetEditCtrl() const					{ return m_pChatWhisperTargetEditCtrl; }
-	/// Ã¤ÆÃ ÀÔ·ÂÁßÀÎÁö ¿©ºÎ¸¦ ¾ò´Â´Ù.
+	/// ì±„íŒ… ìž…ë ¥ì¤‘ì¸ì§€ ì—¬ë¶€ë¥¼ ì–»ëŠ”ë‹¤.
 	BOOL IsChatEditON() const						{ return m_bChatEditON; }
 
-	/// Ã¤ÆÃ ¸®½ºÆ®ÀÇ ±âº» À§Ä¡¸¦ ¾ò´Â´Ù.
+	/// ì±„íŒ… ë¦¬ìŠ¤íŠ¸ì˜ ê¸°ë³¸ ìœ„ì¹˜ë¥¼ ì–»ëŠ”ë‹¤.
 	const CRect& GetDefaultListRect() const			{ return m_rcDefaultList; }
 	const INT GetDefaultListHeight() const { return m_rcDefaultList.Height(); }
-	/// ÁÖ¾îÁø ½½·Ô¿¡ ÇØ´çÇÏ´Â ÅÇÀÇ À§Ä¡¸¦ ¾ò´Â´Ù.
+	/// ì£¼ì–´ì§„ ìŠ¬ë¡¯ì— í•´ë‹¹í•˜ëŠ” íƒ­ì˜ ìœ„ì¹˜ë¥¼ ì–»ëŠ”ë‹¤.
 	const CRect& GetTabSlotRect(INT iSlot) const	{ return m_vTabRect[iSlot]; }
 
-	/// ÇÁ·¹ÀÓÀÌ Àá°å´ÂÁö ¿©ºÎ¸¦ ¾ò´Â´Ù.
+	/// í”„ë ˆìž„ì´ ìž ê²¼ëŠ”ì§€ ì—¬ë¶€ë¥¼ ì–»ëŠ”ë‹¤.
 	BOOL IsLock() const								{ return m_bLock; }
 
-	/// ¸ÞÀÎ °ÔÀÓ ÇÁ·¹ÀÓÀ» ¾ò´Â´Ù.
+	/// ë©”ì¸ ê²Œìž„ í”„ë ˆìž„ì„ ì–»ëŠ”ë‹¤.
 	CTClientGame* GetMainGame() const				{ return m_pMainGame; }
 
 	BYTE GetChatMode() const						{ return m_bChatMode; }
@@ -681,7 +681,7 @@ public:
 
 	CTChatList* GetNotifyList() const				{ return m_pNotifyList; }
 
-	/// °¡Àå ¸¶Áö¸·¿¡ ¹ÞÀº ±Ó¸» »ó´ë¸¦ ¾ò´Â´Ù.
+	/// ê°€ìž¥ ë§ˆì§€ë§‰ì— ë°›ì€ ê·“ë§ ìƒëŒ€ë¥¼ ì–»ëŠ”ë‹¤.
 	const CString& GetLastWhisperTarget() const		{ return m_strLastWhisper; }
 
 	void SetCandiWhisperTarget( CString strCandiWhisper ) { m_strCandiWhisper = strCandiWhisper; }
@@ -693,18 +693,18 @@ public:
 	void ToggleTacticsChatMode( DWORD dwTactics );
 
 #ifdef DEBUG
-	/// ÇöÀç ÇÁ·¹ÀÓÀÇ ¼³Á¤À» Ãâ·ÂÇÑ´Ù.
+	/// í˜„ìž¬ í”„ë ˆìž„ì˜ ì„¤ì •ì„ ì¶œë ¥í•œë‹¤.
 	inline void _LOG(LPCSTR func);
 #endif
 
 protected:
-	/// ÀÌ ÇÁ·¹ÀÓ¿¡¼­ »ç¿ëÇÒ ¼ö ÀÖ´Â À¯ÀÏÇÑ ID ¸¦ ¾ò´Â´Ù.
+	/// ì´ í”„ë ˆìž„ì—ì„œ ì‚¬ìš©í•  ìˆ˜ ìžˆëŠ” ìœ ì¼í•œ ID ë¥¼ ì–»ëŠ”ë‹¤.
 	UINT GetUniqueID(TComponent* pParent);
 
-	/// rcFrom ¸®½ºÆ®¿Í rcTo ¸®½ºÆ®°¡ ½º³À µÅ´ÂÁö °Ë»çÇÏ°í ½º³À µÈ´Ù¸é º¯ÇÒ À§Ä¡¸¦ ¾ò´Â´Ù.
+	/// rcFrom ë¦¬ìŠ¤íŠ¸ì™€ rcTo ë¦¬ìŠ¤íŠ¸ê°€ ìŠ¤ëƒ… ë¼ëŠ”ì§€ ê²€ì‚¬í•˜ê³  ìŠ¤ëƒ… ëœë‹¤ë©´ ë³€í•  ìœ„ì¹˜ë¥¼ ì–»ëŠ”ë‹¤.
 	BOOL SnapList(const CRect& rcFrom, const CRect& rcTo, CRect& outRect);
 
-	// ½º³À °Ë»ç ÇÔ¼öµé..
+	// ìŠ¤ëƒ… ê²€ì‚¬ í•¨ìˆ˜ë“¤..
 	BOOL SnapList_LeftToRight(const CRect& rcFrom, const CRect& rcTo, CRect& outRect);
 	BOOL SnapList_RightToLeft(const CRect& rcFrom, const CRect& rcTo, CRect& outRect);
 	BOOL SnapList_UpToDown(const CRect& rcFrom, const CRect& rcTo, CRect& outRect);

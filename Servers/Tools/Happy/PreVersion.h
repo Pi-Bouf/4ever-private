@@ -1,9 +1,9 @@
-#pragma once
+ï»¿#pragma once
 #include "XListCtrl.h"
 #include "afxwin.h"
 
 
-// CPreVersion ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CPreVersion ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 enum {	STATE_NONE = 0,	
 		STATE_NEW,		
 		STATE_MOVE,		
@@ -16,10 +16,10 @@ class CPreVersion : public CDialog
 	DECLARE_DYNAMIC(CPreVersion)
 
 public:
-	CPreVersion(CWnd* pParent = NULL);   // Ç¥ÁØ »ı¼ºÀÚÀÔ´Ï´Ù.
+	CPreVersion(CWnd* pParent = NULL);   // í‘œì¤€ ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CPreVersion();
 
-// ´ëÈ­ »óÀÚ µ¥ÀÌÅÍÀÔ´Ï´Ù.
+// ëŒ€í™” ìƒì ë°ì´í„°ì…ë‹ˆë‹¤.
 	enum { IDD = IDD_VERSION };
 
 protected:	
@@ -50,7 +50,7 @@ public:
 
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 public:

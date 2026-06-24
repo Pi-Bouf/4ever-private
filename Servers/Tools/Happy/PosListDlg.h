@@ -1,33 +1,33 @@
-#pragma once
+ï»¿#pragma once
 #include "afxcmn.h"
 
 
-// CPosListDlg ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CPosListDlg ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 class CPosListDlg : public CDialog
 {
 	DECLARE_DYNAMIC(CPosListDlg)
 
 public:
-	CPosListDlg(CWnd* pParent = NULL);   // Ç¥ÁØ »ı¼ºÀÚÀÔ´Ï´Ù.
+	CPosListDlg(CWnd* pParent = NULL);   // í‘œì¤€ ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CPosListDlg();
 
-// ´ëÈ­ »óÀÚ µ¥ÀÌÅÍÀÔ´Ï´Ù.
+// ëŒ€í™” ìƒì ë°ì´í„°ì…ë‹ˆë‹¤.
 	enum { IDD = IDD_POSLISTDLG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 public:
 	CListCtrl m_listctrPos;
 	DWORD m_dwSelectIndex;
 
-	void Init(); // ¸®½ºÆ® ¹Ú½º ÃÊ±â ¼¼ÆÃ
+	void Init(); // ë¦¬ìŠ¤íŠ¸ ë°•ìŠ¤ ì´ˆê¸° ì„¸íŒ…
 	void LoadPosListFromData();
 	void ItemDelete();
 	bool ItemSelect();
-	void ClearListItem(); // ¸®½ºÆ® ¾ÆÀÌÅÛ ¸ğµÎ »èÁ¦
+	void ClearListItem(); // ë¦¬ìŠ¤íŠ¸ ì•„ì´í…œ ëª¨ë‘ ì‚­ì œ
 	void InsertItemToListCtr(int _iRow, LPUSERPOS _USERPOS);
 
 	BYTE FindListData(LPUSERPOS pPos);

@@ -1,4 +1,4 @@
-// TClient.h : main header file for the TClient application
+ï»¿// TClient.h : main header file for the TClient application
 //
 #pragma once
 
@@ -52,8 +52,8 @@ public:
 #endif
 
 #ifdef USE_GG
-	CNPGameLib*		m_pNpgl;			// °ÔÀÓ°¡µå.
-	CString			m_strNPMSG;			// °ÔÀÓ°¡µå ¿¡·¯¸Ş¼¼Áö.
+	CNPGameLib*		m_pNpgl;			// ê²Œì„ê°€ë“œ.
+	CString			m_strNPMSG;			// ê²Œì„ê°€ë“œ ì—ëŸ¬ë©”ì„¸ì§€.
 #endif
 
 	CPacketSpyDlg* m_pPacketSpy;

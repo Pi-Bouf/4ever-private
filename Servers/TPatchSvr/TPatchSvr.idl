@@ -1,8 +1,8 @@
-// TPatchSvr.idl : TPatchSvrÀÇ IDL ¼Ò½ºÀÔ´Ï´Ù.
+ï»¿// TPatchSvr.idl : TPatchSvrì˜ IDL ì†ŒìŠ¤ì…ë‹ˆë‹¤.
 //
 
-// ÀÌ ÆÄÀÏÀº MIDL µµ±¸¿¡ ÀÇÇØ Ã³¸®µÇ¾î
-// Çü½Ä ¶óÀÌºê·¯¸®(TPatchSvr.tlb) ¹× ¸¶¼£¸µ ÄÚµå°¡ »ı¼ºµË´Ï´Ù.
+// ì´ íŒŒì¼ì€ MIDL ë„êµ¬ì— ì˜í•´ ì²˜ë¦¬ë˜ì–´
+// í˜•ì‹ ë¼ì´ë¸ŒëŸ¬ë¦¬(TPatchSvr.tlb) ë° ë§ˆìƒ¬ë§ ì½”ë“œê°€ ìƒì„±ë©ë‹ˆë‹¤.
 
 import "oaidl.idl";
 import "ocidl.idl";
@@ -10,7 +10,7 @@ import "ocidl.idl";
 [
 	uuid(3721A4C9-24ED-4880-BF0A-D602E9351772),
 	version(1.0),
-	helpstring("TPatchSvr 1.0 Çü½Ä ¶óÀÌºê·¯¸®")
+	helpstring("TPatchSvr 1.0 í˜•ì‹ ë¼ì´ë¸ŒëŸ¬ë¦¬")
 ]
 library TPatchSvrLib
 {

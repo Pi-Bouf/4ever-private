@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "TSiegeManager.h"
 #include "TClientGame.h"
 
@@ -104,7 +104,7 @@ void	CTSiegeManager::ResetVisibleOBJ(DWORD dwTick)
 	}
 }
 
-/*! ¼º¹° or Å¸¿ö¿¡ ´ëÇÑ ÀÌº¥Æ®Ã³¸®.. */
+/*! ì„±ë¬¼ or íƒ€ì›Œì— ëŒ€í•œ ì´ë²¤íŠ¸ì²˜ë¦¬.. */
 void	CTSiegeManager::OnRClick()
 {
 	CTClientGame* pGame = CTClientGame::GetInstance();
@@ -143,7 +143,7 @@ void	CTSiegeManager::CalcTick( CD3DDevice* pDevice, DWORD dwTick )
 	}
 }
 
-/*! ¸ğµÎÃÊ±âÈ­.. */
+/*! ëª¨ë‘ì´ˆê¸°í™”.. */
 void	CTSiegeManager::Release()
 {
 	MAPSIEGEGODTOWER::iterator itrTw, endTw;
@@ -173,7 +173,7 @@ void	CTSiegeManager::Release()
 	m_mapBalls.clear();
 }
 
-/*! ÀüÅõÁ¾·á.. */
+/*! ì „íˆ¬ì¢…ë£Œ.. */
 void	CTSiegeManager::Endwar(
 							   BYTE bType,
 							   DWORD dwWinGuildID,
@@ -216,7 +216,7 @@ void	CTSiegeManager::Endwar(
 //////////////////////////////////////////////////////////////////////////
 //	RECEIVE FUNCTION IMPLEMENTATION.
 
-/*! ¼º¹°ÀÌ ¶¥¿¡¶³¾îÁö°Å³ª »õ·Î »ı¼ºµÇ´Â °æ¿ì.. */
+/*! ì„±ë¬¼ì´ ë•…ì—ë–¨ì–´ì§€ê±°ë‚˜ ìƒˆë¡œ ìƒì„±ë˜ëŠ” ê²½ìš°.. */
 void	CTSiegeManager::RecvAddGodBall( WORD wBallID, BYTE bCamp, BOOL bInGround, D3DXVECTOR3& vPosition )
 {
 	CTClientGame* pGame = CTClientGame::GetInstance();
@@ -234,7 +234,7 @@ void	CTSiegeManager::RecvAddGodBall( WORD wBallID, BYTE bCamp, BOOL bInGround, D
 	pGodBall->AddGodBall( bCamp, vPosition, bInGround );
 }
 
-/*! ÇØ´ç Ä³¸¯ÅÍ¿¡¼­ ¼º¹°À» Á¦°Å.. */
+/*! í•´ë‹¹ ìºë¦­í„°ì—ì„œ ì„±ë¬¼ì„ ì œê±°.. */
 void	CTSiegeManager::RecvRemoveGodBall( DWORD dwCharID )
 {
 	CTClientGame* pGame = CTClientGame::GetInstance();
@@ -246,7 +246,7 @@ void	CTSiegeManager::RecvRemoveGodBall( DWORD dwCharID )
 	}
 }
 
-/*! ÇØ´ç Ä³¸¯ÅÍ°¡ ¼º¹°À» ¼ÒÀ¯.. */
+/*! í•´ë‹¹ ìºë¦­í„°ê°€ ì„±ë¬¼ì„ ì†Œìœ .. */
 void	CTSiegeManager::RecvTakeGodBall( DWORD dwCharID, WORD wBallID )
 {
 	CTClientGame* pGame = CTClientGame::GetInstance();
@@ -256,7 +256,7 @@ void	CTSiegeManager::RecvTakeGodBall( DWORD dwCharID, WORD wBallID )
 	{
 		pChar->SetGodBallID( wBallID );
 
-		// Àû±ºÀÌ Hide »óÅÂ¿¡¼­ ballÀ» ÀâÀ¸¸é Ã³À½¿¡ ÀÌÆåÆ®¸¦ º¸ÀÌÁö¾ÊÀ½..
+		// ì êµ°ì´ Hide ìƒíƒœì—ì„œ ballì„ ì¡ìœ¼ë©´ ì²˜ìŒì— ì´í™íŠ¸ë¥¼ ë³´ì´ì§€ì•ŠìŒ..
 		BOOL bShow = !pChar->m_bHide || pMainChar->IsAlliance( pChar );
 
 		pChar->PlayGodBallSFX( bShow );
@@ -269,7 +269,7 @@ void	CTSiegeManager::RecvTakeGodBall( DWORD dwCharID, WORD wBallID )
 	}
 }
 
-/*! ¼º¹°ÀÌ ¸Ê¿¡¼­ Á¦°ÅµÊ.. */
+/*! ì„±ë¬¼ì´ ë§µì—ì„œ ì œê±°ë¨.. */
 void	CTSiegeManager::RecvDelGodBall( WORD wBallID )
 {
 	CTGodBall* pGodBall = FindGodBall( wBallID );
@@ -279,7 +279,7 @@ void	CTSiegeManager::RecvDelGodBall( WORD wBallID )
 	}
 }
 
-/*! Å¸¿ö»ı¼º.. */
+/*! íƒ€ì›Œìƒì„±.. */
 void	CTSiegeManager::RecvAddGodTower( WORD wTowerID, BYTE bCamp, D3DXVECTOR3& vPosition )
 {
 	CTClientGame* pGame = CTClientGame::GetInstance();
@@ -301,7 +301,7 @@ void	CTSiegeManager::RecvAddGodTower( WORD wTowerID, BYTE bCamp, D3DXVECTOR3& vP
 	pGodTower->AddGodTower( bCamp, vPosition );
 }
 
-/*! Å¸¿öÁ¦°Å.. */
+/*! íƒ€ì›Œì œê±°.. */
 void	CTSiegeManager::RecvDelGodTower( WORD wTowerID )
 {
 	CTGodTower* pGodTower = FindGodTower( wTowerID );
@@ -311,7 +311,7 @@ void	CTSiegeManager::RecvDelGodTower( WORD wTowerID )
 	}
 }
 
-/*! Ä³¸¯ÅÍ°¡ ¼º¹°À» Å¸¿ö¿¡ ²È¾ÒÀ½.. */
+/*! ìºë¦­í„°ê°€ ì„±ë¬¼ì„ íƒ€ì›Œì— ê½‚ì•˜ìŒ.. */
 void	CTSiegeManager::RecvMountGodBall( WORD wTowerID, WORD wBallID, BYTE bCamp, DWORD dwCharID )
 {
 	CTGodTower* pGodTower = FindGodTower( wTowerID );
@@ -322,7 +322,7 @@ void	CTSiegeManager::RecvMountGodBall( WORD wTowerID, WORD wBallID, BYTE bCamp, 
 	}
 }
 
-/*! Àû±¹ Ä³¸¯ÅÍ°¡ ÇØ´ç Å¸¿ö¿¡¼­ ¼º¹°À» Á¦°Å.. */
+/*! ì êµ­ ìºë¦­í„°ê°€ í•´ë‹¹ íƒ€ì›Œì—ì„œ ì„±ë¬¼ì„ ì œê±°.. */
 void	CTSiegeManager::RecvDemountGodBall( WORD wTowerID )
 {
 	CTGodTower* pGodTower = FindGodTower( wTowerID );

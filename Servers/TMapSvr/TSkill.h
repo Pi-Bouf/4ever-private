@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 class CTSkill
 {
@@ -22,7 +22,7 @@ public:
 	BYTE m_bWasUsed;
 
 	WORD m_wSilencedSkill;
-	DWORD m_dwChargeTick;	//½ºÅ³»ç¿ë½Ã ½ÃÀü½ÃÀÛ tick, ¹öÇÁ½Ã ¹öÇÁ °É¸° tick
+	DWORD m_dwChargeTick;	//ìŠ¤í‚¬ì‚¬ìš©ì‹œ ì‹œì „ì‹œìž‘ tick, ë²„í”„ì‹œ ë²„í”„ ê±¸ë¦° tick
 	DWORD m_dwDelayTick;
 	DWORD m_dwUseTick;
 	DWORD m_dwStartTick;

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "TClientGame.h"
 #include "TFameRank.h"
 
@@ -96,7 +96,7 @@ void CTClientChar::ReleaseData()
 
 CString CTClientChar::GetName()
 {
-	//!! ÀÓ½Ã
+	//!! ì„ì‹œ
 //	if( m_pSiegeBall )
 //		return m_strNAME + " 0";
 //	else
@@ -652,26 +652,26 @@ void CTClientChar::DoResetObj(
 BOOL CTClientChar::CanTalkWithNPC(
 					CTClientNpc* pTARGET )
 {
-	// º¯Àå¿¡ °ü°è ¾øÀÌ »ó´ë¹æÀÌ Áß¸³Áö¿ªÀÌ¸é ¹«Á¶°Ç ´ëÈ­ °¡´É
+	// ë³€ì¥ì— ê´€ê³„ ì—†ì´ ìƒëŒ€ë°©ì´ ì¤‘ë¦½ì§€ì—­ì´ë©´ ë¬´ì¡°ê±´ ëŒ€í™” ê°€ëŠ¥
 	if( pTARGET->m_bContryID == TCONTRY_B ||
 		pTARGET->m_bContryID == TCONTRY_N )
 		return TRUE;
 
-	if( IsDisguise() ) // º¯Àå Áß
+	if( IsDisguise() ) // ë³€ì¥ ì¤‘
 	{
-		if( pTARGET->m_bOriginalContryID == TCONTRY_N ) // ¿ø·¡ Áß¸³Áö¿ªNPC ÀÎ °æ¿ì
+		if( pTARGET->m_bOriginalContryID == TCONTRY_N ) // ì›ë˜ ì¤‘ë¦½ì§€ì—­NPC ì¸ ê²½ìš°
 		{
 			if( m_bDisguise == pTARGET->m_bContryID )
 				return TRUE;
 		}
-		else // ¿ø·¡ Æ¯Á¤±¹°¡¼Ò¼ÓNPC ÀÎ °æ¿ì
+		else // ì›ë˜ íŠ¹ì •êµ­ê°€ì†Œì†NPC ì¸ ê²½ìš°
 		{
 			if( m_bDisguise == pTARGET->m_bContryID &&
 				m_bContryID == pTARGET->m_bOriginalContryID )
 				return TRUE;
 		}
 	}
-	else // º¯Àå ¾Æ´Ñ Áß
+	else // ë³€ì¥ ì•„ë‹Œ ì¤‘
 	{
 		if( m_bContryID == pTARGET->m_bContryID)
 			return TRUE;
@@ -689,7 +689,7 @@ void CTClientChar::ResetEQUIP(
 
 
 ///////////////////////////////////////////////////////////
-//	¼º¹°ÀïÅ»Àü Function Implementation.
+//	ì„±ë¬¼ìŸíƒˆì „ Function Implementation.
 
 void	CTClientChar::PlayGodBallSFX( BOOL bShow )
 {
@@ -792,7 +792,7 @@ void	CTClientChar::SetCamp( BYTE bCamp )
 	m_bCamp = bCamp;
 }
 
-//	End of ¼º¹°ÀïÅ»Àü Function.
+//	End of ì„±ë¬¼ìŸíƒˆì „ Function.
 ///////////////////////////////////////////////////////////
 void CTClientChar::ApplyMantleTexture()
 {

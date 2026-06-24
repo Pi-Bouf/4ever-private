@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+ï»¿#include "Stdafx.h"
 #include "TUpItemSellDlg.h"
 #include "TClientGame.h"
 
@@ -12,7 +12,7 @@ CTUpItemSellDlg::CTUpItemSellDlg(TComponent* pParent, FRAMEDESC_SHAREDPTR pDesc)
 	m_pTXT = FindKid( ID_CTRLINST_TXT1 );
 	m_strSecurityCode = "0000";
 
-	// ÀÏº»ÀÌ¸é ÀÎÁõ¹øÈ£·Î ¹Ù²Û´Ù.
+	// ì¼ë³¸ì´ë©´ ì¸ì¦ë²ˆí˜¸ë¡œ ë°”ê¾¼ë‹¤.
 	if ( CTNationOption::JAPAN )
 		m_pTXT->m_strText = CTChart::LoadString( TSTR_WARN_UPITEM_SECURITYCODE );
 }

@@ -1,4 +1,4 @@
-// SSHandler.cpp : S/S Protocol Handler ÇÔ¼öÀÇ ±¸ÇöÀÔ´Ï´Ù.
+ï»¿// SSHandler.cpp : S/S Protocol Handler í•¨ìˆ˜ì˜ êµ¬í˜„ì…ë‹ˆë‹¤.
 
 #include "stdafx.h"
 #include "TLoginSvr.h"

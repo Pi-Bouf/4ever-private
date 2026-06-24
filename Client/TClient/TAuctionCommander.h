@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 
 //! Auction Commander Class.
@@ -16,80 +16,80 @@ private :	// MEMBER DATA.
 
 public :	// REQUEST FUNCTION.
 
-	/*! °æ¸Å µî·Ï¼ø¼­·Î ¸®½ºÆ®¿äÃ». */
+	/*! ê²½ë§¤ ë“±ë¡ìˆœì„œë¡œ ë¦¬ìŠ¤íŠ¸ìš”ì²­. */
 	void						RequestDefaultList();
-	/*! °Ë»öÅÇÀÇ ¸®½ºÆ®¿äÃ». */
+	/*! ê²€ìƒ‰íƒ­ì˜ ë¦¬ìŠ¤íŠ¸ìš”ì²­. */
 	void						RequestSearchList( LPTAUCTIONFINDINFO pInfo );
-	/*! µî·ÏÅÇÀÇ ¸®½ºÆ®¿äÃ». */
+	/*! ë“±ë¡íƒ­ì˜ ë¦¬ìŠ¤íŠ¸ìš”ì²­. */
 	void						RequestRegistList( LPTAUCTIONFINDINFO pInfo );
-	/*! ÀÔÂû¸ñ·ÏÅÇÀÇ ¸®½ºÆ®¿äÃ». */
+	/*! ì…ì°°ëª©ë¡íƒ­ì˜ ë¦¬ìŠ¤íŠ¸ìš”ì²­. */
 	void						RequestMyBidList( LPTAUCTIONFINDINFO pInfo );
-	/*! °ü½É¹°Ç°ÅÇÀÇ ¸®½ºÆ®¿äÃ». */
+	/*! ê´€ì‹¬ë¬¼í’ˆíƒ­ì˜ ë¦¬ìŠ¤íŠ¸ìš”ì²­. */
 	void						RequestBasketList( LPTAUCTIONFINDINFO pInfo );
 	/*! Update Current Page */
 	void						RequestUpdatePage();
-	/*! ¾ÆÀÌÅÛµî·Ï ¿äÃ». */
+	/*! ì•„ì´í…œë“±ë¡ ìš”ì²­. */
 	void						RequestItemRegist();
-	/*! ¾ÆÀÌÅÛµî·ÏÃë¼Ò ¿äÃ». */
+	/*! ì•„ì´í…œë“±ë¡ì·¨ì†Œ ìš”ì²­. */
 	void						RequestItemRegCancel();
-	/*! ÀÔÂû¿äÃ». */
+	/*! ì…ì°°ìš”ì²­. */
 	void						RequestBid();
-	/*! Áï½Ã±¸¸Å ¿äÃ». */
+	/*! ì¦‰ì‹œêµ¬ë§¤ ìš”ì²­. */
 	void						RequestBuy();
-	/*! °ü½É¹°Ç° µî·Ï ¿äÃ» */
+	/*! ê´€ì‹¬ë¬¼í’ˆ ë“±ë¡ ìš”ì²­ */
 	void						RequestInsertBasket();
-	/*! °ü½É¹°Ç° µî·ÏÇØÁ¦ ¿äÃ» */
+	/*! ê´€ì‹¬ë¬¼í’ˆ ë“±ë¡í•´ì œ ìš”ì²­ */
 	void						RequestEraseBasket();
 
 public :	// RECEIVE FUNCTION.
 
-	/*! ¿äÃ»ÇÑ ¾ÆÀÌÅÛ ¸®½ºÆ®¸¦ Ã³¸®ÇÑ´Ù. */
+	/*! ìš”ì²­í•œ ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ë¥¼ ì²˜ë¦¬í•œë‹¤. */
 	BOOL						RecvFindList_Result( BYTE bResult );
 	void						RecvFindList();
-	/*! ÀÔÂû°á°ú ¸Ş¼¼ÁöÃâ·Â */
+	/*! ì…ì°°ê²°ê³¼ ë©”ì„¸ì§€ì¶œë ¥ */
 	BOOL						RecvBid_Result( BYTE bResult );
-	/*! Áï½Ã±¸¸Å°á°ú ¸Ş¼¼ÁöÃâ·Â */
+	/*! ì¦‰ì‹œêµ¬ë§¤ê²°ê³¼ ë©”ì„¸ì§€ì¶œë ¥ */
 	BOOL						RecvBuy_Result( BYTE bResult );
-	/*! °æ¸Å¾ÆÀÌÅÛ µî·Ï ¸Ş¼¼ÁöÃâ·Â */
+	/*! ê²½ë§¤ì•„ì´í…œ ë“±ë¡ ë©”ì„¸ì§€ì¶œë ¥ */
 	BOOL						RecvReg_Result( BYTE bResult );
-	/*! °æ¸Å¾ÆÀÌÅÛ µî·ÏÃë¼Ò ¸Ş¼¼ÁöÃâ·Â */
+	/*! ê²½ë§¤ì•„ì´í…œ ë“±ë¡ì·¨ì†Œ ë©”ì„¸ì§€ì¶œë ¥ */
 	BOOL						RecvRegCancel_Result( BYTE bResult );
 
 public :	// MEMBER FUNCTION.
 
-	/*! MainFrame( ÀÔÂû¹öÆ°Å¬¸¯ Ã³¸® ) */
+	/*! MainFrame( ì…ì°°ë²„íŠ¼í´ë¦­ ì²˜ë¦¬ ) */
 	void						OnClicked_BidButton();
-	/*! MainFrame( Áï½Ã±¸¸Å¹öÆ°Å¬¸¯ Ã³¸® ) */
+	/*! MainFrame( ì¦‰ì‹œêµ¬ë§¤ë²„íŠ¼í´ë¦­ ì²˜ë¦¬ ) */
 	void						OnClicked_BuyButton();
-	/*! MainFrame( °ü½É¹°Ç°¹öÆ°Å¬¸¯ Ã³¸® ) */
+	/*! MainFrame( ê´€ì‹¬ë¬¼í’ˆë²„íŠ¼í´ë¦­ ì²˜ë¦¬ ) */
 	void						OnClicked_InsertBasketButton();
-	/*! BasketFrame( °ü½Å¹°Ç° ÇØÁ¦ ¹öÆ°Å¬¸¯ Ã³¸® ) */
+	/*! BasketFrame( ê´€ì‹ ë¬¼í’ˆ í•´ì œ ë²„íŠ¼í´ë¦­ ì²˜ë¦¬ ) */
 	void						OnClicked_DeleteBasketButton();
-	/*! SearchFrame( °Ë»ö¹öÆ°Å¬¸¯ Ã³¸® ) */
+	/*! SearchFrame( ê²€ìƒ‰ë²„íŠ¼í´ë¦­ ì²˜ë¦¬ ) */
 	void						OnClicked_SearchButton();
-	/*! SearchFrame( °Ë»öÁ¤º¸ ÃÊ±âÈ­ Ã³¸® ) */
+	/*! SearchFrame( ê²€ìƒ‰ì •ë³´ ì´ˆê¸°í™” ì²˜ë¦¬ ) */
 	void						OnClicked_SearchResetButton();
-	/*! RegistFrame( µî·Ï¹öÆ°Å¬¸¯ Ã³¸® ) */
+	/*! RegistFrame( ë“±ë¡ë²„íŠ¼í´ë¦­ ì²˜ë¦¬ ) */
 	void						OnClicked_RegistButton();
-	/*! RegistFrame( ¾ÆÀÌÅÛ µî·ÏÁ¤º¸ ÃÊ±âÈ­ ) */
+	/*! RegistFrame( ì•„ì´í…œ ë“±ë¡ì •ë³´ ì´ˆê¸°í™” ) */
 	void						OnClicked_RegistResetButton();
-	/*! RegistFrame( µî·ÏÃë¼Ò¹öÆ°Å¬¸¯ Ã³¸® ) */
+	/*! RegistFrame( ë“±ë¡ì·¨ì†Œë²„íŠ¼í´ë¦­ ì²˜ë¦¬ ) */
 	void						OnClicked_RegistCancelButton();
-	/*! Page ÃÊ±âÈ­ */
+	/*! Page ì´ˆê¸°í™” */
 	void						ClearPageNumber();
-	/*! 1¹öÆ° È®ÀÎ ¸Ş¼¼ÁöÃ¢ */
+	/*! 1ë²„íŠ¼ í™•ì¸ ë©”ì„¸ì§€ì°½ */
 	void						SimpleMsgBox( CString strMSG );
-	/* Á¤·Ä¹öÆ° Å¬¸¯Ã³¸®. */
+	/* ì •ë ¬ë²„íŠ¼ í´ë¦­ì²˜ë¦¬. */
 	void						OnClicked_AlignKind( BYTE bColumn, BYTE bASC, BYTE bDESC );
 
 public :	// INLINE FUNCTION.
 
-	/*!	ÀÎ½ºÅÏ½º¸¦ ¾ò¾î¿Â´Ù. */
+	/*!	ì¸ìŠ¤í„´ìŠ¤ë¥¼ ì–»ì–´ì˜¨ë‹¤. */
 	static CTAuctionCommander*	GetInstance();
-	/*! SessionÀ» ¾ò¾î¿Â´Ù. */
+	/*! Sessionì„ ì–»ì–´ì˜¨ë‹¤. */
 	CTClientSession*			GetSession();
-	/*! NpcID¸¦ °¡Á®¿È. */
+	/*! NpcIDë¥¼ ê°€ì ¸ì˜´. */
 	WORD						GetNpcID();
-	/*! NpcID¸¦ ¼ÂÆÃ. */
+	/*! NpcIDë¥¼ ì…‹íŒ…. */
 	void						SetNpcID( WORD wNpcID );
 };

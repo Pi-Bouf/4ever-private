@@ -1,12 +1,12 @@
-#pragma once
+ï»¿#pragma once
 
 
 //! SiegeManager Class.
 /*!
-*	@brief	¼º¹°ÀïÅ»Àü °ü¸®ÀÚ Å¬·¡½º..
+*	@brief	ì„±ë¬¼ìŸíƒˆì „ ê´€ë¦¬ìž í´ëž˜ìŠ¤..
 *
 *	@date	2009/08/21
-*	@author	±Ç ¼ºÇõ
+*	@author	ê¶Œ ì„±í˜
 *
 */
 class CTSiegeManager
@@ -31,15 +31,15 @@ public :	// MEMBER FUNCTION.
 	CTGodTower*				FindGodTower( WORD wGodTowerID );
 	/*! Visible */
 	void					ResetVisibleOBJ( DWORD dwTick );
-	/*! ¼º¹° or Å¸¿ö¿¡ ´ëÇÑ ÀÌº¥Æ®Ã³¸®.. */
+	/*! ì„±ë¬¼ or íƒ€ì›Œì— ëŒ€í•œ ì´ë²¤íŠ¸ì²˜ë¦¬.. */
 	void					OnRClick();
 	/*! */
 	void					ChargeAffterProcess( CTGodTower* pGodTower );
 	/*! */
 	void					CalcTick( CD3DDevice* pDevice, DWORD dwTick );
-	/*! ¸ðµÎÃÊ±âÈ­.. */
+	/*! ëª¨ë‘ì´ˆê¸°í™”.. */
 	void					Release();
-	/*! ÀüÅõÁ¾·á.. */
+	/*! ì „íˆ¬ì¢…ë£Œ.. */
 	void					Endwar(
 		BYTE bType,
 		DWORD dwWinGuildID,
@@ -56,21 +56,21 @@ public :	// MEMBER FUNCTION.
 
 public :	// RECEIVE FUNCTION.
 
-	/*! ¼º¹°ÀÌ ¶¥¿¡¶³¾îÁö°Å³ª »õ·Î »ý¼ºµÇ´Â °æ¿ì.. */
+	/*! ì„±ë¬¼ì´ ë•…ì—ë–¨ì–´ì§€ê±°ë‚˜ ìƒˆë¡œ ìƒì„±ë˜ëŠ” ê²½ìš°.. */
 	void					RecvAddGodBall( WORD wBallID, BYTE bCamp, BOOL bInGround, D3DXVECTOR3& vPosition );
-	/*! ÇØ´ç Ä³¸¯ÅÍ¿¡¼­ ¼º¹°À» Á¦°Å.. */
+	/*! í•´ë‹¹ ìºë¦­í„°ì—ì„œ ì„±ë¬¼ì„ ì œê±°.. */
 	void					RecvRemoveGodBall( DWORD dwCharID );
-	/*! ÇØ´ç Ä³¸¯ÅÍ°¡ ¼º¹°À» ¼ÒÀ¯.. */
+	/*! í•´ë‹¹ ìºë¦­í„°ê°€ ì„±ë¬¼ì„ ì†Œìœ .. */
 	void					RecvTakeGodBall( DWORD dwCharID, WORD wBallID );
-	/*! ¼º¹°ÀÌ ¸Ê¿¡¼­ Á¦°ÅµÊ.. */
+	/*! ì„±ë¬¼ì´ ë§µì—ì„œ ì œê±°ë¨.. */
 	void					RecvDelGodBall( WORD wBallID );
-	/*! Å¸¿ö»ý¼º.. */
+	/*! íƒ€ì›Œìƒì„±.. */
 	void					RecvAddGodTower( WORD wTowerID, BYTE bCamp, D3DXVECTOR3& vPosition );
-	/*! Å¸¿öÁ¦°Å.. */
+	/*! íƒ€ì›Œì œê±°.. */
 	void					RecvDelGodTower( WORD wTowerID );
-	/*! Ä³¸¯ÅÍ°¡ ¼º¹°À» Å¸¿ö¿¡ ²È¾ÒÀ½.. */
+	/*! ìºë¦­í„°ê°€ ì„±ë¬¼ì„ íƒ€ì›Œì— ê½‚ì•˜ìŒ.. */
 	void					RecvMountGodBall( WORD wTowerID, WORD wBallID, BYTE bCamp, DWORD dwCharID );
-	/*! Àû±¹ Ä³¸¯ÅÍ°¡ ÇØ´ç Å¸¿ö¿¡¼­ ¼º¹°À» Á¦°Å.. */
+	/*! ì êµ­ ìºë¦­í„°ê°€ í•´ë‹¹ íƒ€ì›Œì—ì„œ ì„±ë¬¼ì„ ì œê±°.. */
 	void					RecvDemountGodBall( WORD wTowerID );
 
 };

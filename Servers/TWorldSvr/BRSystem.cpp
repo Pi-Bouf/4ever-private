@@ -1,7 +1,7 @@
-/* Copyright (C) Games - All Rights Reserved
+﻿/* Copyright (C) Games - All Rights Reserved
  * Unauthorized copying of this file, via any medium is strictly prohibited
  * Proprietary and confidential
- * Written by Pavel Nov�k <tvfromzoe@seznam.cz>, September 2017
+ * Written by Pavel Novák <tvfromzoe@seznam.cz>, September 2017
  */
 
 #include "stdafx.h"

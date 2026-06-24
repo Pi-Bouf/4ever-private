@@ -1,32 +1,32 @@
-#pragma once
+ï»¿#pragma once
 
-// CPatchBar ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CPatchBar ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 class CPatchBar : public CDialogBar
 {
 	DECLARE_DYNAMIC(CPatchBar)
 
 public:
-	CPatchBar(CWnd* pParent = NULL);   // Ç¥ÁØ »ı¼ºÀÚÀÔ´Ï´Ù.
+	CPatchBar(CWnd* pParent = NULL);   // í‘œì¤€ ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CPatchBar();
 
 	void GetFtp(CString *strAddr, CString *strUser, CString *strPasswd, WORD *wPort);
 	void SetFtp(CString *strAddr, CString *strUser, DWORD *wPort);
-// ´ëÈ­ »óÀÚ µ¥ÀÌÅÍÀÔ´Ï´Ù.
+// ëŒ€í™” ìƒì ë°ì´í„°ì…ë‹ˆë‹¤.
 	enum { IDD = IDD_DIALOG_PATCHBAR };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 
 public:
-	afx_msg void OnUpdateCompareShow(CCmdUI *pCmdUI);		// 06/02/01 ¹Ú»ó¿¬ 
-	afx_msg void OnUpdatePatchUpdateShow(CCmdUI *pCmdUI);	// 06/02/01 ¹Ú»ó¿¬ 
+	afx_msg void OnUpdateCompareShow(CCmdUI *pCmdUI);		// 06/02/01 ë°•ìƒì—° 
+	afx_msg void OnUpdatePatchUpdateShow(CCmdUI *pCmdUI);	// 06/02/01 ë°•ìƒì—° 
 
 public:
-	BYTE	m_bEnableCompare;								// Compare ¹öÆ° È°¼ºÈ­ »óÅÂ
-	BYTE	m_bEnablePatchUpdate;							// PatchUpdate ¹öÆ° È°¼ºÈ­ »óÅÂ	
+	BYTE	m_bEnableCompare;								// Compare ë²„íŠ¼ í™œì„±í™” ìƒíƒœ
+	BYTE	m_bEnablePatchUpdate;							// PatchUpdate ë²„íŠ¼ í™œì„±í™” ìƒíƒœ	
 
 	DWORD m_dwIP;
 	DWORD m_dwPort;

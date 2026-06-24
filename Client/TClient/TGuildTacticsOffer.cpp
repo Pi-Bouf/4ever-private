@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 #include "TGuildTacticsOffer.h"
 #include "TClientGame.h"
 
@@ -99,7 +99,7 @@ m_nMode(0)
 	m_pBtnCancel = (TButton*) FindKid( ID_CTRLINST_BTN_CANCEL );
 	m_dwArticleID = 0;
 
-	// ÅÇ ¼ø¼­
+	// íƒ­ ìˆœì„œ
 	m_bTabAutoNext = FALSE;
 	m_pEditArticleTitle->m_pNextTab = m_pEditRune;
 	m_pEditRune->m_pNextTab = m_pEditLuna;

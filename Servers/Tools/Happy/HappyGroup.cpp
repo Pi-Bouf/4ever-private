@@ -1,4 +1,4 @@
-// HappyGroup.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// HappyGroup.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -39,7 +39,7 @@ BEGIN_MESSAGE_MAP(CHappyGroup, CFormView)
 END_MESSAGE_MAP()
 
 
-// CHappyGroup Áø´ÜÀÔ´Ï´Ù.
+// CHappyGroup ì§„ë‹¨ì…ë‹ˆë‹¤.
 
 #ifdef _DEBUG
 void CHappyGroup::AssertValid() const
@@ -54,13 +54,13 @@ void CHappyGroup::Dump(CDumpContext& dc) const
 #endif //_DEBUG
 
 
-// CHappyGroup ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CHappyGroup ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 void CHappyGroup::OnSize(UINT nType, int cx, int cy)
 {
 	CFormView::OnSize(nType, cx, cy);
 
-	// TODO: ¿©±â¿¡ ¸Ş½ÃÁö Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ë©”ì‹œì§€ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	if (GetSafeHwnd())
 	{
 		CRect rect;
@@ -78,12 +78,12 @@ int CHappyGroup::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CFormView::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
-	// TODO:  ¿©±â¿¡ Æ¯¼öÈ­µÈ ÀÛ¼º ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO:  ì—¬ê¸°ì— íŠ¹ìˆ˜í™”ëœ ì‘ì„± ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	return 0;
 }
 
 void CHappyGroup::OnTcnSelchangeTabGroup(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	*pResult = 0;
 }

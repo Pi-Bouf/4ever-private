@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "TClientGame.h"
 #include "TList.h"
 
@@ -158,10 +158,10 @@ void	CTAuctionRegist::OnKeyDown( UINT nChar, int nRepCnt, UINT nFlags )
 		!CanProcess() )
 		return ;
 
-	//! °æ¸Å½ÃÀÛ°¡¸¦ Áï½Ã±¸¸Å°¡ º¸´Ù ³ô°Ô ¼³Á¤ÇÏ¸é
-	//! UpdateByNumberÇÔ¼ö¿¡¼­ Áï½Ã±¸¸Å°¡¸¦ ÀÔ·ÂÇÏ´Â °æ¸Å½ÃÀÛ°¡¿Í ¶È°°ÀÌ ¼¼ÆÃµÈ´Ù.
-	//! ¹Ý´ë·Î Áï½Ã±¸¸Å°¡¸¦ º¸´Ù ÀÛ°Ô ÀÔ·ÂÇÏ°Ô µÇ¸é [°æ¸Å½ÃÀÛ°¡ > Áï½Ã±¸¸Å°¡] °¡ µÉ ¼ö ÀÖ±â¶§¹®¿¡,
-	//! ÀÌ¸¦ ¹æÁöÇÏ±â À§ÇØ Delete Å°¸¦ ´­·¶À»¶§ UpdateByNumber¸¦ È£ÃâÇØÁØ´Ù.
+	//! ê²½ë§¤ì‹œìž‘ê°€ë¥¼ ì¦‰ì‹œêµ¬ë§¤ê°€ ë³´ë‹¤ ë†’ê²Œ ì„¤ì •í•˜ë©´
+	//! UpdateByNumberí•¨ìˆ˜ì—ì„œ ì¦‰ì‹œêµ¬ë§¤ê°€ë¥¼ ìž…ë ¥í•˜ëŠ” ê²½ë§¤ì‹œìž‘ê°€ì™€ ë˜‘ê°™ì´ ì„¸íŒ…ëœë‹¤.
+	//! ë°˜ëŒ€ë¡œ ì¦‰ì‹œêµ¬ë§¤ê°€ë¥¼ ë³´ë‹¤ ìž‘ê²Œ ìž…ë ¥í•˜ê²Œ ë˜ë©´ [ê²½ë§¤ì‹œìž‘ê°€ > ì¦‰ì‹œêµ¬ë§¤ê°€] ê°€ ë  ìˆ˜ ìžˆê¸°ë•Œë¬¸ì—,
+	//! ì´ë¥¼ ë°©ì§€í•˜ê¸° ìœ„í•´ Delete í‚¤ë¥¼ ëˆŒë €ì„ë•Œ UpdateByNumberë¥¼ í˜¸ì¶œí•´ì¤€ë‹¤.
 
 	switch( nChar )
 	{
@@ -300,7 +300,7 @@ void	CTAuctionRegist::UpdateRegInfo()
 
 void	CTAuctionRegist::UpdateByComp()
 {
-	// ¾ÆÀÌÅÛÁ¤º¸.
+	// ì•„ì´í…œì •ë³´.
 	if( m_pItem )
 	{
 		LPTITEMVISUAL pTVISUAL = m_pItem->GetVisual();
@@ -322,13 +322,13 @@ void	CTAuctionRegist::UpdateByComp()
 		else
 			m_pIcon->SetSkinImageEmpty();
 
-		// ¾÷±×·¹ÀÌµå ¼öÄ¡ ÅØ½ºÆ®.
+		// ì—…ê·¸ë ˆì´ë“œ ìˆ˜ì¹˜ í…ìŠ¤íŠ¸.
 		if( m_pItem->GetGrade() > 0 )
 			m_pUpgrade->m_strText.Format( "+%d", m_pItem->GetGrade() );
 		else
 			m_pUpgrade->m_strText.Empty();
 
-		// ¾ÆÀÌÅÛÀÌ¸§ ÅØ½ºÆ®.
+		// ì•„ì´í…œì´ë¦„ í…ìŠ¤íŠ¸.
 		m_pName->m_strText = m_pItem->GetTITEM()->m_strNAME;
 		
 		if( m_pItem->GetTITEM()->m_bStack > 1 )
@@ -345,12 +345,12 @@ void	CTAuctionRegist::UpdateByComp()
 		m_pItemCount->m_strText = CTChart::Format( TSTR_FMT_AMOUNT, m_RegInfo.bCount );
 	}
 
-	// ½Ã°£¼¼ÆÃ.
+	// ì‹œê°„ì„¸íŒ….
 	size_t i = 0;
 	for( ; i < TTERM_BUTTON_COUNT; ++i )
 		m_pTermBtn[i]->Select( (BOOL)(i == m_dwTerm) );
 
-	// ½ÃÀÛ°¡, Áï½Ã±¸¸Å°¡ ¼¼ÆÃ.
+	// ì‹œìž‘ê°€, ì¦‰ì‹œêµ¬ë§¤ê°€ ì„¸íŒ….
 	DWORD dwStartPrice[ TMONEY_COUNT ] = {0};
 	
 	CTClientGame::SplitMoney(

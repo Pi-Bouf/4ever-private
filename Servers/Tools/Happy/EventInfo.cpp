@@ -1,4 +1,4 @@
-// EventInfo.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// EventInfo.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -9,7 +9,7 @@
 #include ".\eventinfo.h"
 
 
-// CEventInfo ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CEventInfo ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CEventInfo, CDialog)
 CEventInfo::CEventInfo(CWnd* pParent /*=NULL*/)
@@ -62,13 +62,13 @@ BEGIN_MESSAGE_MAP(CEventInfo, CDialog)
 END_MESSAGE_MAP()
 
 
-// CEventInfo ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CEventInfo ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 BOOL CEventInfo::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -78,7 +78,7 @@ BOOL CEventInfo::OnInitDialog()
 			return FALSE;
 	}
 
-	// TODO:  ¿©±â¿¡ Ãß°¡ ÃÊ±âÈ­ ÀÛ¾÷À» Ãß°¡ÇÕ´Ï´Ù.
+	// TODO:  ì—¬ê¸°ì— ì¶”ê°€ ì´ˆê¸°í™” ì‘ì—…ì„ ì¶”ê°€í•©ë‹ˆë‹¤.
 	if(!m_dwEventIndex)
 		Init();
 	else
@@ -92,12 +92,12 @@ BOOL CEventInfo::OnInitDialog()
 
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// ¿¹¿Ü: OCX ¼Ó¼º ÆäÀÌÁö´Â FALSE¸¦ ¹İÈ¯ÇØ¾ß ÇÕ´Ï´Ù.
+	// ì˜ˆì™¸: OCX ì†ì„± í˜ì´ì§€ëŠ” FALSEë¥¼ ë°˜í™˜í•´ì•¼ í•©ë‹ˆë‹¤.
 }
 
 void CEventInfo::Init()
 {	
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -190,7 +190,7 @@ void CEventInfo::Init()
 
 void CEventInfo::Init( LPEVENTINFO pData )
 {
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -374,9 +374,9 @@ void CEventInfo::Init( LPEVENTINFO pData )
 
 void CEventInfo::OnBnClickedUpdate()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -390,9 +390,9 @@ void CEventInfo::OnBnClickedUpdate()
 	stEVENTINFO.Reset();
 	int nValLenth = 0;
 
-	//	ÀÌº¥Æ® ¹øÈ£
+	//	ì´ë²¤íŠ¸ ë²ˆí˜¸
 	stEVENTINFO.m_dwIndex = m_dwEventIndex;
-	//	ÀÌº¥Æ® Á¾·ù
+	//	ì´ë²¤íŠ¸ ì¢…ë¥˜
 	stEVENTINFO.m_bID = m_cbEventType.GetCurSel();
 	if(!stEVENTINFO.m_bID)
 	{
@@ -400,7 +400,7 @@ void CEventInfo::OnBnClickedUpdate()
 		return;
 	}
 
-	//	ÀÌº¥Æ® ÀÌ¸§
+	//	ì´ë²¤íŠ¸ ì´ë¦„
 	GetDlgItemText(IDC_EB_EVENTTITLE,stEVENTINFO.m_strTitle);
 	if( stEVENTINFO.m_strTitle.GetLength() >= MAX_BOARD_TITLE )
 	{
@@ -408,7 +408,7 @@ void CEventInfo::OnBnClickedUpdate()
 		return;
 	}
 
-	//	¼­¹ö ÀÌ¸§
+	//	ì„œë²„ ì´ë¦„
 	CString str;
 	m_cbServer.GetLBText(m_cbServer.GetCurSel(),str);
 
@@ -418,13 +418,13 @@ void CEventInfo::OnBnClickedUpdate()
 		return;
 	}
 
-	//	Ä³½¬ ÇÒÀÎ
+	//	ìºì‰¬ í• ì¸
 	if(stEVENTINFO.m_bID == EVENT_CASHSALE)
 	{
 		int nCount = m_cbServer.GetCount();
 		for(int i = 0; i < nCount; i++)
 		{
-			//	¸ğµç¼­¹ö ¼±ÅÃ
+			//	ëª¨ë“ ì„œë²„ ì„ íƒ
 			m_cbServer.GetLBText(i,str);
 			if( str == STR_WORLD_ALL )
 				break;
@@ -432,7 +432,7 @@ void CEventInfo::OnBnClickedUpdate()
 		m_cbServer.SetCurSel(nCount);
 	}
 
-	//	¸Ê¼­¹ö id Ã£±â
+	//	ë§µì„œë²„ id ì°¾ê¸°
 	DWORD dwID;
 	MAPDWORDSTRING::iterator itS;
 	for(itS = pDoc->m_mapEventSvr.begin(); itS != pDoc->m_mapEventSvr.end(); itS++)
@@ -444,12 +444,12 @@ void CEventInfo::OnBnClickedUpdate()
 		}
 	}
 
-	//	¼­¹ö ¾ÆÀÌµğ ºĞ·ù
+	//	ì„œë²„ ì•„ì´ë”” ë¶„ë¥˜
 	stEVENTINFO.m_bGroupID = SVRGROUP(dwID);
 	stEVENTINFO.m_bSvrType = SVRTYPE(dwID);
 	stEVENTINFO.m_bSvrID = SVRID(dwID);
 
-	//	ÀÌº¥Æ® È®·ü, ¸Êid
+	//	ì´ë²¤íŠ¸ í™•ë¥ , ë§µid
 	stEVENTINFO.m_wValue = (WORD)GetDlgItemInt(IDC_EB_EVENTVALUE);
 	stEVENTINFO.m_wMapID = (WORD)GetDlgItemInt(IDC_EB_MAPID);
 	if(stEVENTINFO.m_bID == EVENT_CASHSALE || stEVENTINFO.m_bID == EVENT_MONSPAWN
@@ -461,12 +461,12 @@ void CEventInfo::OnBnClickedUpdate()
 	CString strSale;
 	int nStart,nMid,nEnd,nCount;
 
-	////	ÀÌº¥Æ® Å¸ÀÔº°
+	////	ì´ë²¤íŠ¸ íƒ€ì…ë³„
 	switch (stEVENTINFO.m_bID)
 	{
-	case EVENT_CASHSALE:	//	Ä³½¬¾ÆÀÌÅÛ ÇÒÀÎ
+	case EVENT_CASHSALE:	//	ìºì‰¬ì•„ì´í…œ í• ì¸
 		{
-			//	¾ÆÀÌÅÛ ¸®½ºÆ® ¾ÆÀÌÅÛ°³¼ö È®ÀÎ
+			//	ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ ì•„ì´í…œê°œìˆ˜ í™•ì¸
 			if( m_lbCashItemList.GetCount() == 0 )
 			{
 				AfxMessageBox("Empty Data");
@@ -475,7 +475,7 @@ void CEventInfo::OnBnClickedUpdate()
 
 			for(int i = 0; i < m_lbCashItemList.GetCount(); i++)
 			{
-				//	¸®½ºÆ®³» ¹®ÀÚ¿­À» µ¥ÀÌÅÍ·Î ÀüÈ¯
+				//	ë¦¬ìŠ¤íŠ¸ë‚´ ë¬¸ìì—´ì„ ë°ì´í„°ë¡œ ì „í™˜
 				m_lbCashItemList.GetText(i,strCashSale);
 				nStart = strCashSale.Find('-');
 				strID = strCashSale.Left(nStart-1);
@@ -498,7 +498,7 @@ void CEventInfo::OnBnClickedUpdate()
 				}
 
 
-				//	Áßº¹¼±ÅÃµÈ Ä³½¬¾ÆÀÌÅÛ °Ë»ç
+				//	ì¤‘ë³µì„ íƒëœ ìºì‰¬ì•„ì´í…œ ê²€ì‚¬
 				for(WORD i = 0; i < (WORD)stEVENTINFO.m_vCashItem.size(); i++)
 				{
 					if( stSALEITEM.m_wID == stEVENTINFO.m_vCashItem[i].m_wID)
@@ -512,12 +512,12 @@ void CEventInfo::OnBnClickedUpdate()
 			break;
 		}
 
-	case EVENT_MONSPAWN:	//	¸ó½ºÅÍ ½ºÆù
+	case EVENT_MONSPAWN:	//	ëª¬ìŠ¤í„° ìŠ¤í°
 		{
 			CString str1;
 			CString str2;
 
-			//	ºóÄ­°Ë»ç
+			//	ë¹ˆì¹¸ê²€ì‚¬
 			if( m_lbSpawnIDList.GetCount() == 0 )
 			{
 				AfxMessageBox("Empty Data");
@@ -526,7 +526,7 @@ void CEventInfo::OnBnClickedUpdate()
 
 			for(int i = 0; i < m_lbSpawnIDList.GetCount(); i++)
 			{
-				//	id ¾ò±â
+				//	id ì–»ê¸°
 				m_lbSpawnIDList.GetText(i,str1);
 				WORD wSpawnID = (WORD)atoi(str1);
 
@@ -544,7 +544,7 @@ void CEventInfo::OnBnClickedUpdate()
 			break;
 		}
 
-	case EVENT_MONREGEN:	//	¸ó½ºÅÍ¸®Á¨
+	case EVENT_MONREGEN:	//	ëª¬ìŠ¤í„°ë¦¬ì  
 		{
 			CString str1;
 
@@ -586,7 +586,7 @@ void CEventInfo::OnBnClickedUpdate()
 			break;
 		}
 
-	case EVENT_LOTTERY:	//	¾ÆÀÌÅÛ ÃßÃ·
+	case EVENT_LOTTERY:	//	ì•„ì´í…œ ì¶”ì²¨
 		{
 			stEVENTINFO.m_wMapID = m_cbLotType.GetCurSel();
 			if(! m_lcLottery.GetItemCount())
@@ -603,7 +603,7 @@ void CEventInfo::OnBnClickedUpdate()
 
 				stEVENTINFO.m_vLOTTERY.push_back(stLOT);
 			}		
-			//	ÆíÁö ¸Ş½ÃÁö
+			//	í¸ì§€ ë©”ì‹œì§€
 			CString tMail, tMail2;
 			GetDlgItemText(IDC_EB_LOTMAIL,tMail);
 			GetDlgItemText(IDC_EB_LOTMAIL2,tMail2);
@@ -621,7 +621,7 @@ void CEventInfo::OnBnClickedUpdate()
 				return;
 			}
 
-			//	³¯Â¥
+			//	ë‚ ì§œ
 			BYTE bStartHour = GetDlgItemInt(IDC_EB_LOTH);
 			BYTE bStartMinute = GetDlgItemInt(IDC_EB_LOTM);
 			if(bStartHour > 23 || bStartMinute > 59)
@@ -638,7 +638,7 @@ void CEventInfo::OnBnClickedUpdate()
 			stEVENTINFO.m_dEndDate = te.GetTime();
 			break;
 		}
-	case EVENT_GIFTTIME:	//	¾ÆÀÌÅÛ ¹èÆ÷?
+	case EVENT_GIFTTIME:	//	ì•„ì´í…œ ë°°í¬?
 		{
 			TLOTTERY stGift;
 			memset(&stGift, 0, sizeof(TLOTTERY));
@@ -653,7 +653,7 @@ void CEventInfo::OnBnClickedUpdate()
 			stEVENTINFO.m_vLOTTERY.clear();
 			stEVENTINFO.m_vLOTTERY.push_back(stGift);
 
-			//	·¹º§Á¦ÇÑ			
+			//	ë ˆë²¨ì œí•œ			
 			BYTE bMinLevel = (BYTE)GetDlgItemInt(IDC_EB_MINL, 0);
 			BYTE bMaxLevel = (BYTE)GetDlgItemInt(IDC_EB_MAXL, 0);
 			if(bMinLevel >= bMaxLevel)
@@ -664,7 +664,7 @@ void CEventInfo::OnBnClickedUpdate()
 
 			stEVENTINFO.m_wValue = MAKEWORD(bMaxLevel, bMinLevel);
 
-			//	ÆíÁö ¸Ş½ÃÁö
+			//	í¸ì§€ ë©”ì‹œì§€
 			CString tMail, tMail2;
 			GetDlgItemText(IDC_EB_LOTMAIL,tMail);
 			GetDlgItemText(IDC_EB_LOTMAIL2,tMail2);
@@ -682,7 +682,7 @@ void CEventInfo::OnBnClickedUpdate()
 				return;
 			}
 
-			//	³¯Â¥
+			//	ë‚ ì§œ
 			BYTE bStartHour = GetDlgItemInt(IDC_EB_LOTH);
 			BYTE bStartMinute = GetDlgItemInt(IDC_EB_LOTM);
 			if(bStartHour > 23 || bStartMinute > 59)
@@ -701,7 +701,7 @@ void CEventInfo::OnBnClickedUpdate()
 		}
 	}
 
-	//	±â°£ Å¸ÀÔ
+	//	ê¸°ê°„ íƒ€ì…
 	if(stEVENTINFO.m_bID != EVENT_LOTTERY && stEVENTINFO.m_bID != EVENT_GIFTTIME)
 	{
 		BYTE bStartHour;
@@ -711,16 +711,16 @@ void CEventInfo::OnBnClickedUpdate()
 
 		stEVENTINFO.m_bPartTime = m_bDateType;
 
-		//	±â°£Å¸ÀÔ È®ÀÎ
+		//	ê¸°ê°„íƒ€ì… í™•ì¸
 		if( !m_bDateType )
 		{
-			//	½Ã°£ ±¸ÇÏ±â
+			//	ì‹œê°„ êµ¬í•˜ê¸°
 			bStartHour = (BYTE)GetDlgItemInt(IDC_EB_STARTHOUR);
 			bStartMinute = (BYTE)GetDlgItemInt(IDC_EB_STARTMIN);
 			bEndHour = (BYTE)GetDlgItemInt(IDC_EB_ENDHOUR);
 			bEndMinute = (BYTE)GetDlgItemInt(IDC_EB_ENDMIN);
 
-			//	³¯Â¥
+			//	ë‚ ì§œ
 			CTime t;
 			m_dtStart.GetTime(t);
 			CTime ts(t.GetYear(),t.GetMonth(),t.GetDay(),bStartHour,bStartMinute,0);
@@ -731,13 +731,13 @@ void CEventInfo::OnBnClickedUpdate()
 		}
 		else
 		{
-			//	½Ã°£ ±¸ÇÏ±â
+			//	ì‹œê°„ êµ¬í•˜ê¸°
 			bStartHour = (BYTE)GetDlgItemInt(IDC_EB_STARTHOUR2);
 			bStartMinute = (BYTE)GetDlgItemInt(IDC_EB_STARTMIN2);
 			bEndHour = (BYTE)GetDlgItemInt(IDC_EB_ENDHOUR2);
 			bEndMinute = (BYTE)GetDlgItemInt(IDC_EB_ENDMIN2);
 
-			//	³¯Â¥
+			//	ë‚ ì§œ
 			CTime t;
 			m_dtStart2.GetTime(t);
 			CTime ts(t.GetYear(),t.GetMonth(),t.GetDay(),bStartHour,bStartMinute,0);
@@ -761,7 +761,7 @@ void CEventInfo::OnBnClickedUpdate()
 	else
 		stEVENTINFO.m_bPartTime = TRUE;
 
-	//	¾Ë¶÷
+	//	ì•ŒëŒ
 	stEVENTINFO.m_dwStartAlarm = GetDlgItemInt(IDC_EB_STARTALARM);
 	GetDlgItemText(IDC_EB_STARTMSG,stEVENTINFO.m_strStartMsg);
 
@@ -1026,12 +1026,12 @@ void CEventInfo::SetLotteryCtrl(BYTE bEventID, BYTE bEnable)
 	else 
 		bEnable = FALSE;
 
-	//	±×·ì
+	//	ê·¸ë£¹
 	GetDlgItem(IDC_EVESET)->ShowWindow(!bEnable);
 	GetDlgItem(IDC_DATESET)->ShowWindow(!bEnable);
 	GetDlgItem(IDC_EVESET2)->ShowWindow(bEnable);
 
-	//	½ºÅÂÆ½
+	//	ìŠ¤íƒœí‹±
 	GetDlgItem(IDC_LOT_STATIC1)->ShowWindow(bEnable);
 	GetDlgItem(IDC_LOT_STATIC2)->ShowWindow(bEnable);
 	GetDlgItem(IDC_LOT_STATIC4)->ShowWindow(bEnable);
@@ -1040,7 +1040,7 @@ void CEventInfo::SetLotteryCtrl(BYTE bEventID, BYTE bEnable)
 	GetDlgItem(IDC_LOT_STATIC8)->ShowWindow(bEnable);
 	GetDlgItem(IDC_LOT_STATIC9)->ShowWindow(bEnable);
 
-	//	±âÅ¸ ÄÁÆ®·Ñ
+	//	ê¸°íƒ€ ì»¨íŠ¸ë¡¤
 	GetDlgItem(IDC_DT_LOT)->ShowWindow(bEnable);
 	GetDlgItem(IDC_EB_LOTH)->ShowWindow(bEnable);
 	GetDlgItem(IDC_EB_LOTM)->ShowWindow(bEnable);
@@ -1091,7 +1091,7 @@ void CEventInfo::SetEventID( DWORD dwEventIndex, BYTE bEventType)
 
 void CEventInfo::OnCbnSelchangeCbEvent()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	BYTE bEventID = m_cbEventType.GetCurSel();
 
 	SetViewCtrl(bEventID, 0, TRUE);
@@ -1099,10 +1099,10 @@ void CEventInfo::OnCbnSelchangeCbEvent()
 	UpdateData(FALSE);
 }
 
-//	Ä³½¬
+//	ìºì‰¬
 void CEventInfo::OnBnClickedBtnCashAdd()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	CString strCashItemSale;
 	CString strCashItem;
 	CString strSale;
@@ -1124,10 +1124,10 @@ void CEventInfo::OnBnClickedBtnCashDelete()
 	UpdateData(FALSE);
 }
 
-//	¸®Á¨
+//	ë¦¬ì  
 void CEventInfo::OnBnClickedBtnAddRegen()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	CString strX,strY,strZ;
 	INT nMonID = GetDlgItemInt(IDC_EB_MONID);
 	INT nDelay = GetDlgItemInt(IDC_EB_MONDELAY);
@@ -1154,14 +1154,14 @@ void CEventInfo::OnBnClickedBtnAddRegen()
 
 void CEventInfo::OnBnClickedBtnRegenDel()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	m_lcRegenList.DeleteString( m_lcRegenList.GetCurSel() );
 	UpdateData(FALSE);
 }
 
 void CEventInfo::OnLbnSelchangeLbRegenlist()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	int nPos = 0;
 	BYTE bCount = 0;
 	CString strTok;
@@ -1187,10 +1187,10 @@ void CEventInfo::OnLbnSelchangeLbRegenlist()
 	UpdateData(FALSE);
 }
 
-//	½ºÆù
+//	ìŠ¤í°
 void CEventInfo::OnBnClickedBtnSpawnAdd()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	CString str1;
 	
 	int nValue = GetDlgItemInt(IDC_EB_SPAWNID);	
@@ -1201,7 +1201,7 @@ void CEventInfo::OnBnClickedBtnSpawnAdd()
 
 void CEventInfo::OnBnClickedBtnSpawnDelete()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	m_lbSpawnIDList.DeleteString( m_lbSpawnIDList.GetCurSel() );
 
 	UpdateData(FALSE);
@@ -1245,7 +1245,7 @@ void CEventInfo::OnBnClickedClose()
 }
 void CEventInfo::OnBnClickedBtnLotadd()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	//VWORD	vMapID;
 
 	int iRow = (int)m_lcLottery.GetItemCount();
@@ -1297,10 +1297,10 @@ void CEventInfo::OnBnClickedBtnLotdel()
 }
 void CEventInfo::OnEnChangeEbRegenmapid()
 {
-	// TODO:  RICHEDIT ÄÁÆ®·ÑÀÎ °æ¿ì ÀÌ ÄÁÆ®·ÑÀº
-	// CDialog::¸¶½ºÅ©¿¡ OR ¿¬»êÇÏ¿© ¼³Á¤µÈ ENM_CHANGE ÇÃ·¡±×¸¦ ÁöÁ¤ÇÏ¿©
-	// CRichEditCtrl().SetEventMask()¸¦ È£ÃâÇÏµµ·Ï OnInitDialog() ÇÔ¼ö¸¦ ÀçÁöÁ¤ÇÏÁö ¾ÊÀ¸¸é
-	// ÀÌ ¾Ë¸²À» º¸³»Áö ¾Ê½À´Ï´Ù.
+	// TODO:  RICHEDIT ì»¨íŠ¸ë¡¤ì¸ ê²½ìš° ì´ ì»¨íŠ¸ë¡¤ì€
+	// CDialog::ë§ˆìŠ¤í¬ì— OR ì—°ì‚°í•˜ì—¬ ì„¤ì •ëœ ENM_CHANGE í”Œë˜ê·¸ë¥¼ ì§€ì •í•˜ì—¬
+	// CRichEditCtrl().SetEventMask()ë¥¼ í˜¸ì¶œí•˜ë„ë¡ OnInitDialog() í•¨ìˆ˜ë¥¼ ì¬ì§€ì •í•˜ì§€ ì•Šìœ¼ë©´
+	// ì´ ì•Œë¦¼ì„ ë³´ë‚´ì§€ ì•ŠìŠµë‹ˆë‹¤.
 
-	// TODO:  ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO:  ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 }

@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+ï»¿#include "Stdafx.h"
 #include "TTextLinker.h"
 
 // ===============================================================================
@@ -549,13 +549,13 @@ CString CTTextLinker::SplitTextByComp(TComponent* pComp, LONG nSize, const CStri
 				{
 					if( !strWORD.IsEmpty() )
 					{
-						// ½ÃÇè¿¡ µé°Ô ÇÏÀÚ.
+						// ì‹œí—˜ì— ë“¤ê²Œ í•˜ì.
 						CString strTEST(strLINE);
 						strTEST.Append( strWORD );
 						pComp->GetTextExtentPoint( strTEST, szSIZE );
 						if( szSIZE.cx > nSize )
 						{
-							// ÀÌ ´Ü¾î¸¦ Æ÷ÇÔÇÒ¼ø¾ø´Ù.
+							// ì´ ë‹¨ì–´ë¥¼ í¬í•¨í• ìˆœì—†ë‹¤.
 							nMsgIndex -= strWORD.GetLength();
 							strWORD.Append( strLEFT );
 							strLEFT = strWORD;
@@ -603,7 +603,7 @@ CString CTTextLinker::SplitTextByComp(TComponent* pComp, LONG nSize, const CStri
 					CSize sizeWORD;
 					pComp->GetTextExtentPoint( strWORD, sizeWORD);
 
-					if( sizeWORD.cx > nSize ) // ÇÑ ´Ü¾î ±æÀÌ°¡ ÄÄÆ÷³ÍÆ®ÀÇ °¡·Î±æÀÌº¸´Ù ±æ´Ù. ÀÌ·²¶© ¹«Á¶°Ç ÀÚ¸£±â.
+					if( sizeWORD.cx > nSize ) // í•œ ë‹¨ì–´ ê¸¸ì´ê°€ ì»´í¬ë„ŒíŠ¸ì˜ ê°€ë¡œê¸¸ì´ë³´ë‹¤ ê¸¸ë‹¤. ì´ëŸ´ë• ë¬´ì¡°ê±´ ìë¥´ê¸°.
 					{
 						CSize sizeLINE;
 						pComp->GetTextExtentPoint( strLINE, sizeLINE );
@@ -629,7 +629,7 @@ CString CTTextLinker::SplitTextByComp(TComponent* pComp, LONG nSize, const CStri
 								break;
 						}
 
-						// strNewWord¸¸ strLINE¿¡ Æ÷ÇÔ, ³ª¸ÓÁø strLEFT·Î µÇµ¹¾Æ°¨.
+						// strNewWordë§Œ strLINEì— í¬í•¨, ë‚˜ë¨¸ì§„ strLEFTë¡œ ë˜ëŒì•„ê°.
 						strWORD = strWORD.Right( strWORD.GetLength() - strNewWord.GetLength() );
 						nMsgIndex -= strWORD.GetLength();
 						strWORD.Append( strLEFT );
@@ -644,13 +644,13 @@ CString CTTextLinker::SplitTextByComp(TComponent* pComp, LONG nSize, const CStri
 
 			if( !strWORD.IsEmpty() )
 			{
-				// ½ÃÇè¿¡ µé°Ô ÇÏÀÚ.
+				// ì‹œí—˜ì— ë“¤ê²Œ í•˜ì.
 				CString strTEST(strLINE);
 				strTEST.Append( strWORD );
 				pComp->GetTextExtentPoint( strTEST, szSIZE );
 				if( szSIZE.cx > nSize )
 				{
-					// ÀÌ ´Ü¾î¸¦ Æ÷ÇÔÇÒ¼ø¾ø´Ù.
+					// ì´ ë‹¨ì–´ë¥¼ í¬í•¨í• ìˆœì—†ë‹¤.
 					nMsgIndex -= strWORD.GetLength();
 					strWORD.Append( strLEFT );
 					strLEFT = strWORD;

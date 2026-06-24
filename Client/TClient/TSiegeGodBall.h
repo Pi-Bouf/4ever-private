@@ -1,13 +1,13 @@
-#pragma once
+ï»¿#pragma once
 
 
 //! GodBall Class.
 /*!
-*	@brief	¼º¹°ÀïÅ»Àü¿¡¼­ÀÇ ¼º¹°À» À§ÇÑ Å¬·¡½º.
-*			( ³À´Ùµé°í ¶Ù¾î¼­ Å¸¿ö¿¡ Mount ½ÃÄÑ¾ßÇÔ.. )
+*	@brief	ì„±ë¬¼ìŸíƒˆì „ì—ì„œì˜ ì„±ë¬¼ì„ ìœ„í•œ í´ë˜ìŠ¤.
+*			( ëƒ…ë‹¤ë“¤ê³  ë›°ì–´ì„œ íƒ€ì›Œì— Mount ì‹œì¼œì•¼í•¨.. )
 *
 *	@date	2009/08/21
-*	@author	±Ç ¼ºÇõ
+*	@author	ê¶Œ ì„±í˜
 *
 */
 class CTGodBall : public CTClientObjBase
@@ -19,15 +19,15 @@ public :	// DEFINITION.
 
 private :	// MEMBER DATA.
 
-	WORD						m_wBallID;			//!< ¼º¹°ID..
-	BOOL						m_bInGround;		//!< ¸Ê¿¡ ¶³¾îÁö¸é true..
-	BYTE						m_bCamp;			//!< °ø°İÃø or ¼öºñÃø ±¸ºĞ..
-	BOOL						m_bValid;			//!< À¯È¿¹üÀ§ ³»¿¡ ÀÖÀ»¶§ TRUE..
+	WORD						m_wBallID;			//!< ì„±ë¬¼ID..
+	BOOL						m_bInGround;		//!< ë§µì— ë–¨ì–´ì§€ë©´ true..
+	BYTE						m_bCamp;			//!< ê³µê²©ì¸¡ or ìˆ˜ë¹„ì¸¡ êµ¬ë¶„..
+	BOOL						m_bValid;			//!< ìœ íš¨ë²”ìœ„ ë‚´ì— ìˆì„ë•Œ TRUE..
 
-	/*! @note	Â÷Æ®µ¥ÀÌÅÍ : m_dwID, m_strName, m_fRot, m_dwOBJID, m_dwIconID, m_dwSfxID.. */
+	/*! @note	ì°¨íŠ¸ë°ì´í„° : m_dwID, m_strName, m_fRot, m_dwOBJID, m_dwIconID, m_dwSfxID.. */
 	LPTGODBALL					m_pBallInfo;
 
-	static MAP_RESOURCE_BALL	m_mapResBall;		//!< ¼º¹°¿ÀºêÁ§Æ® ¸®¼Ò½ºº¸°ü..
+	static MAP_RESOURCE_BALL	m_mapResBall;		//!< ì„±ë¬¼ì˜¤ë¸Œì íŠ¸ ë¦¬ì†ŒìŠ¤ë³´ê´€..
 
 private :	// PRIVATE FUNCTION.
 

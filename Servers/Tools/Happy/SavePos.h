@@ -1,18 +1,18 @@
-#pragma once
+ï»¿#pragma once
 #include "afxwin.h"
 
 
-// CSavePos ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CSavePos ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 class CSavePos : public CDialog
 {
 	DECLARE_DYNAMIC(CSavePos)
 
 public:
-	CSavePos(CWnd* pParent = NULL);   // Ç¥ÁØ »ı¼ºÀÚÀÔ´Ï´Ù.
+	CSavePos(CWnd* pParent = NULL);   // í‘œì¤€ ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CSavePos();
 
-// ´ëÈ­ »óÀÚ µ¥ÀÌÅÍÀÔ´Ï´Ù.
+// ëŒ€í™” ìƒì ë°ì´í„°ì…ë‹ˆë‹¤.
 	enum { IDD = IDD_SAVEPOS };
 
 protected:

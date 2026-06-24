@@ -1,18 +1,18 @@
-#pragma once
+ï»¿#pragma once
 
 #include <TServerSystem.h>
 
 #define ON_RECEIVE(p)							case p : return On##p(pBUF);
 
-////////////////////// ¸Å¿ì¸Å¿ì Áß¿ä - ¼ÒÄÏ Á¾·á¿ä·É /////////////////////////////////////
+////////////////////// ë§¤ìš°ë§¤ìš° ì¤‘ìš” - ì†Œì¼“ ì¢…ë£Œìš”ë ¹ /////////////////////////////////////
 //
-// 1. ÀÚ±âÀÚ½ÅÀ» Á¾·á ÇÏ·Á¸é ÇÚµé·¯ÇÔ¼ö¿¡¼­ EC_SESSION_INVALIDCHAR¸¦ ¸®ÅÏÇÑ´Ù.
-//    (ÇÚµé·¯ ÇÔ¼öÀÇ ÆÄ¶ó¸ÞÅÍ·Î ³Ñ¾î¿Â ¼ÒÄÏ pBUF->m_pSESSIONÀÌ Á¾·á)
+// 1. ìžê¸°ìžì‹ ì„ ì¢…ë£Œ í•˜ë ¤ë©´ í•¸ë“¤ëŸ¬í•¨ìˆ˜ì—ì„œ EC_SESSION_INVALIDCHARë¥¼ ë¦¬í„´í•œë‹¤.
+//    (í•¸ë“¤ëŸ¬ í•¨ìˆ˜ì˜ íŒŒë¼ë©”í„°ë¡œ ë„˜ì–´ì˜¨ ì†Œì¼“ pBUF->m_pSESSIONì´ ì¢…ë£Œ)
 //
-// 2. ´Ù¸¥ ¼ÒÄÏÀ» Á¾·á ÇÏ·Á¸é Á¾·á´ë»óÀ» ÆÄ¶ó¸ÞÅÍ·Î ÇÏ¿© CloseSession()À» È£ÃâÇÑ´Ù.
-//    (¿¹ : CloseSession(pTarget); pTargetÀÌ ½º½º·Î Á¾·áÇÏµµ·Ï À¯µµµÈ´Ù)
+// 2. ë‹¤ë¥¸ ì†Œì¼“ì„ ì¢…ë£Œ í•˜ë ¤ë©´ ì¢…ë£ŒëŒ€ìƒì„ íŒŒë¼ë©”í„°ë¡œ í•˜ì—¬ CloseSession()ì„ í˜¸ì¶œí•œë‹¤.
+//    (ì˜ˆ : CloseSession(pTarget); pTargetì´ ìŠ¤ìŠ¤ë¡œ ì¢…ë£Œí•˜ë„ë¡ ìœ ë„ëœë‹¤)
 //
-// 3. ÀÌ ÀÌ¿ÜÀÇ ¹æ¹ýÀ¸·Î Àý´ë ¼ÒÄÏÀ» Á¾·áÇÏ¸é ¾ÈµÈ´Ù.
+// 3. ì´ ì´ì™¸ì˜ ë°©ë²•ìœ¼ë¡œ ì ˆëŒ€ ì†Œì¼“ì„ ì¢…ë£Œí•˜ë©´ ì•ˆëœë‹¤.
 //
 //////////////////////////////////////////////////////////////////////////////////////////
 #define EVENT_QUARTER_START				(20)
@@ -80,10 +80,10 @@ protected:
 	VTEXPIREDBUF m_vExpired;
 	 
 	BYTE			m_bFameRankSave;	
-	BYTE			m_bRankMonth; //·©Å·ÀÌ ¾÷µ¥ÀÌÆ® µÇ¾ß ÇÏ´Â ´Þ
-	MONTHRANKER		m_arMonthRank[COUNTRY_COUNT][MONTHRANKCOUNT]; //ÇöÀç ´ÞÀÇ ·©Ä¿ ¸®½ºÆ®
-	MONTHRANKER		m_arLastFameRank[FAMERANKCOUNT]; //Áö³­´ÞÀÇ ¸í¿¹ÀÇ Àü´ç ¸®½ºÆ®
-	MONTHRANKER		m_arFirstGradeGroup[COUNTRY_COUNT][FIRSTGRADEGROUPCOUNT]; //Áö³­´ÞÀÇ 1±º ¸®½ºÆ®
+	BYTE			m_bRankMonth; //ëž­í‚¹ì´ ì—…ë°ì´íŠ¸ ë˜ì•¼ í•˜ëŠ” ë‹¬
+	MONTHRANKER		m_arMonthRank[COUNTRY_COUNT][MONTHRANKCOUNT]; //í˜„ìž¬ ë‹¬ì˜ ëž­ì»¤ ë¦¬ìŠ¤íŠ¸
+	MONTHRANKER		m_arLastFameRank[FAMERANKCOUNT]; //ì§€ë‚œë‹¬ì˜ ëª…ì˜ˆì˜ ì „ë‹¹ ë¦¬ìŠ¤íŠ¸
+	MONTHRANKER		m_arFirstGradeGroup[COUNTRY_COUNT][FIRSTGRADEGROUPCOUNT]; //ì§€ë‚œë‹¬ì˜ 1êµ° ë¦¬ìŠ¤íŠ¸
 
 	MAPDWORD m_mapRank;
 	MAPDWORD m_mapMonthRank;
@@ -168,7 +168,7 @@ public:
 	void SaveGuildStats(CTGuild * pGuild);
 protected:
 	////////////////////////////////////////////////
-	// Batch thread¿¡¼­¸¸ »ç¿ë°¡´É
+	// Batch threadì—ì„œë§Œ ì‚¬ìš©ê°€ëŠ¥
 	BYTE PushConCess(LPTCHARACTER pTCHAR, LPPACKETBUF pBUF);
 	DWORD PopConCess(LPTCHARACTER pTCHAR);
 	void OnBeginTeleport(LPTCHARACTER pTCHAR, LPPACKETBUF pBUF);
@@ -390,10 +390,10 @@ protected:
 	void ProcessSession( CTWorldSession *pSession, DWORD dwIoBytes);
 	void OnSendComplete( CTWorldSession *pSession, DWORD dwIoBytes);
 
-	void OnInvalidSession( CTWorldSession *pServer);			// »ç¿ë ±ÝÁö
-	void OnCloseSession( CTWorldSession *pServer);				// »ç¿ë ±ÝÁö
-	void ClosingSession( CTWorldSession *pServer);				// »ç¿ë ±ÝÁö
-	void CloseSession( CTWorldSession *pServer);				// ¼¼¼ÇÀ» Á¾·áÇÏ·Á¸é ÀÌ ÇÔ¼ö¸¦ È£Ãâ
+	void OnInvalidSession( CTWorldSession *pServer);			// ì‚¬ìš© ê¸ˆì§€
+	void OnCloseSession( CTWorldSession *pServer);				// ì‚¬ìš© ê¸ˆì§€
+	void ClosingSession( CTWorldSession *pServer);				// ì‚¬ìš© ê¸ˆì§€
+	void CloseSession( CTWorldSession *pServer);				// ì„¸ì…˜ì„ ì¢…ë£Œí•˜ë ¤ë©´ ì´ í•¨ìˆ˜ë¥¼ í˜¸ì¶œ
 
 	void SayToBATCH( LPPACKETBUF pBUF);
 	void SayToDB( LPPACKETBUF pBUF);
@@ -493,7 +493,7 @@ protected:
 	// DB message handler
 
 	/////////////////////////////////////////////////////////////////////
-	// ±æµå
+	// ê¸¸ë“œ
 	DWORD OnDM_GUILDUPDATE_REQ( LPPACKETBUF pBUF);
 	DWORD OnDM_GUILDESTABLISH_REQ( LPPACKETBUF pBUF);
 	DWORD OnDM_GUILDESTABLISH_ACK( LPPACKETBUF pBUF);
@@ -614,7 +614,7 @@ protected:
 	DWORD OnMW_LEVELUP_ACK( LPPACKETBUF pBUF);
 	DWORD OnMW_PARTYMEMBERRECALLANS_ACK(LPPACKETBUF pBUF);
 	////////////////////////////////////////////////////////////////////////////////////
-	// ±æµå
+	// ê¸¸ë“œ
 	DWORD OnMW_GUILDESTABLISH_ACK(LPPACKETBUF pBUF);
 	DWORD OnMW_GUILDDISORGANIZATION_ACK( LPPACKETBUF pBUF);
 	DWORD OnMW_GUILDINVITE_ACK( LPPACKETBUF pBUF);
@@ -868,7 +868,7 @@ void SendDM_TOURNAMENTAPPLY_REQ(BYTE bAdd, DWORD dwCharID, BYTE bEntry=0, DWORD 
 
 
 	////////////////////////////////////////////////////////////////
-	// ±æµå
+	// ê¸¸ë“œ
 	void SendDM_GUILDDUTY_REQ(
 		DWORD dwCharID,
 		DWORD dwGuildID,
@@ -980,11 +980,11 @@ public:
 	DECLARE_REGISTRY_APPID_RESOURCEID(IDR_TWORLDSVR, "{2DD07566-9248-4798-A96F-259263CDA0E5}")
 	HRESULT InitializeSecurity() throw()
 	{
-		// TODO : CoInitializeSecurity¸¦ È£ÃâÇÏ°í ¼­ºñ½º¿¡ 
-		// ¿Ã¹Ù¸¥ º¸¾È ¼³Á¤À»
-		// Àû¿ëÇÏ½Ê½Ã¿À. PKT ¼öÁØ ÀÎÁõ, 
-		// RPC_C_IMP_LEVEL_IDENTIFY °¡Àå ¼öÁØ ÀÎÁõ 
-		// ¹× NullÀÌ ¾Æ´Ñ ÀûÀýÇÑ º¸¾È ¼³¸íÀÚ µîÀ» Àû¿ëÇÏ¸é µË´Ï´Ù.
+		// TODO : CoInitializeSecurityë¥¼ í˜¸ì¶œí•˜ê³  ì„œë¹„ìŠ¤ì— 
+		// ì˜¬ë°”ë¥¸ ë³´ì•ˆ ì„¤ì •ì„
+		// ì ìš©í•˜ì‹­ì‹œì˜¤. PKT ìˆ˜ì¤€ ì¸ì¦, 
+		// RPC_C_IMP_LEVEL_IDENTIFY ê°€ìž¥ ìˆ˜ì¤€ ì¸ì¦ 
+		// ë° Nullì´ ì•„ë‹Œ ì ì ˆí•œ ë³´ì•ˆ ì„¤ëª…ìž ë“±ì„ ì ìš©í•˜ë©´ ë©ë‹ˆë‹¤.
 
 		return S_OK;
 	}

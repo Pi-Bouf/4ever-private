@@ -1,16 +1,16 @@
-#pragma once
+ï»¿#pragma once
 
 #define ON_RECEIVE(p)							case p : return On##p( pDB, pSession);
 
-////////////////////// ¸Å¿ì¸Å¿ì Áß¿ä - ¼ÒÄÏ Á¾·á¿ä·É /////////////////////////////////////
+////////////////////// ë§¤ìš°ë§¤ìš° ì¤‘ìš” - ì†Œì¼“ ì¢…ë£Œìš”ë ¹ /////////////////////////////////////
 //
-// 1. ÀÚ±âÀÚ½ÅÀ» Á¾·á ÇÏ·Á¸é ÇÚµé·¯ÇÔ¼ö¿¡¼­ EC_SESSION_INVALIDCHAR¸¦ ¸®ÅÏÇÑ´Ù.
-//    (ÇÚµé·¯ ÇÔ¼öÀÇ ÆÄ¶ó¸ÞÅÍ·Î ³Ñ¾î¿Â ¼ÒÄÏ pUser°¡ Á¾·á)
+// 1. ìžê¸°ìžì‹ ì„ ì¢…ë£Œ í•˜ë ¤ë©´ í•¸ë“¤ëŸ¬í•¨ìˆ˜ì—ì„œ EC_SESSION_INVALIDCHARë¥¼ ë¦¬í„´í•œë‹¤.
+//    (í•¸ë“¤ëŸ¬ í•¨ìˆ˜ì˜ íŒŒë¼ë©”í„°ë¡œ ë„˜ì–´ì˜¨ ì†Œì¼“ pUserê°€ ì¢…ë£Œ)
 //
-// 2. ´Ù¸¥ ¼ÒÄÏÀ» Á¾·á ÇÏ·Á¸é Á¾·á´ë»óÀ» ÆÄ¶ó¸ÞÅÍ·Î ÇÏ¿© CloseSession()À» È£ÃâÇÑ´Ù.
-//    (¿¹ : CloseSession(pTarget); pTargetÀÌ ½º½º·Î Á¾·áÇÏµµ·Ï À¯µµµÈ´Ù)
+// 2. ë‹¤ë¥¸ ì†Œì¼“ì„ ì¢…ë£Œ í•˜ë ¤ë©´ ì¢…ë£ŒëŒ€ìƒì„ íŒŒë¼ë©”í„°ë¡œ í•˜ì—¬ CloseSession()ì„ í˜¸ì¶œí•œë‹¤.
+//    (ì˜ˆ : CloseSession(pTarget); pTargetì´ ìŠ¤ìŠ¤ë¡œ ì¢…ë£Œí•˜ë„ë¡ ìœ ë„ëœë‹¤)
 //
-// 3. ÀÌ ÀÌ¿ÜÀÇ ¹æ¹ýÀ¸·Î Àý´ë ¼ÒÄÏÀ» Á¾·áÇÏ¸é ¾ÈµÈ´Ù.
+// 3. ì´ ì´ì™¸ì˜ ë°©ë²•ìœ¼ë¡œ ì ˆëŒ€ ì†Œì¼“ì„ ì¢…ë£Œí•˜ë©´ ì•ˆëœë‹¤.
 //
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -55,10 +55,10 @@ protected:
 		CTPatchSession * pSession,
 		DWORD dwIoBytes);
 
-	void OnInvalidSession( CTPatchSession * pSession);			// »ç¿ë ±ÝÁö
-	void OnCloseSession( CTPatchSession * pSession);				// »ç¿ë ±ÝÁö
-	void ClosingSession( CTPatchSession * pSession);				// »ç¿ë ±ÝÁö
-	void CloseSession( CTPatchSession * pSession);				// ¼¼¼ÇÀ» Á¾·áÇÏ·Á¸é ÀÌ ÇÔ¼ö¸¦ È£Ãâ
+	void OnInvalidSession( CTPatchSession * pSession);			// ì‚¬ìš© ê¸ˆì§€
+	void OnCloseSession( CTPatchSession * pSession);				// ì‚¬ìš© ê¸ˆì§€
+	void ClosingSession( CTPatchSession * pSession);				// ì‚¬ìš© ê¸ˆì§€
+	void CloseSession( CTPatchSession * pSession);				// ì„¸ì…˜ì„ ì¢…ë£Œí•˜ë ¤ë©´ ì´ í•¨ìˆ˜ë¥¼ í˜¸ì¶œ
 
 	void ClearThread();
 	void UpdateData();
@@ -93,7 +93,7 @@ private:
 	static DWORD WINAPI _WorkThread( LPVOID lpParam);
 
 protected:
-	// ½Ã½ºÅÛ ¸Þ¼¼Áö ÇÚµé·¯
+	// ì‹œìŠ¤í…œ ë©”ì„¸ì§€ í•¸ë“¤ëŸ¬
 	DWORD OnSM_QUITSERVICE_REQ( CSqlDatabase *pDB, CTPatchSession * pSession);
 
 protected:
@@ -117,11 +117,11 @@ public:
 	DECLARE_REGISTRY_APPID_RESOURCEID(IDR_TPATCHSVR, "{A9C0CF53-7D54-43D7-B01C-D604FB9DF809}")
 	HRESULT InitializeSecurity() throw()
 	{
-		// TODO : CoInitializeSecurity¸¦ È£ÃâÇÏ°í ¼­ºñ½º¿¡ 
-		// ¿Ã¹Ù¸¥ º¸¾È ¼³Á¤À»
-		// Àû¿ëÇÏ½Ê½Ã¿À. PKT ¼öÁØ ÀÎÁõ, 
-		// RPC_C_IMP_LEVEL_IDENTIFY °¡Àå ¼öÁØ ÀÎÁõ 
-		// ¹× NullÀÌ ¾Æ´Ñ ÀûÀýÇÑ º¸¾È ¼³¸íÀÚ µîÀ» Àû¿ëÇÏ¸é µË´Ï´Ù.
+		// TODO : CoInitializeSecurityë¥¼ í˜¸ì¶œí•˜ê³  ì„œë¹„ìŠ¤ì— 
+		// ì˜¬ë°”ë¥¸ ë³´ì•ˆ ì„¤ì •ì„
+		// ì ìš©í•˜ì‹­ì‹œì˜¤. PKT ìˆ˜ì¤€ ì¸ì¦, 
+		// RPC_C_IMP_LEVEL_IDENTIFY ê°€ìž¥ ìˆ˜ì¤€ ì¸ì¦ 
+		// ë° Nullì´ ì•„ë‹Œ ì ì ˆí•œ ë³´ì•ˆ ì„¤ëª…ìž ë“±ì„ ì ìš©í•˜ë©´ ë©ë‹ˆë‹¤.
 
 		return S_OK;
 	}

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "md5.h"
 #include <iostream>
 #include <fstream> 
@@ -442,7 +442,7 @@ void CTClientWnd::OnClose( CTachyonSession *pSession, int nErrorCode)
 				pNEWSESSION->m_bSvrID = bSvrID;
 				pNEWSESSION->m_bSVR = SVR_MAP;
 
-				pNEWSESSION->m_bLogicalValid = FALSE; // CS_CONNECT_ACK¸¦ ¹Ş±âÀü±îÁø ÀÌ ¼ÒÄÏÀº ¿¬°áÀº À¯È¿ÇØµµ Åë½ÅÇØ¼­´Â ¾ÈµÈ´Ù.
+				pNEWSESSION->m_bLogicalValid = FALSE; // CS_CONNECT_ACKë¥¼ ë°›ê¸°ì „ê¹Œì§„ ì´ ì†Œì¼“ì€ ì—°ê²°ì€ ìœ íš¨í•´ë„ í†µì‹ í•´ì„œëŠ” ì•ˆëœë‹¤.
 				
 				pNEWSESSION->Start(
 					inet_ntoa(pNEWSESSION->m_target.sin_addr),
@@ -533,7 +533,7 @@ void CTClientWnd::OnClose( CTachyonSession *pSession, int nErrorCode)
 					ID_SND_ERROR);
 			}
 
-			else if (!m_bIntendLogout) // ³»°¡ ÀÇµµÇÑ ¼¼¼ÇÁ¾·á°¡ ¾Æ´Ñ °æ¿ì ¿¡·¯¸Ş½ÃÁö Ãâ·Â.
+			else if (!m_bIntendLogout) // ë‚´ê°€ ì˜ë„í•œ ì„¸ì…˜ì¢…ë£Œê°€ ì•„ë‹Œ ê²½ìš° ì—ëŸ¬ë©”ì‹œì§€ ì¶œë ¥.
 				OnERROR(TERR_CONNECT_FAILED);
 		}
 		else if (m_bRelogin)
@@ -2136,7 +2136,7 @@ void CTClientWnd::InitResource( CString strGroupID,
 	}
 
 
-	// ·ÎºñUI ÃÊ±âÈ­
+	// ë¡œë¹„UI ì´ˆê¸°í™”
 	for(auto i=0; i<7; i++)
 	{
 		m_TNet.AddFrame(dwFrameID[i][1], dwFrameID[i][0]);
@@ -2275,7 +2275,7 @@ void CTClientWnd::InitResource( CString strGroupID,
 	}
 	
 	
-	// ±æµåÃ¢
+	// ê¸¸ë“œì°½
 	pFrmGrpBase = static_cast<CTFrameGroupBase*>(m_MainGame.m_vTFRAME[TFRAME_COMMUNITY]);
 	{
 		pDESC = m_pTParser->FindFrameTemplate(ID_FRAME_GUILDNORMAL);
@@ -2292,7 +2292,7 @@ void CTClientWnd::InitResource( CString strGroupID,
 	}
 
 
-	// Ä¿¹Â´ÏÆ¼Ã¢
+	// ì»¤ë®¤ë‹ˆí‹°ì°½
 	pFrmGrpBase = static_cast<CTFrameGroupBase*>(m_MainGame.m_vTFRAME[TFRAME_MESSENGER]);
 	{
 		pDESC = m_pTParser->FindFrameTemplate(ID_FRAME_MESSENGER_BASE);
@@ -2312,7 +2312,7 @@ void CTClientWnd::InitResource( CString strGroupID,
 	}
 
 
-	/*// ÆíÁöÃ¢
+	/*// í¸ì§€ì°½
 	pFrmGrpBase = static_cast<CTFrameGroupBase*>(m_MainGame.m_vTFRAME[TFRAME_MAIL]);
 	{
 		pDESC = m_pTParser->FindFrameTemplate(ID_FRAME_MAILBOX_BASE);
@@ -2411,7 +2411,7 @@ void CTClientWnd::InitResource( CString strGroupID,
 	m_bRelogin = FALSE;
 
 	LoadCustomCompPos();
-	CollectResolution(); // ÇØ»óµµ ¼öÁı
+	CollectResolution(); // í•´ìƒë„ ìˆ˜ì§‘
 
 	if( CTNationOption::MODIFY_DIRECTLOGIN )
 	{
@@ -2438,7 +2438,7 @@ void CTClientWnd::InitResource( CString strGroupID,
 	}
 
 #ifdef USE_GG
-	// °ÔÀÓ°¡µå.
+	// ê²Œì„ê°€ë“œ.
 	if( theApp.m_pNpgl )
 		theApp.m_pNpgl->SetHwnd( GetSafeHwnd() );
 #endif
@@ -3416,7 +3416,7 @@ void CTClientWnd::SaveCustomCompPos()
 	}
 
 	CTGaugePannel* pTGaugePannel = static_cast<CTGaugePannel*>(m_MainGame.m_vTFRAME[TFRAME_GAUGE]);
-	CTUtilityBarDlg* pUB = pTGaugePannel->m_pUtility; //there is actually like 1000€ at least probably more
+	CTUtilityBarDlg* pUB = pTGaugePannel->m_pUtility; //there is actually like 1000Â€ at least probably more
 	if (pUB)
 	{
 		pUB->GetComponentPos(&offset);
@@ -3733,7 +3733,7 @@ void CTClientWnd::LoadCustomCompPos()
 	}
 
 	CTGaugePannel* pTGaugePannel = static_cast<CTGaugePannel*>(m_MainGame.m_vTFRAME[TFRAME_GAUGE]);
-	CTUtilityBarDlg* pUB = pTGaugePannel->m_pUtility; //there is actually like 1000€ at least probably more
+	CTUtilityBarDlg* pUB = pTGaugePannel->m_pUtility; //there is actually like 1000Â€ at least probably more
 	if (pUB)
 	{
 		CString strFMT;
@@ -4390,7 +4390,7 @@ void CTClientWnd::InitChart()
 
 
 
-	// TRACETEMP ÈÄÃ³¸®
+	// TRACETEMP í›„ì²˜ë¦¬
 	{
 		int n = 0;
 
@@ -4417,7 +4417,7 @@ void CTClientWnd::InitChart()
 	}
 	CTachyonRes::RenderBACK( 15, 100 );
 
-	// TQUESTMAGICITEM ÈÄÃ³¸®
+	// TQUESTMAGICITEM í›„ì²˜ë¦¬
 	{
 		ReleaseTQuestMagicClientItem();
 
@@ -4458,7 +4458,7 @@ void CTClientWnd::InitChart()
 		}
 	}
 
-	// TMINIMAP ÈÄÃ³¸®
+	// TMINIMAP í›„ì²˜ë¦¬
 	{
 		CTWorldmapDlg* pWorldDlg = (CTWorldmapDlg*) m_MainGame.m_vTFRAME[TFRAME_WORLDMAP];
 
@@ -4489,7 +4489,7 @@ void CTClientWnd::InitChart()
 		}
 	}
 	
-	// TACTIONDATA ÈÄÃ³¸®
+	// TACTIONDATA í›„ì²˜ë¦¬
 	{
 		m_MainGame.m_pActListPopup->ClearButtons();
 
@@ -4534,7 +4534,7 @@ void CTClientWnd::InitChart()
 			GM_OPEN_MENU_COMMUNITY);
 	}
 	
-	// TSFXTEMP ÈÄÃ³¸®
+	// TSFXTEMP í›„ì²˜ë¦¬
 	{
 		MAPTSFXTEMP::iterator itTSFX, end;
 		itTSFX = CTChart::m_mapTSFXTEMP.begin();
@@ -4554,7 +4554,7 @@ void CTClientWnd::InitChart()
 		}
 	}
 
-	// TITEMGRADEVISUAL ÈÄÃ³¸®
+	// TITEMGRADEVISUAL í›„ì²˜ë¦¬
 	{
 		MAPTITEMGRADEVISUAL::iterator it, end;
 		it = CTChart::m_mapTITEMGRADEVISUAL.begin();
@@ -4579,7 +4579,7 @@ void CTClientWnd::InitChart()
 	}
 
 
-	// THELP ÈÄÃ³¸®
+	// THELP í›„ì²˜ë¦¬
 	{
 		if( !CTChart::m_mapTHELP.empty() )
 		{
@@ -4746,13 +4746,13 @@ void CTClientWnd::ReleaseChart()
 	CTChart::ReleaseTArena();
 	CTChart::ReleaseTPORTALLINK();
 
-	// TITEMTEMP ÈÄÃ³¸®
+	// TITEMTEMP í›„ì²˜ë¦¬
 	{
 		CTClientItem::m_mapTITEMTICK.clear();
 		CTClientItem::m_mapTITEMLOCK.clear();
 	}
 
-	// TQUESTMAGICITEM ÈÄÃ³¸®
+	// TQUESTMAGICITEM í›„ì²˜ë¦¬
 	{
 		ReleaseTQuestMagicClientItem();
 	}
@@ -5125,7 +5125,7 @@ BOOL CTClientWnd::MessageBox( CString strMSG,
 	{
 	default:
 
-	case TMSGBOXOPEN_NONE:	// ±âÁ¸¿¡ ¶° ÀÖ´Â°Ô ÀÖÀ¸¸é Áö±İ ¿­·Á´Â ¸Ş½ÃÁö¹Ú½º´Â ±×³É ¹«½ÃÇÏÀÚ.
+	case TMSGBOXOPEN_NONE:	// ê¸°ì¡´ì— ë–  ìˆëŠ”ê²Œ ìˆìœ¼ë©´ ì§€ê¸ˆ ì—´ë ¤ëŠ” ë©”ì‹œì§€ë°•ìŠ¤ëŠ” ê·¸ëƒ¥ ë¬´ì‹œí•˜ì.
 		{
 			if( (IsMsgBoxVisible() || m_bModalFrame != (BYTE)(T_INVALID)) )
 				return FALSE;
@@ -5133,7 +5133,7 @@ BOOL CTClientWnd::MessageBox( CString strMSG,
 		break;
 
 
-	case TMSGBOXOPEN_CLOSEALL_ALREADY: // ±âÁ¸¿¡ ¿­·ÁÀÖ´ø ¸ğµç ¸Ş½ÃÁö ¹Ú½º¸¦ °­Á¦ Á¾·á ½ÃÅ°°í Áö±İ ÀÌ ¸Ş½ÃÁö¹Ú½º¸¦ ¿¬´Ù.
+	case TMSGBOXOPEN_CLOSEALL_ALREADY: // ê¸°ì¡´ì— ì—´ë ¤ìˆë˜ ëª¨ë“  ë©”ì‹œì§€ ë°•ìŠ¤ë¥¼ ê°•ì œ ì¢…ë£Œ ì‹œí‚¤ê³  ì§€ê¸ˆ ì´ ë©”ì‹œì§€ë°•ìŠ¤ë¥¼ ì—°ë‹¤.
 		{
 			ClearMessageBox();
 			ClearMsgBoxStackForced();
@@ -5141,7 +5141,7 @@ BOOL CTClientWnd::MessageBox( CString strMSG,
 		break;
 
 
-	case TMSGBOXOPEN_OVERLAP: // ±âÁ¸ °Í¿¡ µ¤¾î¼­ À§¿¡ Áö±İ ÀÌ ¸Ş½ÃÁö¹Ú½º¸¦ ¿¬´Ù.
+	case TMSGBOXOPEN_OVERLAP: // ê¸°ì¡´ ê²ƒì— ë®ì–´ì„œ ìœ„ì— ì§€ê¸ˆ ì´ ë©”ì‹œì§€ë°•ìŠ¤ë¥¼ ì—°ë‹¤.
 		{
 			ClearMessageBox();
 		}
@@ -7398,7 +7398,7 @@ LRESULT CTClientWnd::DefWindowProc( UINT message, WPARAM wParam, LPARAM lParam)
 
 
 
-// TEST ¿ë Ã¤ÆÃ ¸í·É¾î
+// TEST ìš© ì±„íŒ… ëª…ë ¹ì–´
 // ------------------------------------------------------------------------------------------
 CString _on_chatcmd_fps(const CString& strCMD, const VECTORSTRING& vPARAM, DWORD dwUSER)
 {
@@ -7573,7 +7573,7 @@ CString _on_chatcmd_test(const CString& strCMD, const VECTORSTRING& vPARAM, DWOR
 {
 	CTClientGame* pTGAME = (CTClientGame*) dwUSER;
 	LPTASSISTANT pNew = new TASSISTANT;
-	pNew->m_strName = "¶Ê¶ÊÀÌ";
+	pNew->m_strName = "ë˜˜ë˜˜ì´";
 	pNew->m_dwCharID = 123;
 	pNew->m_dwCommanderID = 123;
 	pNew->m_bDie = TRUE;
@@ -7582,7 +7582,7 @@ CString _on_chatcmd_test(const CString& strCMD, const VECTORSTRING& vPARAM, DWOR
 	pNew->m_bHair = 2;
 	pTGAME->m_vTASSISTANT.push_back( pNew );
 	pNew = new TASSISTANT;
-	pNew->m_strName = "¸ÛÃæÀÌ";
+	pNew->m_strName = "ë©ì¶©ì´";
 	pNew->m_dwCharID = 123;
 	pNew->m_dwCommanderID = 0;
 	pNew->m_bDie = TRUE;
@@ -7591,7 +7591,7 @@ CString _on_chatcmd_test(const CString& strCMD, const VECTORSTRING& vPARAM, DWOR
 	pNew->m_bHair = 0;
 	pTGAME->m_vTASSISTANT.push_back( pNew );
 	pNew = new TASSISTANT;
-	pNew->m_strName = "°³¹ÚÀÌ";
+	pNew->m_strName = "ê°œë°•ì´";
 	pNew->m_dwCharID = 123;
 	pNew->m_dwCommanderID = 0;
 	pNew->m_bDie = FALSE;
@@ -7708,7 +7708,7 @@ void CTClientWnd::InitChatProc()
 	CTChatFrame* pChat = m_MainGame.m_pChatFrame;
 
 
-	// fps : ÇÁ·¹ÀÓ,À§Ä¡ Á¤º¸ º¸±â
+	// fps : í”„ë ˆì„,ìœ„ì¹˜ ì •ë³´ ë³´ê¸°
 	pChat->AddChatCmdProc("fps", _on_chatcmd_fps, (DWORD)(&m_MainGame));
 
 	pChat->AddChatCmdProc("f", _on_chatcmd_f, (DWORD)(&m_MainGame));
@@ -7717,24 +7717,24 @@ void CTClientWnd::InitChatProc()
 	pChat->AddChatCmdProc("teleportbr", _on_teleport_br, (DWORD)(&m_MainGame));
 
 #ifdef TEST_MODE
-	// mon_roaming_off : ¸ó½ºÅÍ ·Î¹Ö ²û
+	// mon_roaming_off : ëª¬ìŠ¤í„° ë¡œë° ë”
 	pChat->AddChatCmdProc("mon_roaming_off", _on_chatcmd_mon_roaming_off, (DWORD)(&m_MainGame));
 
-	// mon_roaming_on : ¸ó½ºÅÍ ·Î¹Ö ÄÔ
+	// mon_roaming_on : ëª¬ìŠ¤í„° ë¡œë° ì¼¬
 	pChat->AddChatCmdProc("mon_roaming_on", _on_chatcmd_mon_roaming_on, (DWORD)(&m_MainGame));
 
 
-	// draw_object : ¿ÀºêÁ§Æ® ·»´õ¸µ ¿©ºÎ
+	// draw_object : ì˜¤ë¸Œì íŠ¸ ë Œë”ë§ ì—¬ë¶€
 	pChat->AddChatCmdProc("draw_object", _on_chatcmd_draw_object, (DWORD)(&m_MainGame));
 
-	// spawn_edit_start : ½ºÆù ¿¡µğÆ® ½ÃÀÛ
+	// spawn_edit_start : ìŠ¤í° ì—ë””íŠ¸ ì‹œì‘
 	pChat->AddChatCmdProc("spawn_edit_start", _on_chatcmd_spawn_edit_start, (DWORD)(&m_MainGame));
 
 
-	// spawn_edit_end : ½ºÆù ¿¡µğÆ® Á¾·á
+	// spawn_edit_end : ìŠ¤í° ì—ë””íŠ¸ ì¢…ë£Œ
 	pChat->AddChatCmdProc("spawn_edit_end", _on_chatcmd_spawn_edit_end, (DWORD)(&m_MainGame));
 
-	// spawn_edit_save : ½ºÆù ¿¡µğÆ® ÀúÀå
+	// spawn_edit_save : ìŠ¤í° ì—ë””íŠ¸ ì €ì¥
 	pChat->AddChatCmdProc("spawn_edit_save", _on_chatcmd_spawn_edit_save, (DWORD)(&m_MainGame));
 
 	pChat->AddChatCmdProc( "rm", _on_chatcmd_rm, (DWORD)(&m_MainGame) );

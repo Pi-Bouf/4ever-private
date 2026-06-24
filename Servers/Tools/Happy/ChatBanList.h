@@ -1,23 +1,23 @@
-#pragma once
+ï»¿#pragma once
 #include "afxcmn.h"
 #include "afxwin.h"
 
 
-// CChatBanList ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CChatBanList ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 class CChatBanList : public CDialog
 {
 	DECLARE_DYNAMIC(CChatBanList)
 
 public:
-	CChatBanList(CWnd* pParent = NULL);   // Ç¥ÁØ »ı¼ºÀÚÀÔ´Ï´Ù.
+	CChatBanList(CWnd* pParent = NULL);   // í‘œì¤€ ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CChatBanList();
 
-// ´ëÈ­ »óÀÚ µ¥ÀÌÅÍÀÔ´Ï´Ù.
+// ëŒ€í™” ìƒì ë°ì´í„°ì…ë‹ˆë‹¤.
 	enum { IDD = IDD_CHATBANLIST };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 public:

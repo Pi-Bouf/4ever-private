@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+ï»¿#include "Stdafx.h"
 #include "TGuildMarkMakeDlg.h"
 #include "TClientGame.h"
 #include "Resource.h"
@@ -9,29 +9,29 @@ CTGuildMarkMakeDlg::CTGuildMarkMakeDlg(TComponent *pParent, FRAMEDESC_SHAREDPTR 
 {
 	static const DWORD dwMIDDLE[] = 
 	{
-		ID_CTRLINST_MARK_TYPE,			///< ¹®¾ç
-		ID_CTRLINST_BACK_TYPE,			///< ¹ÙÅÁ
-		ID_CTRLINST_MCOL_BAR,			///< ¹®¾ç»ö
-		ID_CTRLINST_BCOL1_BAR,			///< ¹ÙÅÁ»ö1
-		ID_CTRLINST_BCOL2_BAR,			///< ¹ÙÅÁ»ö2
+		ID_CTRLINST_MARK_TYPE,			///< ë¬¸ì–‘
+		ID_CTRLINST_BACK_TYPE,			///< ë°”íƒ•
+		ID_CTRLINST_MCOL_BAR,			///< ë¬¸ì–‘ìƒ‰
+		ID_CTRLINST_BCOL1_BAR,			///< ë°”íƒ•ìƒ‰1
+		ID_CTRLINST_BCOL2_BAR,			///< ë°”íƒ•ìƒ‰2
 	};
 
 	static const DWORD dwLEFT[] = 
 	{
-		ID_CTRLINST_MARK_LB,			///< ¹®¾ç
-		ID_CTRLINST_BACK_LB,			///< ¹ÙÅÁ
-		ID_CTRLINST_MCOL_LB,			///< ¹®¾ç»ö
-		ID_CTRLINST_BCOL1_LB,			///< ¹ÙÅÁ»ö1
-		ID_CTRLINST_BCOL2_LB,			///< ¹ÙÅÁ»ö2
+		ID_CTRLINST_MARK_LB,			///< ë¬¸ì–‘
+		ID_CTRLINST_BACK_LB,			///< ë°”íƒ•
+		ID_CTRLINST_MCOL_LB,			///< ë¬¸ì–‘ìƒ‰
+		ID_CTRLINST_BCOL1_LB,			///< ë°”íƒ•ìƒ‰1
+		ID_CTRLINST_BCOL2_LB,			///< ë°”íƒ•ìƒ‰2
 	};
 
 	static const DWORD dwRIGHT[] = 
 	{
-		ID_CTRLINST_MARK_RB,			///< ¹®¾ç
-		ID_CTRLINST_BACK_RB,			///< ¹ÙÅÁ
-		ID_CTRLINST_MCOL_RB,			///< ¹®¾ç»ö
-		ID_CTRLINST_BCOL1_RB,			///< ¹ÙÅÁ»ö1
-		ID_CTRLINST_BCOL2_RB,			///< ¹ÙÅÁ»ö2
+		ID_CTRLINST_MARK_RB,			///< ë¬¸ì–‘
+		ID_CTRLINST_BACK_RB,			///< ë°”íƒ•
+		ID_CTRLINST_MCOL_RB,			///< ë¬¸ì–‘ìƒ‰
+		ID_CTRLINST_BCOL1_RB,			///< ë°”íƒ•ìƒ‰1
+		ID_CTRLINST_BCOL2_RB,			///< ë°”íƒ•ìƒ‰2
 	};
 
 

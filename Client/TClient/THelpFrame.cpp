@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "THelpFrame.h"
 #include "TClientGame.h"
 
@@ -74,11 +74,11 @@ void CTHelpFrame::LeftPage()
 		SetPage(m_wCurrentPage-1);
 
 		if( CTClientGame::GetInstance()->GetClientMap()->m_wMapID != TUTORIAL_MAPID &&
-			wOldPage == m_wCurrentPage ) // ÆäÀÌÁö°¡ ¾È ¹Ù²¼´Ù´Â°Ç Ã³À½ÀÌ¶ó´Â °Í.
+			wOldPage == m_wCurrentPage ) // í˜ì´ì§€ê°€ ì•ˆ ë°”ê¼ˆë‹¤ëŠ”ê±´ ì²˜ìŒì´ë¼ëŠ” ê²ƒ.
 		{
 			LPTHELP pOldHelp = m_pCurrentHelp;
 			PrevHelp();
-			if( pOldHelp != m_pCurrentHelp ) // Ä«Å×°í¸®°¡ ¹Ù²¼´Ù¸é!
+			if( pOldHelp != m_pCurrentHelp ) // ì¹´í…Œê³ ë¦¬ê°€ ë°”ê¼ˆë‹¤ë©´!
 				SetPage( (m_pCurrentHelp->m_vPage.size() != 0) ? m_pCurrentHelp->m_vPage.size()-1 : 0 );
 		}
 	}
@@ -93,7 +93,7 @@ void CTHelpFrame::RightPage()
 		SetPage(m_wCurrentPage+1);
 		
 		if( CTClientGame::GetInstance()->GetClientMap()->m_wMapID != TUTORIAL_MAPID &&
-			wOldPage == m_wCurrentPage ) // ÆäÀÌÁö°¡ ¾È ¹Ù²¼´Ù´Â°Ç ³¡ÀÌ¶ó´Â °Í.
+			wOldPage == m_wCurrentPage ) // í˜ì´ì§€ê°€ ì•ˆ ë°”ê¼ˆë‹¤ëŠ”ê±´ ëì´ë¼ëŠ” ê²ƒ.
 			NextHelp();
 	}
 }

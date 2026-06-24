@@ -1,4 +1,4 @@
-// Microsoft Visual C++ generated resource script.
+ï»¿// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -18,7 +18,7 @@
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
 #ifdef _WIN32
 LANGUAGE LANG_KOREAN, SUBLANG_DEFAULT
-#pragma code_page(949)
+#pragma code_page(65001)
 #endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
@@ -48,7 +48,7 @@ BEGIN
     "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)\r\n"
     "#ifdef _WIN32\r\n"
     "LANGUAGE 18, 1\r\n"
-    "#pragma code_page(949)\r\n"
+    "#pragma code_page(65001)\r\n"
     "#endif //_WIN32\r\n"
     "#include ""res\\TClient.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
     "#include ""l.kor\\afxres.rc""          // Standard components\r\n"
@@ -67,24 +67,24 @@ END
 ID_ERROR_DIALOG DIALOGEX 0, 0, 251, 197
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | 
     WS_CAPTION | WS_SYSMENU
-CAPTION "¿À·ù"
+CAPTION "ì˜¤ë¥˜"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     LISTBOX         IDC_LIST_ERROR,7,40,237,69,LBS_NOINTEGRALHEIGHT | 
                     LBS_NOSEL | WS_VSCROLL | WS_TABSTOP
-    DEFPUSHBUTTON   "¿À·ù³»¿ë º¸°í",IDOK,7,176,182,14
-    PUSHBUTTON      "´Ý±â",IDCANCEL,194,176,50,14
-    LTEXT           "½ÇÇà Áß ¿¹»óÄ¡ ¸øÇÑ ¿À·ù¸¦ ¹ß°ßÇÏ¿´½À´Ï´Ù.\nºÒÆíÀ» ³¢ÃÄµå·Á ´ë´ÜÈ÷ ÁË¼ÛÇÕ´Ï´Ù.",
+    DEFPUSHBUTTON   "ì˜¤ë¥˜ë‚´ìš© ë³´ê³ ",IDOK,7,176,182,14
+    PUSHBUTTON      "ë‹«ê¸°",IDCANCEL,194,176,50,14
+    LTEXT           "ì‹¤í–‰ ì¤‘ ì˜ˆìƒì¹˜ ëª»í•œ ì˜¤ë¥˜ë¥¼ ë°œê²¬í•˜ì˜€ìŠµë‹ˆë‹¤.\në¶ˆíŽ¸ì„ ë¼ì³ë“œë ¤ ëŒ€ë‹¨ížˆ ì£„ì†¡í•©ë‹ˆë‹¤.",
                     IDC_STATIC_MESSAGE,7,7,237,20
-    LTEXT           "º¸°í³»¿ë",IDC_STATIC_CONTENTS,7,30,32,8
-    LTEXT           "ÇØ´ç ¿À·ù¸¦ º¸°í ÇÏ¿© ¹®Á¦ ÇØ°á¿¡ µµ¿òÀ» ÁÖ½Ç ¼ö ÀÖ½À´Ï´Ù.\n\n¼öÁýµÈ µ¥ÀÌÅÍ´Â ¿ÀÁ÷ ¹®Á¦¸¦ ÇØ°áÇÏ´Âµ¥ ¸¸ »ç¿ëµË´Ï´Ù. ÀÌ ¿À·ù º¸°í´Â ¿À·ù ÇØ°á ¿Ü¿¡ ¸¶ÄÉÆÃ µîÀÇ ´Ù¸¥ ¸ñÀûÀ¸·Î »ç¿ëµÇÁö ¾Ê½À´Ï´Ù. È¨ÆäÀÌÁö¸¦ ÅëÇØ ¿À·ù³»¿ëÀ» »ó¼¼È÷ ±â¼úÇØ ÁÖ½Ã¸é ºü¸¥ ¹®Á¦ÇØ°á¿¡ Å« µµ¿òÀÌ µË´Ï´Ù.",
+    LTEXT           "ë³´ê³ ë‚´ìš©",IDC_STATIC_CONTENTS,7,30,32,8
+    LTEXT           "í•´ë‹¹ ì˜¤ë¥˜ë¥¼ ë³´ê³  í•˜ì—¬ ë¬¸ì œ í•´ê²°ì— ë„ì›€ì„ ì£¼ì‹¤ ìˆ˜ ìžˆìŠµë‹ˆë‹¤.\n\nìˆ˜ì§‘ëœ ë°ì´í„°ëŠ” ì˜¤ì§ ë¬¸ì œë¥¼ í•´ê²°í•˜ëŠ”ë° ë§Œ ì‚¬ìš©ë©ë‹ˆë‹¤. ì´ ì˜¤ë¥˜ ë³´ê³ ëŠ” ì˜¤ë¥˜ í•´ê²° ì™¸ì— ë§ˆì¼€íŒ… ë“±ì˜ ë‹¤ë¥¸ ëª©ì ìœ¼ë¡œ ì‚¬ìš©ë˜ì§€ ì•ŠìŠµë‹ˆë‹¤. í™ˆíŽ˜ì´ì§€ë¥¼ í†µí•´ ì˜¤ë¥˜ë‚´ìš©ì„ ìƒì„¸ížˆ ê¸°ìˆ í•´ ì£¼ì‹œë©´ ë¹ ë¥¸ ë¬¸ì œí•´ê²°ì— í° ë„ì›€ì´ ë©ë‹ˆë‹¤.",
                     IDC_STATIC_MESSAGE2,7,115,237,57
 END
 
 ID_PACKET_DIALOG DIALOGEX 0, 0, 529, 354
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_MINIMIZEBOX | 
     WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "ÆÐÅ¶ °¨½Ã±â"
+CAPTION "íŒ¨í‚· ê°ì‹œê¸°"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     LISTBOX         IDC_LIST_PACKET,7,43,257,54,LBS_SORT | 
@@ -93,16 +93,16 @@ BEGIN
     CONTROL         "",IDC_LIST_CAPTURED,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_ALIGNLEFT | LVS_NOSORTHEADER | 
                     WS_BORDER | WS_TABSTOP,7,113,257,230
-    LTEXT           "°¨½ÃµÈ ÆÐÅ¶",IDC_STATIC,7,102,71,8
-    LTEXT           "ÆÐÅ¶ ³»¿ë",IDC_STATIC,268,7,71,8
-    LTEXT           "°¨½ÃÁßÀÎ ÆÐÅ¶",IDC_STATIC,7,34,242,8
-    LTEXT           "ÆÐÅ¶ Å¸ÀÔÁ¾·ù",IDC_STATIC,7,7,40,8
-    LTEXT           "ÆÐÅ¶",IDC_STATIC,63,7,40,8
+    LTEXT           "ê°ì‹œëœ íŒ¨í‚·",IDC_STATIC,7,102,71,8
+    LTEXT           "íŒ¨í‚· ë‚´ìš©",IDC_STATIC,268,7,71,8
+    LTEXT           "ê°ì‹œì¤‘ì¸ íŒ¨í‚·",IDC_STATIC,7,34,242,8
+    LTEXT           "íŒ¨í‚· íƒ€ìž…ì¢…ë¥˜",IDC_STATIC,7,7,40,8
+    LTEXT           "íŒ¨í‚·",IDC_STATIC,63,7,40,8
     COMBOBOX        IDC_COMBO1,7,17,54,48,CBS_DROPDOWNLIST | CBS_SORT | 
                     WS_VSCROLL | WS_TABSTOP
     COMBOBOX        IDC_COMBO2,62,18,155,195,CBS_DROPDOWNLIST | CBS_SORT | 
                     WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "µî·Ï",IDC_BUTTON_ADD,219,17,46,15
+    PUSHBUTTON      "ë“±ë¡",IDC_BUTTON_ADD,219,17,46,15
     CONTROL         "",IDC_EDIT_OUTPUT,"RichEdit20A",ES_MULTILINE | 
                     ES_AUTOHSCROLL | ES_READONLY | ES_WANTRETURN | WS_BORDER | 
                     WS_VSCROLL | WS_HSCROLL | WS_TABSTOP,267,17,255,326
@@ -111,15 +111,15 @@ END
 IDD_IP_DIALOG DIALOGEX 0, 0, 186, 86
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
     WS_SYSMENU
-CAPTION "Á¢¼Ó ¾ÆÀÌÇÇ¸¦ ÀÔ·ÂÇØÁÖ¼¼¿ä."
+CAPTION "ì ‘ì† ì•„ì´í”¼ë¥¼ ìž…ë ¥í•´ì£¼ì„¸ìš”."
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "",IDC_IPADDRESS1,"SysIPAddress32",WS_TABSTOP,47,14,127,
                     12
     EDITTEXT        IDC_EDIT1,47,32,78,12,ES_AUTOHSCROLL
-    DEFPUSHBUTTON   "È®ÀÎ",IDOK,115,59,50,14
-    LTEXT           "¾ÆÀÌÇÇ :",IDC_STATIC,14,16,30,8
-    LTEXT           "Æ÷Æ® :",IDC_STATIC,22,34,22,8
+    DEFPUSHBUTTON   "í™•ì¸",IDOK,115,59,50,14
+    LTEXT           "ì•„ì´í”¼ :",IDC_STATIC,14,16,30,8
+    LTEXT           "í¬íŠ¸ :",IDC_STATIC,22,34,22,8
 END
 
 
@@ -205,7 +205,7 @@ END
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 #ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
+#pragma code_page(65001)
 #endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
@@ -316,7 +316,7 @@ IDR_MAINFRAME           ICON                    "res\\TClient.ico"
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
 #ifdef _WIN32
 LANGUAGE 18, 1
-#pragma code_page(949)
+#pragma code_page(65001)
 #endif //_WIN32
 #include "res\TClient.rc2"  // non-Microsoft Visual C++ edited resources
 #include "l.kor\afxres.rc"          // Standard components

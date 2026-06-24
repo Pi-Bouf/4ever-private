@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 class CTTextLinker
 {
@@ -15,32 +15,32 @@ protected:
 	CTTextLinkData*	m_pTextLinkDataPool;
 
 public:
-	/// »õ·Î¿î ÅØ½ºÆ® ¸µÅ© µ¥ÀÌÅ¸ ÀÎ½ºÅÏ½º¸¦ ¾ò´Â´Ù.
+	/// ìƒˆë¡œìš´ í…ìŠ¤íŠ¸ ë§í¬ ë°ì´íƒ€ ì¸ìŠ¤í„´ìŠ¤ë¥¼ ì–»ëŠ”ë‹¤.
 	DWORD NewTextLinkData(CTTextLinkData** pOut);
-	/// ÁÖ¾îÁø ¾ÆÀÌµğÀÇ ÅØ½ºÆ® ¸µÅ© µ¥ÀÌÅ¸¸¦ ¾ò´Â´Ù.
+	/// ì£¼ì–´ì§„ ì•„ì´ë””ì˜ í…ìŠ¤íŠ¸ ë§í¬ ë°ì´íƒ€ë¥¼ ì–»ëŠ”ë‹¤.
 	CTTextLinkData* GetTextLinkData(DWORD nPos) const;
 
 public:
-	/// ÁÖ¾îÁø ¿¡µğÅÍ¿¡ Äù½ºÆ®Á¤º¸¿¡ ´ëÇÑ ¸µÅ©¸¦ »ğÀÔÇÑ´Ù.
+	/// ì£¼ì–´ì§„ ì—ë””í„°ì— í€˜ìŠ¤íŠ¸ì •ë³´ì— ëŒ€í•œ ë§í¬ë¥¼ ì‚½ì…í•œë‹¤.
 	void InsertLinkTextToEdit(TEdit* pEdit, LPTQUEST pQuest);
-	/// ÁÖ¾îÁø ¿¡µğÅÍ¿¡ ¾ÆÀÌÅÛÁ¤º¸¿¡ ´ëÇÑ ¸µÅ©¸¦ »ğÀÔÇÑ´Ù.
+	/// ì£¼ì–´ì§„ ì—ë””í„°ì— ì•„ì´í…œì •ë³´ì— ëŒ€í•œ ë§í¬ë¥¼ ì‚½ì…í•œë‹¤.
 	void InsertLinkTextToEdit(TEdit* pEdit, LPTITEM pItem, CTClientItem* pClientItem);
 
-	/// ÁÖ¾îÁø Çü½ÄÀÇ ¹®ÀÚ¿­ Æ÷¸Ë¿¡ ¸ÂÃß¾î ¸µÅ© ÅØ½ºÆ®¸¦ ³×Æ®¿öÅ© Àü¼Û °¡´ÉÇÑ ÇüÅÂ·Î ¸¸µç´Ù.
+	/// ì£¼ì–´ì§„ í˜•ì‹ì˜ ë¬¸ìì—´ í¬ë§·ì— ë§ì¶”ì–´ ë§í¬ í…ìŠ¤íŠ¸ë¥¼ ë„¤íŠ¸ì›Œí¬ ì „ì†¡ ê°€ëŠ¥í•œ í˜•íƒœë¡œ ë§Œë“ ë‹¤.
 	CString MakeItemNetText(const CString& strFormat, const VECTORDWORD& vItemID);
 
-	/// ¿¡µğÅÍÀÇ ¸µÅ© ÅØ½ºÆ®¸¦ ³×Æ®¿öÅ© Àü¼Û °¡´ÉÇÑ ÇüÅÂ·Î ¸¸µç´Ù.
+	/// ì—ë””í„°ì˜ ë§í¬ í…ìŠ¤íŠ¸ë¥¼ ë„¤íŠ¸ì›Œí¬ ì „ì†¡ ê°€ëŠ¥í•œ í˜•íƒœë¡œ ë§Œë“ ë‹¤.
 	CString MakeLinkToNetText(TEdit* pEdit, BOOL bLengthSafety=FALSE, INT nMaxLength=0); 
-	/// ³×Æ®¿öÅ© Àü¼Û Å¸ÀÔ ÅØ½ºÆ®¸¦ ¸µÅ© Å¸ÀÔÀ¸·Î ¸¸µç´Ù.
+	/// ë„¤íŠ¸ì›Œí¬ ì „ì†¡ íƒ€ì… í…ìŠ¤íŠ¸ë¥¼ ë§í¬ íƒ€ì…ìœ¼ë¡œ ë§Œë“ ë‹¤.
 	CString MakeNetToSimpleLinkText(TComponent* pTxtSettingComp, const CString& strNetMsg);
 	CString MakeNetToLinkText(TComponent* pTxtSettingComp, const CString& strNetMsg);
 
-	/// ÁÖ¾îÁø ¹®ÀÚ¿­À» °³Çà¹®ÀÚ ´ÜÀ§·Î ³ª´«´Ù.
+	/// ì£¼ì–´ì§„ ë¬¸ìì—´ì„ ê°œí–‰ë¬¸ì ë‹¨ìœ„ë¡œ ë‚˜ëˆˆë‹¤.
 	CString SplitTextByCrLf(const CString& strMSG, const CString& strTOK, INT& nPos, BOOL bTrimCrLf=TRUE);
-	/// ÁÖ¾îÁø ¹®ÀÚ¿­À» ÇØ´ç ÄÁÆ®·ÑÀÇ ³Êºñ¸¦ ³ÑÁö ¸øÇÏµµ·Ï ¿©·¯ÁÙ·Î ³ª´«´Ù.
+	/// ì£¼ì–´ì§„ ë¬¸ìì—´ì„ í•´ë‹¹ ì»¨íŠ¸ë¡¤ì˜ ë„ˆë¹„ë¥¼ ë„˜ì§€ ëª»í•˜ë„ë¡ ì—¬ëŸ¬ì¤„ë¡œ ë‚˜ëˆˆë‹¤.
 	CString SplitTextByComp(TComponent* pComp, LONG nSize, const CString& strMSG, TTLINKLINE_ARRAY& outLINES);
 
-	/// ÅØ½ºÆ® ¼¼ÆÃÀ» ¾ò´Â´Ù.
+	/// í…ìŠ¤íŠ¸ ì„¸íŒ…ì„ ì–»ëŠ”ë‹¤.
 	void GetTextSettings( TComponent* pTxtSettingComp, const TTLINKLINE_ARRAY& vLINES, TLLINESETTING_ARRAY2D& outSettings);
 
 	CString BuildNetString( const CString& strHeader, const CString& strBody);

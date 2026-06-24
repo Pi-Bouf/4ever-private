@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 
 class CTClientChar : public CTClientMoveObj
@@ -189,7 +189,7 @@ public:
 		DWORD dwActionID,
 		INT nCount);
 
-public :	// ¼º¹°ÀïÅ»Àü.
+public :	// ì„±ë¬¼ìŸíƒˆì „.
 
 	void PlayGodBallSFX( BOOL bShow = TRUE );
 	void ClearGodBallSFX();

@@ -1,4 +1,4 @@
-// MainFrm.cpp : CMainFrame Å¬·¡½ºÀÇ ±¸Çö
+ï»¿// MainFrm.cpp : CMainFrame í´ëž˜ìŠ¤ì˜ êµ¬í˜„
 //
 
 #include "stdafx.h"
@@ -41,18 +41,18 @@ END_MESSAGE_MAP()
 
 static UINT indicators[] =
 {
-	ID_SEPARATOR,           // »óÅÂ ÁÙ Ç¥½Ã±â
+	ID_SEPARATOR,           // ìƒíƒœ ì¤„ í‘œì‹œê¸°
 	ID_INDICATOR_CAPS,
 	ID_INDICATOR_NUM,
 	ID_INDICATOR_SCRL,
 };
 
 
-// CMainFrame »ý¼º/¼Ò¸ê
+// CMainFrame ìƒì„±/ì†Œë©¸
 
 CMainFrame::CMainFrame()
 {
-	// TODO: ¿©±â¿¡ ¸â¹ö ÃÊ±âÈ­ ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ë©¤ë²„ ì´ˆê¸°í™” ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 }
 
 CMainFrame::~CMainFrame()
@@ -69,19 +69,19 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		| CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC) ||
 		!m_wndToolBar.LoadToolBar(IDR_BAR_CONTROL))
 	{
-		TRACE0("µµ±¸ ¸ðÀ½À» ¸¸µéÁö ¸øÇß½À´Ï´Ù.\n");
-		return -1;      // ¸¸µéÁö ¸øÇß½À´Ï´Ù.
+		TRACE0("ë„êµ¬ ëª¨ìŒì„ ë§Œë“¤ì§€ ëª»í–ˆìŠµë‹ˆë‹¤.\n");
+		return -1;      // ë§Œë“¤ì§€ ëª»í–ˆìŠµë‹ˆë‹¤.
 	}
 
 	if (!m_wndStatusBar.Create(this) ||
 		!m_wndStatusBar.SetIndicators(indicators,
 		  sizeof(indicators)/sizeof(UINT)))
 	{
-		TRACE0("»óÅÂ Ç¥½ÃÁÙÀ» ¸¸µéÁö ¸øÇß½À´Ï´Ù.\n");
-		return -1;      // ¸¸µéÁö ¸øÇß½À´Ï´Ù.
+		TRACE0("ìƒíƒœ í‘œì‹œì¤„ì„ ë§Œë“¤ì§€ ëª»í–ˆìŠµë‹ˆë‹¤.\n");
+		return -1;      // ë§Œë“¤ì§€ ëª»í–ˆìŠµë‹ˆë‹¤.
 	}
 
-	// TODO: µµ±¸ ¸ðÀ½À» µµÅ·ÇÒ ¼ö ¾ø°Ô ÇÏ·Á¸é ÀÌ ¼¼ ÁÙÀ» »èÁ¦ÇÏ½Ê½Ã¿À.
+	// TODO: ë„êµ¬ ëª¨ìŒì„ ë„í‚¹í•  ìˆ˜ ì—†ê²Œ í•˜ë ¤ë©´ ì´ ì„¸ ì¤„ì„ ì‚­ì œí•˜ì‹­ì‹œì˜¤.
 	m_wndToolBar.EnableDocking(CBRS_ALIGN_ANY);
 	EnableDocking(CBRS_ALIGN_ANY);
 	DockControlBar(&m_wndToolBar);
@@ -93,7 +93,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	ShowToolBar(0);
 
-	// AutoStart ON ÀÌ¹ÌÁö¸¦ Åø¹Ù ÀÌ¹ÌÁö¸®½ºÆ®¿¡ µî·Ï
+	// AutoStart ON ì´ë¯¸ì§€ë¥¼ íˆ´ë°” ì´ë¯¸ì§€ë¦¬ìŠ¤íŠ¸ì— ë“±ë¡
 	m_dwAutoNormal = 7;
 	CImageList* pImgList;
 	CBitmap bmp;
@@ -112,14 +112,14 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 {
 	if( !CMDIFrameWnd::PreCreateWindow(cs) )
 		return FALSE;
-	// TODO: CREATESTRUCT cs¸¦ ¼öÁ¤ÇÏ¿© ¿©±â¿¡¼­
-	// Window Å¬·¡½º ¶Ç´Â ½ºÅ¸ÀÏÀ» ¼öÁ¤ÇÕ´Ï´Ù.
+	// TODO: CREATESTRUCT csë¥¼ ìˆ˜ì •í•˜ì—¬ ì—¬ê¸°ì—ì„œ
+	// Window í´ëž˜ìŠ¤ ë˜ëŠ” ìŠ¤íƒ€ì¼ì„ ìˆ˜ì •í•©ë‹ˆë‹¤.
 
 	return TRUE;
 }
 
 
-// CMainFrame Áø´Ü
+// CMainFrame ì§„ë‹¨
 
 #ifdef _DEBUG
 void CMainFrame::AssertValid() const
@@ -135,22 +135,22 @@ void CMainFrame::Dump(CDumpContext& dc) const
 #endif //_DEBUG
 
 
-// CMainFrame ¸Þ½ÃÁö Ã³¸®±â
+// CMainFrame ë©”ì‹œì§€ ì²˜ë¦¬ê¸°
 
 
 BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 {
-	// TODO: ¿©±â¿¡ Æ¯¼öÈ­µÈ ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº» Å¬·¡½º¸¦ È£ÃâÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— íŠ¹ìˆ˜í™”ëœ ì½”ë“œë¥¼ ì¶”ê°€ ë°/ë˜ëŠ” ê¸°ë³¸ í´ëž˜ìŠ¤ë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
 	m_wndSplitter.CreateStatic(this, 1, 2);
 
 	m_nGroup = m_wndSplitter.AddView(0,0,RUNTIME_CLASS(CHappyGroup),pContext);
 	m_nTree = m_wndSplitter.AddView(0,0,RUNTIME_CLASS(CServiceTree),pContext);
 	m_nPatch = m_wndSplitter.AddView(0,0,RUNTIME_CLASS(CAutoPatch), pContext);
-	m_nMachine = m_wndSplitter.AddView(0,0,RUNTIME_CLASS(CMachine), pContext); // Çö½Â·æ Machine
+	m_nMachine = m_wndSplitter.AddView(0,0,RUNTIME_CLASS(CMachine), pContext); // í˜„ìŠ¹ë£¡ Machine
 	
 	m_nMachineGraph = m_wndSplitter.AddView(0, 1, RUNTIME_CLASS(CMachineGraph), pContext);
 	m_nListPatch = m_wndSplitter.AddView(0,1,RUNTIME_CLASS(CPatchList), pContext);
-	m_nGraph = m_wndSplitter.AddView(0,1,RUNTIME_CLASS(CServiceGraph), pContext); // Çö½Â·æ Graph
+	m_nGraph = m_wndSplitter.AddView(0,1,RUNTIME_CLASS(CServiceGraph), pContext); // í˜„ìŠ¹ë£¡ Graph
 	m_nList = m_wndSplitter.AddView(0,1,RUNTIME_CLASS(CServiceList), pContext);
 	
 	CHappyGroup * pWnd = (CHappyGroup *)m_wndSplitter.GetView(m_nGroup);
@@ -163,7 +163,7 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 
 	m_wndSplitter.ShowView(m_nGroup);
 
-	// Çö½Â·æ ¹öÆ° È°¼ºÈ­ / ºñÈ°¼ºÈ­
+	// í˜„ìŠ¹ë£¡ ë²„íŠ¼ í™œì„±í™” / ë¹„í™œì„±í™”
 	SetAllControlEnable(FALSE,TRUE);
 	
 	return CMDIFrameWnd::OnCreateClient(lpcs, pContext);	
@@ -171,7 +171,7 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 
 void CMainFrame::OnTimer(UINT nIDEvent)
 {
-	// TODO: ¿©±â¿¡ ¸Þ½ÃÁö Ã³¸®±â ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº»°ªÀ» È£ÃâÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ë©”ì‹œì§€ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€ ë°/ë˜ëŠ” ê¸°ë³¸ê°’ì„ í˜¸ì¶œí•©ë‹ˆë‹¤.
 	if(nIDEvent == TIMER_CHECK_BEEP)
 	{
 		CHappyDoc * pHappy = (CHappyDoc *)GetActiveDocument();
@@ -251,7 +251,7 @@ void CMainFrame::OnUpdateServerDisconnect(CCmdUI *pCmdUI)
 		pCmdUI->Enable(FALSE);
 }
 ////////////////////////////////////////////////////
-// Çö½Â·æ ¼­ºñ½º ½ÃÀÛ/Á¤Áö ¹öÆ° È°¼ºÈ­/ºñÈ°¼ºÈ­
+// í˜„ìŠ¹ë£¡ ì„œë¹„ìŠ¤ ì‹œìž‘/ì •ì§€ ë²„íŠ¼ í™œì„±í™”/ë¹„í™œì„±í™”
 void CMainFrame::SetServiceButton(BYTE bService)
 {
     m_bService = bService;
@@ -259,7 +259,7 @@ void CMainFrame::SetServiceButton(BYTE bService)
 ////////////////////////////////////////////////////
 void CMainFrame::OnUpdateServiceStart(CCmdUI *pCmdUI)
 {
-	if(m_bService == FALSE) // Çö½Â·æ È°¼ºÈ­/ºñÈ°¼ºÈ­
+	if(m_bService == FALSE) // í˜„ìŠ¹ë£¡ í™œì„±í™”/ë¹„í™œì„±í™”
 	{
 		pCmdUI->Enable(m_bService);
 		return;
@@ -291,7 +291,7 @@ void CMainFrame::OnUpdateServiceStart(CCmdUI *pCmdUI)
 
 void CMainFrame::OnUpdateServiceStop(CCmdUI *pCmdUI)
 {
-	if(m_bService == FALSE) // Çö½Â·æ È°¼ºÈ­/ºñÈ°¼ºÈ­
+	if(m_bService == FALSE) // í˜„ìŠ¹ë£¡ í™œì„±í™”/ë¹„í™œì„±í™”
 	{
 		pCmdUI->Enable(m_bService);
 		return;
@@ -323,7 +323,7 @@ void CMainFrame::OnUpdateServiceStop(CCmdUI *pCmdUI)
 
 void CMainFrame::OnUpdateServiceAlert(CCmdUI *pCmdUI)
 {
-	pCmdUI->Enable(m_bAlert); // Çö½Â·æ ¹öÆ° È°¼ºÈ­/ºñÈ°¼ºÈ­
+	pCmdUI->Enable(m_bAlert); // í˜„ìŠ¹ë£¡ ë²„íŠ¼ í™œì„±í™”/ë¹„í™œì„±í™”
 
 	CHappyDoc * pDoc = (CHappyDoc *)GetActiveDocument();
 	if(!pDoc)
@@ -341,7 +341,7 @@ void CMainFrame::OnUpdateServiceAlert(CCmdUI *pCmdUI)
 
 void CMainFrame::OnUpdateServiceAllView(CCmdUI *pCmdUI)
 {
-	pCmdUI->Enable(m_bAllView); // Çö½Â·æ ¹öÆ° È°¼ºÈ­/ºñÈ°¼ºÈ­
+	pCmdUI->Enable(m_bAllView); // í˜„ìŠ¹ë£¡ ë²„íŠ¼ í™œì„±í™”/ë¹„í™œì„±í™”
 
 	CHappyDoc * pDoc = (CHappyDoc *)GetActiveDocument();
 	if(!pDoc)
@@ -362,7 +362,7 @@ void CMainFrame::OnUpdateServiceAllView(CCmdUI *pCmdUI)
 }
 
 ////////////////////////////////////////////////////////////
-// Çö½Â·æ ¼­ºñ½ºÀüÃ¼º¸±â/°æº¸À½ ¹öÆ° È°¼ºÈ­/ºñÈ°¼ºÈ­
+// í˜„ìŠ¹ë£¡ ì„œë¹„ìŠ¤ì „ì²´ë³´ê¸°/ê²½ë³´ìŒ ë²„íŠ¼ í™œì„±í™”/ë¹„í™œì„±í™”
 void CMainFrame::SetAllView(BYTE bAllView)
 {
 	m_bAllView = bAllView;
@@ -405,13 +405,13 @@ void CMainFrame::SetFtpAddAndAcc(DWORD *dwAddr, CString *strUser, DWORD *dwPort)
 	m_wndPatchBar.SetFtp( &CString(inet_ntoa(addr)), strUser, dwPort);
 }
 
-// PatchBarÀÇ Compare ¹öÆ° Visible Setting
+// PatchBarì˜ Compare ë²„íŠ¼ Visible Setting
 void CMainFrame::SetPatchBarCompareVisible(BYTE bCompare)
 {
 	m_wndPatchBar.m_bEnableCompare = bCompare;
 }
 
-// PatchBarÀÇ PatchUpdate ¹öÆ° Visible Setting
+// PatchBarì˜ PatchUpdate ë²„íŠ¼ Visible Setting
 void CMainFrame::SetPatchBarPatchUpdateVisible(BYTE bPatchUpdate)
 {
 	m_wndPatchBar.m_bEnablePatchUpdate = bPatchUpdate;
@@ -419,24 +419,24 @@ void CMainFrame::SetPatchBarPatchUpdateVisible(BYTE bPatchUpdate)
 
 void CMainFrame::OnUpdateServiceUpload(CCmdUI *pCmdUI)
 {
-	// TODO: ¿©±â¿¡ ¸í·É ¾÷µ¥ÀÌÆ® UI Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ëª…ë ¹ ì—…ë°ì´íŠ¸ UI ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	pCmdUI->Enable( m_wndPatchBar.m_bEnableCompare );
 }
 
 void CMainFrame::OnUpdateButtonCompare(CCmdUI *pCmdUI)
 {
-	// TODO: ¿©±â¿¡ ¸í·É ¾÷µ¥ÀÌÆ® UI Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ëª…ë ¹ ì—…ë°ì´íŠ¸ UI ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	pCmdUI->Enable( m_wndPatchBar.m_bEnableCompare );
 }
 
 void CMainFrame::OnUpdateButtonPatchup(CCmdUI *pCmdUI)
 {
-	// TODO: ¿©±â¿¡ ¸í·É ¾÷µ¥ÀÌÆ® UI Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ëª…ë ¹ ì—…ë°ì´íŠ¸ UI ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	pCmdUI->Enable( m_wndPatchBar.m_bEnablePatchUpdate );
 }
 
 ///////////////////////////////////////////////////////////////////
-// Çö½Â·æ Graph
+// í˜„ìŠ¹ë£¡ Graph
 void CMainFrame::SetGraphButton(BYTE bGraph)
 {
 	m_bGraph = bGraph;
@@ -511,7 +511,7 @@ void CMainFrame::SetCurView(BYTE bCur)
 	}
 	pDoc->SetCurView(bCur);
 }
-// Çö½Â·æ ·Î±× ±â·Ï È°¼ºÈ­/ºñÈ°¼ºÈ­
+// í˜„ìŠ¹ë£¡ ë¡œê·¸ ê¸°ë¡ í™œì„±í™”/ë¹„í™œì„±í™”
 void CMainFrame::SetServiceLog(BYTE bLog)
 {
 	m_bLog = bLog;
@@ -520,7 +520,7 @@ void CMainFrame::OnUpdateServcieLog(CCmdUI *pCmdUI)
 {
 	pCmdUI->Enable(m_bLog);
 }
-// Çö½Â·æ ·Î±× ±â·Ï
+// í˜„ìŠ¹ë£¡ ë¡œê·¸ ê¸°ë¡
 void CMainFrame::SetLogTimer(BYTE bResult, DWORD dwTime)
 {
 	if(bResult)
@@ -528,7 +528,7 @@ void CMainFrame::SetLogTimer(BYTE bResult, DWORD dwTime)
 	else
 		KillTimer(TIMER_CHECK_LOG);
 }
-// Çö½Â·æ À¯Àú À¥ È°¼ºÈ­/ºñÈ°¼ºÈ­
+// í˜„ìŠ¹ë£¡ ìœ ì € ì›¹ í™œì„±í™”/ë¹„í™œì„±í™”
 void CMainFrame::SetUserWeb(BYTE bWeb)
 {
 	m_bUserWeb = bWeb;
@@ -537,7 +537,7 @@ void CMainFrame::OnUpdateUserweb(CCmdUI *pCmdUI)
 {
 	pCmdUI->Enable(m_bUserWeb);
 }
-// Çö½Â·æ ¿î¿µÀÚ Åø È°¼ºÈ­/ºñÈ°¼ºÈ­
+// í˜„ìŠ¹ë£¡ ìš´ì˜ìž íˆ´ í™œì„±í™”/ë¹„í™œì„±í™”
 void CMainFrame::SetGMTool(BYTE bGMTool)
 {
 	m_bGMTool = bGMTool;
@@ -554,7 +554,7 @@ void CMainFrame::SetAutoStart(BYTE _bAutoStart)
 
 void CMainFrame::OnUpdateServiceAutoStart(CCmdUI *pCmdUI)
 {
-	// TODO: ¿©±â¿¡ ¸í·É ¾÷µ¥ÀÌÆ® UI Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ëª…ë ¹ ì—…ë°ì´íŠ¸ UI ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 
 	pCmdUI->Enable(m_bAutoStart);
 
@@ -573,7 +573,7 @@ void CMainFrame::OnUpdateServiceAutoStart(CCmdUI *pCmdUI)
 		if( !pDoc->m_bBtnAutoStart )
 		{
 			pDoc->m_bBtnAutoStart = TRUE;
-			m_wndToolBar.SetButtonInfo(m_dwAutoNormal,ID_VIEW_SERVICEAUTOSTART,TBBS_CHECKED,m_dwAutoPush);// Çª½¬»óÅÂ. Çª½¬ÀÌ¹ÌÁö·Î º¯°æ.
+			m_wndToolBar.SetButtonInfo(m_dwAutoNormal,ID_VIEW_SERVICEAUTOSTART,TBBS_CHECKED,m_dwAutoPush);// í‘¸ì‰¬ìƒíƒœ. í‘¸ì‰¬ì´ë¯¸ì§€ë¡œ ë³€ê²½.
          
 		}
 	}
@@ -583,7 +583,7 @@ void CMainFrame::OnUpdateServiceAutoStart(CCmdUI *pCmdUI)
 		if(pDoc->m_bBtnAutoStart)
 		{
 			pDoc->m_bBtnAutoStart = FALSE;
-			m_wndToolBar.SetButtonInfo(m_dwAutoNormal,ID_VIEW_SERVICEAUTOSTART,NULL,m_dwAutoNormal);//³ë¸Ö»óÅÂ. ³ë¸ÖÀÌ¹ÌÁö·Î º¯°æ
+			m_wndToolBar.SetButtonInfo(m_dwAutoNormal,ID_VIEW_SERVICEAUTOSTART,NULL,m_dwAutoNormal);//ë…¸ë©€ìƒíƒœ. ë…¸ë©€ì´ë¯¸ì§€ë¡œ ë³€ê²½
 		}
 	}
 }
@@ -611,13 +611,13 @@ void CMainFrame::SetServiceDataClear(BYTE bView)
 }
 void CMainFrame::OnUpdateServiceDataClear(CCmdUI *pCmdUI)
 {
-	// TODO: ¿©±â¿¡ ¸í·É ¾÷µ¥ÀÌÆ® UI Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ëª…ë ¹ ì—…ë°ì´íŠ¸ UI ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	pCmdUI->Enable(m_bServiceDataClear);
 }
 
 void CMainFrame::OnUpdateExportHappydata(CCmdUI *pCmdUI)
 {
-	// TODO: ¿©±â¿¡ ¸í·É ¾÷µ¥ÀÌÆ® UI Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ëª…ë ¹ ì—…ë°ì´íŠ¸ UI ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	pCmdUI->Enable(m_bExportHappyData);
 }
 
@@ -633,6 +633,6 @@ void CMainFrame::SetChatBanList(BYTE bView)
 
 void CMainFrame::OnUpdateUseradminChatbanlist(CCmdUI *pCmdUI)
 {
-	// TODO: ¿©±â¿¡ ¸í·É ¾÷µ¥ÀÌÆ® UI Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ëª…ë ¹ ì—…ë°ì´íŠ¸ UI ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	pCmdUI->Enable(m_bChatBanList);
 }

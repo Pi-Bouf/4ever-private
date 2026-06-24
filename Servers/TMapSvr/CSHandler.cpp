@@ -1,4 +1,4 @@
-// CSHandler.cpp : C/S Protocol Handler ÇÔ¼öÀÇ ±¸ÇöÀÔ´Ï´Ù.
+ï»¿// CSHandler.cpp : C/S Protocol Handler í•¨ìˆ˜ì˜ êµ¬í˜„ì…ë‹ˆë‹¤.
 
 #include "StdAfx.h"
 #include <SvrInc.h>
@@ -554,7 +554,7 @@ FLOAT fSpeed;
 
 	if( !pPlayer->m_bCanHost && bAction != TA_STAND )
 	{
-		//Ã³À½ Á¢¼ÓÇØ¼­ ¼¿¿¡ È¥ÀÚ°¡ ¾Æ´Ò°æ¿ì´Â ¿òÁ÷ÀÌ¸é bCanHost Set
+		//ì²˜ìŒ ì ‘ì†í•´ì„œ ì…€ì— í˜¼ìê°€ ì•„ë‹ê²½ìš°ëŠ” ì›€ì§ì´ë©´ bCanHost Set
 		VTMONSTER vMONS;
 		vMONS.clear();
 
@@ -1604,7 +1604,7 @@ DWORD CTMapSvrModule::OnCS_DEFEND_REQ( LPPACKETBUF pBUF)
 	CTSelfObj * pSelf = NULL;
 	CTObjBase *pDEFEND = FindTarget(pPlayer, bTargetType, dwTargetID);
 
-	// °áÅõ
+	// ê²°íˆ¬
 	if(pDEFEND && bTargetType == OT_PC)
 	{
 		if(!((CTPlayer*)pDEFEND)->CanDuel(pAtkHost))
@@ -1700,7 +1700,7 @@ DWORD CTMapSvrModule::OnCS_DEFEND_REQ( LPPACKETBUF pBUF)
 			dwAttackID != pDEFEND->m_dwID) &&
 			pTemp->IsNegative() &&
 			pTemp->GetAttackType() == SAT_PHYSIC)
-		{	// ¸¶¹ı°Å¿ï
+		{	// ë§ˆë²•ê±°ìš¸
 
 			wAttackPartyID = pDEFEND->GetPartyID();
 			bAttackCountry = pDEFEND->m_bCountry;
@@ -2388,7 +2388,7 @@ LPTSECURE pSECURE = pPlayer->GetSecureCode();
 		pPlayer->m_wSkillPoint -= pTemp->GetNeedSkillPoint(1);
 		pPlayer->UseMoney(dwPrice, TRUE); 
 
-		//½ºÅ³ ¹ö¸±¶§ m_vRemainSkill¿¡¼­ ÇØ´ç ½ºÅ³ ²À »¬°Í
+		//ìŠ¤í‚¬ ë²„ë¦´ë•Œ m_vRemainSkillì—ì„œ í•´ë‹¹ ìŠ¤í‚¬ ê¼­ ëº„ê²ƒ
 		pPlayer->m_mapTSKILL.insert(MAPTSKILL::value_type(wSkillID, pSkill));
 		pPlayer->RemainSkill( pSkill, 0);
 	}
@@ -2845,7 +2845,7 @@ DWORD CTMapSvrModule::OnCS_SKILLUSE_REQ(LPPACKETBUF pBUF)
 		*/
 		pATTACK->SkillUse(pSkill, m_dwTick);
 	
-		if(!pPlayer->UseSkillItem(pSkill, bTotalHit-1))	//¼Ò¸ğ ¾ÆÀÌÅÛÀ» ¾ø¾Ö´Ï±ñ »ç¿ë ¸¶Áö¸· Á¶°ÇÀ¸·Î...
+		if(!pPlayer->UseSkillItem(pSkill, bTotalHit-1))	//ì†Œëª¨ ì•„ì´í…œì„ ì—†ì• ë‹ˆê¹ ì‚¬ìš© ë§ˆì§€ë§‰ ì¡°ê±´ìœ¼ë¡œ...
 		{
 			pPlayer->SendCS_SKILLUSE_ACK(
 				SKILL_UNSUITWEAPON,
@@ -3251,7 +3251,7 @@ DWORD CTMapSvrModule::OnCS_LOOPSKILL_REQ(LPPACKETBUF pBUF)
 	}
 
 	if( bAttackType == OT_PC &&
-		!pPlayer->UseSkillItem(pSkill, bTotalHit-1))	//¼Ò¸ğ ¾ÆÀÌÅÛÀ» ¾ø¾Ö´Ï±ñ »ç¿ë ¸¶Áö¸· Á¶°ÇÀ¸·Î...
+		!pPlayer->UseSkillItem(pSkill, bTotalHit-1))	//ì†Œëª¨ ì•„ì´í…œì„ ì—†ì• ë‹ˆê¹ ì‚¬ìš© ë§ˆì§€ë§‰ ì¡°ê±´ìœ¼ë¡œ...
 	{
 		pPlayer->SendCS_LOOPSKILL_ACK(
 			SKILL_UNSUITWEAPON,
@@ -3689,7 +3689,7 @@ DWORD CTMapSvrModule::OnCS_QUESTLIST_POSSIBLE_REQ(LPPACKETBUF pBUF)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-// ±æµå
+// ê¸¸ë“œ
 DWORD CTMapSvrModule::OnCS_GUILDESTABLISH_REQ(LPPACKETBUF pBUF)
 {
 	CTPlayer *pPlayer = (CTPlayer *) pBUF->m_pSESSION;
@@ -6991,7 +6991,7 @@ DWORD CTMapSvrModule::OnCS_FRIENDASK_REQ(LPPACKETBUF pBUF)
 	if(pPlayer->m_strNAME == strTarget)
 		return EC_NOERROR;
 
-	// Â÷´Ü°Ë»ç
+	// ì°¨ë‹¨ê²€ì‚¬
 	MAPTPROTECTED::iterator it;
 	for(it=pPlayer->m_mapTPROTECTED.begin(); it!=pPlayer->m_mapTPROTECTED.end(); it++)
 	{
@@ -7592,7 +7592,7 @@ LPTSECURE pSECURE = pPlayer->GetSecureCode();
 	BYTE bItemKind = pGradeItem->m_pTITEM->m_bKind;
 	BYTE bItemGrade = pGradeItem->m_pTITEM->m_bGrade;
 
-	// ÁÖ¹®¼­ Ã³¸®
+	// ì£¼ë¬¸ì„œ ì²˜ë¦¬
 
 	pGradeItem->m_bCount--;
 	if(!pGradeItem->m_bCount)
@@ -7676,7 +7676,7 @@ LPTSECURE pSECURE = pPlayer->GetSecureCode();
 			}
 		}
 		break;
-	case IK_DOWNGRADE: // Á¤È­ÁÖ¹®¼­
+	case IK_DOWNGRADE: // ì •í™”ì£¼ë¬¸ì„œ
 		{
 			if(pItem->m_bLevel)
 			{
@@ -7910,7 +7910,7 @@ LPTSECURE pSECURE = pPlayer->GetSecureCode();
 	break;
 
 	case IK_MAGICGRADE:
-	case IK_RAREGRADE: // Á¦ÀÛÁÖ¹®¼­
+	case IK_RAREGRADE: // ì œì‘ì£¼ë¬¸ì„œ
 		{
 			BYTE bResult = ITEMUPGRADE_MAGICFAIL;
 
@@ -7946,7 +7946,7 @@ LPTSECURE pSECURE = pPlayer->GetSecureCode();
 				pPlayer->SendCS_ITEMMAGICGRADE_ACK(bResult, bTargetInven, pItem);
 			else
 			{
-				if(bItemKind == IK_RAREGRADE) // ·¹¾îÀÏ °æ¿ì ¾ÆÀÌÅÆ Á¦°Å
+				if(bItemKind == IK_RAREGRADE) // ë ˆì–´ì¼ ê²½ìš° ì•„ì´íƒ¬ ì œê±°
 				{
 	#ifdef	DEF_UDPLOG
 					m_pUdpSocket->LogItemUpgrade(LOGMAP_ITEMMAKEFAILDEL, pPlayer, pItem);
@@ -9398,7 +9398,7 @@ LPTSECURE pSECURE = pPlayer->GetSecureCode();
 				CTSkillTemp * pTemp = FindTSkill(pItem->m_pTITEM->m_wUseValue);
 				CTRecallMon *pRecall = pPlayer->FindRecallPet();
 
-				// ÀÌº¥Æ® º¯½Å¹°¾à
+				// ì´ë²¤íŠ¸ ë³€ì‹ ë¬¼ì•½
 				if( pTemp )
 				{
 					if(!pPlayer->m_dwRiding || !pRecall)
@@ -9515,7 +9515,7 @@ LPTSECURE pSECURE = pPlayer->GetSecureCode();
 			{
 				CTSkillTemp * pTemp = FindTSkill(pItem->m_pTITEM->m_wUseValue);
 
-				// ÀÌº¥Æ® º¯½Å¹°¾à
+				// ì´ë²¤íŠ¸ ë³€ì‹ ë¬¼ì•½
 				if( pTemp )
 				{
 					if(pPlayer->HaveDisguiseBuff() && pTemp->IsTrans())
@@ -10554,7 +10554,7 @@ DWORD CTMapSvrModule::OnCS_PROTECTEDERASE_REQ(LPPACKETBUF pBUF)
 	pPlayer->m_mapTPROTECTED.erase((*it).first);
 	pPlayer->SendCS_PROTECTEDERASE_ACK(PROTECTED_SUCCESS, strProtected);
 
-	// Â÷´Ü¿¡ °ü·ÃµÈ on-lineÇ¥½Ã
+	// ì°¨ë‹¨ì— ê´€ë ¨ëœ on-lineí‘œì‹œ
 	SendMW_PROTECTEDCHECK_ACK(pPlayer->m_dwID, pPlayer->m_dwKEY, FRIEND_CONNECTION, strProtected);
 
 	LPPACKETBUF pBuf = new PACKETBUF();
@@ -11274,7 +11274,7 @@ LPTSECURE pSECURE = pPlayer->GetSecureCode();
 	{
 		pPlayer->m_bStore = TRUE;
 		pPlayer->m_strStoreName = strName;
-		// °­Á¦¹öÇÁ°É±â
+		// ê°•ì œë²„í”„ê±¸ê¸°
 		((CTObjBase*)pPlayer)->ForceMaintain(TSTORE_SKILL, pPlayer->m_dwID, OT_PC, pPlayer->m_dwID, pPlayer->m_bType, 0);
 		pPlayer->SendCS_STOREOPEN_ACK(STORE_SUCCESS, pPlayer->m_dwID, strName);
 		pPlayer->SendCS_STOREITEMLIST_ACK(pPlayer->m_dwID, pPlayer->m_strStoreName, pPlayer);
@@ -12570,7 +12570,7 @@ DWORD CTMapSvrModule::OnCS_SKILLINIT_REQ(LPPACKETBUF pBUF)
 			return EC_NOERROR;
 		}
 
-		// ±âº»ÀûÀ¸·Î ÁÖ´Â ½ºÅ³
+		// ê¸°ë³¸ì ìœ¼ë¡œ ì£¼ëŠ” ìŠ¤í‚¬
 		if(pSkill->m_pTSKILL->m_bStartLevel == 0 &&
 			pSkill->m_bLevel == 1)
 		{
@@ -12578,7 +12578,7 @@ DWORD CTMapSvrModule::OnCS_SKILLINIT_REQ(LPPACKETBUF pBUF)
 			return EC_NOERROR;
 		}
 
-		// ÃÖÇÏ´Ü ½ºÅ³ÀÌ ¾Æ´Ï¶ó¸é
+		// ìµœí•˜ë‹¨ ìŠ¤í‚¬ì´ ì•„ë‹ˆë¼ë©´
 		if(pPlayer->FindTChildSkill(wSkillID))
 		{
 			pPlayer->SendCS_SKILLINIT_ACK(SKILL_HAVECHILD);
@@ -14419,7 +14419,7 @@ LPTSECURE pSECURE = pPlayer->GetSecureCode();
 			}
 		}
 
-		// ¸ÅÁ÷¿É¼Ç ÀüÀÌ È®·ü
+		// ë§¤ì§ì˜µì…˜ ì „ì´ í™•ë¥ 
 		BYTE bMagicProb = rand() % 100;
 
 		if(!bCol &&	bMagicProb < wTransProb)
@@ -14800,7 +14800,7 @@ DWORD CTMapSvrModule::OnCS_HEROSELECT_REQ(LPPACKETBUF pBUF)
 		>> wBattleZoneID
 		>> strHeroName;
 
-	//ÀÌ¸§ °Ë»ç.
+	//ì´ë¦„ ê²€ì‚¬.
 	if( strHeroName.IsEmpty() || strHeroName.GetLength() > MAX_NAME)
 	{
 		pPlayer->SendCS_HEROSELECT_ACK(HSR_INVALIDCHAR);
@@ -14819,7 +14819,7 @@ DWORD CTMapSvrModule::OnCS_HEROSELECT_REQ(LPPACKETBUF pBUF)
 		return EC_NOERROR;
 	}
 
-	// ¿µ¿õ Áßº¹ ÁöÁ¤ °Ë»ç
+	// ì˜ì›… ì¤‘ë³µ ì§€ì • ê²€ì‚¬
 	VTLOCAL vLocal;
 	vLocal.clear();
 	GetLocalList(LOCAL_NONE, &vLocal);
@@ -17677,7 +17677,7 @@ DWORD CTMapSvrModule::OnCS_NPROTECT_REQ(LPPACKETBUF pBUF)
 	if(bServerID != m_bServerID)
 		return EC_NOERROR;
 
-	//	µ¥ÀÌÅÍ ±æÀÌ°Ë»ç
+	//	ë°ì´í„° ê¸¸ì´ê²€ì‚¬
 	if(nLenth != sizeof(GG_AUTH_DATA))
 	{
 		LogNProtect(pPlayer->m_dwID, nLenth, _T("Invalid Buffer Size"));
@@ -20569,7 +20569,7 @@ DWORD CTMapSvrModule::OnCS_FINISHSKILL_ACK(LPPACKETBUF pBUF)
 				dwAttackID != pDEFEND->m_dwID) &&
 				pTemp->IsNegative() &&
 				pTemp->GetAttackType() == SAT_PHYSIC) //Add !IsFake maybe
-			{	// ¸¶aı°Lzd
+			{	// ë§ˆaçLzd
 
 				wAttackPartyID = pDEFEND->GetPartyID();
 				bAttackCountry = pDEFEND->m_bCountry;

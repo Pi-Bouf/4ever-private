@@ -1,8 +1,8 @@
-// TLoginSvr.idl : TLoginSvrÀÇ IDL ¼Ò½ºÀÔ´Ï´Ù.
+ï»¿// TLoginSvr.idl : TLoginSvrì˜ IDL ì†ŒìŠ¤ìž…ë‹ˆë‹¤.
 //
 
-// ÀÌ ÆÄÀÏÀº MIDL µµ±¸¿¡ ÀÇÇØ Ã³¸®µÇ¾î
-// Çü½Ä ¶óÀÌºê·¯¸®(TLoginSvr.tlb) ¹× ¸¶¼£¸µ ÄÚµå°¡ »ý¼ºµË´Ï´Ù.
+// ì´ íŒŒì¼ì€ MIDL ë„êµ¬ì— ì˜í•´ ì²˜ë¦¬ë˜ì–´
+// í˜•ì‹ ë¼ì´ë¸ŒëŸ¬ë¦¬(TLoginSvr.tlb) ë° ë§ˆìƒ¬ë§ ì½”ë“œê°€ ìƒì„±ë©ë‹ˆë‹¤.
 
 import "oaidl.idl";
 import "ocidl.idl";
@@ -10,7 +10,7 @@ import "ocidl.idl";
 [
 	uuid(E9F8E765-87F4-4E21-AB86-AA8103806A01),
 	version(1.0),
-	helpstring("TLoginSvr 1.0 Çü½Ä ¶óÀÌºê·¯¸®")
+	helpstring("TLoginSvr 1.0 í˜•ì‹ ë¼ì´ë¸ŒëŸ¬ë¦¬")
 ]
 library TLoginSvrLib
 {

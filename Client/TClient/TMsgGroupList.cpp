@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+ï»¿#include "Stdafx.h"
 #include "TMsgGroupList.h"
 #include "TMiniPopupDlg.h"
 #include "Resource.h"
@@ -67,7 +67,7 @@ CTMsgGroupList::CTMsgGroupList(TComponent *pParent, FRAMEDESC_SHAREDPTR pDesc)
 	m_nItemHeight = szItem.cy;
 	m_nLinePerPage = (m_rc.Height() - LIST_DOWN_MARGIN) / m_nItemHeight;
 
-	// ¼Ò¿ï¸ÞÀÌÆ® ±×·ì »ý¼º
+	// ì†Œìš¸ë©”ì´íŠ¸ ê·¸ë£¹ ìƒì„±
 	m_pSoulmateGroup = AddGroup();
 	m_pSoulmateGroup->m_dwID = 0;
 	m_pSoulmateGroup->m_bSoulmate = TRUE;

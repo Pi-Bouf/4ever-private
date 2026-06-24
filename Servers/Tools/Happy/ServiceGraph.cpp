@@ -1,6 +1,6 @@
-// Çö½Â·æ ServiceGraph.cpp
+ï»¿// í˜„ìŠ¹ë£¡ ServiceGraph.cpp
 
-// ServiceGraph.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+// ServiceGraph.cpp : êµ¬í˜„ íŒŒì¼ìž…ë‹ˆë‹¤.
 
 #include "stdafx.h"
 #include "Happy.h"
@@ -23,7 +23,7 @@ CServiceGraph::CServiceGraph()
 	m_bWorldRelay = 0;
 	m_vTOTALUSER.clear();
 	m_vSERVICEGRAPH.clear();
-	m_listFlag = FALSE; // Ãß°¡¸®½ºÆ® »èÁ¦
+	m_listFlag = FALSE; // ì¶”ê°€ë¦¬ìŠ¤íŠ¸ ì‚­ì œ
 	
 	m_pImageList.Create(IDB_BITMAP1, 16, 1, RGB(0, 128, 128));
 
@@ -82,7 +82,7 @@ BEGIN_MESSAGE_MAP(CServiceGraph, CFormView)
 END_MESSAGE_MAP()
 
 
-// CServiceGraph Áø´ÜÀÔ´Ï´Ù.
+// CServiceGraph ì§„ë‹¨ìž…ë‹ˆë‹¤.
 
 #ifdef _DEBUG
 void CServiceGraph::AssertValid() const
@@ -97,7 +97,7 @@ void CServiceGraph::Dump(CDumpContext& dc) const
 #endif //_DEBUG
 
 
-// CServiceGraph ¸Þ½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CServiceGraph ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ìž…ë‹ˆë‹¤.
 
 void CServiceGraph::OnInitialUpdate()
 {
@@ -108,7 +108,7 @@ void CServiceGraph::OnSize(UINT nType, int cx, int cy)
 {
 	CFormView::OnSize(nType, cx, cy);
 	
-	// À©µµ¿ì Å©±â º¯°æ½Ã 
+	// ìœˆë„ìš° í¬ê¸° ë³€ê²½ì‹œ 
 	
 	GetClientRect(&m_rectBack);
 
@@ -188,7 +188,7 @@ void CServiceGraph::OnPaint()
 	dc.BitBlt(m_rectGraph.left, m_rectGraph.top, m_rectGraph.Width(), m_rectGraph.Height(), &MemDC, 0,0, SRCCOPY);
 }
 
-void CServiceGraph::ClearGraph() // Ãß°¡ ¼­ºñ½º º¯¼ö ÃÊ±âÈ­
+void CServiceGraph::ClearGraph() // ì¶”ê°€ ì„œë¹„ìŠ¤ ë³€ìˆ˜ ì´ˆê¸°í™”
 {
 	m_dwMaxUser = 100;
 	m_dwMaxPing = 100;
@@ -466,7 +466,7 @@ BYTE CServiceGraph::DrawTotalUser()
 	return 0;
 }
 
-// Ãß°¡ / »èÁ¦
+// ì¶”ê°€ / ì‚­ì œ
 void CServiceGraph::AddServiceGraph(DWORD dwID)
 {
 	CHappyDoc * pDoc = (CHappyDoc *)GetDocument();
@@ -474,7 +474,7 @@ void CServiceGraph::AddServiceGraph(DWORD dwID)
 
 	if(m_vSERVICEGRAPH.size() == MAX_ADD_SERVICE)
 	{
-		AfxMessageBox(_T("No more added"));//´õ ÀÌ»ó Ãß°¡ÇÒ ¼ö ¾ø½À´Ï´Ù
+		AfxMessageBox(_T("No more added"));//ë” ì´ìƒ ì¶”ê°€í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤
 		return;
 	}
 
@@ -522,10 +522,10 @@ void CServiceGraph::OnLButtonUp(UINT nFlags, CPoint point)
 	CMainFrame * pFrm = (CMainFrame *)AfxGetMainWnd();
 	CServiceTree * pTree = (CServiceTree *)pFrm->m_wndSplitter.GetView(pFrm->m_nTree);	
 
-	// ¸®½ºÆ® Ãß°¡
+	// ë¦¬ìŠ¤íŠ¸ ì¶”ê°€
 	if(pTree->m_DragFlag)
     {
-		// ±×·¡ÇÁ ¿µ¿ª ¾È
+		// ê·¸ëž˜í”„ ì˜ì—­ ì•ˆ
 		if(point.x > m_rectGraph.left && point.x < m_rectGraph.right &&	
 			point.y > m_rectGraph.top && point.y < m_rectGraph.bottom)
 		{
@@ -537,7 +537,7 @@ void CServiceGraph::OnLButtonUp(UINT nFlags, CPoint point)
 				CString strWorld = (pTree->m_treeCtrl).GetItemText(hGroup);
 				CString strGroup = (pTree->m_treeCtrl).GetItemText(pTree->m_hDragItem);
 
-				MAPSERVICEGRAPH::iterator it; // ¼­ºñ½º °Ë»ö
+				MAPSERVICEGRAPH::iterator it; // ì„œë¹„ìŠ¤ ê²€ìƒ‰
 				for(it = pDoc->m_mapSERVICEGRAPH.begin(); it != pDoc->m_mapSERVICEGRAPH.end(); it++)
 				{
 					SERVICEGRAPH sGraph = (*it).second;
@@ -552,7 +552,7 @@ void CServiceGraph::OnLButtonUp(UINT nFlags, CPoint point)
 				CString strGroup = (pTree->m_treeCtrl).GetItemText(hGroup);
 				CString strService = (pTree->m_treeCtrl).GetItemText(pTree->m_hDragItem);
 
-				MAPSERVICEGRAPH::iterator it; // ¼­ºñ½º °Ë»ö
+				MAPSERVICEGRAPH::iterator it; // ì„œë¹„ìŠ¤ ê²€ìƒ‰
 				for(it = pDoc->m_mapSERVICEGRAPH.begin(); it != pDoc->m_mapSERVICEGRAPH.end(); it++)
 				{
 					SERVICEGRAPH sGraph = (*it).second;
@@ -573,7 +573,7 @@ void CServiceGraph::OnLButtonUp(UINT nFlags, CPoint point)
 		pTree->m_Cursor = LoadCursor(0, IDC_ARROW);
 	}
 
-	// ¸®½ºÆ® »èÁ¦
+	// ë¦¬ìŠ¤íŠ¸ ì‚­ì œ
 	if( m_listFlag )
 	{
 		ReleaseCapture();
@@ -626,7 +626,7 @@ BOOL CServiceGraph::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 	//return CFormView::OnSetCursor(pWnd, nHitTest, message);
 }
 
-void CServiceGraph::OnLvnBegindragAddGraphList(NMHDR *pNMHDR, LRESULT *pResult) // Ãß°¡¸®½ºÆ®»èÁ¦
+void CServiceGraph::OnLvnBegindragAddGraphList(NMHDR *pNMHDR, LRESULT *pResult) // ì¶”ê°€ë¦¬ìŠ¤íŠ¸ì‚­ì œ
 {
     LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);	
 
@@ -643,7 +643,7 @@ void CServiceGraph::OnLvnBegindragAddGraphList(NMHDR *pNMHDR, LRESULT *pResult) 
 	*pResult = 0;
 }
 
-void CServiceGraph::OnBnClickedClearButton() // Ãß°¡¸®½ºÆ® ÃÊ±âÈ­
+void CServiceGraph::OnBnClickedClearButton() // ì¶”ê°€ë¦¬ìŠ¤íŠ¸ ì´ˆê¸°í™”
 {
 	ClearGraph();
 }

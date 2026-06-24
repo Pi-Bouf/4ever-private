@@ -1,16 +1,16 @@
-#pragma once
+ï»¿#pragma once
 #include "afxcmn.h"
 
 
 
-// CPatchList Æû ºäÀÔ´Ï´Ù.
+// CPatchList í¼ ë·°ì…ë‹ˆë‹¤.
 
 class CPatchList : public CFormView
 {
 	DECLARE_DYNCREATE(CPatchList)
 
 protected:
-	CPatchList();           // µ¿Àû ¸¸µé±â¿¡ »ç¿ëµÇ´Â protected »ı¼ºÀÚÀÔ´Ï´Ù.
+	CPatchList();           // ë™ì  ë§Œë“¤ê¸°ì— ì‚¬ìš©ë˜ëŠ” protected ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CPatchList();
 
 public:
@@ -22,7 +22,7 @@ public:
 #endif
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 public:

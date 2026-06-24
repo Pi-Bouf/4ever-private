@@ -1,4 +1,4 @@
-// TabCtrlHappy.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// TabCtrlHappy.cpp : êµ¬í˜„ íŒŒì¼ìž…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -382,7 +382,7 @@ void CTabCtrlHappy::OnMoveWindow()
 		ResizeWindow(GetTabActivePage(), rect.Width (), rect.Height ());
 }
 
-// CTabCtrlHappy ¸Þ½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CTabCtrlHappy ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ìž…ë‹ˆë‹¤.
 void CTabCtrlHappy::OnDestroy()
 {
 	CTabCtrl::OnDestroy();
@@ -463,7 +463,7 @@ void CTabCtrlHappy::OnTcnSelchange(NMHDR *pNMHDR, LRESULT *pResult)
 	switch(nIndex)
 	{
 	case 0:		
-		if(pFrm->GetGraphCheck()) // Çö½Â·æ Graph
+		if(pFrm->GetGraphCheck()) // í˜„ìŠ¹ë£¡ Graph
 		{
 			pFrm->m_wndSplitter.ShowView(pFrm->m_nGraph);
 			bCurPage = 1;
@@ -477,7 +477,7 @@ void CTabCtrlHappy::OnTcnSelchange(NMHDR *pNMHDR, LRESULT *pResult)
 		pFrm->ShowToolBar(nIndex);
 		bCurPage = 2;
 		break;
-	case 2: // Çö½Â·æ Machine
+	case 2: // í˜„ìŠ¹ë£¡ Machine
 		pFrm->m_wndSplitter.ShowView(pFrm->m_nMachineGraph);
 		pFrm->ShowToolBar(0);
 		bCurPage = 3;
@@ -521,7 +521,7 @@ BOOL CTabCtrlHappy::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 
 BOOL CTabCtrlHappy::OnCommand(WPARAM wParam, LPARAM lParam)
 {
-	// TODO: ¿©±â¿¡ Æ¯¼öÈ­µÈ ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº» Å¬·¡½º¸¦ È£ÃâÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— íŠ¹ìˆ˜í™”ëœ ì½”ë“œë¥¼ ì¶”ê°€ ë°/ë˜ëŠ” ê¸°ë³¸ í´ëž˜ìŠ¤ë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
 	GetParent ()->SendMessage (WM_COMMAND, wParam, lParam);
 	
 	CMainFrame * pFrm = (CMainFrame *)AfxGetMainWnd();
@@ -538,7 +538,7 @@ BOOL CTabCtrlHappy::OnCommand(WPARAM wParam, LPARAM lParam)
 
 BOOL CTabCtrlHappy::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 {
-	// TODO: ¿©±â¿¡ Æ¯¼öÈ­µÈ ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº» Å¬·¡½º¸¦ È£ÃâÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— íŠ¹ìˆ˜í™”ëœ ì½”ë“œë¥¼ ì¶”ê°€ ë°/ë˜ëŠ” ê¸°ë³¸ í´ëž˜ìŠ¤ë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
 	GetParent()->SendMessage (WM_NOTIFY, wParam, lParam);
 	return CTabCtrl::OnNotify(wParam, lParam, pResult);
 }

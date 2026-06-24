@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+ï»¿#include "Stdafx.h"
 #include "TDurationFrame.h"
 #include "TClientGame.h"
 #include "TClientWnd.h"
@@ -75,7 +75,7 @@ void CTDurationFrame::Update()
 {
 #ifdef NEW_IF
 
-	// ÀÏ´Ü ¸ğµÎ Á¤»óÀ¸·Î ÃÊ±âÈ­
+	// ì¼ë‹¨ ëª¨ë‘ ì •ìƒìœ¼ë¡œ ì´ˆê¸°í™”
 
 	for(BYTE i=0; i<ES_COUNT; ++i)
 	{
@@ -95,9 +95,9 @@ void CTDurationFrame::Update()
 			if( GetDurationPercent(i, dwPercent) )
 			{
 				if( 30 < dwPercent && dwPercent <= 50 )
-					m_vEquip[i]->SetCurImage( DAMAGE_NORMAL); // 30%ÃÊ°ú ~50%ÀÌÇÏ
+					m_vEquip[i]->SetCurImage( DAMAGE_NORMAL); // 30%ì´ˆê³¼ ~50%ì´í•˜
 				else if( dwPercent <= 30 )
-					m_vEquip[i]->SetCurImage( DAMAGE_YELLOW); // 30%ÀÌÇÏ
+					m_vEquip[i]->SetCurImage( DAMAGE_YELLOW); // 30%ì´í•˜
 
 				if( dwPercent <= 50 )
 					m_vEquip[i]->ShowComponent(TRUE);
@@ -106,7 +106,7 @@ void CTDurationFrame::Update()
 			}
 			else
 			{
-				if( dwPercent == 0 ) // ±úÁ³´Ù.
+				if( dwPercent == 0 ) // ê¹¨ì¡Œë‹¤.
 				{
 					m_vEquip[i]->SetCurImage(DAMAGE_RED);
 					m_vEquip[i]->ShowComponent(TRUE);
@@ -122,9 +122,9 @@ void CTDurationFrame::Update()
 	else
 		m_pFrame->ShowComponent(FALSE);
 #else
-	BOOL bExistDuration = FALSE; // ³ë¶ûÀÌ°Å³ª »¡°­»öÀÎ ¹«±â°¡ ÀÖÀ» °æ¿ì¿¡¸¸ Ãâ·ÂÇÏ±â À§ÇØ¼­.
+	BOOL bExistDuration = FALSE; // ë…¸ë‘ì´ê±°ë‚˜ ë¹¨ê°•ìƒ‰ì¸ ë¬´ê¸°ê°€ ìˆì„ ê²½ìš°ì—ë§Œ ì¶œë ¥í•˜ê¸° ìœ„í•´ì„œ.
 
-	// ÀÏ´Ü ¸ğµÎ Á¤»óÀ¸·Î ÃÊ±âÈ­
+	// ì¼ë‹¨ ëª¨ë‘ ì •ìƒìœ¼ë¡œ ì´ˆê¸°í™”
 	for(BYTE i=0; i<ES_COUNT; ++i)
 	{
 		if( m_vEquip[i] )
@@ -143,23 +143,23 @@ void CTDurationFrame::Update()
 			if( GetDurationPercent(i, dwPercent) )
 			{
 				if( dwPercent > 50 )
-					m_vEquip[i]->SetCurImage( DAMAGE_NORMAL); // 50%ÃÊ°ú
+					m_vEquip[i]->SetCurImage( DAMAGE_NORMAL); // 50%ì´ˆê³¼
 				else if( 30 < dwPercent && dwPercent <= 50 )
-					m_vEquip[i]->SetCurImage( DAMAGE_YELLOW); // 30%ÃÊ°ú ~50%ÀÌÇÏ
+					m_vEquip[i]->SetCurImage( DAMAGE_YELLOW); // 30%ì´ˆê³¼ ~50%ì´í•˜
 				else if( dwPercent <= 30 )
-					m_vEquip[i]->SetCurImage( DAMAGE_RED); // 30%ÀÌÇÏ
+					m_vEquip[i]->SetCurImage( DAMAGE_RED); // 30%ì´í•˜
 
-				if( dwPercent <= 50 ) // 50% ¹Ì¸¸ÀÌ ÇÑ°³ ÀÌ»ó ÀÖÀ» °æ¿ì¿¡¸¸ Ãâ·ÂÀ» ÇÑ´Ù.
+				if( dwPercent <= 50 ) // 50% ë¯¸ë§Œì´ í•œê°œ ì´ìƒ ìˆì„ ê²½ìš°ì—ë§Œ ì¶œë ¥ì„ í•œë‹¤.
 					bExistDuration = TRUE;
 			}
 			else
 			{
-				// ¿©±â´Â ¹«±â°¡ ¾ø°Å³ª dwPercent°¡ 0ÀÎ °æ¿ì¸¸ ¿Â´Ù.
+				// ì—¬ê¸°ëŠ” ë¬´ê¸°ê°€ ì—†ê±°ë‚˜ dwPercentê°€ 0ì¸ ê²½ìš°ë§Œ ì˜¨ë‹¤.
 
-				if( dwPercent == 0 ) // ±úÁ³´Ù.
+				if( dwPercent == 0 ) // ê¹¨ì¡Œë‹¤.
 				{
 					m_vEquip[i]->SetCurImage(DAMAGE_BREAK);
-					bExistDuration = TRUE; // ±úÁø°Ô ÇÑ°³ ÀÌ»óÀÎ °æ¿ì¿¡µµ Ãâ·ÂÇÑ´Ù.
+					bExistDuration = TRUE; // ê¹¨ì§„ê²Œ í•œê°œ ì´ìƒì¸ ê²½ìš°ì—ë„ ì¶œë ¥í•œë‹¤.
 				}
 			}
 		}

@@ -1,15 +1,15 @@
-#pragma once
+ï»¿#pragma once
 #include "afxwin.h"
 #include "afxcmn.h"
 
-// CPacketSpyDlg ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CPacketSpyDlg ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 class CPacketSpyDlg : public CDialog
 {
 	DECLARE_DYNAMIC(CPacketSpyDlg)
 
 public:
-	CPacketSpyDlg(CWnd* pParent = NULL);   // Ç¥ÁØ »ı¼ºÀÚÀÔ´Ï´Ù.
+	CPacketSpyDlg(CWnd* pParent = NULL);   // í‘œì¤€ ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CPacketSpyDlg();
 
 public:
@@ -75,7 +75,7 @@ protected:
 	BOOL			m_bNeedUpdate;
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 

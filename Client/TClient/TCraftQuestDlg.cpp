@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "TCraftQuestDlg.h"
 #include "TClientGame.h"
 #include "TClientChar.h"
@@ -463,7 +463,7 @@ void CTCraftQuestDlg::ResetTerm()
 
 	if( m_pTQUEST )
 	{
-		// ¸ñÇ¥Á¤º¸
+		// ëª©í‘œì •ë³´
 		INT nTermLine = 0;
 		INT nNumber = 1;
 		for( BYTE i=0; i<INT(m_pTQUEST->m_vTTERM.size()); i++)
@@ -523,7 +523,7 @@ void CTCraftQuestDlg::ResetTQUEST( LPTQUEST pTQuest )
 	int nIndex = 0;
 	if(m_pTQUEST)
 	{
-		// ¸ñÇ¥Á¤º¸
+		// ëª©í‘œì •ë³´
 		ResetTerm();
 		m_pTermList->SetCurSelItem(0);
 
@@ -535,7 +535,7 @@ void CTCraftQuestDlg::ResetTQUEST( LPTQUEST pTQuest )
 
 		INT nRewardItemCount = 0;
 
-		// º¸»ó¸ñ·Ï
+		// ë³´ìƒëª©ë¡
 		for( int i=0; i<INT(pTQuest->m_vTREWARD.size()); i++)
 		{
 			CString strREWARD;
@@ -603,7 +603,7 @@ void CTCraftQuestDlg::ResetTQUEST( LPTQUEST pTQuest )
 					nLine = m_pRewardList->AddString( strREWARD );
 				else
 				{
-					nLine = m_pRewardList->GetItemCount()-1; // ¸¶Áö¸· ¶óÀÎ
+					nLine = m_pRewardList->GetItemCount()-1; // ë§ˆì§€ë§‰ ë¼ì¸
 					nCol = 1;
 
 					m_pRewardList->SetItemString( nLine, nCol, (LPCTSTR)strREWARD );
@@ -682,7 +682,7 @@ void CTCraftQuestDlg::SummaryMessage( CString strText)
 			strLINE = strMSG;
 		}
 
-		BYTE c = strText.GetAt(nPOS-1); // ¹«¾ù¿¡ ÀÇÇØ¼­ Tokenize´çÇß³ª.
+		BYTE c = strText.GetAt(nPOS-1); // ë¬´ì—‡ì— ì˜í•´ì„œ Tokenizeë‹¹í–ˆë‚˜.
 		if( c == ' ')
 		{
 			strLINE += ' ';

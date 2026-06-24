@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 
 class CTClientMoveObj : public CTClientObjBase
@@ -22,7 +22,7 @@ public:
 	int m_nPITCH;
 	int m_nDIR;
 
-	// MainChair Àü¿ë
+	// MainChair ì „ìš©
 	D3DXVECTOR3 m_vSyncLastPosition;
 
 protected:

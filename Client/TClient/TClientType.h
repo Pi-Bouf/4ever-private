@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #define TBUILD_NUMBER					(0x00000130)		// RELEASE MODE
 
@@ -11,8 +11,8 @@
 //#define MODIFY_CNP_NAME
 #define ADD_CMGIFT
 #define MAGICITEMSHOP
-#define ADD_SNOW// ´« ÀÌº¥Æ®
-//#define ADD_TEXTOOL // ¸ÁÅäÅØ½ºÃÄ ÁÂÇ¥¼³Á¤ In-game Åø
+#define ADD_SNOW// ëˆˆ ì´ë²¤íŠ¸
+//#define ADD_TEXTOOL // ë§í† í…ìŠ¤ì³ ì¢Œí‘œì„¤ì • In-game íˆ´
 #define ADD_MISSION
 #define EVENT_LOTTERT
 //#define ADD_WEB_CASHSHOP
@@ -23,7 +23,7 @@
 #define MODIFY_TT
 
 #define MODIFY_GUILD
-#define KEYHOOK_CTRLALTDEL		// Ctrl + Alt + Del Å° ÈÄÅ·Ã³¸®.
+#define KEYHOOK_CTRLALTDEL		// Ctrl + Alt + Del í‚¤ í›„í‚¹ì²˜ë¦¬.
 //#define ADD_SKYGARDEN
 //#define SKYGARDEN
 
@@ -883,56 +883,56 @@ typedef enum TPVPM
 
 typedef enum TGM_PBTN
 {
-	TGM_PBTN_WHISPER,						///< ±Ó¸»
-	TGM_PBTN_MAIL,							///< ÆíÁö
-	TGM_PBTN_POINT_REWARD,			///< Æ÷ÀÎÆ® Æ÷»ó
-	TGM_PBTN_PARTY,							///< ÆÄÆ¼ÃÊ´ë
-	TGM_PBTN_FRIEND,						///< Ä£±¸ÃÊ´ë
-	TGM_PBTN_KICK,							///< Ãß¹æ
-	TGM_PBTN_SET_GM,						///< ±æµåÀå À§ÀÓ
-	TGM_PBTN_SET_GSM,						///< ºÎ±æµåÀå À§ÀÓ
-	TGM_PBTN_CANCEL_GSM,					///< ºÎ±æµåÀå ÇØÀÓ
-	TGM_PBTN_PEER_BARON,					///< ³²ÀÛ ÀÓ¸í
-	TGM_PBTN_PEER_VISCOUNT,					///< ÀÚÀÛ ÀÓ¸í	
-	TGM_PBTN_PEER_COUNT,					///< ¹éÀÛ ÀÓ¸í
-	TGM_PBTN_PEER_MARQUIS,					///< ÈÄÀÛ ÀÓ¸í
-	TGM_PBTN_PEER_DUKE,						///< °øÀÛ ÀÓ¸í
-	TGM_PBTN_CANCEL_PEER,					///< ÀÛÀ§ Ãë¼Ò
-	TGM_PBTN_CANCEL,						///< ÆË¾÷´İ±â
-	TGM_PBTN_VOLUNTEER_HESED,				///< Çì¼¼µåÁö¿ø
-	TGM_PBTN_VOLUNTEER_ARDRI,				///< ¾Æ¸£µå¸®Áö¿ø
-	TGM_PBTN_VOLUNTEER_TYCON,				///< Å¸ÀÌÄÜÅ×·Î°¡Áö¿ø
-	TGM_PBTN_VOLUNTEER_GEHBRA,				///< °Ôºê¶óÁö¿ø
+	TGM_PBTN_WHISPER,						///< ê·“ë§
+	TGM_PBTN_MAIL,							///< í¸ì§€
+	TGM_PBTN_POINT_REWARD,			///< í¬ì¸íŠ¸ í¬ìƒ
+	TGM_PBTN_PARTY,							///< íŒŒí‹°ì´ˆëŒ€
+	TGM_PBTN_FRIEND,						///< ì¹œêµ¬ì´ˆëŒ€
+	TGM_PBTN_KICK,							///< ì¶”ë°©
+	TGM_PBTN_SET_GM,						///< ê¸¸ë“œì¥ ìœ„ì„
+	TGM_PBTN_SET_GSM,						///< ë¶€ê¸¸ë“œì¥ ìœ„ì„
+	TGM_PBTN_CANCEL_GSM,					///< ë¶€ê¸¸ë“œì¥ í•´ì„
+	TGM_PBTN_PEER_BARON,					///< ë‚¨ì‘ ì„ëª…
+	TGM_PBTN_PEER_VISCOUNT,					///< ìì‘ ì„ëª…	
+	TGM_PBTN_PEER_COUNT,					///< ë°±ì‘ ì„ëª…
+	TGM_PBTN_PEER_MARQUIS,					///< í›„ì‘ ì„ëª…
+	TGM_PBTN_PEER_DUKE,						///< ê³µì‘ ì„ëª…
+	TGM_PBTN_CANCEL_PEER,					///< ì‘ìœ„ ì·¨ì†Œ
+	TGM_PBTN_CANCEL,						///< íŒì—…ë‹«ê¸°
+	TGM_PBTN_VOLUNTEER_HESED,				///< í—¤ì„¸ë“œì§€ì›
+	TGM_PBTN_VOLUNTEER_ARDRI,				///< ì•„ë¥´ë“œë¦¬ì§€ì›
+	TGM_PBTN_VOLUNTEER_TYCON,				///< íƒ€ì´ì½˜í…Œë¡œê°€ì§€ì›
+	TGM_PBTN_VOLUNTEER_GEHBRA,				///< ê²Œë¸Œë¼ì§€ì›
 	TGM_PBTN_VOLUNTEER_WOODLAND,
-	TGM_PBTN_VOLUNTEER_CANCEL,				///< Áö¿øÃë¼Ò
-	TGM_PBTN_TACTICS_RE_CONTRACT,			///< ¿ëº´ Àç°è¾à
-	TGM_PBTN_TACTICS_KICK,						///< ¿ëº´ °è¾à ÆÄ±â
-	TGM_PBTN_TACTICS_REWARD_POINT,			///< ¿ëº´ Æ÷»ó
-	TGM_PBTN_TACTICS_SELF_KICK,					///< ¿ëº´ Å»Åğ
+	TGM_PBTN_VOLUNTEER_CANCEL,				///< ì§€ì›ì·¨ì†Œ
+	TGM_PBTN_TACTICS_RE_CONTRACT,			///< ìš©ë³‘ ì¬ê³„ì•½
+	TGM_PBTN_TACTICS_KICK,						///< ìš©ë³‘ ê³„ì•½ íŒŒê¸°
+	TGM_PBTN_TACTICS_REWARD_POINT,			///< ìš©ë³‘ í¬ìƒ
+	TGM_PBTN_TACTICS_SELF_KICK,					///< ìš©ë³‘ íƒˆí‡´
 	TGM_PBTN_COUNT
 };
 
 typedef enum RegularInfo
 {
-	RINFO_NAME,							///< Ä³¸¯ÅÍ ÀÌ¸§
-	RINFO_CLASS,						///< Á÷¾÷
-	RINFO_LEVEL,						///< ·¹º§
-	RINFO_SERVICE,						///< ±â¿©µµ
-	RINFO_DUTY,							///< Á÷À§
-	RINFO_PEER,							///< ÀÛÀ§
-	RINFO_POSITION,						///< À§Ä¡
+	RINFO_NAME,							///< ìºë¦­í„° ì´ë¦„
+	RINFO_CLASS,						///< ì§ì—…
+	RINFO_LEVEL,						///< ë ˆë²¨
+	RINFO_SERVICE,						///< ê¸°ì—¬ë„
+	RINFO_DUTY,							///< ì§ìœ„
+	RINFO_PEER,							///< ì‘ìœ„
+	RINFO_POSITION,						///< ìœ„ì¹˜
 	RINFO_COUNT,
 };
 
 typedef enum TacticsInfo
 {
-	TACTICS_INFO_NAME=0, //Ä³¸¯ÅÍ ÀÌ¸§ : m_strName
-	TACTICS_INFO_CLASS, //Á÷¾÷ : m_bClass
-	TACTICS_INFO_LEVEL, //·¹º§ : m_bLevel
-	TACTICS_INFO_GOTPOINT, //ÀüÅõ±â¿©µµ : m_dwGotPoint
-	TACTICS_INFO_POINT, //¼ö´ç : m_dwPoint
-	TACTICS_INFO_DAY, //°è¾à±â°£ : m_bDay;
-	TACTICS_INFO_REGION, //ÇöÀçÀ§Ä¡ : m_dwRegion
+	TACTICS_INFO_NAME=0, //ìºë¦­í„° ì´ë¦„ : m_strName
+	TACTICS_INFO_CLASS, //ì§ì—… : m_bClass
+	TACTICS_INFO_LEVEL, //ë ˆë²¨ : m_bLevel
+	TACTICS_INFO_GOTPOINT, //ì „íˆ¬ê¸°ì—¬ë„ : m_dwGotPoint
+	TACTICS_INFO_POINT, //ìˆ˜ë‹¹ : m_dwPoint
+	TACTICS_INFO_DAY, //ê³„ì•½ê¸°ê°„ : m_bDay;
+	TACTICS_INFO_REGION, //í˜„ì¬ìœ„ì¹˜ : m_dwRegion
 	TACTICS_INFO_COUNT,
 };
 
@@ -970,13 +970,13 @@ typedef enum LatestInfo
 
 typedef enum PREMIUM_MAINTAIN
 {
-	PREMIUM_MAINTAIN1 = 900,	//4S°ñµå ÇÁ¸®¹Ì¾ö(30ÀÏ)
-	PREMIUM_MAINTAIN2 = 901,	//4S°ñµå ÇÁ¸®¹Ì¾ö(10½Ã°£)
-	PREMIUM_MAINTAIN3 = 902,	//4S°ñµå ÇÁ¸®¹Ì¾ö(3½Ã°£)
-	PREMIUM_MAINTAIN4 = 903,	//PC¹æ ÇıÅÃ
-	PREMIUM_MAINTAIN5 = 914,	//4S°ñµå ÇÁ¸®¹Ì¾ö
-	PREMIUM_MAINTAIN6 = 915,	//4S½Ç¹ö ÇÁ¸®¹Ì¾ö
-	PREMIUM_MAINTAIN7 = 916,	//4S ÇÁ¸®¹Ì¾ö		
+	PREMIUM_MAINTAIN1 = 900,	//4Sê³¨ë“œ í”„ë¦¬ë¯¸ì—„(30ì¼)
+	PREMIUM_MAINTAIN2 = 901,	//4Sê³¨ë“œ í”„ë¦¬ë¯¸ì—„(10ì‹œê°„)
+	PREMIUM_MAINTAIN3 = 902,	//4Sê³¨ë“œ í”„ë¦¬ë¯¸ì—„(3ì‹œê°„)
+	PREMIUM_MAINTAIN4 = 903,	//PCë°© í˜œíƒ
+	PREMIUM_MAINTAIN5 = 914,	//4Sê³¨ë“œ í”„ë¦¬ë¯¸ì—„
+	PREMIUM_MAINTAIN6 = 915,	//4Sì‹¤ë²„ í”„ë¦¬ë¯¸ì—„
+	PREMIUM_MAINTAIN7 = 916,	//4S í”„ë¦¬ë¯¸ì—„		
 	PREMIUM_MAINTAIN_COUNT = 7
 };
 
@@ -1255,13 +1255,13 @@ typedef enum TCHAT_SET
 #else
 	TCHAT_SET_NORMAL,				// RDa?
 #endif
-	TCHAT_SET_WHISPER,				// ±Ó¸»
+	TCHAT_SET_WHISPER,				// ê·“ë§
 	TCHAT_SET_PARTY,				// RD?
 	TCHAT_SET_GUILD,				// ??
-	TCHAT_SET_FORCE,				// sÎ´?
+	TCHAT_SET_FORCE,				// sçŒ?
 #ifdef NEW_IF
 #else
-	TCHAT_SET_RESULT,				// °á°ú
+	TCHAT_SET_RESULT,				// ê²°ê³¼
 #endif
 	TCHAT_SET_COUNT
 } *LPTCHAT_SET;
@@ -1283,13 +1283,13 @@ typedef enum TCHAT_MENU
 
 typedef enum TCHAT_POPUP
 {
-	TCHAT_POPUP_WHISPER,			// ±Ó¸»
-	TCHAT_POPUP_NEAR,				// ÀÏ¹İ
-	TCHAT_POPUP_MAP,				// ÀüÃ¼
-	TCHAT_POPUP_PARTY,				// ÆÄÆ¼
-	TCHAT_POPUP_GUILD,				// ±æµå
-	TCHAT_POPUP_FORCE,				// Àü´ë
-	TCHAT_POPUP_GM,					// ¿î¿µÀÚ(GM¹®ÀÇ)
+	TCHAT_POPUP_WHISPER,			// ê·“ë§
+	TCHAT_POPUP_NEAR,				// ì¼ë°˜
+	TCHAT_POPUP_MAP,				// ì „ì²´
+	TCHAT_POPUP_PARTY,				// íŒŒí‹°
+	TCHAT_POPUP_GUILD,				// ê¸¸ë“œ
+	TCHAT_POPUP_FORCE,				// ì „ëŒ€
+	TCHAT_POPUP_GM,					// ìš´ì˜ì(GMë¬¸ì˜)
 	TCHAT_POPUP_COUNT
 } *LPTCHAT_POPUP;
 
@@ -1607,30 +1607,30 @@ typedef enum TTERMRESULT_TYPE
 
 typedef enum TCHAR_STAT
 {
-	TCHARSTAT_STR = 0,	// Èû
-	TCHARSTAT_DEX,		// ¹ÎÃ¸
-	TCHARSTAT_CON,		// Ã¼·Â
-	TCHARSTAT_INT,		// Áö´É
-	TCHARSTAT_WIS,		// ÁöÇı
-	TCHARSTAT_MEN,		// Á¤½Å
+	TCHARSTAT_STR = 0,	// í˜
+	TCHARSTAT_DEX,		// ë¯¼ì²©
+	TCHARSTAT_CON,		// ì²´ë ¥
+	TCHARSTAT_INT,		// ì§€ëŠ¥
+	TCHARSTAT_WIS,		// ì§€í˜œ
+	TCHARSTAT_MEN,		// ì •ì‹ 
 	TCHARSTAT_COUNT
 } *LPTCHAR_STAT;
 
 
 typedef enum TCHAR_BASIC
 {
-	TCHARBASIC_PAP = 0,	// ¹°¸® °ø°İ·Â
-	TCHARBASIC_PDP,		// ¹°¸® ¹æ¾î·Â
-	TCHARBASIC_PSP,		// ¹°¸® ¿ø°Å¸® °ø°İ·Â
-	TCHARBASIC_PAL,		// ¹°¸® °ø°İµî±Ş
-	TCHARBASIC_PDL,		// ¹°¸® ¹æ¾îµî±Ş
-	TCHARBASIC_PCR,		// ¹°¸® Ä¡¸íÈ®·ü
-	TCHARBASIC_MAP,		// ¸¶¹ı °ø°İ·Â
-	TCHARBASIC_MDP,		// ¸¶¹ı ¹æ¾î·Â
-	TCHARBASIC_STA,		// ¸¶¹ı ½ÃÀü À¯ÁöÈ®·ü
-	TCHARBASIC_MAL,		// ¸¶¹ı °ø°İµî±Ş
-	TCHARBASIC_MDL,		// ¸¶¹ı ¹æ¾îµî±Ş
-	TCHARBASIC_MCR,		// ¸¶¹ı Ä¡¸íÈ®·ü
+	TCHARBASIC_PAP = 0,	// ë¬¼ë¦¬ ê³µê²©ë ¥
+	TCHARBASIC_PDP,		// ë¬¼ë¦¬ ë°©ì–´ë ¥
+	TCHARBASIC_PSP,		// ë¬¼ë¦¬ ì›ê±°ë¦¬ ê³µê²©ë ¥
+	TCHARBASIC_PAL,		// ë¬¼ë¦¬ ê³µê²©ë“±ê¸‰
+	TCHARBASIC_PDL,		// ë¬¼ë¦¬ ë°©ì–´ë“±ê¸‰
+	TCHARBASIC_PCR,		// ë¬¼ë¦¬ ì¹˜ëª…í™•ë¥ 
+	TCHARBASIC_MAP,		// ë§ˆë²• ê³µê²©ë ¥
+	TCHARBASIC_MDP,		// ë§ˆë²• ë°©ì–´ë ¥
+	TCHARBASIC_STA,		// ë§ˆë²• ì‹œì „ ìœ ì§€í™•ë¥ 
+	TCHARBASIC_MAL,		// ë§ˆë²• ê³µê²©ë“±ê¸‰
+	TCHARBASIC_MDL,		// ë§ˆë²• ë°©ì–´ë“±ê¸‰
+	TCHARBASIC_MCR,		// ë§ˆë²• ì¹˜ëª…í™•ë¥ 
 	TCHARBASIC_COUNT
 } *LPTCHAR_BASIC;
 
@@ -2112,17 +2112,17 @@ typedef enum TITEM_QUALITY
 
 typedef enum TCOMMUNITY_FRAME
 {
-	TCOMMUNITY_FRAME_GUILDNORMAL,			///< ¿ä¾à
-	TCOMMUNITY_FRAME_GUILDMEMBER,			///< ¸íºÎ
-	TCOMMUNITY_FRAME_GUILDTERRITORY,		///< ¿µÅä
-	TCOMMUNITY_FRAME_GUILDVOLUNTEER,		///< Áö¿øÀÚ
+	TCOMMUNITY_FRAME_GUILDNORMAL,			///< ìš”ì•½
+	TCOMMUNITY_FRAME_GUILDMEMBER,			///< ëª…ë¶€
+	TCOMMUNITY_FRAME_GUILDTERRITORY,		///< ì˜í† 
+	TCOMMUNITY_FRAME_GUILDVOLUNTEER,		///< ì§€ì›ì
 	TCOMMUNITY_FRAME_COUNT
 } *LPTCOMMUNITY_FRAME;
 
 typedef enum TGUILDAPP_FRAME
 {
-	TGUILDAPP_FRAME_OFFER,					///< ±æµå¿ø¸ğÁı
-	TGUILDAPP_FRAME_SEEK,					///< Áö¿øµî·Ï
+	TGUILDAPP_FRAME_OFFER,					///< ê¸¸ë“œì›ëª¨ì§‘
+	TGUILDAPP_FRAME_SEEK,					///< ì§€ì›ë“±ë¡
 	TGUILDAPP_FRAME_COUNT,
 } *LPTGUILDAPP_FRAME;
 
@@ -2233,19 +2233,19 @@ typedef enum TGUI_YBASE
 
 typedef enum TGUILD_MEMBER
 {
-	TGM_REGULAR,					///< Á¤±Ô±º
-	TGM_TACTICS,					///< Áö¿øº´ (¿ëº´)
+	TGM_REGULAR,					///< ì •ê·œêµ°
+	TGM_TACTICS,					///< ì§€ì›ë³‘ (ìš©ë³‘)
 	TGM_COUNT
 } *LPTGUILD_MEMBER;
 
 typedef enum TITEMMAGIC_RV
 {
-	TITEMMAGIC_RV_NONE,				///< º¸Á¤¾øÀ½
-	TITEMMAGIC_RV_AP,				///< ¹°¸®°ø°İ·Â
-	TITEMMAGIC_RV_MAP,				///< ¸¶¹ı°ø°İ·Â
-	TITEMMAGIC_RV_FM,				///< ¹°¸®¼º´É
-	TITEMMAGIC_RV_MFM,				///< ¸¶¹ı¼º´É
-	TITEMMAGIC_RV_SKILL,			///< ½ºÅ³ÁöÁ¤
+	TITEMMAGIC_RV_NONE,				///< ë³´ì •ì—†ìŒ
+	TITEMMAGIC_RV_AP,				///< ë¬¼ë¦¬ê³µê²©ë ¥
+	TITEMMAGIC_RV_MAP,				///< ë§ˆë²•ê³µê²©ë ¥
+	TITEMMAGIC_RV_FM,				///< ë¬¼ë¦¬ì„±ëŠ¥
+	TITEMMAGIC_RV_MFM,				///< ë§ˆë²•ì„±ëŠ¥
+	TITEMMAGIC_RV_SKILL,			///< ìŠ¤í‚¬ì§€ì •
 	TITEMMAGIC_RV_COUNT
 } *LPTITEMMAGIC_RV;
 
@@ -2270,9 +2270,9 @@ typedef enum TCHATCOL_KIND
 
 typedef enum TMSGBOXOPEN_TYPE
 {
-	TMSGBOXOPEN_NONE,					// ±âÁ¸¿¡ ¶° ÀÖ´Â ¸Ş½ÃÁö ¹Ú½º°¡ ÀÖÀ¸¸é ¾Æ¹«°Íµµ ÇÏÁö ¾Ê´Â´Ù.
-	TMSGBOXOPEN_CLOSEALL_ALREADY,		// ±âÁ¸¿¡ ¶° ÀÖ´Â ¸Ş½ÃÁö ¹Ú½º°¡ ÀÖÀ¸¸é ¸ğµÎ ´İ´Â´Ù.
-	TMSGBOXOPEN_OVERLAP					// ±âÁ¸¿¡ ¶° ÀÖ´Â ¸Ş½ÃÁö ¹Ú½º À§¿¡ µ¤¾î¼­ Ãâ·ÂÇÑ´Ù. ´İÀ¸¸é ¿¹Àü²² º¹¿ø µÈ´Ù.
+	TMSGBOXOPEN_NONE,					// ê¸°ì¡´ì— ë–  ìˆëŠ” ë©”ì‹œì§€ ë°•ìŠ¤ê°€ ìˆìœ¼ë©´ ì•„ë¬´ê²ƒë„ í•˜ì§€ ì•ŠëŠ”ë‹¤.
+	TMSGBOXOPEN_CLOSEALL_ALREADY,		// ê¸°ì¡´ì— ë–  ìˆëŠ” ë©”ì‹œì§€ ë°•ìŠ¤ê°€ ìˆìœ¼ë©´ ëª¨ë‘ ë‹«ëŠ”ë‹¤.
+	TMSGBOXOPEN_OVERLAP					// ê¸°ì¡´ì— ë–  ìˆëŠ” ë©”ì‹œì§€ ë°•ìŠ¤ ìœ„ì— ë®ì–´ì„œ ì¶œë ¥í•œë‹¤. ë‹«ìœ¼ë©´ ì˜ˆì „ê»˜ ë³µì› ëœë‹¤.
 } *LPTMSGBOXOPEN_TYPE;
 
 typedef enum TCHARGETYPE
@@ -3467,7 +3467,7 @@ struct tagTMESSAGEBOX
 	DWORD dwFrameID;
 	TCOMMAND vYesID;
 	TCOMMAND vNoID;
-	TCOMMAND vIgnoreID; // Ã¢À» °­Á¦ Á¾·á ´çÇÒ °æ¿ì ½ÇÇàÇÑ ¸Ş´º
+	TCOMMAND vIgnoreID; // ì°½ì„ ê°•ì œ ì¢…ë£Œ ë‹¹í•  ê²½ìš° ì‹¤í–‰í•œ ë©”ë‰´
 	BYTE bEdit;
 	BYTE bModal;
 	CString strTitle;
@@ -3954,7 +3954,7 @@ struct tagTTEVENTMATCH
 	BYTE m_bType;
 	CString m_strChoice;
 	BYTE m_bCountry;
-	FLOAT m_fRate; //ºñÀ²
+	FLOAT m_fRate; //ë¹„ìœ¨
 	DWORD m_dwAmount;
 	VTTEVENTTARGET m_vList;
 
@@ -4006,9 +4006,9 @@ struct tagTMATCHPLAYER
 	BYTE m_bClass;
 	DWORD m_dwRank;
 	DWORD m_dwMonthRank;
-	BYTE m_bQfWin; // 8°­ ½ÂÆĞ
-	BYTE m_bSfWin; // 4°­ ½ÂÆĞ
-	BYTE m_bFWin; // °á½Â ½ÂÆĞ
+	BYTE m_bQfWin; // 8ê°• ìŠ¹íŒ¨
+	BYTE m_bSfWin; // 4ê°• ìŠ¹íŒ¨
+	BYTE m_bFWin; // ê²°ìŠ¹ ìŠ¹íŒ¨
 
 	VTMATCHPARTY m_vParty;
 
@@ -4031,20 +4031,20 @@ struct tagTMATCHPLAYER
 struct tagTMATCH
 {
 	BYTE m_bGroup;
-	BYTE m_bEntryID; //Á¾¸ñ
-	CString m_strEntry; //Á¾¸ñÀÌ¸§
-	BYTE m_bType; //±¸ºĞ
-	DWORD m_dwClass; // Á¾Á·
-	BYTE m_bStep; // ÁøÇà»óÈ²
-	BYTE m_bMyApplied; // Áö¿ø
-	DWORD m_dwFee; // ¼ö¼ö·á
-	DWORD m_dwBackFee; // È¯ºÒ·á
-	BYTE m_bPermitCount; // Çã°¡¼­ °¹¼ö
-	BYTE m_bNeed; // ÀÏ¹İÁ¤¿ø
-	WORD m_wTotalApplicant; // ÀÏ¹İÁö¿øÀÚ¼ö
-	BYTE m_bRewardCount; // »óÇ°¼ö
-	BYTE m_bMinLevel;	//ÃÖ¼Ò ·¹º§
-	BYTE m_bMaxLevel; // ÃÖ´ë ·¹º§
+	BYTE m_bEntryID; //ì¢…ëª©
+	CString m_strEntry; //ì¢…ëª©ì´ë¦„
+	BYTE m_bType; //êµ¬ë¶„
+	DWORD m_dwClass; // ì¢…ì¡±
+	BYTE m_bStep; // ì§„í–‰ìƒí™©
+	BYTE m_bMyApplied; // ì§€ì›
+	DWORD m_dwFee; // ìˆ˜ìˆ˜ë£Œ
+	DWORD m_dwBackFee; // í™˜ë¶ˆë£Œ
+	BYTE m_bPermitCount; // í—ˆê°€ì„œ ê°¯ìˆ˜
+	BYTE m_bNeed; // ì¼ë°˜ì •ì›
+	WORD m_wTotalApplicant; // ì¼ë°˜ì§€ì›ììˆ˜
+	BYTE m_bRewardCount; // ìƒí’ˆìˆ˜
+	BYTE m_bMinLevel;	//ìµœì†Œ ë ˆë²¨
+	BYTE m_bMaxLevel; // ìµœëŒ€ ë ˆë²¨
 
 	VTMATCHREWARD m_vReward;
 	VTMATCHPLAYER m_vPlayer;

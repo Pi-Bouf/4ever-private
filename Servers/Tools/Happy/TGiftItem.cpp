@@ -1,4 +1,4 @@
-// TGiftItem.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// TGiftItem.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -7,7 +7,7 @@
 #include "MainFrm.h"
 #include "HappyDoc.h"
 
-// CTGiftItem ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CTGiftItem ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CTGiftItem, CDialog)
 CTGiftItem::CTGiftItem(CWnd* pParent /*=NULL*/)
@@ -39,7 +39,7 @@ BEGIN_MESSAGE_MAP(CTGiftItem, CDialog)
 END_MESSAGE_MAP()
 
 
-// CTGiftItem ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CTGiftItem ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 void CTGiftItem::OnBnClickedGiftSet()
 {
@@ -122,7 +122,7 @@ void CTGiftItem::Init()
 	{
 		m_cbWorld.AddString(_T("SELECT"));
 
-		//	¿ùµå¼­¹ö ¸®½ºÆ® ±¸ÇÏ±â
+		//	ì›”ë“œì„œë²„ ë¦¬ìŠ¤íŠ¸ êµ¬í•˜ê¸°
 		MAPGROUP::iterator itG;
 		for(itG=pDoc->m_mapGroup.begin(); itG!=pDoc->m_mapGroup.end(); itG++)
 		{	
@@ -132,7 +132,7 @@ void CTGiftItem::Init()
 	}
 	m_cbWorld.SetCurSel(0);
 	
-	//	ÅØ½ºÆ® ¹Ú½º ÃÊ±âÈ­
+	//	í…ìŠ¤íŠ¸ ë°•ìŠ¤ ì´ˆê¸°í™”
 	SetDlgItemText(IDC_GIFT_NAME, _T(""));
 	SetDlgItemText(IDC_GIFT_GID, _T(""));
 }

@@ -153,7 +153,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalOptions>
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:.949 
       </AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\Lib\Own\HwidLib\HwidLib;..\..\Lib\Own\TProtocol\Include;..\..\Lib\Own\Engine Lib\Engine Lib;..\..\Lib\Own\TCML\TCML;..\..\Lib\Own\TChart\TChart;..\..\Lib\Own\TComp\TComp;..\History Files;..\..\Lib\3rdParty\VLD\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -193,7 +193,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalOptions>
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:.949 
       </AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\Lib\Own\HwidLib\HwidLib;..\..\Lib\Own\TProtocol\Include;..\..\Lib\Own\Engine Lib\Engine Lib;..\..\Lib\Own\TCML\TCML;..\..\Lib\Own\TChart\TChart;..\..\Lib\Own\TComp\TComp;..\History Files;..\..\Lib\3rdParty\VLD\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -236,7 +236,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalOptions>
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:.949 
       </AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
@@ -291,7 +291,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalOptions>
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:.949 
       </AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
@@ -343,7 +343,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Test Release|Win32'">
     <ClCompile>
-      <AdditionalOptions>
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:.949 
       </AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
@@ -390,7 +390,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Test Release|x64'">
     <ClCompile>
-      <AdditionalOptions>
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:.949 
       </AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>

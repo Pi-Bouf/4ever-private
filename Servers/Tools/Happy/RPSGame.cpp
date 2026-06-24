@@ -1,4 +1,4 @@
-// RPSGame.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// RPSGame.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 #include "stdafx.h"
 #include "Happy.h"
@@ -8,7 +8,7 @@
 #include "HappyDoc.h"
 
 
-// CRPSGame ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CRPSGame ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CRPSGame, CDialog)
 CRPSGame::CRPSGame(CWnd* pParent /*=NULL*/)
@@ -109,7 +109,7 @@ void CRPSGame::InitWorld()
 	m_cbWorld.AddString(_T("(Selected World Server)"));
 	m_cbWorld.SetCurSel(0);
 
-	//	¿ùµå¼­¹ö ¸®½ºÆ® ±¸ÇÏ±â
+	//	ì›”ë“œì„œë²„ ë¦¬ìŠ¤íŠ¸ êµ¬í•˜ê¸°
 	MAPGROUP::iterator itG;
 	for(itG=pDoc->m_mapGroup.begin(); itG!=pDoc->m_mapGroup.end(); itG++)
 	{	
@@ -143,14 +143,14 @@ void CRPSGame::InitRPSList()
 	}		
 
 	m_lcRPCList.SetExtendedStyle(LVS_EX_FULLROWSELECT/* | LVS_EX_GRIDLINES | LVS_EX_FLATSB | LVS_EX_SUBITEMIMAGES*/);	
-	// ¸®½ºÆ® ¾ÆÀÌÅÛ ³ôÀÌ ¼³Á¤
+	// ë¦¬ìŠ¤íŠ¸ ì•„ì´í…œ ë†’ì´ ì„¤ì •
 	m_lcRPCList.SetRowHeight(20);
 
-	// ¾ğ´õ¶óÀÎ ¼³Á¤
+	// ì–¸ë”ë¼ì¸ ì„¤ì •
 	m_lcRPCList.SetUnderLine(TRUE);
 	m_lcRPCList.SetColorUnderLine( RGB(240,240,240) );
 
-	// Çì´õ ³ôÀÌ ¼³Á¤
+	// í—¤ë” ë†’ì´ ì„¤ì •
 	m_lcRPCList.m_HeaderCtrl.SetHeight(25);
 
 	int arColWidthList[] = {70,70,70,70,95,95};
@@ -237,7 +237,7 @@ void CRPSGame::ClearList()
 }
 
 
-// CRPSGame ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CRPSGame ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 void CRPSGame::OnCbnSelchangeWorld()
 {
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
@@ -305,7 +305,7 @@ void CRPSGame::OnCbnSelchangeType()
 
 int CRPSGame::GetSelectItem()
 {
-	// ¼±ÅÃµÈ ¾ÆÀÌÅÛ Ã£±â		
+	// ì„ íƒëœ ì•„ì´í…œ ì°¾ê¸°		
 	int iCount = m_lcRPCList.GetItemCount();
 	for(int i = 0; i < iCount; i++)
 	{

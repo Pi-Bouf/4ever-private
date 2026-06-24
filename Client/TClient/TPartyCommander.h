@@ -1,36 +1,36 @@
-#pragma once
+ï»¿#pragma once
 
 class CTPartyCommander
 {
 public:
-	/// ¸í·É ¿­°Å
+	/// ëª…ë ¹ ì—´ê±°
 	enum CmdEnum
 	{
-		CMD_PARTY_INVITE,				///< ÆÄÆ¼ ÃÊ´ë
-		CMD_PARTY_KICK,					///< ÆÄÆ¼¿ø Ãß¹æ
-		CMD_PARTY_OUT,					///< ÆÄÆ¼ ³ª°¡±â
-		CMD_CORPS_INVITE,				///< Àü´ë ÃÊ´ë
-		CMD_ASSISTANT_INVITE,			///< ºÎ°ü ÃÊ´ë
+		CMD_PARTY_INVITE,				///< íŒŒí‹° ì´ˆëŒ€
+		CMD_PARTY_KICK,					///< íŒŒí‹°ì› ì¶”ë°©
+		CMD_PARTY_OUT,					///< íŒŒí‹° ë‚˜ê°€ê¸°
+		CMD_CORPS_INVITE,				///< ì „ëŒ€ ì´ˆëŒ€
+		CMD_ASSISTANT_INVITE,			///< ë¶€ê´€ ì´ˆëŒ€
 		CMD_COUNT
 	};
 
-	/// ¸í·É¿¡ µû¸¥ ¹®ÀÚ¿­ ¹è¿­
+	/// ëª…ë ¹ì— ë”°ë¥¸ ë¬¸ìžì—´ ë°°ì—´
 	static const DWORD CMD_STRING[CMD_COUNT];
 
 public:
-	/// ÆÄÆ¼ Ä¿¸Çµå ÀÎ½ºÅÏ½º¸¦ ¾ò´Â´Ù.
+	/// íŒŒí‹° ì»¤ë§¨ë“œ ì¸ìŠ¤í„´ìŠ¤ë¥¼ ì–»ëŠ”ë‹¤.
 	static CTPartyCommander* GetInstance();
 
-	/// Ã¤ÆÃ ¸Þ½ÃÁö¿¡ ÀÇÇÑ ÆÄÆ¼ ¸í·É ÀÌº¥Æ®¸¦ Ã³¸®ÇÑ´Ù.
+	/// ì±„íŒ… ë©”ì‹œì§€ì— ì˜í•œ íŒŒí‹° ëª…ë ¹ ì´ë²¤íŠ¸ë¥¼ ì²˜ë¦¬í•œë‹¤.
 	static CString OnPartyCmdByChatMsg(const CString& strCMD, const VECTORSTRING& vPARAM, DWORD dwUSER);
-	/// Ã¤ÆÃ ¸Þ½ÃÁö Ä¿¸Çµå¸¦ µî·ÏÇÑ´Ù.
+	/// ì±„íŒ… ë©”ì‹œì§€ ì»¤ë§¨ë“œë¥¼ ë“±ë¡í•œë‹¤.
 	static void RegChatCmds();
 
 protected:
 
 
 public:
-	/// ÆÄÆ¼ °ü·Ã ¸í·ÉÀ» ³»¸°´Ù.
+	/// íŒŒí‹° ê´€ë ¨ ëª…ë ¹ì„ ë‚´ë¦°ë‹¤.
 	void DoPartyCommand(CmdEnum eCmd, const CString& strParam="");
 
 protected:

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 #include "TNormalCabinetDlg.h"
 #include "TClientGame.h"
 #include "TClient.h"
@@ -64,7 +64,7 @@ void CTCashCabinetDlg::SetupComponent()
 
 	m_nMaxItemSlot	= MAX_ITEM_SLOT;
 	m_nMaxItemCol	= MAX_ITEM_COLUMN;
-	m_nMaxCabCnt	= 1; // Ä³½¬ ¾ÆÀÌÅÛÀÇ °æ¿ì º¸°üÇÔÀº ÇÏ³ªÀÓ!!
+	m_nMaxCabCnt	= 1; // ìºì‰¬ ì•„ì´í…œì˜ ê²½ìš° ë³´ê´€í•¨ì€ í•˜ë‚˜ì„!!
 	m_nMaxStorage	= 0;
 
 	m_pSelectTxt= NULL;

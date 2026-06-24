@@ -1,4 +1,4 @@
-// PatchBar.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// PatchBar.cpp : êµ¬í˜„ íŒŒì¼ìž…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -7,7 +7,7 @@
 #include ".\patchbar.h"
 
 
-// CPatchBar ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CPatchBar ëŒ€í™” ìƒìžìž…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CPatchBar, CDialogBar)
 CPatchBar::CPatchBar(CWnd* pParent /*=NULL*/)
@@ -47,13 +47,13 @@ void CPatchBar::SetFtp(CString *strAddr, CString *strUser, DWORD *dwPort)
 	SetDlgItemInt( IDC_EDIT_FTP_PORT, *dwPort );
 }
 
-// 06/02/01 ¹Ú»ó¿¬ 
+// 06/02/01 ë°•ìƒì—° 
 void CPatchBar::OnUpdateCompareShow(CCmdUI *pCmdUI)
 {
 	pCmdUI->Enable(m_bEnableCompare);
 }
 
-// 06/02/01 ¹Ú»ó¿¬ 
+// 06/02/01 ë°•ìƒì—° 
 void CPatchBar::OnUpdatePatchUpdateShow(CCmdUI *pCmdUI)
 {
 	pCmdUI->Enable(m_bEnablePatchUpdate);

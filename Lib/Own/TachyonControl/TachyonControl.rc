@@ -1,4 +1,4 @@
-// Microsoft Visual C++ generated resource script.
+Ôªø// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -13,12 +13,12 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// «—±πæÓ resources
+// ÌïúÍµ≠Ïñ¥ resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
 #ifdef _WIN32
 LANGUAGE LANG_KOREAN, SUBLANG_DEFAULT
-#pragma code_page(949)
+#pragma code_page(65001)
 #endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
@@ -46,17 +46,17 @@ END
 
 #endif    // APSTUDIO_INVOKED
 
-#endif    // «—±πæÓ resources
+#endif    // ÌïúÍµ≠Ïñ¥ resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// øµæÓ(πÃ±π) resources
+// ÏòÅÏñ¥(ÎØ∏Íµ≠) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 #ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
+#pragma code_page(65001)
 #endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
@@ -214,7 +214,7 @@ BEGIN
 END
 #endif    // APSTUDIO_INVOKED
 
-#endif    // øµæÓ(πÃ±π) resources
+#endif    // ¬ø¬µ¬æ√Æ(¬π√å¬±¬π) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

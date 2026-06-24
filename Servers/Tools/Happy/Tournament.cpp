@@ -1,4 +1,4 @@
-// Tournament.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// Tournament.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -8,7 +8,7 @@
 #include "HappyDoc.h"
 
 
-// CTournament ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CTournament ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CTournament, CDialog)
 CTournament::CTournament(CWnd* pParent /*=NULL*/)
@@ -70,12 +70,12 @@ BEGIN_MESSAGE_MAP(CTournament, CDialog)
 END_MESSAGE_MAP()
 
 
-// CTournament ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CTournament ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
-//	±âº» ÃÊ±âÈ­
+//	ê¸°ë³¸ ì´ˆê¸°í™”
 void CTournament::Init()
 {
-	//	´ÙÀÌ¾ó·Î±× °ª ÃÊ±âÈ­
+	//	ë‹¤ì´ì–¼ë¡œê·¸ ê°’ ì´ˆê¸°í™”
 	m_cbWeek.SetCurSel(0);
 	m_cbDay.SetCurSel(0);
 	SetDlgItemInt(IDC_EB_THOUR,0);
@@ -85,12 +85,12 @@ void CTournament::Init()
 	ClearCtrl();
 	InitCharInfo();
 
-	//	Åä³Ê¸ÕÆ® µ¥ÀÌÅÍ È®ÀÎ
+	//	í† ë„ˆë¨¼íŠ¸ ë°ì´í„° í™•ì¸
 	if(m_bNewTNT)
 		delete m_pTNT;	
 	m_pTNT = NULL;
 
-	//	´ÙÀÌ¾ó·Î±× ÄÁÆ®·Ñ Enable ¼³Á¤
+	//	ë‹¤ì´ì–¼ë¡œê·¸ ì»¨íŠ¸ë¡¤ Enable ì„¤ì •
 	SetEnableCtrl(TRUE);
 	
 	GetDlgItem(IDC_BTN_UPDATETEVENT)->EnableWindow(TRUE);
@@ -98,7 +98,7 @@ void CTournament::Init()
 	GetDlgItem(IDC_BTN_TUPDATEDATE)->EnableWindow(TRUE);
 }
 
-//	Åä³Ê¸ÕÆ® µ¥ÀÌÅÍ ÀÖÀ»½Ã
+//	í† ë„ˆë¨¼íŠ¸ ë°ì´í„° ìˆì„ì‹œ
 void CTournament::Init(LPTOURNAMENT pTNT)
 {
 	if(!pTNT)
@@ -257,7 +257,7 @@ void CTournament::InitWorld()
 	m_cbWorld.AddString(_T("(Selected World Server)"));
 	m_cbWorld.SetCurSel(0);
 
-	//	¿ùµå¼­¹ö ¸®½ºÆ® ±¸ÇÏ±â
+	//	ì›”ë“œì„œë²„ ë¦¬ìŠ¤íŠ¸ êµ¬í•˜ê¸°
 	MAPGROUP::iterator itG;
 	for(itG=pDoc->m_mapGroup.begin(); itG!=pDoc->m_mapGroup.end(); itG++)
 	{	
@@ -292,14 +292,14 @@ void CTournament::InitEventList()
 	m_lcTEvent.SetExtendedStyle(LVS_EX_FULLROWSELECT/* | LVS_EX_GRIDLINES | LVS_EX_FLATSB | LVS_EX_SUBITEMIMAGES*/);
 	
 
-	// ¸®½ºÆ® ¾ÆÀÌÅÛ ³ôÀÌ ¼³Á¤
+	// ë¦¬ìŠ¤íŠ¸ ì•„ì´í…œ ë†’ì´ ì„¤ì •
 	m_lcTEvent.SetRowHeight(20);
 
-	// ¾ğ´õ¶óÀÎ ¼³Á¤
+	// ì–¸ë”ë¼ì¸ ì„¤ì •
 	m_lcTEvent.SetUnderLine(TRUE);
 	m_lcTEvent.SetColorUnderLine( RGB(240,240,240) );
 
-	// Çì´õ ³ôÀÌ ¼³Á¤
+	// í—¤ë” ë†’ì´ ì„¤ì •
 	m_lcTEvent.m_HeaderCtrl.SetHeight(25);
 
 	int arColWidthList[] = {50,140,60,80,80,80,80,55,50,50,130};
@@ -310,7 +310,7 @@ void CTournament::InitEventList()
 
 void CTournament::InitStepList()
 {
-	// ¸®½ºÆ® ÄÁÆ®·ÑÀÇ ¸ğµç ÄÃ·³ »èÁ¦
+	// ë¦¬ìŠ¤íŠ¸ ì»¨íŠ¸ë¡¤ì˜ ëª¨ë“  ì»¬ëŸ¼ ì‚­ì œ
 	for(int i = 0; i < MAX_TOURNAMENTSTEP_COLUMN ; i++)
         m_lcStep.DeleteColumn(0);
 
@@ -332,14 +332,14 @@ void CTournament::InitStepList()
 	m_lcStep.SetExtendedStyle(LVS_EX_FULLROWSELECT/* | LVS_EX_GRIDLINES | LVS_EX_FLATSB | LVS_EX_SUBITEMIMAGES*/);
 	
 	
-	// ¸®½ºÆ® ¾ÆÀÌÅÛ ³ôÀÌ ¼³Á¤
+	// ë¦¬ìŠ¤íŠ¸ ì•„ì´í…œ ë†’ì´ ì„¤ì •
 	m_lcStep.SetRowHeight(20);
 
-	// ¾ğ´õ¶óÀÎ ¼³Á¤
+	// ì–¸ë”ë¼ì¸ ì„¤ì •
 	m_lcStep.SetUnderLine(TRUE);
 	m_lcStep.SetColorUnderLine( RGB(240,240,240) );
 
-	// Çì´õ ³ôÀÌ ¼³Á¤
+	// í—¤ë” ë†’ì´ ì„¤ì •
 	m_lcStep.m_HeaderCtrl.SetHeight(25);
 
 	int arColWidthList[] = {50, 200, 70,120};
@@ -485,7 +485,7 @@ void CTournament::ResetStepList(BYTE bNewList)
 
 void CTournament::OnBnClickedBtnAddEvent()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	
 	if(!m_pTNT)
 	{	
@@ -603,7 +603,7 @@ int CTournament::AddEventList(COLORREF crText)
 
 void CTournament::OnBnClickedBtnDelEvent()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	if(!m_pTNT)	
 		return;
 	
@@ -633,7 +633,7 @@ void CTournament::OnBnClickedBtnDelEvent()
 
 void CTournament::OnBnClickedBtnAddEntry()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -699,7 +699,7 @@ void CTournament::OnBnClickedBtnAddEntry()
 
 void CTournament::OnBnClickedBtnDelEntry()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -834,7 +834,7 @@ void CTournament::OnBnClickedBtnNewTournament()
 
 void CTournament::OnBnClickedCancel()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	ClearCtrl();
 
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
@@ -868,10 +868,10 @@ void CTournament::ClearTList()
 	m_lcTList.DeleteAllItems();
 }
 
-//	world ÄŞº¸¹Ú½º Å¬¸¯
+//	world ì½¤ë³´ë°•ìŠ¤ í´ë¦­
 void CTournament::OnCbnSelchangeCbTList()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
@@ -911,7 +911,7 @@ void CTournament::OnCbnSelchangeCbTList()
 	
 	ClearCtrl();
 	SetEnableCtrl(FALSE);
-	//	¼­¹ö¿¡¼­ Åä³Ê¸ÕÆ® ¸®½ºÆ®¸¦ ´Ş¶ó°í ¿äÃ»
+	//	ì„œë²„ì—ì„œ í† ë„ˆë¨¼íŠ¸ ë¦¬ìŠ¤íŠ¸ë¥¼ ë‹¬ë¼ê³  ìš”ì²­
 	pDoc->SendCT_TOURNAMENTEVENT_REQ(m_bSelectWorld, TET_LIST, NULL);
 }
 
@@ -948,7 +948,7 @@ void CTournament::DelList(CString str)
 // Tournament delete
 void CTournament::OnBnClickedBtnDelt()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
@@ -962,13 +962,13 @@ void CTournament::OnBnClickedBtnDelt()
 	if(!m_pTNT)
 		return;
 
-	//	ÇöÀç Åä³Ê¸ÕÆ® »èÁ¦ ¿äÃ»
+	//	í˜„ì¬ í† ë„ˆë¨¼íŠ¸ ì‚­ì œ ìš”ì²­
 	pDoc->SendCT_TOURNAMENTEVENT_REQ(m_bSelectWorld, TET_SCHEDULEDEL,m_pTNT);
 }
 
 void CTournament::OnBnClickedBtnAddreward()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 
 	int iEventID = AddRewardList(TRUE,RGB(242,149,48));
 	if(iEventID < 0)
@@ -1045,7 +1045,7 @@ int CTournament::AddRewardList(BYTE bCheckEvent,COLORREF crText)
 
 void CTournament::OnBnClickedBtnDelreward()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	if(!m_pTNT)
 		return;
 
@@ -1095,14 +1095,14 @@ void CTournament::InitCharInfo()
 
 	m_lcCharInfo.SetExtendedStyle(LVS_EX_FULLROWSELECT/* | LVS_EX_GRIDLINES | LVS_EX_FLATSB | LVS_EX_SUBITEMIMAGES*/);
 	
-	// ¸®½ºÆ® ¾ÆÀÌÅÛ ³ôÀÌ ¼³Á¤
+	// ë¦¬ìŠ¤íŠ¸ ì•„ì´í…œ ë†’ì´ ì„¤ì •
 	m_lcCharInfo.SetRowHeight(20);
 
-	// ¾ğ´õ¶óÀÎ ¼³Á¤
+	// ì–¸ë”ë¼ì¸ ì„¤ì •
 	m_lcCharInfo.SetUnderLine(TRUE);
 	m_lcCharInfo.SetColorUnderLine( RGB(240,240,240) );
 
-	// Çì´õ ³ôÀÌ ¼³Á¤
+	// í—¤ë” ë†’ì´ ì„¤ì •
 	m_lcCharInfo.m_HeaderCtrl.SetHeight(25);	
 
 	int arColWidthList[] = {60, 120};
@@ -1162,14 +1162,14 @@ void CTournament::InitReward()
 
 	m_lcReward.SetExtendedStyle(LVS_EX_FULLROWSELECT/* | LVS_EX_GRIDLINES | LVS_EX_FLATSB | LVS_EX_SUBITEMIMAGES*/);
 	
-	// ¸®½ºÆ® ¾ÆÀÌÅÛ ³ôÀÌ ¼³Á¤
+	// ë¦¬ìŠ¤íŠ¸ ì•„ì´í…œ ë†’ì´ ì„¤ì •
 	m_lcReward.SetRowHeight(20);
 
-	// ¾ğ´õ¶óÀÎ ¼³Á¤
+	// ì–¸ë”ë¼ì¸ ì„¤ì •
 	m_lcReward.SetUnderLine(TRUE);
 	m_lcReward.SetColorUnderLine( RGB(240,240,240) );
 
-	// Çì´õ ³ôÀÌ ¼³Á¤
+	// í—¤ë” ë†’ì´ ì„¤ì •
 	m_lcReward.m_HeaderCtrl.SetHeight(25);
 
 	int arColWidthList[] = {40, 90, 70, 60, 90, 60};
@@ -1211,7 +1211,7 @@ void CTournament::AddReward( LPTREWARD pREWARD,BYTE bIsEvent )
 
 void CTournament::OnBnClickedBtnUpdateTEvent()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -1248,7 +1248,7 @@ void CTournament::OnBnClickedBtnUpdateTEvent()
 
 void CTournament::OnBnClickedBtnUpdateTSchedule()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -1319,7 +1319,7 @@ void CTournament::OnBnClickedBtnUpdateTSchedule()
 
 void CTournament::OnBnClickedBtnEndChar()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -1337,7 +1337,7 @@ void CTournament::OnBnClickedBtnEndChar()
 
 int	CTournament::ItemSelectTList()
 {
-	// ¼±ÅÃµÈ ¾ÆÀÌÅÛ Ã£±â		
+	// ì„ íƒëœ ì•„ì´í…œ ì°¾ê¸°		
 	int iCount = m_lcTList.GetItemCount();
 	for(int i = 0; i < iCount; i++)
 	{
@@ -1351,7 +1351,7 @@ int	CTournament::ItemSelectTList()
 
 int CTournament::ItemSelectTEvent()
 {
-	// ¼±ÅÃµÈ ¾ÆÀÌÅÛ Ã£±â		
+	// ì„ íƒëœ ì•„ì´í…œ ì°¾ê¸°		
 	int iCount = m_lcTEvent.GetItemCount();
 	for(int i = 0; i < iCount; i++)
 	{
@@ -1514,7 +1514,7 @@ void CTournament::OnNMDblclkLcTevent(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CTournament::OnNMClickLcTevent(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	*pResult = 0;
 
 	int iEventID = ItemSelectTEvent();
@@ -1544,7 +1544,7 @@ void CTournament::OnNMClickLcTevent(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CTournament::OnBnClickedBtnTregister()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -1627,7 +1627,7 @@ void CTournament::EnableBtnSTEP( BYTE bEnable )
 }
 void CTournament::OnBnClickedBtnTupdatedate()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
@@ -1755,7 +1755,7 @@ void CTournament::AddEntryChar( LPTNTCHAR pTNTCHAR )
 
 void CTournament::OnNMClickLcTlist(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	*pResult = 0;
 
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
@@ -1767,7 +1767,7 @@ void CTournament::OnNMClickLcTlist(NMHDR *pNMHDR, LRESULT *pResult)
 			return;
 	}
 
-	// ¼±ÅÃµÈ ¾ÆÀÌÅÛ Ã£±â	
+	// ì„ íƒëœ ì•„ì´í…œ ì°¾ê¸°	
 	int iCount = ItemSelectTList();
 	if(0 > iCount)
 		return;
@@ -1780,7 +1780,7 @@ void CTournament::OnNMClickLcTlist(NMHDR *pNMHDR, LRESULT *pResult)
 	return;	
 }
 
-//	Æ÷Ä¿½º ¼³Á¤
+//	í¬ì»¤ìŠ¤ ì„¤ì •
 void CTournament::UpdateFocus()
 {	
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
@@ -1792,7 +1792,7 @@ void CTournament::UpdateFocus()
 			return;
 	}
 
-	//	TList Æ÷Ä¿½º
+	//	TList í¬ì»¤ìŠ¤
 	if(0 <= m_nFocusTList)
 	{
 		m_lcTList.SetItemState(m_nFocusTList, LVIS_SELECTED, LVIS_SELECTED);
@@ -1803,7 +1803,7 @@ void CTournament::UpdateFocus()
 
 		Init(m_pTNT);
 
-		//	TEvent Æ÷Ä¿½º
+		//	TEvent í¬ì»¤ìŠ¤
 		if(0 <= m_nFocusTEvent)
 		{
 			m_lcTEvent.SetItemState(m_nFocusTEvent, LVIS_SELECTED, LVIS_SELECTED);
@@ -1834,7 +1834,7 @@ BOOL CTournament::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// TODO:  ¿©±â¿¡ Ãß°¡ ÃÊ±âÈ­ ÀÛ¾÷À» Ãß°¡ÇÕ´Ï´Ù.
+	// TODO:  ì—¬ê¸°ì— ì¶”ê°€ ì´ˆê¸°í™” ì‘ì—…ì„ ì¶”ê°€í•©ë‹ˆë‹¤.
 
 	InitTitle();
 	InitEventList();
@@ -1843,7 +1843,7 @@ BOOL CTournament::OnInitDialog()
 	InitStepList();	
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// ¿¹¿Ü: OCX ¼Ó¼º ÆäÀÌÁö´Â FALSE¸¦ ¹İÈ¯ÇØ¾ß ÇÕ´Ï´Ù.
+	// ì˜ˆì™¸: OCX ì†ì„± í˜ì´ì§€ëŠ” FALSEë¥¼ ë°˜í™˜í•´ì•¼ í•©ë‹ˆë‹¤.
 }
 
 LRESULT CTournament::OnXCtrlItem(WPARAM wParam, LPARAM lParam)
@@ -1883,7 +1883,7 @@ LRESULT CTournament::OnXCtrlItem(WPARAM wParam, LPARAM lParam)
 }
 BOOL CTournament::PreTranslateMessage(MSG* pMsg)
 {
-	// TODO: ¿©±â¿¡ Æ¯¼öÈ­µÈ ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº» Å¬·¡½º¸¦ È£ÃâÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— íŠ¹ìˆ˜í™”ëœ ì½”ë“œë¥¼ ì¶”ê°€ ë°/ë˜ëŠ” ê¸°ë³¸ í´ë˜ìŠ¤ë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
 	if( pMsg->message == WM_KEYDOWN) 
 	{
 		switch(pMsg->wParam)

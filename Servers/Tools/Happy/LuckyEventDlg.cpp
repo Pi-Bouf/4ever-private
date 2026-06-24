@@ -1,4 +1,4 @@
-// LuckyEventDlg.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// LuckyEventDlg.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -10,7 +10,7 @@
 #include "HappyDoc.h"
 
 
-// CLuckyEventDlg ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CLuckyEventDlg ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CLuckyEventDlg, CDialog)
 CLuckyEventDlg::CLuckyEventDlg(CWnd* pParent /*=NULL*/)
@@ -45,7 +45,7 @@ ON_BN_CLICKED(IDC_CHK_LKANN, OnBnClickedChkLkann)
 END_MESSAGE_MAP()
 
 
-// CLuckyEventDlg ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CLuckyEventDlg ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 void CLuckyEventDlg::Init()
 {
@@ -64,7 +64,7 @@ void CLuckyEventDlg::Init()
 
 	m_cbLKWorld.AddString(_T("SELECT"));
 
-	//	¿ùµå¼­¹ö ¸®½ºÆ® ±¸ÇÏ±â
+	//	ì›”ë“œì„œë²„ ë¦¬ìŠ¤íŠ¸ êµ¬í•˜ê¸°
 	MAPGROUP::iterator itG;
 	for(itG=pDoc->m_mapGroup.begin(); itG!=pDoc->m_mapGroup.end(); itG++)
 	{	
@@ -101,7 +101,7 @@ void CLuckyEventDlg::ClearDlg()
 	ClearListItem();
 	ClearCtrl();
 
-	// ¸®½ºÆ® ÄÁÆ®·ÑÀÇ ¸ğµç ÄÃ·³ »èÁ¦
+	// ë¦¬ìŠ¤íŠ¸ ì»¨íŠ¸ë¡¤ì˜ ëª¨ë“  ì»¬ëŸ¼ ì‚­ì œ
 	for(int i = 0; i < MAX_LUCKYEVENT_COLUMN ; i++)
         m_lcLkEvent.DeleteColumn(0);
 
@@ -121,7 +121,7 @@ void CLuckyEventDlg::ClearDlg()
 		//m_listctrPos.InsertColumn(0,"NAME",LVCFMT_CENTER,180);
 	}
 	
-	// ÇÏ³ªÀÇ ¶óÀÎ ÀüÃ¼°¡ ¼±ÅÃµÇµµ·Ï ¼³Á¤
+	// í•˜ë‚˜ì˜ ë¼ì¸ ì „ì²´ê°€ ì„ íƒë˜ë„ë¡ ì„¤ì •
 	m_lcLkEvent.SetExtendedStyle(LVS_EX_FULLROWSELECT);
 
 	m_mapDay.insert(MAPBYTESTRING::value_type(1,_T("SUN")) );
@@ -152,7 +152,7 @@ void CLuckyEventDlg::InsertItemToListCtr(  LPLUCKYEVENT pLKEVENT,int _iRow )
 		iRowCount = m_lcLkEvent.GetItemCount();
 	
 	lvItem.mask		= LVIF_TEXT;
-	lvItem.iItem	= iRowCount; // Row ÀÎµ¦½º
+	lvItem.iItem	= iRowCount; // Row ì¸ë±ìŠ¤
 	
 	for(int iCol = 0; iCol < MAX_LUCKYEVENT_COLUMN ; iCol++)
 	{
@@ -171,7 +171,7 @@ void CLuckyEventDlg::InsertItemToListCtr(  LPLUCKYEVENT pLKEVENT,int _iRow )
 		case 10: strTmp.Format("%s",pLKEVENT->m_strAnnounce);	break;
 		}
 		
-		lvItem.iSubItem = iCol ; // ÄÃ·³ ÀÎµ¦½º
+		lvItem.iSubItem = iCol ; // ì»¬ëŸ¼ ì¸ë±ìŠ¤
 		lvItem.pszText	= strTmp.GetBuffer(0);		
 		
 		if( iCol == 0 )
@@ -224,13 +224,13 @@ void CLuckyEventDlg::UpdateListData( LPLUCKYEVENT pLKEVENT )
 }
 void CLuckyEventDlg::DeleteListData(WORD wID)
 {		
-	// ¼±ÅÃµÈ ¾ÆÀÌÅÛ Ã£±â	
+	// ì„ íƒëœ ì•„ì´í…œ ì°¾ê¸°	
 	int iCount = m_lcLkEvent.GetItemCount();
 	for(int i = 0; i < iCount; i++)
 	{
 		if(wID == m_lcLkEvent.GetItemData(i))
 		{
-			// list control °»½Å
+			// list control ê°±ì‹ 
 			m_lcLkEvent.DeleteItem(i);
 			m_lcLkEvent.UpdateData();
 			return;
@@ -240,7 +240,7 @@ void CLuckyEventDlg::DeleteListData(WORD wID)
 
 void CLuckyEventDlg::ItemSelect()
 {
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -252,7 +252,7 @@ void CLuckyEventDlg::ItemSelect()
 
 	m_wSelectItemID = 0;
 
-	// ¼±ÅÃµÈ ¾ÆÀÌÅÛ Ã£±â
+	// ì„ íƒëœ ì•„ì´í…œ ì°¾ê¸°
 	int iCount = m_lcLkEvent.GetItemCount();
 	for(int i = 0; i < iCount; i++)
 	{
@@ -323,15 +323,15 @@ void CLuckyEventDlg::ItemSelect()
 
 void CLuckyEventDlg::OnBnClickedBtnLkdel()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	if( !m_lcLkEvent.GetItemCount())
 		return;
 
-	if(AfxMessageBox("Are you sure you want to delete?",MB_YESNO) == IDNO ) //ÁøÁ¤ »èÁ¦ÇÏ½Ã°Ú½À´Ï±î
+	if(AfxMessageBox("Are you sure you want to delete?",MB_YESNO) == IDNO ) //ì§„ì • ì‚­ì œí•˜ì‹œê² ìŠµë‹ˆê¹Œ
 		return;
 	
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -354,9 +354,9 @@ void CLuckyEventDlg::OnBnClickedBtnLkdel()
 
 void CLuckyEventDlg::OnBnClickedBtnLkadd()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -382,13 +382,13 @@ void CLuckyEventDlg::OnBnClickedBtnLkadd()
 
 void CLuckyEventDlg::OnBnClickedBtnLkUpdate()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 
 	if(AfxMessageBox("Are you sure you want to update?",MB_YESNO) == IDNO )
 		return;
 
 
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -423,9 +423,9 @@ void CLuckyEventDlg::OnBnClickedBtnLkUpdate()
 
 void CLuckyEventDlg::OnBnClickedBtnLkRefresh()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -464,7 +464,7 @@ BYTE CLuckyEventDlg::FindDay(CString str)
 
 void CLuckyEventDlg::OnNMClickLcLuckyevent(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	*pResult = 0;
 
 	ItemSelect();
@@ -490,7 +490,7 @@ void CLuckyEventDlg::ClearData()
 }
 BOOL CLuckyEventDlg::PreTranslateMessage(MSG* pMsg)
 {
-	// TODO: ¿©±â¿¡ Æ¯¼öÈ­µÈ ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº» Å¬·¡½º¸¦ È£ÃâÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— íŠ¹ìˆ˜í™”ëœ ì½”ë“œë¥¼ ì¶”ê°€ ë°/ë˜ëŠ” ê¸°ë³¸ í´ë˜ìŠ¤ë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
 
 	if( (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN) ||
         (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_ESCAPE) )	
@@ -522,7 +522,7 @@ BOOL CLuckyEventDlg::PreTranslateMessage(MSG* pMsg)
 
 void CLuckyEventDlg::OnCbnSelchangeCombo1()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -543,9 +543,9 @@ void CLuckyEventDlg::OnCbnSelchangeCombo1()
 
 void CLuckyEventDlg::OnCbnSelchangeCbLkday()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -685,5 +685,5 @@ void CLuckyEventDlg::OnBnClickedChkLkann()
 	GetDlgItem(IDC_EB_LKMESSAGE)->EnableWindow(!bCheckAnnounce);
 	GetDlgItem(IDC_EB_LKPRESENT)->EnableWindow(!bCheckAnnounce);
 
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 }

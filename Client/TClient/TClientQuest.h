@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 
 class CTClientQuest
@@ -16,7 +16,7 @@ public:
 	DWORD m_dwTick;
 	BYTE m_bTimmer;
 
-	BOOL m_bCheckShowRight; // È­¸é ¿ìÃø¿¡ º¸ÀÌ´Â Á¤º¸Ç¥½Ã¿©ºÎ
+	BOOL m_bCheckShowRight; // í™”ë©´ ìš°ì¸¡ì— ë³´ì´ëŠ” ì •ë³´í‘œì‹œì—¬ë¶€
 
 public:
 	CTClientTerm *FindTTerm( LPTTERM pTTERM);

@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  *
  */
 #pragma once
@@ -15,7 +15,7 @@ class TMemPool
 public:
 
 	///////////////////////////////////////////
-	// ¸µÅ©µå ¸®½ºÆ® Ã³·³ °ü¸®¸¦ À§ÇÑ ³ëµå Å¸ÀÔ
+	// ë§í¬ë“œ ë¦¬ìŠ¤íŠ¸ ì²˜ëŸ¼ ê´€ë¦¬ë¥¼ ìœ„í•œ ë…¸ë“œ íƒ€ì…
 	struct BlockNode
 	{
 		BlockNode * pNext;
@@ -28,15 +28,15 @@ public:
 
 	//////////////////////////////////////////
 
-	BlockNode * m_pFreeList; // ³²¾Æ ÀÖ´Â ¸Ş¸ğ¸® ºí·° ¸®½ºÆ®
+	BlockNode * m_pFreeList; // ë‚¨ì•„ ìˆëŠ” ë©”ëª¨ë¦¬ ë¸”ëŸ­ ë¦¬ìŠ¤íŠ¸
 	void * m_pMemBlock;
 
-	int m_nNumofBlock; // ¸Ş¸ğ¸® ÇÒ´çÇÒ ºí·° ¼ö
-	int m_nListBlockSize; // ÇÑ ºí·° »çÀÌÁî
-	int m_nAllocCount; // ÇÒ´çµÈ ¸Ş¸ğ¸® ºí·° °¹¼ö
+	int m_nNumofBlock; // ë©”ëª¨ë¦¬ í• ë‹¹í•  ë¸”ëŸ­ ìˆ˜
+	int m_nListBlockSize; // í•œ ë¸”ëŸ­ ì‚¬ì´ì¦ˆ
+	int m_nAllocCount; // í• ë‹¹ëœ ë©”ëª¨ë¦¬ ë¸”ëŸ­ ê°¯ìˆ˜
 	CRITICAL_SECTION	m_cs;
 
-	// »ı¼ºÀÚ
+	// ìƒì„±ì
 	TMemPool(int nNumOfBlock) : m_nNumofBlock(nNumOfBlock), m_pFreeList(NULL), m_pMemBlock(NULL), m_nAllocCount(0)
 	{
 		assert(nNumOfBlock > 0);
@@ -45,13 +45,13 @@ public:
 		Create();
 	}
 
-	// ¼Ò¸êÀÚ
+	// ì†Œë©¸ì
 	virtual ~TMemPool()
 	{
 		Destroy();
 	}
 
-	// ¸Ş¸ğ¸® ÇÒ´ç
+	// ë©”ëª¨ë¦¬ í• ë‹¹
 	Type * Alloc()
 	{
 		BlockNode * pNode = NULL;
@@ -108,7 +108,7 @@ public:
 protected:
 	void Create()
 	{
-		const int AllocationSize = (m_nListBlockSize) * m_nNumofBlock; // ¸Ş¸ğ¸® ÇÒ´çÇÒ Å©±â
+		const int AllocationSize = (m_nListBlockSize) * m_nNumofBlock; // ë©”ëª¨ë¦¬ í• ë‹¹í•  í¬ê¸°
 		m_pMemBlock = VirtualAlloc(NULL, AllocationSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 		assert(m_pMemBlock);
 
@@ -119,7 +119,7 @@ protected:
 		
 		for (int i = m_nNumofBlock - 1; i >= 0; i--)
 		{
-			pNode->pNext = m_pFreeList; // Ã³À½¿¡´Â NULL , Áï Tail Àº NULL ·Î ÇÑ´Ù.
+			pNode->pNext = m_pFreeList; // ì²˜ìŒì—ëŠ” NULL , ì¦‰ Tail ì€ NULL ë¡œ í•œë‹¤.
 			m_pFreeList = pNode;
 			pNode = reinterpret_cast < BlockNode * > ((reinterpret_cast < DWORD > (pNode)) - m_nListBlockSize);
 		}

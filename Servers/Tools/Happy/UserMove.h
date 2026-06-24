@@ -1,4 +1,4 @@
-// Çö½Â·æ UserMove.h
+ï»¿// í˜„ìŠ¹ë£¡ UserMove.h
 
 #pragma once
 #include "afxwin.h"
@@ -8,21 +8,21 @@
 #include "PosListDlg.h"
 #include "afxcmn.h"
 
-// CUserMove ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CUserMove ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 class CUserMove : public CDialog
 {
 	DECLARE_DYNAMIC(CUserMove)
 
 public:
-	CUserMove(CWnd* pParent = NULL);   // Ç¥ÁØ »ı¼ºÀÚÀÔ´Ï´Ù.
+	CUserMove(CWnd* pParent = NULL);   // í‘œì¤€ ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CUserMove();
 
-// ´ëÈ­ »óÀÚ µ¥ÀÌÅÍÀÔ´Ï´Ù.
+// ëŒ€í™” ìƒì ë°ì´í„°ì…ë‹ˆë‹¤.
 	enum { IDD = IDD_USERMOVE };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 public:
@@ -37,12 +37,12 @@ public:
 	afx_msg void OnBnClickedOk();
 
 	afx_msg void OnBnClickedSavePos();
-	afx_msg void OnBnClickedRadioCoord(); // 'ÁÂÇ¥ÀÔ·Â' ¶óµğ¿À ¹öÆ°À» Å¬¸¯ÇßÀ» ¶§
-	afx_msg void OnBnClickedRadioChar();  // '´ë»óÄ³¸¯ÅÍ' ¶óµğ¿À ¹öÆ°À» Å¬¸¯ÇßÀ» ¶§
-	afx_msg void OnBnClickedLoadpos(); // ÀúÀå¸®½ºÆ®¸¦ º¸¿©ÁÖ´Â ´ÙÀÌ¾ó·Î±×¸¦ º¸¿©ÁØ´Ù.
+	afx_msg void OnBnClickedRadioCoord(); // 'ì¢Œí‘œì…ë ¥' ë¼ë””ì˜¤ ë²„íŠ¼ì„ í´ë¦­í–ˆì„ ë•Œ
+	afx_msg void OnBnClickedRadioChar();  // 'ëŒ€ìƒìºë¦­í„°' ë¼ë””ì˜¤ ë²„íŠ¼ì„ í´ë¦­í–ˆì„ ë•Œ
+	afx_msg void OnBnClickedLoadpos(); // ì €ì¥ë¦¬ìŠ¤íŠ¸ë¥¼ ë³´ì—¬ì£¼ëŠ” ë‹¤ì´ì–¼ë¡œê·¸ë¥¼ ë³´ì—¬ì¤€ë‹¤.
 
 	void ShowLocationItem(BYTE bShow);	
-	void Init(); // [ÁÂÇ¥ÀÔ·Â] , [´ë»ó Ä³¸¯ÅÍ·ÎÀÇ ¼ÒÈ¯] ºÎºĞÀ» ¸ğµÎ Disable »óÅÂ·Î ¸¸µç´Ù.
+	void Init(); // [ì¢Œí‘œì…ë ¥] , [ëŒ€ìƒ ìºë¦­í„°ë¡œì˜ ì†Œí™˜] ë¶€ë¶„ì„ ëª¨ë‘ Disable ìƒíƒœë¡œ ë§Œë“ ë‹¤.
 	
 	void SetData(LPUSERPOS pUserPos);
 	void InsertItemToListCtr(int _iRow, LPUSERPOS _USERPOS);

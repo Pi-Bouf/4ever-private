@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 
 class CTMonSpawn
@@ -9,7 +9,7 @@ public:
 
 	BYTE m_bStatus;
 	DWORD m_dwLeader;
-	BYTE m_bGroupOrder; //±×·ì³»¿¡¼­ÀÇ ¼ø¹ø.
+	BYTE m_bGroupOrder; //ê·¸ë£¹ë‚´ì—ì„œì˜ ìˆœë²ˆ.
 public:
 	CTMonSpawn();
 	virtual ~CTMonSpawn();

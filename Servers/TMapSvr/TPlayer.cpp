@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 #include <SvrInc.h>
 #include "TMapSvrModule.h"
 
@@ -2688,7 +2688,7 @@ BYTE CTPlayer::OnQuestComplete( LPMAPTSKILLTEMP pSKILLTEMP,
 							CTSkill * pSkill = new CTSkill();
 							pSkill->m_pTSKILL = (*itTEMP).second;
 
-							//½ºÅ³ ¹ö¸±¶§ m_vRemainSkill¿¡¼­ ÇØ´ç ½ºÅ³ ²À »¬°Í
+							//ìŠ¤í‚¬ ë²„ë¦´ë•Œ m_vRemainSkillì—ì„œ í•´ë‹¹ ìŠ¤í‚¬ ê¼­ ëº„ê²ƒ
 							m_mapTSKILL.insert(MAPTSKILL::value_type((*itTEMP).second->m_wID, pSkill));
 							RemainSkill( pSkill, 0);
 							SendCS_SKILLBUY_ACK(
@@ -3036,9 +3036,9 @@ DWORD CTPlayer::GetPossibleQuestID( CQuest * pQuest )
 				MAPQUEST::iterator finder = m_mapQUEST.find( (*it).second->m_dwQuestID );
 
 				if( finder == m_mapQUEST.end() )
-					return (*it).second->m_dwQuestID;				// ÇÏÀ§ Äù½ºÆ® ¼öÇà °¡´É
+					return (*it).second->m_dwQuestID;				// í•˜ìœ„ í€˜ìŠ¤íŠ¸ ìˆ˜í–‰ ê°€ëŠ¥
 				else
-					return GetPossibleQuestID( (*finder).second );	// ÇÏÀ§ Äù½ºÆ® È®ÀÎ
+					return GetPossibleQuestID( (*finder).second );	// í•˜ìœ„ í€˜ìŠ¤íŠ¸ í™•ì¸
 			}
 
 
@@ -3054,7 +3054,7 @@ DWORD CTPlayer::GetPossibleQuestID( CQuest * pQuest )
 		}
 	}
 
-	return 0;	// Äù½ºÆ® ÁøÇàÁß
+	return 0;	// í€˜ìŠ¤íŠ¸ ì§„í–‰ì¤‘
 }
 BYTE CTPlayer::IsEnoughSkillPoint(CTSkillTemp * pSkill)
 {
@@ -4552,7 +4552,7 @@ void CTPlayer::InitializeSkill(CTSkill * pSkill)
 
 			while(pSkill->m_bLevel)
 			{
-				// ±âº»ÀûÀ¸·Î ÁÖ´Â ½ºÅ³
+				// ê¸°ë³¸ì ìœ¼ë¡œ ì£¼ëŠ” ìŠ¤í‚¬
 				if((*it).second->m_pTSKILL->m_bStartLevel == 0 &&
 					(*it).second->m_bLevel == 1)
 					break;
@@ -4708,7 +4708,7 @@ void CTPlayer::CheckSoulHP()
 		{
 			CTPlayer *pChar = vPLAYERS.back();
 
-			// ÇÇÀü¼Û
+			// í”¼ì „ì†¡
 			if(pChar->m_bMain &&
 				pChar->m_dwSoulmate == m_dwID &&
 				!pChar->m_dwSoulSilence &&
@@ -4809,10 +4809,10 @@ WORD CTPlayer::DurationDec(BYTE bSlot, BYTE bDel)
 	CTInven * pInven = FindTInven(INVEN_EQUIP);
 	switch(bSlot)
 	{
-	case 1://¿ø°Å¸®¹«±â
+	case 1://ì›ê±°ë¦¬ë¬´ê¸°
 		pItem1 = pInven->FindTItem(ES_LONGWEAPON);
 		break;
-	case 2://¹æÆÐ Á¦¿Ü ÁÖ.º¸Á¶¹«±â
+	case 2://ë°©íŒ¨ ì œì™¸ ì£¼.ë³´ì¡°ë¬´ê¸°
 		pItem1 = pInven->FindTItem(ES_PRMWEAPON);
 		if(pItem1 && pItem1->m_pTITEM->m_bType == IT_SHIELD)
 			pItem1 = NULL;
@@ -4820,7 +4820,7 @@ WORD CTPlayer::DurationDec(BYTE bSlot, BYTE bDel)
 		if(pItem2 && pItem2->m_pTITEM->m_bType == IT_SHIELD)
 			pItem2 = NULL;
 		break;
-	case 3://¹æ¾î±¸
+	case 3://ë°©ì–´êµ¬
 		bDef = rand() % 6;
 		switch(bDef)
 		{
@@ -4844,7 +4844,7 @@ WORD CTPlayer::DurationDec(BYTE bSlot, BYTE bDel)
 			break;
 		}
 		break;
-	case 4://¹æÆÐ
+	case 4://ë°©íŒ¨
 		pItem1 = pInven->FindTItem(ES_SNDWEAPON);
 		if(pItem1 && pItem1->m_pTITEM->m_bType != IT_SHIELD)
 			pItem1 = NULL;

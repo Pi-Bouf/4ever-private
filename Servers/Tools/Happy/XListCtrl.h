@@ -1,4 +1,4 @@
-// XListCtrl.h  Version 1.3
+ï»¿// XListCtrl.h  Version 1.3
 //
 // Author:  Hans Dietrich
 //          hdietrich2@hotmail.com
@@ -12,7 +12,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-// ¸®½ºÆ®ÄÁÆ®·Ñ ¼Ó¼º
+// ë¦¬ìŠ¤íŠ¸ì»¨íŠ¸ë¡¤ ì†ì„±
 // View: Report
 // No Sort Header : TRUE
 
@@ -695,7 +695,7 @@ public:
 	BOOL	SetEnabled(int nItem, BOOL bEnable);
 	BOOL	SetSubItemEnabled(int nItem, int nSubItem, BOOL bEnable);
 	BOOL	SetEditBoxAlign(int nItem, int nSubItem, DWORD dwAlign = ES_LEFT); //ES_LEFT, ES_CENTER, ES_RIGHT
-	void	ResizeListColumn(int arPercent[]); // List Control Å©±â¿¡ ¸ÂÃç¼­ ºñÀ²·Î ÄÃ·³ »çÀÌÁî Á¶Á¤. arPercent ¹è¿­ÀÇ ¸¶Áö¸· °ªÀº 0 ÀÌ¾î¾ß ÇÑ´Ù.
+	void	ResizeListColumn(int arPercent[]); // List Control í¬ê¸°ì— ë§ì¶°ì„œ ë¹„ìœ¨ë¡œ ì»¬ëŸ¼ ì‚¬ì´ì¦ˆ ì¡°ì •. arPercent ë°°ì—´ì˜ ë§ˆì§€ë§‰ ê°’ì€ 0 ì´ì–´ì•¼ í•œë‹¤.
 	DWORD	SetExtendedStyleX(DWORD dwNewStyle) 
 	{
 		DWORD dwOldStyle = m_dwExtendedStyleX;
@@ -736,7 +736,7 @@ public:
 	void	UpdateSubItem(int nItem, int nSubItem);
 
 	
-	virtual void Sort(int nSubItem, BOOL bSort); // bSort = TRUE:³»¸²Â÷¼ø, FALSE:¿À¸§Â÷¼ø
+	virtual void Sort(int nSubItem, BOOL bSort); // bSort = TRUE:ë‚´ë¦¼ì°¨ìˆœ, FALSE:ì˜¤ë¦„ì°¨ìˆœ
 
 	void	SetRowHeight(int nRowHeight);
 	void	SetTextFont(CFont *pTextFont) { m_pTextFont = pTextFont; RedrawWindow(); }
@@ -764,22 +764,22 @@ public:
 protected:
 	CImageList		m_cImageList;		// Image list for the header control
 
-	BOOL			m_bUnderLine;		// ¾ğ´õ¶óÀÎ ±×¸®±âÀÇ À¯¹« ¼³Á¤
-	BOOL			m_bResize;			// ¸¶¿ì½º µå·¡±×·Î Çì´õ ÄÃ·³ÀÇ ¸®»çÀÌÁî À¯¹« ¼³Á¤
-	BOOL			m_bFocusRect;		// Focus Rect Ç¥½Ã À¯¹«
-	CString			m_strNoItemMsg;		// ¾ÆÀÌÅÛÀÌ ¾øÀ»¶§ Ç¥½Ã ÇÒ ÅØ½ºÆ® ¼³Á¤
-	int				m_nStatusColumn;	// »óÅÂ ÄÃ·³ÀÇ Rect(¹é±×¶ó¿îµå ÄÃ·¯¿µ¿ª)À» Àç¼³Á¤ÇÒ ÄÃ·³ ¼³Á¤
-	BOOL			m_bEnableSubCtrl;	// ¸®½ºÆ®¿¡ Æ÷ÇÔµÈ ¸ğµç ÄÁÆ®·Ñ »óÅÂ
+	BOOL			m_bUnderLine;		// ì–¸ë”ë¼ì¸ ê·¸ë¦¬ê¸°ì˜ ìœ ë¬´ ì„¤ì •
+	BOOL			m_bResize;			// ë§ˆìš°ìŠ¤ ë“œë˜ê·¸ë¡œ í—¤ë” ì»¬ëŸ¼ì˜ ë¦¬ì‚¬ì´ì¦ˆ ìœ ë¬´ ì„¤ì •
+	BOOL			m_bFocusRect;		// Focus Rect í‘œì‹œ ìœ ë¬´
+	CString			m_strNoItemMsg;		// ì•„ì´í…œì´ ì—†ì„ë•Œ í‘œì‹œ í•  í…ìŠ¤íŠ¸ ì„¤ì •
+	int				m_nStatusColumn;	// ìƒíƒœ ì»¬ëŸ¼ì˜ Rect(ë°±ê·¸ë¼ìš´ë“œ ì»¬ëŸ¬ì˜ì—­)ì„ ì¬ì„¤ì •í•  ì»¬ëŸ¼ ì„¤ì •
+	BOOL			m_bEnableSubCtrl;	// ë¦¬ìŠ¤íŠ¸ì— í¬í•¨ëœ ëª¨ë“  ì»¨íŠ¸ë¡¤ ìƒíƒœ
 
-	COLORREF		m_crBgProgress;		// ÇÁ·Î±×·¹½ºÀÇ ¹è°æ»ö	
-	COLORREF		m_crUnderLine;		// ¾ğ´õ¶óÀÎÀÇ »ö
+	COLORREF		m_crBgProgress;		// í”„ë¡œê·¸ë ˆìŠ¤ì˜ ë°°ê²½ìƒ‰	
+	COLORREF		m_crUnderLine;		// ì–¸ë”ë¼ì¸ì˜ ìƒ‰
 
-	BOOL			m_bHeaderTracking;	// ÇöÀç Çì´õ°¡ Æ®·¡Å·ÁßÀÎÁö ÆÇ´ÜÇÏ´Â ÇÃ·¡±×
-	BOOL			m_bHeaderDraging;	// ÇöÀç Çì´õ°¡ µå·¡±ëÁßÀÎÁö ÆÇ´ÜÇÏ´Â ÇÃ·¡±×
+	BOOL			m_bHeaderTracking;	// í˜„ì¬ í—¤ë”ê°€ íŠ¸ë˜í‚¹ì¤‘ì¸ì§€ íŒë‹¨í•˜ëŠ” í”Œë˜ê·¸
+	BOOL			m_bHeaderDraging;	// í˜„ì¬ í—¤ë”ê°€ ë“œë˜ê¹…ì¤‘ì¸ì§€ íŒë‹¨í•˜ëŠ” í”Œë˜ê·¸
 
 	BOOL			m_bTracking;
-	BOOL			m_bUseTracking;		// Æ®·¡Å·À» »ç¿ëÇÒ °ÍÀÎ°¡
-	BOOL			m_bSelAlwaysColor;  // ¾ÆÀÌÅÛÀ» ¼±ÅÃÈÄ ´Ù¸¥ ÄÁÆ®·Ñ¿¡ Æ÷Ä¿½º°¡ ¿Å°Ü°£ ÈÄ ¼±ÅÃµÈ ¾ÆÀÌÅÛÀÇ ÅØ½ºÆ®¸¦ ÁöÁ¤ÇÑ »öÀ¸·Î º¸¿©ÁÙ °ÍÀÎ°¡.
+	BOOL			m_bUseTracking;		// íŠ¸ë˜í‚¹ì„ ì‚¬ìš©í•  ê²ƒì¸ê°€
+	BOOL			m_bSelAlwaysColor;  // ì•„ì´í…œì„ ì„ íƒí›„ ë‹¤ë¥¸ ì»¨íŠ¸ë¡¤ì— í¬ì»¤ìŠ¤ê°€ ì˜®ê²¨ê°„ í›„ ì„ íƒëœ ì•„ì´í…œì˜ í…ìŠ¤íŠ¸ë¥¼ ì§€ì •í•œ ìƒ‰ìœ¼ë¡œ ë³´ì—¬ì¤„ ê²ƒì¸ê°€.
 	
 	CFont		*	m_pTextFont;
 

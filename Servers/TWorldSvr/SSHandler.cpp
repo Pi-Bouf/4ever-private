@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "TWorldSvr.h"
 #include "TWorldSvrModule.h"
 
@@ -727,7 +727,7 @@ DWORD CTWorldSvrModule::OnMW_ADDCHAR_ACK( LPPACKETBUF pBUF)
 	MAPTCHARACTER::iterator itCHAR = m_mapTCHAR.find(dwCharID);
 	if( itCHAR == m_mapTCHAR.end())
 	{
-		// ¿ùµå¿¡ Ã³À½ ÀÔÀå. Ä³¸¯ÅÍ ¿ÀºêÁ§Æ®¸¦ »ı¼ºÇÏ°í °ü¸®¸ñ·Ï¿¡ µî·Ï
+		// ì›”ë“œì— ì²˜ìŒ ì…ì¥. ìºë¦­í„° ì˜¤ë¸Œì íŠ¸ë¥¼ ìƒì„±í•˜ê³  ê´€ë¦¬ëª©ë¡ì— ë“±ë¡
 		LPTCHARACTER pTCHAR = new TCHARACTER();
 		LPTCHARCON pCON = new TCHARCON();
 
@@ -789,12 +789,12 @@ DWORD CTWorldSvrModule::OnMW_ADDCHAR_ACK( LPPACKETBUF pBUF)
 		pCON->m_bReady = FALSE;
 		pCON->m_bValid = TRUE;
 
-		// ¸ŞÀÎ¼­¹ö µî·Ï
+		// ë©”ì¸ì„œë²„ ë“±ë¡
 		pTCHAR->m_mapTCHARCON.insert( MAPTCHARCON::value_type( LOBYTE(pSERVER->m_wID), pCON));
-		// Ä³¸¯ÅÍ µî·Ï
+		// ìºë¦­í„° ë“±ë¡
 		m_mapTCHAR.insert( MAPTCHARACTER::value_type( dwCharID, pTCHAR));
 
-		// ¸ŞÀÎ¼­¹ö·Î ÀÔÀå. ÀÌ ½ÃÁ¡¿¡ °èÁ¤ÀÎÁõ ÀıÂ÷¸¦ °ÅÄ£ ÈÄ ÃÖÃÊ·Î Ä³¸¯ÅÍ µ¥ÀÌÅÍ°¡ ¸Ê ¼­¹ö¿¡ ·Îµå µÈ´Ù
+		// ë©”ì¸ì„œë²„ë¡œ ì…ì¥. ì´ ì‹œì ì— ê³„ì •ì¸ì¦ ì ˆì°¨ë¥¼ ê±°ì¹œ í›„ ìµœì´ˆë¡œ ìºë¦­í„° ë°ì´í„°ê°€ ë§µ ì„œë²„ì— ë¡œë“œ ëœë‹¤
 		pSERVER->SendMW_ENTERSVR_REQ(
 			TRUE,
 			pTCHAR->m_dwCharID,
@@ -802,21 +802,21 @@ DWORD CTWorldSvrModule::OnMW_ADDCHAR_ACK( LPPACKETBUF pBUF)
 	}
 	else
 	{
-		// Ãß°¡ Ä¿³Ø¼Ç ¿¬°á. Ä³¸¯ÅÍ ¿ÀºêÁ§Æ®¿¡ µî·ÏµÈ À¯È¿ÇÑ ¿¬°áÀÎÁö¿¡´ëÇÑ ÀÎÁõÀıÂ÷¸¦ ¸¶Ä£ ÈÄ
-		// Ä³¸¯ÅÍ ¿ÀºêÁ§Æ®¿¡ µî·ÏµÈ ÇØ´ç ¿¬°áÀÇ ¿¬°á»óÅÂ(m_bValid)¸¦ ¿¬°áµÊÀ¸·Î ™VÆÃÇÏ°í Ä³¸¯ÅÍ ¿ÀºêÁ§Æ®ÀÇ ¸ğµç ¿¬°áÀÇ
-		// ¿¬°á»óÅÂ°¡ ¿¬°áµÊÀ¸·Î ™VÆÃ µÇ¾úÀ¸¸é MW_CHARDATA_ACK¸¦ ÅëÇÑ ¸ŞÀÎ¼­¹ö Ã¼Å©¸¦ ½Ãµµ
+		// ì¶”ê°€ ì»¤ë„¥ì…˜ ì—°ê²°. ìºë¦­í„° ì˜¤ë¸Œì íŠ¸ì— ë“±ë¡ëœ ìœ íš¨í•œ ì—°ê²°ì¸ì§€ì—ëŒ€í•œ ì¸ì¦ì ˆì°¨ë¥¼ ë§ˆì¹œ í›„
+		// ìºë¦­í„° ì˜¤ë¸Œì íŠ¸ì— ë“±ë¡ëœ í•´ë‹¹ ì—°ê²°ì˜ ì—°ê²°ìƒíƒœ(m_bValid)ë¥¼ ì—°ê²°ë¨ìœ¼ë¡œ ì…‘íŒ…í•˜ê³  ìºë¦­í„° ì˜¤ë¸Œì íŠ¸ì˜ ëª¨ë“  ì—°ê²°ì˜
+		// ì—°ê²°ìƒíƒœê°€ ì—°ê²°ë¨ìœ¼ë¡œ ì…‘íŒ… ë˜ì—ˆìœ¼ë©´ MW_CHARDATA_ACKë¥¼ í†µí•œ ë©”ì¸ì„œë²„ ì²´í¬ë¥¼ ì‹œë„
 		MAPTCHARCON::iterator itCON = (*itCHAR).second->m_mapTCHARCON.find(LOBYTE(pSERVER->m_wID));
 		CTServer *pMAIN = FindMapSvr((*itCHAR).second->m_bMainID);
 
-		if( !pMAIN || (*itCHAR).second->m_dwKEY != dwKEY ||		// »õ·Ó°Ô Á¢¼ÓÇÑ »ç¿ëÀÚÀÇ ÀÎÁõÅ°°¡ µî·ÏµÇ¾îÀÖ´Â »ç¿ëÀÚÀÇ ÀÎÁõÅ°¿Í ´Ù¸£°Å³ª
-			itCON == (*itCHAR).second->m_mapTCHARCON.end() ||	// ¿¬°áÀÌ Ä³¸¯ÅÍ ¿ÀºêÁ§Æ®¿¡ µî·ÏµÈ ¿¬°áÀÌ ¾Æ´Ï°Å³ª
-			(*itCON).second->m_bValid ||						// »õ·Î¿î ¿¬°áÀÇ ¿¬°á»óÅÂ°¡ ÀÌ¹Ì ¿¬°áµÊÀ¸·Î ¼³Á¤µÇ¾î ÀÖ°Å³ª
-			dwIPAddr != (*itCON).second->m_dwIPAddr ||			// »õ·Î¿î ¿¬°áÀÇ IP°¡ µî·ÏµÈ ¿¬°áÀÇ IP¿Í ´Ù¸£°Å³ª
-			wPort != (*itCON).second->m_wPort )					// »õ·Î¿î ¿¬°áÀÇ Æ÷Æ®°¡ µî·ÏµÈ ¿¬°áÀÇ Æ÷Æ®°¡ ´Ù¸£¸é
+		if( !pMAIN || (*itCHAR).second->m_dwKEY != dwKEY ||		// ìƒˆë¡­ê²Œ ì ‘ì†í•œ ì‚¬ìš©ìì˜ ì¸ì¦í‚¤ê°€ ë“±ë¡ë˜ì–´ìˆëŠ” ì‚¬ìš©ìì˜ ì¸ì¦í‚¤ì™€ ë‹¤ë¥´ê±°ë‚˜
+			itCON == (*itCHAR).second->m_mapTCHARCON.end() ||	// ì—°ê²°ì´ ìºë¦­í„° ì˜¤ë¸Œì íŠ¸ì— ë“±ë¡ëœ ì—°ê²°ì´ ì•„ë‹ˆê±°ë‚˜
+			(*itCON).second->m_bValid ||						// ìƒˆë¡œìš´ ì—°ê²°ì˜ ì—°ê²°ìƒíƒœê°€ ì´ë¯¸ ì—°ê²°ë¨ìœ¼ë¡œ ì„¤ì •ë˜ì–´ ìˆê±°ë‚˜
+			dwIPAddr != (*itCON).second->m_dwIPAddr ||			// ìƒˆë¡œìš´ ì—°ê²°ì˜ IPê°€ ë“±ë¡ëœ ì—°ê²°ì˜ IPì™€ ë‹¤ë¥´ê±°ë‚˜
+			wPort != (*itCON).second->m_wPort )					// ìƒˆë¡œìš´ ì—°ê²°ì˜ í¬íŠ¸ê°€ ë“±ë¡ëœ ì—°ê²°ì˜ í¬íŠ¸ê°€ ë‹¤ë¥´ë©´
 		{
-			// Áßº¹µÈ Á¢¼Ó ¶Ç´Â °ø½Ä ¹èÆ÷µÈ Å¬¶óÀÌ¾ğÆ®°¡ ¾Æ´Ï°Å³ª ÇØÅ·À¸·Î ÀÇ½ÉµÇ´Â ¿¬°á
-			// Áßº¹Á¢¼Ó Ã³¸®¸¦ À§ÇØ ¸Ê ¼­¹ö¸¦ ÅëÇØ ±âÁ¸ Á¢¼ÓÀÚÀÇ Å¬¶óÀÌ¾ğÆ® ¿¬°áÀ» Á¾·áÇÏ°í
-			// ½Å±Ô Á¢¼ÓÀÚÀÇ Å¬¶óÀÌ¾ğÆ®¿¡ ¿À·ù¸Ş¼¼Áö¸¦ Àü´ŞÇÑ ÈÄ Å¬¶óÀÌ¾ğÆ®ÀÇ ¿¬°áÀ» Á¾·á
+			// ì¤‘ë³µëœ ì ‘ì† ë˜ëŠ” ê³µì‹ ë°°í¬ëœ í´ë¼ì´ì–¸íŠ¸ê°€ ì•„ë‹ˆê±°ë‚˜ í•´í‚¹ìœ¼ë¡œ ì˜ì‹¬ë˜ëŠ” ì—°ê²°
+			// ì¤‘ë³µì ‘ì† ì²˜ë¦¬ë¥¼ ìœ„í•´ ë§µ ì„œë²„ë¥¼ í†µí•´ ê¸°ì¡´ ì ‘ì†ìì˜ í´ë¼ì´ì–¸íŠ¸ ì—°ê²°ì„ ì¢…ë£Œí•˜ê³ 
+			// ì‹ ê·œ ì ‘ì†ìì˜ í´ë¼ì´ì–¸íŠ¸ì— ì˜¤ë¥˜ë©”ì„¸ì§€ë¥¼ ì „ë‹¬í•œ í›„ í´ë¼ì´ì–¸íŠ¸ì˜ ì—°ê²°ì„ ì¢…ë£Œ
 			pSERVER->SendMW_INVALIDCHAR_REQ(
 				dwCharID,
 				dwKEY);
@@ -825,17 +825,17 @@ DWORD CTWorldSvrModule::OnMW_ADDCHAR_ACK( LPPACKETBUF pBUF)
 			return EC_NOERROR;
 		}
 
-		// Ä³¸¯ÅÍ ·Îµå»óÅÂ¸¦ ·ÎµåµÇÁö ¾ÊÀ½, ¿¬°á»óÅÂ¸¦ ¿¬°áµÊÀ¸·Î ™VÆÃ
+		// ìºë¦­í„° ë¡œë“œìƒíƒœë¥¼ ë¡œë“œë˜ì§€ ì•ŠìŒ, ì—°ê²°ìƒíƒœë¥¼ ì—°ê²°ë¨ìœ¼ë¡œ ì…‘íŒ…
 		(*itCON).second->m_bReady = FALSE;
 		(*itCON).second->m_bValid = TRUE;
 
-		// ÇÊ¿äÇÑ ¸ğµç ¿¬°áÀÇ ¿¬°á»óÅÂ°¡ ¿¬°áµÊÀ¸·Î ™VÆÃµÇ¾îÀÖ´ÂÁö È®ÀÎ ÈÄ ¿¬°áµÇÁö ¾ÊÀ½À¸·Î ™VÆÃµÈ ¿¬°áÀÌ ÀÖÀ¸¸é
-		// ¸ğµç ¿¬°áÀÇ ¿¬°á»óÅÂ°¡ ¿¬°áµÊÀ¸·Î ™VÆÃµÉ¶§±îÁö ´ë±â
+		// í•„ìš”í•œ ëª¨ë“  ì—°ê²°ì˜ ì—°ê²°ìƒíƒœê°€ ì—°ê²°ë¨ìœ¼ë¡œ ì…‘íŒ…ë˜ì–´ìˆëŠ”ì§€ í™•ì¸ í›„ ì—°ê²°ë˜ì§€ ì•ŠìŒìœ¼ë¡œ ì…‘íŒ…ëœ ì—°ê²°ì´ ìˆìœ¼ë©´
+		// ëª¨ë“  ì—°ê²°ì˜ ì—°ê²°ìƒíƒœê°€ ì—°ê²°ë¨ìœ¼ë¡œ ì…‘íŒ…ë ë•Œê¹Œì§€ ëŒ€ê¸°
 		for( itCON = (*itCHAR).second->m_mapTCHARCON.begin(); itCON != (*itCHAR).second->m_mapTCHARCON.end(); itCON++)
 			if(!(*itCON).second->m_bValid)
 				return EC_NOERROR;
 
-		// ¿¬°á»óÅÂ°¡ ¿¬°áµÊÀ¸·Î ™VÆÃ µÇ¾úÀ¸¸é MW_CHARDATA_ACK¸¦ ÅëÇÑ ¸ŞÀÎ¼­¹ö Ã¼Å©¸¦ ½Ãµµ
+		// ì—°ê²°ìƒíƒœê°€ ì—°ê²°ë¨ìœ¼ë¡œ ì…‘íŒ… ë˜ì—ˆìœ¼ë©´ MW_CHARDATA_ACKë¥¼ í†µí•œ ë©”ì¸ì„œë²„ ì²´í¬ë¥¼ ì‹œë„
 		pMAIN->SendMW_CHARDATA_REQ(
 			dwCharID,
 			dwKEY);
@@ -905,8 +905,8 @@ DWORD CTWorldSvrModule::OnMW_CHARDATA_ACK( LPPACKETBUF pBUF)
 	CTServer *pMAIN = FindMapSvr(pTCHAR->m_bMainID);
 	if(!pMAIN)
 	{
-		// ¸ŞÀÎ¼­¹ö°¡ ¾ø°Å³ª ´Ù¸£°Ô ¼³Á¤µÇ¾î °ø½Ä ¹èÆ÷µÈ Å¬¶óÀÌ¾ğÆ®°¡ ¾Æ´Ï°Å³ª ÇØÅ·À¸·Î ÀÇ½ÉµÇ´Â ¿¬°á
-		// ¸Ê ¼­¹ö¸¦ ÅëÇØ Å¬¶óÀÌ¾ğÆ®¿¡°Ô ¿À·ù¸Ş¼¼Áö¸¦ Àü´ŞÇÑ ÈÄ Å¬¶óÀÌ¾ğÆ®ÀÇ ¿¬°áÀ» Á¾·á
+		// ë©”ì¸ì„œë²„ê°€ ì—†ê±°ë‚˜ ë‹¤ë¥´ê²Œ ì„¤ì •ë˜ì–´ ê³µì‹ ë°°í¬ëœ í´ë¼ì´ì–¸íŠ¸ê°€ ì•„ë‹ˆê±°ë‚˜ í•´í‚¹ìœ¼ë¡œ ì˜ì‹¬ë˜ëŠ” ì—°ê²°
+		// ë§µ ì„œë²„ë¥¼ í†µí•´ í´ë¼ì´ì–¸íŠ¸ì—ê²Œ ì˜¤ë¥˜ë©”ì„¸ì§€ë¥¼ ì „ë‹¬í•œ í›„ í´ë¼ì´ì–¸íŠ¸ì˜ ì—°ê²°ì„ ì¢…ë£Œ
 		pSERVER->SendMW_INVALIDCHAR_REQ(
 			dwCharID,
 			dwKEY);
@@ -965,7 +965,7 @@ DWORD CTWorldSvrModule::OnMW_CHARDATA_ACK( LPPACKETBUF pBUF)
 			wCommander = pCorps->m_wCommander;
 	}
 
-	// ¸ğµç ¿¬°áÀÇ Ä³¸¯ÅÍ ·Îµå»óÅÂ°¡ ·ÎµåµÊÀ¸·Î ™VÆÃµÇ¾îÀÖ´ÂÁö Ã¼Å©
+	// ëª¨ë“  ì—°ê²°ì˜ ìºë¦­í„° ë¡œë“œìƒíƒœê°€ ë¡œë“œë¨ìœ¼ë¡œ ì…‘íŒ…ë˜ì–´ìˆëŠ”ì§€ ì²´í¬
 	while(itCON != pTCHAR->m_mapTCHARCON.end())
 	{
 		MAPTCHARCON::iterator itNEXT = itCON;
@@ -977,7 +977,7 @@ DWORD CTWorldSvrModule::OnMW_CHARDATA_ACK( LPPACKETBUF pBUF)
 
 			if(pMAP)
 			{
-				// Ä³¸¯ÅÍ°¡ ·ÎµåµÇÁö ¾ÊÀº ¿¬°á·Î Ä³¸¯ÅÍ µ¥ÀÌÅÍ Àü¼Û
+				// ìºë¦­í„°ê°€ ë¡œë“œë˜ì§€ ì•Šì€ ì—°ê²°ë¡œ ìºë¦­í„° ë°ì´í„° ì „ì†¡
 				pMAP->SendMW_ENTERCHAR_REQ(
 					pTCHAR->m_dwCharID,
 					pTCHAR->m_dwKEY,
@@ -1014,12 +1014,12 @@ DWORD CTWorldSvrModule::OnMW_CHARDATA_ACK( LPPACKETBUF pBUF)
 					pTCHAR->m_bClass,
 					&pBUF->m_packet);
 
-				// Ä³¸¯ÅÍ°¡ ·ÎµåµÇÁö ¾ÊÀº ¿¬°áÀÌ Á¸ÀçÇÔÀ» Ç¥½Ã
+				// ìºë¦­í„°ê°€ ë¡œë“œë˜ì§€ ì•Šì€ ì—°ê²°ì´ ì¡´ì¬í•¨ì„ í‘œì‹œ
 				bReady = FALSE;				
 			}
 			else
 			{
-				// ºñÈ°¼º ÁßÀÎ ¸Ê ¼­¹ö·ÎÀÇ ¿¬°áÀº »èÁ¦
+				// ë¹„í™œì„± ì¤‘ì¸ ë§µ ì„œë²„ë¡œì˜ ì—°ê²°ì€ ì‚­ì œ
 				delete (*itCON).second;
 				pTCHAR->m_mapTCHARCON.erase(itCON);
 			}
@@ -1028,7 +1028,7 @@ DWORD CTWorldSvrModule::OnMW_CHARDATA_ACK( LPPACKETBUF pBUF)
 		itCON = itNEXT;
 	}
 
-	// ¸ğµç ¿¬°áÀÇ Ä³¸¯ÅÍ ·Îµå»óÅÂ°¡ ·ÎµåµÊÀ¸·Î ™VÆÃµÇ¾îÀÖÀ¸¸é ¸ŞÀÎ¼­¹ö Ã¼Å©
+	// ëª¨ë“  ì—°ê²°ì˜ ìºë¦­í„° ë¡œë“œìƒíƒœê°€ ë¡œë“œë¨ìœ¼ë¡œ ì…‘íŒ…ë˜ì–´ìˆìœ¼ë©´ ë©”ì¸ì„œë²„ ì²´í¬
 	if(bReady)
 		CheckMainCON(pTCHAR);
 
@@ -1069,8 +1069,8 @@ DWORD CTWorldSvrModule::OnMW_ENTERCHAR_ACK( LPPACKETBUF pBUF)
 
 	if(!pCON)
 	{
-		// Ä³¸¯ÅÍ ¿ÀºêÁ§Æ®¿¡ ÇØ´ç ¿¬°áÀÌ µî·ÏµÇÁö ¾ÊÀ¸¹Ç·Î °ø½Ä ¹èÆ÷µÈ Å¬¶óÀÌ¾ğÆ®°¡ ¾Æ´Ï°Å³ª ÇØÅ·À¸·Î ÀÇ½ÉµÇ´Â ¿¬°á
-		// ¸Ê ¼­¹ö¸¦ ÅëÇØ Å¬¶óÀÌ¾ğÆ®¿¡°Ô ¿À·ù¸Ş¼¼Áö¸¦ Àü´ŞÇÑ ÈÄ Å¬¶óÀÌ¾ğÆ®ÀÇ ¿¬°áÀ» Á¾·á
+		// ìºë¦­í„° ì˜¤ë¸Œì íŠ¸ì— í•´ë‹¹ ì—°ê²°ì´ ë“±ë¡ë˜ì§€ ì•Šìœ¼ë¯€ë¡œ ê³µì‹ ë°°í¬ëœ í´ë¼ì´ì–¸íŠ¸ê°€ ì•„ë‹ˆê±°ë‚˜ í•´í‚¹ìœ¼ë¡œ ì˜ì‹¬ë˜ëŠ” ì—°ê²°
+		// ë§µ ì„œë²„ë¥¼ í†µí•´ í´ë¼ì´ì–¸íŠ¸ì—ê²Œ ì˜¤ë¥˜ë©”ì„¸ì§€ë¥¼ ì „ë‹¬í•œ í›„ í´ë¼ì´ì–¸íŠ¸ì˜ ì—°ê²°ì„ ì¢…ë£Œ
 		pSERVER->SendMW_INVALIDCHAR_REQ(
 			dwCharID,
 			dwKEY);
@@ -1078,15 +1078,15 @@ DWORD CTWorldSvrModule::OnMW_ENTERCHAR_ACK( LPPACKETBUF pBUF)
 		return EC_NOERROR;
 	}
 
-	// Ä³¸¯ÅÍ µ¥ÀÌÅÍ ·Îµå»óÅÂ¸¦ ·ÎµåµÊÀ¸·Î ™VÆÃ
+	// ìºë¦­í„° ë°ì´í„° ë¡œë“œìƒíƒœë¥¼ ë¡œë“œë¨ìœ¼ë¡œ ì…‘íŒ…
 	pCON->m_bReady = TRUE;
 
-	// ¸ğµç ¿¬°áÀÇ Ä³¸¯ÅÍ µ¥ÀÌÅÍ ·Îµå»óÅÂ°¡ ·ÎµåµÊÀ¸·Î ™VÆÃµÉ¶§ ±îÁö ´ë±â
+	// ëª¨ë“  ì—°ê²°ì˜ ìºë¦­í„° ë°ì´í„° ë¡œë“œìƒíƒœê°€ ë¡œë“œë¨ìœ¼ë¡œ ì…‘íŒ…ë ë•Œ ê¹Œì§€ ëŒ€ê¸°
 	for( itCON = pTCHAR->m_mapTCHARCON.begin(); itCON != pTCHAR->m_mapTCHARCON.end(); itCON++)
 		if(!(*itCON).second->m_bReady)
 			return EC_NOERROR;
 
-	// ¸ğµç ¿¬°áÀÇ Ä³¸¯ÅÍ ·Îµå»óÅÂ°¡ ·ÎµåµÊÀ¸·Î ™VÆÃµÇ¾îÀÖÀ¸¸é ¸ŞÀÎ¼­¹ö Ã¼Å©
+	// ëª¨ë“  ì—°ê²°ì˜ ìºë¦­í„° ë¡œë“œìƒíƒœê°€ ë¡œë“œë¨ìœ¼ë¡œ ì…‘íŒ…ë˜ì–´ìˆìœ¼ë©´ ë©”ì¸ì„œë²„ ì²´í¬
 	CheckMainCON(pTCHAR);
 
 	return EC_NOERROR;
@@ -1121,8 +1121,8 @@ DWORD CTWorldSvrModule::OnMW_CHECKMAIN_ACK( LPPACKETBUF pBUF)
 	CTServer *pMAIN = FindMapSvr(pTCHAR->m_bMainID);
 	if(!pMAIN)
 	{
-		// ¸ŞÀÎ¼­¹ö°¡ ¾ø¾î °ø½Ä ¹èÆ÷µÈ Å¬¶óÀÌ¾ğÆ®°¡ ¾Æ´Ï°Å³ª ÇØÅ·À¸·Î ÀÇ½ÉµÇ´Â ¿¬°á
-		// ¸Ê ¼­¹ö¸¦ ÅëÇØ Å¬¶óÀÌ¾ğÆ®¿¡°Ô ¿À·ù¸Ş¼¼Áö¸¦ Àü´ŞÇÑ ÈÄ Å¬¶óÀÌ¾ğÆ®ÀÇ ¿¬°áÀ» Á¾·á
+		// ë©”ì¸ì„œë²„ê°€ ì—†ì–´ ê³µì‹ ë°°í¬ëœ í´ë¼ì´ì–¸íŠ¸ê°€ ì•„ë‹ˆê±°ë‚˜ í•´í‚¹ìœ¼ë¡œ ì˜ì‹¬ë˜ëŠ” ì—°ê²°
+		// ë§µ ì„œë²„ë¥¼ í†µí•´ í´ë¼ì´ì–¸íŠ¸ì—ê²Œ ì˜¤ë¥˜ë©”ì„¸ì§€ë¥¼ ì „ë‹¬í•œ í›„ í´ë¼ì´ì–¸íŠ¸ì˜ ì—°ê²°ì„ ì¢…ë£Œ
 		pSERVER->SendMW_INVALIDCHAR_REQ(
 			dwCharID,
 			dwKEY);
@@ -1132,35 +1132,35 @@ DWORD CTWorldSvrModule::OnMW_CHECKMAIN_ACK( LPPACKETBUF pBUF)
 
 	if(!pTCHAR->m_bSave)
 	{
-		// ¸ŞÀÎ¼­¹ö ±³Ã¼Áß ´Ù½Ã ¸ŞÀÎ¼­¹ö¸¦ ±³Ã¼¸¦ ½Ãµµ ¶Ç´Â °ø½Ä ¹èÆ÷µÈ Å¬¶óÀÌ¾ğÆ®°¡ ¾Æ´Ï°Å³ª ÇØÅ·À¸·Î ÀÇ½ÉµÇ´Â ¿¬°á
-		// Å¬¶óÀÌ¾ğÆ®ÀÇ ¿¬°áÀ» Á¾·á
+		// ë©”ì¸ì„œë²„ êµì²´ì¤‘ ë‹¤ì‹œ ë©”ì¸ì„œë²„ë¥¼ êµì²´ë¥¼ ì‹œë„ ë˜ëŠ” ê³µì‹ ë°°í¬ëœ í´ë¼ì´ì–¸íŠ¸ê°€ ì•„ë‹ˆê±°ë‚˜ í•´í‚¹ìœ¼ë¡œ ì˜ì‹¬ë˜ëŠ” ì—°ê²°
+		// í´ë¼ì´ì–¸íŠ¸ì˜ ì—°ê²°ì„ ì¢…ë£Œ
 		CloseChar(pTCHAR);
 	}
 
 	if( pMAIN == pSERVER )
 	{
-		// ¸ŞÀÎ¼­¹ö¸¦ ±³Ã¼ÇÏÁö ¾Ê¾Æµµ µÇ´Â °æ¿ì
-		// ¿¬°á°ü¸® ÇÁ·Î¼¼½ºÀÇ ¸¶¹«¸® ´Ü°è
+		// ë©”ì¸ì„œë²„ë¥¼ êµì²´í•˜ì§€ ì•Šì•„ë„ ë˜ëŠ” ê²½ìš°
+		// ì—°ê²°ê´€ë¦¬ í”„ë¡œì„¸ìŠ¤ì˜ ë§ˆë¬´ë¦¬ ë‹¨ê³„
 
-		// Á¾·áÇØ¾ßÇÒ ¿¬°áµéÀ» Á¾·á
+		// ì¢…ë£Œí•´ì•¼í•  ì—°ê²°ë“¤ì„ ì¢…ë£Œ
 		ClearDeadCON(pTCHAR);
 
-		// ¸ÊÀ¸·ÎÀÇ ÁøÀÔÀ» Çã°¡
+		// ë§µìœ¼ë¡œì˜ ì§„ì…ì„ í—ˆê°€
 		pMAIN->SendMW_CONRESULT_REQ(
 			pTCHAR->m_dwCharID,
 			pTCHAR->m_dwKEY,
 			CN_SUCCESS,
 			pTCHAR->m_mapTCHARCON);
 
-		// ÇöÀç ÁøÇàµÇ°í ÀÖ´Â ¿¬°á°ü¸® ÇÁ·Î¼¼½º¸¦ Á¾·áÇÏ°í ´ÙÀ½ ¿¬°á°ü¸® ÇÁ·Î¼¼½º¸¦ È°¼ºÈ­
+		// í˜„ì¬ ì§„í–‰ë˜ê³  ìˆëŠ” ì—°ê²°ê´€ë¦¬ í”„ë¡œì„¸ìŠ¤ë¥¼ ì¢…ë£Œí•˜ê³  ë‹¤ìŒ ì—°ê²°ê´€ë¦¬ í”„ë¡œì„¸ìŠ¤ë¥¼ í™œì„±í™”
 		PopConCess(pTCHAR);
 	}
 	else
 	{
-		// ¸ŞÀÎ¼­¹ö¸¦ ±³Ã¼ÇØ¾ßÇÏ´Â °æ¿ì
+		// ë©”ì¸ì„œë²„ë¥¼ êµì²´í•´ì•¼í•˜ëŠ” ê²½ìš°
 
-		// ÇöÀç ¸ŞÀÎ¼­¹ö·Î ¸ŞÀÎ¼­¹ö ÇØÁ¦¸Ş¼¼Áö Àü´Ş
-		// ¸Ê ¼­¹ö´Â ÇØÁ¦¸Ş¼¼Áö¸¦ ¹ŞÀ¸¸é Ä³¸¯ÅÍ µ¥ÀÌÅÍ ÀúÀå ÈÄ ÇØÁ¦¿Ï·á ¸Ş¼¼Áö(MW_RELEASEMAIN_ACK)¸¦ µ¹·ÁÁÜ
+		// í˜„ì¬ ë©”ì¸ì„œë²„ë¡œ ë©”ì¸ì„œë²„ í•´ì œë©”ì„¸ì§€ ì „ë‹¬
+		// ë§µ ì„œë²„ëŠ” í•´ì œë©”ì„¸ì§€ë¥¼ ë°›ìœ¼ë©´ ìºë¦­í„° ë°ì´í„° ì €ì¥ í›„ í•´ì œì™„ë£Œ ë©”ì„¸ì§€(MW_RELEASEMAIN_ACK)ë¥¼ ëŒë ¤ì¤Œ
 		pMAIN->SendMW_RELEASEMAIN_REQ(
 			pTCHAR->m_dwCharID,
 			pTCHAR->m_dwKEY,
@@ -1170,7 +1170,7 @@ DWORD CTWorldSvrModule::OnMW_CHECKMAIN_ACK( LPPACKETBUF pBUF)
 			pTCHAR->m_fPosY,
 			pTCHAR->m_fPosZ);
 
-		// ¿¹ºñ ¸ŞÀÎ¼­¹ö µî·Ï
+		// ì˜ˆë¹„ ë©”ì¸ì„œë²„ ë“±ë¡
 		pTCHAR->m_bMainID = LOBYTE(pSERVER->m_wID);
 		pTCHAR->m_bSave = FALSE;
 	}
@@ -1242,15 +1242,15 @@ DWORD CTWorldSvrModule::OnMW_ENTERSVR_ACK( LPPACKETBUF pBUF)
 		>> dwRankPoint
 		>> dwUserIP;
 
-	// ÀÎÁõ°á°ú È®ÀÎ ½ÃÀÛ
+	// ì¸ì¦ê²°ê³¼ í™•ì¸ ì‹œì‘
 	LPTCHARACTER pTCHAR = FindTChar(
 		dwCharID,
 		dwKEY);
 
 	if(!pTCHAR)
 	{
-		// MW_ADDCHAR_ACK¸¦ ÅëÇÑ ¿¬°áÀÌ ¾Æ´Ï°Å³ª ´Ù¸¥ ¿äÀÎ¿¡ ÀÇÇØ »èÁ¦µÇ¾î À¯È¿ÇÏÁö ¾ÊÀº ¿¬°á
-		// ¸Ê ¼­¹ö¸¦ ÅëÇØ Å¬¶óÀÌ¾ğÆ®ÀÇ ¿¬°áÀ» Á¾·á
+		// MW_ADDCHAR_ACKë¥¼ í†µí•œ ì—°ê²°ì´ ì•„ë‹ˆê±°ë‚˜ ë‹¤ë¥¸ ìš”ì¸ì— ì˜í•´ ì‚­ì œë˜ì–´ ìœ íš¨í•˜ì§€ ì•Šì€ ì—°ê²°
+		// ë§µ ì„œë²„ë¥¼ í†µí•´ í´ë¼ì´ì–¸íŠ¸ì˜ ì—°ê²°ì„ ì¢…ë£Œ
 		pSERVER->SendMW_DELCHAR_REQ(
 			dwCharID,
 			dwKEY,
@@ -1263,8 +1263,8 @@ DWORD CTWorldSvrModule::OnMW_ENTERSVR_ACK( LPPACKETBUF pBUF)
 	CTServer *pMAIN = FindMapSvr(pTCHAR->m_bMainID);
 	if( !pMAIN || pMAIN != pSERVER )
 	{
-		// ¸ŞÀÎ¼­¹ö°¡ ¾ø°Å³ª ´Ù¸£°Ô ¼³Á¤µÇ¾î °ø½Ä ¹èÆ÷µÈ Å¬¶óÀÌ¾ğÆ®°¡ ¾Æ´Ï°Å³ª ÇØÅ·À¸·Î ÀÇ½ÉµÇ´Â ¿¬°á
-		// ¸Ê ¼­¹ö¸¦ ÅëÇØ Å¬¶óÀÌ¾ğÆ®¿¡°Ô ¿À·ù¸Ş¼¼Áö¸¦ Àü´ŞÇÑ ÈÄ Å¬¶óÀÌ¾ğÆ®ÀÇ ¿¬°áÀ» Á¾·á
+		// ë©”ì¸ì„œë²„ê°€ ì—†ê±°ë‚˜ ë‹¤ë¥´ê²Œ ì„¤ì •ë˜ì–´ ê³µì‹ ë°°í¬ëœ í´ë¼ì´ì–¸íŠ¸ê°€ ì•„ë‹ˆê±°ë‚˜ í•´í‚¹ìœ¼ë¡œ ì˜ì‹¬ë˜ëŠ” ì—°ê²°
+		// ë§µ ì„œë²„ë¥¼ í†µí•´ í´ë¼ì´ì–¸íŠ¸ì—ê²Œ ì˜¤ë¥˜ë©”ì„¸ì§€ë¥¼ ì „ë‹¬í•œ í›„ í´ë¼ì´ì–¸íŠ¸ì˜ ì—°ê²°ì„ ì¢…ë£Œ
 		pSERVER->SendMW_INVALIDCHAR_REQ(
 			dwCharID,
 			dwKEY);
@@ -1280,8 +1280,8 @@ DWORD CTWorldSvrModule::OnMW_ENTERSVR_ACK( LPPACKETBUF pBUF)
 
 	if(!pCON)
 	{
-		// Ä³¸¯ÅÍ ¿ÀºêÁ§Æ®¿¡ ¸ŞÀÎ Ä¿³Ø¼ÇÀÌ µî·ÏµÇÁö ¾ÊÀº °ø½Ä ¹èÆ÷µÈ Å¬¶óÀÌ¾ğÆ®°¡ ¾Æ´Ï°Å³ª ÇØÅ·À¸·Î ÀÇ½ÉµÇ´Â ¿¬°á
-		// ¸Ê ¼­¹ö¸¦ ÅëÇØ Å¬¶óÀÌ¾ğÆ®¿¡°Ô ¿À·ù¸Ş¼¼Áö¸¦ Àü´ŞÇÑ ÈÄ Å¬¶óÀÌ¾ğÆ®ÀÇ ¿¬°áÀ» Á¾·á
+		// ìºë¦­í„° ì˜¤ë¸Œì íŠ¸ì— ë©”ì¸ ì»¤ë„¥ì…˜ì´ ë“±ë¡ë˜ì§€ ì•Šì€ ê³µì‹ ë°°í¬ëœ í´ë¼ì´ì–¸íŠ¸ê°€ ì•„ë‹ˆê±°ë‚˜ í•´í‚¹ìœ¼ë¡œ ì˜ì‹¬ë˜ëŠ” ì—°ê²°
+		// ë§µ ì„œë²„ë¥¼ í†µí•´ í´ë¼ì´ì–¸íŠ¸ì—ê²Œ ì˜¤ë¥˜ë©”ì„¸ì§€ë¥¼ ì „ë‹¬í•œ í›„ í´ë¼ì´ì–¸íŠ¸ì˜ ì—°ê²°ì„ ì¢…ë£Œ
 		pSERVER->SendMW_INVALIDCHAR_REQ(
 			dwCharID,
 			dwKEY);
@@ -1292,8 +1292,8 @@ DWORD CTWorldSvrModule::OnMW_ENTERSVR_ACK( LPPACKETBUF pBUF)
 	if (m_pRelay)
 		m_pRelay->SendRW_CHANGEMAP_ACK(dwCharID, wMapID, MAKEWORD( BYTE(INT(fPosX) / UNIT_SIZE), BYTE(INT(fPosZ) / UNIT_SIZE)));
 
-	// ¸ŞÀÎ¼­¹ö·Î ·ÎµùµÈ µ¥ÀÌÅÍ ™VÆÃ
-	// ¸Ê ÀÌµ¿ÀÌ³ª ¸ŞÀÎ¼­¹ö º¯°æ µîÀÇ ±âÁØ µ¥ÀÌÅÍ·Î »ç¿ëµÊ
+	// ë©”ì¸ì„œë²„ë¡œ ë¡œë”©ëœ ë°ì´í„° ì…‘íŒ…
+	// ë§µ ì´ë™ì´ë‚˜ ë©”ì¸ì„œë²„ ë³€ê²½ ë“±ì˜ ê¸°ì¤€ ë°ì´í„°ë¡œ ì‚¬ìš©ë¨
 	if (m_pBOWModule && m_pBOWModule->FindPlayer(dwCharID))
 	{
 		LPBOWPLAYER pBOWPlayer = m_pBOWModule->FindPlayer(dwCharID);
@@ -1329,7 +1329,7 @@ DWORD CTWorldSvrModule::OnMW_ENTERSVR_ACK( LPPACKETBUF pBUF)
 
 	if(bResult)
 	{
-		// Enter server error, Áßº¹ Á¢¼Ó µîÀ¸·Î ¸Ê¼­¹ö¸¦ ÅëÇØ Å¬¶óÀÌ¾ğÆ®¿¡ ¿À·ù¸Ş¼¼Áö¸¦ Àü´ŞÇÑ ÈÄ Å¬¶óÀÌ¾ğÆ®ÀÇ ¿¬°áÀ» Á¾·á
+		// Enter server error, ì¤‘ë³µ ì ‘ì† ë“±ìœ¼ë¡œ ë§µì„œë²„ë¥¼ í†µí•´ í´ë¼ì´ì–¸íŠ¸ì— ì˜¤ë¥˜ë©”ì„¸ì§€ë¥¼ ì „ë‹¬í•œ í›„ í´ë¼ì´ì–¸íŠ¸ì˜ ì—°ê²°ì„ ì¢…ë£Œ
 		pMAIN->SendMW_CONRESULT_REQ(
 			pTCHAR->m_dwCharID,
 			pTCHAR->m_dwKEY,
@@ -1338,18 +1338,18 @@ DWORD CTWorldSvrModule::OnMW_ENTERSVR_ACK( LPPACKETBUF pBUF)
 
 		return EC_NOERROR;
 	}
-	// ÀÎÁõ°á°ú À¯È¿ÇÑ ¿¬°á·Î È®ÀÎµÊ
+	// ì¸ì¦ê²°ê³¼ ìœ íš¨í•œ ì—°ê²°ë¡œ í™•ì¸ë¨
 
 	if (pTCHAR->m_bCHGMainID && 
 		pTCHAR->m_bCHGMainID != BOW_SERVER_ID && 
 		pTCHAR->m_bCHGMainID != BR_SERVER_ID )
 	{
-		// Ä³¸¯ÅÍ ¿ÀºêÁ§Æ®°¡ ¸ŞÀÎ¼­¹ö ±³Ã¼ Áß »óÅÂ·Î ™VÆÃµÈ °æ¿ì
+		// ìºë¦­í„° ì˜¤ë¸Œì íŠ¸ê°€ ë©”ì¸ì„œë²„ êµì²´ ì¤‘ ìƒíƒœë¡œ ì…‘íŒ…ëœ ê²½ìš°
 
-		// Ä³¸¯ÅÍ ¿ÀºêÁ§Æ®¸¦ ¸ŞÀÎ¼­¹ö ±³Ã¼¿Ï·á »óÅÂ·Î ™VÆÃ
+		// ìºë¦­í„° ì˜¤ë¸Œì íŠ¸ë¥¼ ë©”ì¸ì„œë²„ êµì²´ì™„ë£Œ ìƒíƒœë¡œ ì…‘íŒ…
 		pTCHAR->m_bCHGMainID = FALSE;
 
-		// Ãß°¡·Î ÇÊ¿äÇÑ ¿¬°á¸ñ·ÏÀ» ¸ŞÀÎ¼­¹ö¿¡ ¿äÃ»
+		// ì¶”ê°€ë¡œ í•„ìš”í•œ ì—°ê²°ëª©ë¡ì„ ë©”ì¸ì„œë²„ì— ìš”ì²­
 		pMAIN->SendMW_MAPSVRLIST_REQ(
 			pTCHAR->m_dwCharID,
 			pTCHAR->m_dwKEY,
@@ -1378,7 +1378,7 @@ DWORD CTWorldSvrModule::OnMW_ENTERSVR_ACK( LPPACKETBUF pBUF)
 	}
 	else
 	{
-		// Ã³À½À¸·Î ¸Ê¿¡ ·Î±×ÀÎ ÇßÀ» ¶§
+		// ì²˜ìŒìœ¼ë¡œ ë§µì— ë¡œê·¸ì¸ í–ˆì„ ë•Œ
 		CString strFindName = strNAME;
 		strFindName.MakeUpper();
 		m_mapTCHARNAME.insert( MAPTCHARACTERNAME::value_type( strFindName, pTCHAR));
@@ -1439,8 +1439,8 @@ DWORD CTWorldSvrModule::OnMW_ENTERSVR_ACK( LPPACKETBUF pBUF)
 			}
 		}
 
-		// ¸ŞÀÎ ¼­¹ö¸¦ ÅëÇØ CS_CHARINFO_ACKµî Ä³¸¯ÅÍ Á¤º¸¸¦ Å¬¶óÀÌ¾ğÆ®·Î Àü¼Û
-		// Å¬¶óÀÌ¾ğÆ®´Â ÀÌ ½ÃÁ¡¿¡ ¸Ê ·ÎµùÀÌ ½ÃÀÛµÊ
+		// ë©”ì¸ ì„œë²„ë¥¼ í†µí•´ CS_CHARINFO_ACKë“± ìºë¦­í„° ì •ë³´ë¥¼ í´ë¼ì´ì–¸íŠ¸ë¡œ ì „ì†¡
+		// í´ë¼ì´ì–¸íŠ¸ëŠ” ì´ ì‹œì ì— ë§µ ë¡œë”©ì´ ì‹œì‘ë¨
 		pMAIN->SendMW_CHARINFO_REQ(
 			pTCHAR->m_dwCharID,
 			pTCHAR->m_dwKEY,
@@ -1456,7 +1456,7 @@ DWORD CTWorldSvrModule::OnMW_ENTERSVR_ACK( LPPACKETBUF pBUF)
 			pTCHAR->m_bCHGMainID == BOW_SERVER_ID || pTCHAR->m_bCHGMainID == BR_SERVER_ID);
 
 
-		// ¸ŞÀÎ ¼­¹ö¸¦ ÅëÇØ ´õ ÇÊ¿äÇÑ Ä¿³Ø¼ÇÀÌ ÀÖ´ÂÁö Ã¼Å©
+		// ë©”ì¸ ì„œë²„ë¥¼ í†µí•´ ë” í•„ìš”í•œ ì»¤ë„¥ì…˜ì´ ìˆëŠ”ì§€ ì²´í¬
 		pMAIN->SendMW_ROUTE_REQ(
 			pTCHAR->m_dwCharID,
 			pTCHAR->m_dwKEY,
@@ -1466,12 +1466,12 @@ DWORD CTWorldSvrModule::OnMW_ENTERSVR_ACK( LPPACKETBUF pBUF)
 			pTCHAR->m_fPosY,
 			pTCHAR->m_fPosZ);
 
-		// DBThread·Î ¼Ò¿ï¸ŞÀÌÆ®¸¦ ¿äÃ»
+		// DBThreadë¡œ ì†Œìš¸ë©”ì´íŠ¸ë¥¼ ìš”ì²­
 		SendDM_SOULMATELIST_REQ(
 			pTCHAR->m_dwCharID,
 			pTCHAR->m_dwKEY);
 
-		// DBThread·Î Ä£±¸¸ñ·ÏÀ» ¿äÃ»
+		// DBThreadë¡œ ì¹œêµ¬ëª©ë¡ì„ ìš”ì²­
 		SendDM_FRIENDLIST_REQ(
 			pTCHAR->m_dwCharID,
 			pTCHAR->m_dwKEY);
@@ -1518,8 +1518,8 @@ DWORD CTWorldSvrModule::OnMW_TELEPORT_ACK( LPPACKETBUF pBUF)
 	CTServer *pTMAP = FindMapSvr(bServerID);
 	if(!pTMAP)
 	{
-		// À¯È¿ÇÏÁö ¾ÊÀº ¼­¹ö·Î ÅÚ·¹Æ÷Æ® ½Ãµµ
-		// Å¬¶óÀÌ¾ğÆ®¿¡ ¿À·ù¸Ş¼¼Áö¸¦ Àü¼ÛÇÑ ÈÄ Å¬¶óÀÌ¾ğÆ®ÀÇ ¿¬°áÀ» Á¾·á
+		// ìœ íš¨í•˜ì§€ ì•Šì€ ì„œë²„ë¡œ í…”ë ˆí¬íŠ¸ ì‹œë„
+		// í´ë¼ì´ì–¸íŠ¸ì— ì˜¤ë¥˜ë©”ì„¸ì§€ë¥¼ ì „ì†¡í•œ í›„ í´ë¼ì´ì–¸íŠ¸ì˜ ì—°ê²°ì„ ì¢…ë£Œ
 		pSERVER->SendMW_TELEPORT_REQ(
 			dwCharID,
 			dwKEY,
@@ -1537,8 +1537,8 @@ DWORD CTWorldSvrModule::OnMW_TELEPORT_ACK( LPPACKETBUF pBUF)
 
 	pTCHAR->m_bPartyWaiter = FALSE;
 
-	// Å¬¶óÀÌ¾ğÆ®¿¡°Ô ÅÚ·¹Æ÷Æ® ½ÂÀÎ¸Ş¼¼Áö¸¦ Àü¼ÛÇÑ´Ù
-	// ÀÌ ¶§ Å¬¶óÀÌ¾ğÆ®¿¡¼­ ½ÇÁúÀûÀÎ ÅÚ·¹Æ÷Æ® ½ÇÇà
+	// í´ë¼ì´ì–¸íŠ¸ì—ê²Œ í…”ë ˆí¬íŠ¸ ìŠ¹ì¸ë©”ì„¸ì§€ë¥¼ ì „ì†¡í•œë‹¤
+	// ì´ ë•Œ í´ë¼ì´ì–¸íŠ¸ì—ì„œ ì‹¤ì§ˆì ì¸ í…”ë ˆí¬íŠ¸ ì‹¤í–‰
 	pSERVER->SendMW_TELEPORT_REQ(
 		dwCharID,
 		dwKEY,
@@ -1549,7 +1549,7 @@ DWORD CTWorldSvrModule::OnMW_TELEPORT_ACK( LPPACKETBUF pBUF)
 		pTCHAR->m_fPosZ,
 		TPR_SUCCESS);
 
-	// ÅÚ·¹Æ÷Æ®¿¡´ëÇÑ ¸ñÀûÁö ¼­¹ö¿¡ ÇÊ¿äÇÑ ¿¬°á¸ñ·ÏÀ» ¿äÃ»
+	// í…”ë ˆí¬íŠ¸ì—ëŒ€í•œ ëª©ì ì§€ ì„œë²„ì— í•„ìš”í•œ ì—°ê²°ëª©ë¡ì„ ìš”ì²­
 	pTMAP->SendMW_CONLIST_REQ(
 		dwCharID,
 		dwKEY,
@@ -1920,8 +1920,8 @@ DWORD CTWorldSvrModule::OnMW_ROUTE_ACK( LPPACKETBUF pBUF)
 
 	if(!pTCHAR)
 	{
-		// MW_ADDCHAR_ACK¸¦ ÅëÇÑ ¿¬°áÀÌ ¾Æ´Ï°Å³ª ´Ù¸¥ ¿äÀÎ¿¡ ÀÇÇØ »èÁ¦µÇ¾î À¯È¿ÇÏÁö ¾ÊÀº ¿¬°á
-		// ¸Ê ¼­¹ö¸¦ ÅëÇØ Å¬¶óÀÌ¾ğÆ®ÀÇ ¿¬°áÀ» Á¾·á
+		// MW_ADDCHAR_ACKë¥¼ í†µí•œ ì—°ê²°ì´ ì•„ë‹ˆê±°ë‚˜ ë‹¤ë¥¸ ìš”ì¸ì— ì˜í•´ ì‚­ì œë˜ì–´ ìœ íš¨í•˜ì§€ ì•Šì€ ì—°ê²°
+		// ë§µ ì„œë²„ë¥¼ í†µí•´ í´ë¼ì´ì–¸íŠ¸ì˜ ì—°ê²°ì„ ì¢…ë£Œ
 		pSERVER->SendMW_DELCHAR_REQ(
 			dwCharID,
 			dwKEY,
@@ -1933,7 +1933,7 @@ DWORD CTWorldSvrModule::OnMW_ROUTE_ACK( LPPACKETBUF pBUF)
 
 	if(!bCount)
 	{
-		// Ãß°¡ Ä¿³Ø¼ÇÀÌ ÇÊ¿ä ¾ø´Â °æ¿ì MW_CHARDATA_ACK¸¦ ÅëÇØ ¸ŞÀÎ¼­¹ö¸¦ Ã¼Å©ÇÔ
+		// ì¶”ê°€ ì»¤ë„¥ì…˜ì´ í•„ìš” ì—†ëŠ” ê²½ìš° MW_CHARDATA_ACKë¥¼ í†µí•´ ë©”ì¸ì„œë²„ë¥¼ ì²´í¬í•¨
 		pSERVER->SendMW_CHARDATA_REQ(
 			pTCHAR->m_dwCharID,
 			pTCHAR->m_dwKEY);
@@ -1942,7 +1942,7 @@ DWORD CTWorldSvrModule::OnMW_ROUTE_ACK( LPPACKETBUF pBUF)
 	}
 	CPacket *pMSG = new CPacket();
 
-	// Ãß°¡ Ä¿³Ø¼ÇÀ» ¿äÃ»ÇÑ ¸Ê ¼­¹ö¸¦ ÅëÇØ Å¬¶óÀÌ¾ğÆ®·Î ÇÊ¿äÇÑ Ãß°¡ Ä¿³Ø¼Ç Á¤º¸¸¦ Àü¼Û
+	// ì¶”ê°€ ì»¤ë„¥ì…˜ì„ ìš”ì²­í•œ ë§µ ì„œë²„ë¥¼ í†µí•´ í´ë¼ì´ì–¸íŠ¸ë¡œ í•„ìš”í•œ ì¶”ê°€ ì»¤ë„¥ì…˜ ì •ë³´ë¥¼ ì „ì†¡
 	pMSG->SetID(MW_ADDCONNECT_REQ)
 		<< pTCHAR->m_dwCharID
 		<< pTCHAR->m_dwKEY
@@ -1950,12 +1950,12 @@ DWORD CTWorldSvrModule::OnMW_ROUTE_ACK( LPPACKETBUF pBUF)
 
 	for( BYTE i=0; i<bCount; i++)
 	{
-		// ÇÊ¿äÇÑ Ãß°¡ Ä¿³Ø¼ÇÀ» ¿¬°á»óÅÂ(m_bValid)¸¦ ¿¬°áµÇÁö ¾ÊÀ½
-		// µ¥ÀÌÅÍ ·Îµå »óÅÂ(m_bReady)¸¦ ·ÎµåµÇÁö ¾ÊÀ½À¸·Î
-		// ™VÆÃÇÏ¿© Ä³¸¯ÅÍ ¿ÀºêÁ§Æ®¿¡ µî·ÏÇÏ¿© ÀÌ ÈÄ MW_ADDCHAR_ACK¿¡¼­
-		// À¯È¿¼º °Ë»ç ÈÄ ¿¬°á»óÅÂ¸¦ ¿¬°áµÊÀ¸·Î ™VÆÃÇÏ°í MW_CHARDATA_ACK¿¡¼­
-		// µ¥ÀÌÅÍ ·Îµå »óÅÂ¸¦ ·ÎµåµÊÀ¸·Î ™VÆÃÇÏ¿© ¸ğµç Ä¿³Ø¼Ç¿¡ ´ëÇØ ÁØºñ°¡ ¿Ï·áµÇ¸é
-		// ¸ŞÀÎ¼­¹ö¸¦ Ã¼Å©ÇÏµµ·Ï ÇÑ´Ù.
+		// í•„ìš”í•œ ì¶”ê°€ ì»¤ë„¥ì…˜ì„ ì—°ê²°ìƒíƒœ(m_bValid)ë¥¼ ì—°ê²°ë˜ì§€ ì•ŠìŒ
+		// ë°ì´í„° ë¡œë“œ ìƒíƒœ(m_bReady)ë¥¼ ë¡œë“œë˜ì§€ ì•ŠìŒìœ¼ë¡œ
+		// ì…‘íŒ…í•˜ì—¬ ìºë¦­í„° ì˜¤ë¸Œì íŠ¸ì— ë“±ë¡í•˜ì—¬ ì´ í›„ MW_ADDCHAR_ACKì—ì„œ
+		// ìœ íš¨ì„± ê²€ì‚¬ í›„ ì—°ê²°ìƒíƒœë¥¼ ì—°ê²°ë¨ìœ¼ë¡œ ì…‘íŒ…í•˜ê³  MW_CHARDATA_ACKì—ì„œ
+		// ë°ì´í„° ë¡œë“œ ìƒíƒœë¥¼ ë¡œë“œë¨ìœ¼ë¡œ ì…‘íŒ…í•˜ì—¬ ëª¨ë“  ì»¤ë„¥ì…˜ì— ëŒ€í•´ ì¤€ë¹„ê°€ ì™„ë£Œë˜ë©´
+		// ë©”ì¸ì„œë²„ë¥¼ ì²´í¬í•˜ë„ë¡ í•œë‹¤.
 		LPTCHARCON pCON = new TCHARCON();
 		BYTE bServerID;
 
@@ -2049,8 +2049,8 @@ DWORD CTWorldSvrModule::OnMW_CONLIST_ACK( LPPACKETBUF pBUF)
 	CTServer *pMAIN = FindMapSvr(pTCHAR->m_bMainID);
 	if(!pMAIN)
 	{
-		// ¸ŞÀÎ¼­¹ö°¡ ¾ø°Å³ª ´Ù¸£°Ô ¼³Á¤µÇ¾î °ø½Ä ¹èÆ÷µÈ Å¬¶óÀÌ¾ğÆ®°¡ ¾Æ´Ï°Å³ª ÇØÅ·À¸·Î ÀÇ½ÉµÇ´Â ¿¬°á
-		// ¸Ê ¼­¹ö¸¦ ÅëÇØ Å¬¶óÀÌ¾ğÆ®¿¡°Ô ¿À·ù¸Ş¼¼Áö¸¦ Àü´ŞÇÑ ÈÄ Å¬¶óÀÌ¾ğÆ®ÀÇ ¿¬°áÀ» Á¾·á
+		// ë©”ì¸ì„œë²„ê°€ ì—†ê±°ë‚˜ ë‹¤ë¥´ê²Œ ì„¤ì •ë˜ì–´ ê³µì‹ ë°°í¬ëœ í´ë¼ì´ì–¸íŠ¸ê°€ ì•„ë‹ˆê±°ë‚˜ í•´í‚¹ìœ¼ë¡œ ì˜ì‹¬ë˜ëŠ” ì—°ê²°
+		// ë§µ ì„œë²„ë¥¼ í†µí•´ í´ë¼ì´ì–¸íŠ¸ì—ê²Œ ì˜¤ë¥˜ë©”ì„¸ì§€ë¥¼ ì „ë‹¬í•œ í›„ í´ë¼ì´ì–¸íŠ¸ì˜ ì—°ê²°ì„ ì¢…ë£Œ
 		pSERVER->SendMW_INVALIDCHAR_REQ(
 			dwCharID,
 			dwKEY);
@@ -2061,7 +2061,7 @@ DWORD CTWorldSvrModule::OnMW_CONLIST_ACK( LPPACKETBUF pBUF)
 	MAPBYTE mapCON;
 	mapCON.clear();
 
-	// ÇÊ¿äÇÑ ¿¬°á¸ñ·Ï ±¸¼º
+	// í•„ìš”í•œ ì—°ê²°ëª©ë¡ êµ¬ì„±
 	for( BYTE i=0; i<bCount; i++)
 	{
 		BYTE bServerID;
@@ -2073,7 +2073,7 @@ DWORD CTWorldSvrModule::OnMW_CONLIST_ACK( LPPACKETBUF pBUF)
 	}
 	mapCON.insert( MAPBYTE::value_type( LOBYTE(pSERVER->m_wID), LOBYTE(pSERVER->m_wID)));
 
-	// ÇÊ¿ä¾ø´Â ¿¬°áµéÀ» Á¾·á´ë±â ¹öÆÛ·Î ÀÌµ¿
+	// í•„ìš”ì—†ëŠ” ì—°ê²°ë“¤ì„ ì¢…ë£ŒëŒ€ê¸° ë²„í¼ë¡œ ì´ë™
 	MAPTCHARCON::iterator itCON = pTCHAR->m_mapTCHARCON.begin();
 	while(itCON != pTCHAR->m_mapTCHARCON.end())
 	{
@@ -2091,7 +2091,7 @@ DWORD CTWorldSvrModule::OnMW_CONLIST_ACK( LPPACKETBUF pBUF)
 		itCON = itNEXT;
 	}
 
-	// »õ·Ó°Ô ¿¬°áµÇ¾î¾ß ÇÏ´Â ¿¬°á¸ñ·Ï ±¸¼º
+	// ìƒˆë¡­ê²Œ ì—°ê²°ë˜ì–´ì•¼ í•˜ëŠ” ì—°ê²°ëª©ë¡ êµ¬ì„±
 	MAPBYTE::iterator itID = mapCON.begin();
 	while(itID != mapCON.end())
 	{
@@ -2106,8 +2106,8 @@ DWORD CTWorldSvrModule::OnMW_CONLIST_ACK( LPPACKETBUF pBUF)
 
 	if(!mapCON.empty())
 	{
-		// »õ·Ó°Ô ¿¬°áµÇ¾î¾ß ÇÏ´Â ¿¬°áÀÌ ÀÖÀ¸¸é ¸ŞÀÎ¼­¹ö·Î ÇØ´ç ¿¬°áÀÇ Á¢¼ÓÁ¤º¸(IP, Æ÷Æ® µî)¸¦ ¿äÃ»
-		// ÀÌ ¶§ ¸Ê ¼­¹ö´Â MW_ROUTE_ACK¸¦ ÀÌ¿ëÇÏ¿© Á¢¼ÓÁ¤º¸¸¦ ¹İÈ¯ÇÏ¿© Ãß°¡ ¿¬°á°ü¸® ÇÁ·Î¼¼½º ½ÇÇà
+		// ìƒˆë¡­ê²Œ ì—°ê²°ë˜ì–´ì•¼ í•˜ëŠ” ì—°ê²°ì´ ìˆìœ¼ë©´ ë©”ì¸ì„œë²„ë¡œ í•´ë‹¹ ì—°ê²°ì˜ ì ‘ì†ì •ë³´(IP, í¬íŠ¸ ë“±)ë¥¼ ìš”ì²­
+		// ì´ ë•Œ ë§µ ì„œë²„ëŠ” MW_ROUTE_ACKë¥¼ ì´ìš©í•˜ì—¬ ì ‘ì†ì •ë³´ë¥¼ ë°˜í™˜í•˜ì—¬ ì¶”ê°€ ì—°ê²°ê´€ë¦¬ í”„ë¡œì„¸ìŠ¤ ì‹¤í–‰
 		CPacket *pMSG = new CPacket();
 
 		pMSG->SetID(MW_ROUTELIST_REQ)
@@ -2122,7 +2122,7 @@ DWORD CTWorldSvrModule::OnMW_CONLIST_ACK( LPPACKETBUF pBUF)
 	}
 	else
 	{
-		// »õ·Ó°Ô ¿¬°áµÇ¾î¾ß ÇÏ´Â ¿¬°áÀÌ ¾øÀ¸¸é Áï½Ã ¸ŞÀÎ¼­¹ö Ã¼Å©
+		// ìƒˆë¡­ê²Œ ì—°ê²°ë˜ì–´ì•¼ í•˜ëŠ” ì—°ê²°ì´ ì—†ìœ¼ë©´ ì¦‰ì‹œ ë©”ì¸ì„œë²„ ì²´í¬
 		CheckMainCON(pTCHAR);
 	}
 	mapCON.clear();
@@ -2162,8 +2162,8 @@ DWORD CTWorldSvrModule::OnMW_MAPSVRLIST_ACK( LPPACKETBUF pBUF)
 	CTServer *pMAIN = FindMapSvr(pTCHAR->m_bMainID);
 	if(!pMAIN)
 	{
-		// ¸ŞÀÎ¼­¹ö°¡ ¾ø°Å³ª ´Ù¸£°Ô ¼³Á¤µÇ¾î °ø½Ä ¹èÆ÷µÈ Å¬¶óÀÌ¾ğÆ®°¡ ¾Æ´Ï°Å³ª ÇØÅ·À¸·Î ÀÇ½ÉµÇ´Â ¿¬°á
-		// ¸Ê ¼­¹ö¸¦ ÅëÇØ Å¬¶óÀÌ¾ğÆ®¿¡°Ô ¿À·ù¸Ş¼¼Áö¸¦ Àü´ŞÇÑ ÈÄ Å¬¶óÀÌ¾ğÆ®ÀÇ ¿¬°áÀ» Á¾·á
+		// ë©”ì¸ì„œë²„ê°€ ì—†ê±°ë‚˜ ë‹¤ë¥´ê²Œ ì„¤ì •ë˜ì–´ ê³µì‹ ë°°í¬ëœ í´ë¼ì´ì–¸íŠ¸ê°€ ì•„ë‹ˆê±°ë‚˜ í•´í‚¹ìœ¼ë¡œ ì˜ì‹¬ë˜ëŠ” ì—°ê²°
+		// ë§µ ì„œë²„ë¥¼ í†µí•´ í´ë¼ì´ì–¸íŠ¸ì—ê²Œ ì˜¤ë¥˜ë©”ì„¸ì§€ë¥¼ ì „ë‹¬í•œ í›„ í´ë¼ì´ì–¸íŠ¸ì˜ ì—°ê²°ì„ ì¢…ë£Œ
 		pSERVER->SendMW_INVALIDCHAR_REQ(
 			dwCharID,
 			dwKEY);
@@ -2174,7 +2174,7 @@ DWORD CTWorldSvrModule::OnMW_MAPSVRLIST_ACK( LPPACKETBUF pBUF)
 	MAPBYTE mapCON;
 	mapCON.clear();
 
-	// ÇÊ¿äÇÑ ¿¬°á¸ñ·Ï ±¸¼º
+	// í•„ìš”í•œ ì—°ê²°ëª©ë¡ êµ¬ì„±
 	for( BYTE i=0; i<bCount; i++)
 	{
 		BYTE bServerID;
@@ -2186,7 +2186,7 @@ DWORD CTWorldSvrModule::OnMW_MAPSVRLIST_ACK( LPPACKETBUF pBUF)
 	}
 	mapCON.insert( MAPBYTE::value_type( LOBYTE(pSERVER->m_wID), LOBYTE(pSERVER->m_wID)));
 
-	// ÇÊ¿ä¾ø´Â ¿¬°áµéÀ» Á¾·á´ë±â ¹öÆÛ·Î ÀÌµ¿
+	// í•„ìš”ì—†ëŠ” ì—°ê²°ë“¤ì„ ì¢…ë£ŒëŒ€ê¸° ë²„í¼ë¡œ ì´ë™
 	MAPTCHARCON::iterator itCON = pTCHAR->m_mapTCHARCON.begin();
 	while(itCON != pTCHAR->m_mapTCHARCON.end())
 	{
@@ -2204,7 +2204,7 @@ DWORD CTWorldSvrModule::OnMW_MAPSVRLIST_ACK( LPPACKETBUF pBUF)
 		itCON = itNEXT;
 	}
 
-	// »õ·Ó°Ô ¿¬°áµÇ¾î¾ß ÇÏ´Â ¿¬°á¸ñ·Ï ±¸¼º
+	// ìƒˆë¡­ê²Œ ì—°ê²°ë˜ì–´ì•¼ í•˜ëŠ” ì—°ê²°ëª©ë¡ êµ¬ì„±
 	MAPBYTE::iterator itID = mapCON.begin();
 	while(itID != mapCON.end())
 	{
@@ -2219,8 +2219,8 @@ DWORD CTWorldSvrModule::OnMW_MAPSVRLIST_ACK( LPPACKETBUF pBUF)
 
 	if(!mapCON.empty())
 	{
-		// »õ·Ó°Ô ¿¬°áµÇ¾î¾ß ÇÏ´Â ¿¬°áÀÌ ÀÖÀ¸¸é ¸ŞÀÎ¼­¹ö·Î ÇØ´ç ¿¬°áÀÇ Á¢¼ÓÁ¤º¸(IP, Æ÷Æ® µî)¸¦ ¿äÃ»
-		// ÀÌ ¶§ ¸Ê ¼­¹ö´Â MW_ROUTE_ACK¸¦ ÀÌ¿ëÇÏ¿© Á¢¼ÓÁ¤º¸¸¦ ¹İÈ¯ÇÏ¿© Ãß°¡ ¿¬°á°ü¸® ÇÁ·Î¼¼½º ½ÇÇà
+		// ìƒˆë¡­ê²Œ ì—°ê²°ë˜ì–´ì•¼ í•˜ëŠ” ì—°ê²°ì´ ìˆìœ¼ë©´ ë©”ì¸ì„œë²„ë¡œ í•´ë‹¹ ì—°ê²°ì˜ ì ‘ì†ì •ë³´(IP, í¬íŠ¸ ë“±)ë¥¼ ìš”ì²­
+		// ì´ ë•Œ ë§µ ì„œë²„ëŠ” MW_ROUTE_ACKë¥¼ ì´ìš©í•˜ì—¬ ì ‘ì†ì •ë³´ë¥¼ ë°˜í™˜í•˜ì—¬ ì¶”ê°€ ì—°ê²°ê´€ë¦¬ í”„ë¡œì„¸ìŠ¤ ì‹¤í–‰
 		CPacket *pMSG = new CPacket();
 
 		pMSG->SetID(MW_ROUTELIST_REQ)
@@ -2235,7 +2235,7 @@ DWORD CTWorldSvrModule::OnMW_MAPSVRLIST_ACK( LPPACKETBUF pBUF)
 	}
 	else
 	{
-		// »õ·Ó°Ô ¿¬°áµÇ¾î¾ß ÇÏ´Â ¿¬°áÀÌ ¾øÀ¸¸é Áï½Ã ¸ŞÀÎ¼­¹ö Ã¼Å©
+		// ìƒˆë¡­ê²Œ ì—°ê²°ë˜ì–´ì•¼ í•˜ëŠ” ì—°ê²°ì´ ì—†ìœ¼ë©´ ì¦‰ì‹œ ë©”ì¸ì„œë²„ ì²´í¬
 		CheckMainCON(pTCHAR);
 	}
 	mapCON.clear();
@@ -2269,12 +2269,12 @@ DWORD CTWorldSvrModule::OnMW_CHECKCONNECT_ACK( LPPACKETBUF pBUF)
 		return EC_NOERROR;
 	}
 
-	// ¿¬°á°ü¸® ÇÁ·Î¼¼½º Å¥¿¡ µî·Ï ÇÑ ÈÄ ÀÌ¹Ì ½ÇÇà ÁßÀÌ°Å³ª ½ÇÇà´ë±â ÁßÀÎ ¿¬°á°ü¸® ÇÁ·Î¼¼½º°¡ ÀÖÀ¸¸é
-	// ¸ÕÀú µî·ÏµÈ ¿¬°á°ü¸® ÇÁ·Î¼¼½º°¡ ³¡³¯¶§±îÁö ´ë±â
+	// ì—°ê²°ê´€ë¦¬ í”„ë¡œì„¸ìŠ¤ íì— ë“±ë¡ í•œ í›„ ì´ë¯¸ ì‹¤í–‰ ì¤‘ì´ê±°ë‚˜ ì‹¤í–‰ëŒ€ê¸° ì¤‘ì¸ ì—°ê²°ê´€ë¦¬ í”„ë¡œì„¸ìŠ¤ê°€ ìˆìœ¼ë©´
+	// ë¨¼ì € ë“±ë¡ëœ ì—°ê²°ê´€ë¦¬ í”„ë¡œì„¸ìŠ¤ê°€ ëë‚ ë•Œê¹Œì§€ ëŒ€ê¸°
 	if(PushConCess( pTCHAR, pBUF))
 		return EC_NOERROR;
 
-	// ÀÌ¹Ì ½ÇÇà ÁßÀÌ°Å³ª ½ÇÇà´ë±â ÁßÀÎ ¿¬°á°ü¸® ÇÁ·Î¼¼½º°¡ ¾øÀ¸¸é ¿¬°áÈ®ÀÎ ½ÃÀÛ
+	// ì´ë¯¸ ì‹¤í–‰ ì¤‘ì´ê±°ë‚˜ ì‹¤í–‰ëŒ€ê¸° ì¤‘ì¸ ì—°ê²°ê´€ë¦¬ í”„ë¡œì„¸ìŠ¤ê°€ ì—†ìœ¼ë©´ ì—°ê²°í™•ì¸ ì‹œì‘
 	pBUF->m_packet.Rewind(FALSE);
 	OnCheckConnect( pTCHAR, pBUF);
 
@@ -2312,8 +2312,8 @@ DWORD CTWorldSvrModule::OnMW_RELEASEMAIN_ACK( LPPACKETBUF pBUF)
 	CTServer *pMAIN = FindMapSvr(pTCHAR->m_bMainID);
 	if(!pMAIN)
 	{
-		// ÀÓ½Ã ¸ŞÀÎ¼­¹ö°¡ ¾ø°Å³ª ´Ù¸£°Ô ¼³Á¤µÇ¾î °ø½Ä ¹èÆ÷µÈ Å¬¶óÀÌ¾ğÆ®°¡ ¾Æ´Ï°Å³ª ÇØÅ·À¸·Î ÀÇ½ÉµÇ´Â ¿¬°á
-		// ¸Ê ¼­¹ö¸¦ ÅëÇØ Å¬¶óÀÌ¾ğÆ®¿¡°Ô ¿À·ù¸Ş¼¼Áö¸¦ Àü´ŞÇÑ ÈÄ Å¬¶óÀÌ¾ğÆ®ÀÇ ¿¬°áÀ» Á¾·á
+		// ì„ì‹œ ë©”ì¸ì„œë²„ê°€ ì—†ê±°ë‚˜ ë‹¤ë¥´ê²Œ ì„¤ì •ë˜ì–´ ê³µì‹ ë°°í¬ëœ í´ë¼ì´ì–¸íŠ¸ê°€ ì•„ë‹ˆê±°ë‚˜ í•´í‚¹ìœ¼ë¡œ ì˜ì‹¬ë˜ëŠ” ì—°ê²°
+		// ë§µ ì„œë²„ë¥¼ í†µí•´ í´ë¼ì´ì–¸íŠ¸ì—ê²Œ ì˜¤ë¥˜ë©”ì„¸ì§€ë¥¼ ì „ë‹¬í•œ í›„ í´ë¼ì´ì–¸íŠ¸ì˜ ì—°ê²°ì„ ì¢…ë£Œ
 		pSERVER->SendMW_INVALIDCHAR_REQ(
 			dwCharID,
 			dwKEY,
@@ -2322,8 +2322,8 @@ DWORD CTWorldSvrModule::OnMW_RELEASEMAIN_ACK( LPPACKETBUF pBUF)
 		return EC_NOERROR;
 	}
 
-	// ÀÓ½Ã ¸ŞÀÎ¼­¹ö·Î ÀÔÀå½ÂÀÎ ¸Ş¼¼Áö¸¦ Àü´ŞÇÏ°í Ä³¸¯ÅÍ ¿ÀºêÁ§Æ®¸¦ ¸ŞÀÎ¼­¹ö ±³Ã¼ Áß »óÅÂ·Î ™VÆÃ
-	// ÀÌ ½ÃÁ¡¿¡ °èÁ¤ÀÎÁõ ÀıÂ÷¸¦ °ÅÄ£ ÈÄ Ä³¸¯ÅÍ µ¥ÀÌÅÍ°¡ ÀÓ½Ã ¸ŞÀÎ¼­¹ö¿¡ ·Îµå µÈ´Ù
+	// ì„ì‹œ ë©”ì¸ì„œë²„ë¡œ ì…ì¥ìŠ¹ì¸ ë©”ì„¸ì§€ë¥¼ ì „ë‹¬í•˜ê³  ìºë¦­í„° ì˜¤ë¸Œì íŠ¸ë¥¼ ë©”ì¸ì„œë²„ êµì²´ ì¤‘ ìƒíƒœë¡œ ì…‘íŒ…
+	// ì´ ì‹œì ì— ê³„ì •ì¸ì¦ ì ˆì°¨ë¥¼ ê±°ì¹œ í›„ ìºë¦­í„° ë°ì´í„°ê°€ ì„ì‹œ ë©”ì¸ì„œë²„ì— ë¡œë“œ ëœë‹¤
 	pMAIN->SendMW_ENTERSVR_REQ(pBUF);
 
 	pTCHAR->m_bCHGMainID = LOBYTE(pSERVER->m_wID);
@@ -2975,7 +2975,7 @@ DWORD CTWorldSvrModule::OnMW_LEVELUP_ACK(LPPACKETBUF pBUF)
 	return EC_NOERROR;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ±æµå
+// ê¸¸ë“œ
 DWORD CTWorldSvrModule::OnDM_GUILDUPDATE_REQ(LPPACKETBUF pBUF)
 {
 	DWORD	dwAllience;
@@ -6571,7 +6571,7 @@ DWORD CTWorldSvrModule::OnDM_RESERVEDPOSTSEND_REQ(LPPACKETBUF pBUF)
 
 		if(!nRet)
 		{
-			// Recver °¡ ÀÖÀ¸¸é Notify
+			// Recver ê°€ ìˆìœ¼ë©´ Notify
 			strSender = query->m_szSender;
 			strRecver = query->m_szRecver;
 			strTitle  = query->m_szTitle;
@@ -7455,7 +7455,7 @@ DWORD CTWorldSvrModule::OnMW_TMSSEND_ACK(LPPACKETBUF pBUF)
 
 	LPTMS pTMS = (*itTMS).second;
 
-	// ¸¶Áö¸· ³ª°£ »ç¶÷¿¡°Ô ¸Ş½ÃÁö
+	// ë§ˆì§€ë§‰ ë‚˜ê°„ ì‚¬ëŒì—ê²Œ ë©”ì‹œì§€
 	if(pTMS->m_mapMember.size() == 1)
 	{
 		LPTCHARACTER pTarget = FindTChar(pTMS->m_strLastMember);
@@ -7463,7 +7463,7 @@ DWORD CTWorldSvrModule::OnMW_TMSSEND_ACK(LPPACKETBUF pBUF)
 			strMessage = BuildNetString(NAME_NULL, GetSvrMsg(TMS_NORECEIVER));
 		else
 		{
-			// Å¸°ÙÀÇ Â÷´Ü¸ñ·ÏÀ» °Ë»çÇÑ´Ù
+			// íƒ€ê²Ÿì˜ ì°¨ë‹¨ëª©ë¡ì„ ê²€ì‚¬í•œë‹¤
 			CTServer * pCon = FindMapSvr(pTarget->m_bMainID);
 			if(pCon)
 			{
@@ -7534,7 +7534,7 @@ DWORD CTWorldSvrModule::OnMW_TMSINVITEASK_ACK(LPPACKETBUF pBUF)
 	LPTCHARACTER pTarget = FindTChar(dwTargetID, dwTargetKEY);
 	if(pTarget && bResult)
 	{
-		// Â÷´ÜµÇ¾î ÀÖÁö ¾Ê´Ù¸é INVITE
+		// ì°¨ë‹¨ë˜ì–´ ìˆì§€ ì•Šë‹¤ë©´ INVITE
 		pTMS->m_mapMember.insert(MAPTCHARACTER::value_type(pTarget->m_dwCharID, pTarget));
 		pTarget->m_mapTMS.insert(MAPDWORD::value_type(pTMS->m_dwID, pTMS->m_dwID));
 
@@ -7626,7 +7626,7 @@ DWORD CTWorldSvrModule::OnMW_TMSINVITE_ACK(LPPACKETBUF pBUF)
 	if(!mapMEMBER.size())
 		return EC_NOERROR;
 
-	// 1:1 ´ëÈ­ÀÏ°æ¿ì
+	// 1:1 ëŒ€í™”ì¼ê²½ìš°
 	if(!pTMS && mapMEMBER.size() == 1)
 	{
 		LPTCHARACTER pTarget = (*mapMEMBER.begin()).second;
@@ -7638,7 +7638,7 @@ DWORD CTWorldSvrModule::OnMW_TMSINVITE_ACK(LPPACKETBUF pBUF)
 			if(itTMS==m_mapTMS.end())
 				continue;
 
-			// ¸¶Áö¸· ³ª°£ »ç¶÷ÀÌ ³ªÀÏ °æ¿ì
+			// ë§ˆì§€ë§‰ ë‚˜ê°„ ì‚¬ëŒì´ ë‚˜ì¼ ê²½ìš°
 			if( (*itTMS).second->m_mapMember.size() == 1 && 
 				(*itTMS).second->m_strLastMember == pTCHAR->m_strNAME)
 			{
@@ -8586,15 +8586,15 @@ DWORD CTWorldSvrModule::OnMW_BEGINTELEPORT_ACK(LPPACKETBUF pBUF)
 		return EC_NOERROR;
 	}
 
-	// ¿¬°á°ü¸® ÇÁ·Î¼¼½º Å¥¿¡ µî·Ï ÇÑ ÈÄ ÀÌ¹Ì ½ÇÇà ÁßÀÌ°Å³ª ½ÇÇà´ë±â ÁßÀÎ ¿¬°á°ü¸® ÇÁ·Î¼¼½º°¡ ÀÖÀ¸¸é
-	// ¸ÕÀú µî·ÏµÈ ¿¬°á°ü¸® ÇÁ·Î¼¼½º°¡ ³¡³¯¶§±îÁö ´ë±â
+	// ì—°ê²°ê´€ë¦¬ í”„ë¡œì„¸ìŠ¤ íì— ë“±ë¡ í•œ í›„ ì´ë¯¸ ì‹¤í–‰ ì¤‘ì´ê±°ë‚˜ ì‹¤í–‰ëŒ€ê¸° ì¤‘ì¸ ì—°ê²°ê´€ë¦¬ í”„ë¡œì„¸ìŠ¤ê°€ ìˆìœ¼ë©´
+	// ë¨¼ì € ë“±ë¡ëœ ì—°ê²°ê´€ë¦¬ í”„ë¡œì„¸ìŠ¤ê°€ ëë‚ ë•Œê¹Œì§€ ëŒ€ê¸°
 	if(PushConCess( pTCHAR, pBUF))
 	{
 		CTBowSystem::Log("No PCS > ServerID");
 		return EC_NOERROR;
 	}
 
-	// ÀÌ¹Ì ½ÇÇà ÁßÀÌ°Å³ª ½ÇÇà´ë±â ÁßÀÎ ¿¬°á°ü¸® ÇÁ·Î¼¼½º°¡ ¾øÀ¸¸é ÅÚ·¹Æ÷Æ® ½ÃÀÛ
+	// ì´ë¯¸ ì‹¤í–‰ ì¤‘ì´ê±°ë‚˜ ì‹¤í–‰ëŒ€ê¸° ì¤‘ì¸ ì—°ê²°ê´€ë¦¬ í”„ë¡œì„¸ìŠ¤ê°€ ì—†ìœ¼ë©´ í…”ë ˆí¬íŠ¸ ì‹œì‘
 	pBUF->m_packet.Rewind(FALSE);
 	OnBeginTeleport( pTCHAR, pBUF);
 
@@ -9378,7 +9378,7 @@ DWORD CTWorldSvrModule::OnMW_SOULMATESEARCH_ACK(LPPACKETBUF pBUF)
 	VECTORTMEMBER vMember;
 	vMember.clear();
 
-	// ·¹º§Â÷ÀÌ°¡ °¡Àå ÀÛÀº ´ë»ó / ÀÌ¿ôÀÎ ´ë»ó
+	// ë ˆë²¨ì°¨ì´ê°€ ê°€ì¥ ì‘ì€ ëŒ€ìƒ / ì´ì›ƒì¸ ëŒ€ìƒ
 	MAPTCHARACTER::iterator itPLAYERS;
 	for(itPLAYERS=m_mapTCHAR.begin(); itPLAYERS!=m_mapTCHAR.end(); itPLAYERS++)
 	{
@@ -9411,7 +9411,7 @@ DWORD CTWorldSvrModule::OnMW_SOULMATESEARCH_ACK(LPPACKETBUF pBUF)
 
 	VECTORTMEMBER vTemp;
 
-	// ½ÇÁ¦¼ºº°ÀÌ ÀÌ¼ºÀÎ ´ë»ó
+	// ì‹¤ì œì„±ë³„ì´ ì´ì„±ì¸ ëŒ€ìƒ
 	if(vMember.size() != 1)
 	{
 		vTemp.clear();
@@ -9425,7 +9425,7 @@ DWORD CTWorldSvrModule::OnMW_SOULMATESEARCH_ACK(LPPACKETBUF pBUF)
 		vTemp.clear();
 	}
 
-	// ¼Ò¿ï¸ŞÀÌÆ®¸¦ ÁöÁ¤ÇÏÁö ¾ÊÀº ´ë»ó
+	// ì†Œìš¸ë©”ì´íŠ¸ë¥¼ ì§€ì •í•˜ì§€ ì•Šì€ ëŒ€ìƒ
 	if(vMember.size() != 1)
 	{
 		vTemp.clear();
@@ -9444,7 +9444,7 @@ DWORD CTWorldSvrModule::OnMW_SOULMATESEARCH_ACK(LPPACKETBUF pBUF)
 		vTemp.clear();
 	}
 
-	// ÄÉ¸¯ÅÍÀÇ ¼ºº°ÀÌ ÀÌ¼ºÀÎ ´ë»ó
+	// ì¼€ë¦­í„°ì˜ ì„±ë³„ì´ ì´ì„±ì¸ ëŒ€ìƒ
 	if(vMember.size() != 1)
 	{
 		vTemp.clear();
@@ -11027,7 +11027,7 @@ DWORD CTWorldSvrModule::OnSM_MONTHRANKSAVE_REQ(LPPACKETBUF pBUF)
 	pMSG->m_packet.SetID(DM_MONTHRANKSAVE_REQ);
 
 	//////////////////////////////////////////////////////////////////////////
-	// ÀüÃ¼ ¼øÀ§ ¼±Á¤
+	// ì „ì²´ ìˆœìœ„ ì„ ì •
 	BYTE t;
 	MONTHRANKER	arTotalRank[TOTALMONTHRANKCOUNT];
 	VMONTHRANKER vMonthRanker;
@@ -11075,7 +11075,7 @@ DWORD CTWorldSvrModule::OnSM_MONTHRANKSAVE_REQ(LPPACKETBUF pBUF)
 				<< t;
 
             m_arMonthRank[i][j].WrapPacketIn( &(pMSG->m_packet));
-			if(t == 0) //´©Àû1À§°¡ ¿ù°£ ¼øÀ§ 0À§¿¡ ÀÖÀ»°æ¿ì¸¦ ´ëºñ
+			if(t == 0) //ëˆ„ì 1ìœ„ê°€ ì›”ê°„ ìˆœìœ„ 0ìœ„ì— ìˆì„ê²½ìš°ë¥¼ ëŒ€ë¹„
 				k = 1;
 		}
 	}
@@ -11222,7 +11222,7 @@ DWORD CTWorldSvrModule::OnDM_MONTHRANKSAVE_ACK(LPPACKETBUF pBUF)
 	}
 
 	//////////////////////////////////////////////////////////////////////////
-	//1±º ¼±¼öµî·Ï
+	//1êµ° ì„ ìˆ˜ë“±ë¡
 	
 	for(BYTE i = 0; i < COUNTRY_COUNT; i++)
 		for(BYTE j = 0; j < FIRSTGRADEGROUPCOUNT; j++)
@@ -11280,14 +11280,14 @@ DWORD CTWorldSvrModule::OnMW_MONTHRANKUPDATE_ACK(LPPACKETBUF pBUF)
 
 	stMONTHRANKER.WrapPacketOut(&(pBUF->m_packet));
 
-	//´©Àû 1À§ Àç¼±Á¤
+	//ëˆ„ì  1ìœ„ ì¬ì„ ì •
 	if(m_arMonthRank[bCountry][0].m_dwTotalPoint < stMONTHRANKER.m_dwTotalPoint ||
 		m_arMonthRank[bCountry][0].m_dwCharID == stMONTHRANKER.m_dwCharID)
 	{
 		m_arMonthRank[bCountry][0] = stMONTHRANKER;
 		bNewWarlord = TRUE;
 
-		for(BYTE w =1 ; w< MONTHRANKCOUNT; w++)	// ´©Àû 1À§°¡ ¸íÁ¡ÀÌ ±ğ¿´À» °æ¿ì ¼øÀ§ Àç¼±Á¤
+		for(BYTE w =1 ; w< MONTHRANKCOUNT; w++)	// ëˆ„ì  1ìœ„ê°€ ëª…ì ì´ ê¹ì˜€ì„ ê²½ìš° ìˆœìœ„ ì¬ì„ ì •
 			if(m_arMonthRank[bCountry][w].m_dwTotalPoint > m_arMonthRank[bCountry][0].m_dwTotalPoint)			
 				m_arMonthRank[bCountry][0] = m_arMonthRank[bCountry][w];		
 	}
@@ -11363,14 +11363,14 @@ DWORD CTWorldSvrModule::OnMW_MONTHRANKUPDATE_ACK(LPPACKETBUF pBUF)
 		bEndRank = bOldRank;
 	}
 	
-	//´©Àû 1À§ Àç¼±Á¤
+	//ëˆ„ì  1ìœ„ ì¬ì„ ì •
 	if(m_arMonthRank[bCountry][0].m_dwTotalPoint < stMONTHRANKER.m_dwTotalPoint ||
 		m_arMonthRank[bCountry][0].m_dwCharID == stMONTHRANKER.m_dwCharID)
 	{
 		m_arMonthRank[bCountry][0] = stMONTHRANKER;
 		bNewWarlord = TRUE;
 
-		for(BYTE w =1 ; w< MONTHRANKCOUNT; w++)		// ´©Àû 1À§°¡ ¸íÁ¡ÀÌ ±ğ¿´À» °æ¿ì ¼øÀ§ Àç¼±Á¤
+		for(BYTE w =1 ; w< MONTHRANKCOUNT; w++)		// ëˆ„ì  1ìœ„ê°€ ëª…ì ì´ ê¹ì˜€ì„ ê²½ìš° ìˆœìœ„ ì¬ì„ ì •
 			if(m_arMonthRank[bCountry][w].m_dwTotalPoint > m_arMonthRank[bCountry][0].m_dwTotalPoint)			
 				m_arMonthRank[bCountry][0] = m_arMonthRank[bCountry][w];		
 	}

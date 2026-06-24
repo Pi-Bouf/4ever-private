@@ -1,6 +1,6 @@
-// Çö½Â·æ UserMove.cpp
+ï»¿// í˜„ìŠ¹ë£¡ UserMove.cpp
 
-// UserMove.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+// UserMove.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -11,7 +11,7 @@
 #include "HappyDoc.h"
 
 
-// CUserMove ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CUserMove ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CUserMove, CDialog)
 CUserMove::CUserMove(CWnd* pParent /*=NULL*/)
@@ -43,10 +43,10 @@ BEGIN_MESSAGE_MAP(CUserMove, CDialog)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_POSFIND, OnLvnItemchangedPosfind)
 END_MESSAGE_MAP()
 
-// ÁÂÇ¥ÀÌµ¿
+// ì¢Œí‘œì´ë™
 void CUserMove::MoveNow(LPUSERPOS pUserPos)
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 
@@ -63,7 +63,7 @@ void CUserMove::MoveNow(LPUSERPOS pUserPos)
 	int nString = 0;
 	BYTE bGroupID;
 
-	//	ÀÌ¸§ ¾ò±â
+	//	ì´ë¦„ ì–»ê¸°
 	GetDlgItemText(IDC_EDIT1, strName);
 	strName.Replace(" ","");
 
@@ -86,7 +86,7 @@ void CUserMove::MoveNow(LPUSERPOS pUserPos)
 		return;
 	}
 
-	//	±×·ì ¾ò±â
+	//	ê·¸ë£¹ ì–»ê¸°
 	m_comboWorld.GetLBText(m_comboWorld.GetCurSel(), strTmp);
 
 	MAPGROUP::iterator itG;
@@ -107,7 +107,7 @@ void CUserMove::MoveNow(LPUSERPOS pUserPos)
 	if(pUserPos)
 		return pDoc->SendCT_USERMOVE_REQ(&qStrUser, bGroupID, pUserPos->bChannelNum, pUserPos->wMapID, pUserPos->PosX, pUserPos->PosY, pUserPos->PosZ);
 
-	//	Å¸ÀÔ¿¡ µû¸¥ ºĞ·ù
+	//	íƒ€ì…ì— ë”°ë¥¸ ë¶„ë¥˜
 	if(!m_bType)
 	{
 		BYTE bChannelID;
@@ -145,7 +145,7 @@ void CUserMove::MoveNow(LPUSERPOS pUserPos)
 	}
 }
 
-// CUserMove ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CUserMove ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 void CUserMove::OnBnClickedOk()
 {
 	MoveNow();
@@ -168,7 +168,7 @@ void CUserMove::OnBnClickedRadioChar()
 
 void CUserMove::OnBnClickedSavePos()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.	
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.	
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 
@@ -300,7 +300,7 @@ void CUserMove::Init()
 
 	GetDlgItem(IDC_EDIT1)->SetFocus();
 
-	// ¸®½ºÆ® ÄÁÆ®·ÑÀÇ ¸ğµç ÄÃ·³ »èÁ¦
+	// ë¦¬ìŠ¤íŠ¸ ì»¨íŠ¸ë¡¤ì˜ ëª¨ë“  ì»¬ëŸ¼ ì‚­ì œ
     m_listctrPos.DeleteColumn(0);
 	m_listctrPos.InsertColumn(0,"name", LVCFMT_LEFT, 190);
 	m_listctrPos.SetExtendedStyle(LVS_EX_FULLROWSELECT);
@@ -337,10 +337,10 @@ void CUserMove::LoadPosListFromData()
 
 void CUserMove::ItemDelete()
 {
-	if(AfxMessageBox("Are you sure you want to delete?",MB_YESNO) == IDNO ) //ÁøÁ¤ »èÁ¦ÇÏ½Ã°Ú½À´Ï±î
+	if(AfxMessageBox("Are you sure you want to delete?",MB_YESNO) == IDNO ) //ì§„ì • ì‚­ì œí•˜ì‹œê² ìŠµë‹ˆê¹Œ
 		return;	
 
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -350,7 +350,7 @@ void CUserMove::ItemDelete()
 			return;
 	}	
 
-	// ¼±ÅÃµÈ ¾ÆÀÌÅÛ Ã£±â	
+	// ì„ íƒëœ ì•„ì´í…œ ì°¾ê¸°	
 	int iCount = m_listctrPos.GetItemCount();
 	for(int i = 0; i < iCount; i++)
 	{
@@ -377,7 +377,7 @@ BYTE CUserMove::FindListData(LPUSERPOS pPos)
 	if(!pPos)
 		return FALSE;
 
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -401,7 +401,7 @@ void CUserMove::DeleteListData(LPUSERPOS pPos)
 	if(!pPos)
 		return ;
 
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -427,7 +427,7 @@ void CUserMove::OnNMDblclkPosfind(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	*pResult = 0;
 
-	// ¼±ÅÃµÈ ¾ÆÀÌÅÛ Ã£±â
+	// ì„ íƒëœ ì•„ì´í…œ ì°¾ê¸°
 	for(int i = 0; i < m_listctrPos.GetItemCount(); i++)
 	{
 		if( m_listctrPos.GetItemState(i, LVIS_SELECTED) != 0 )
@@ -438,10 +438,10 @@ void CUserMove::OnNMDblclkPosfind(NMHDR *pNMHDR, LRESULT *pResult)
 void CUserMove::OnLvnItemchangedPosfind(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	*pResult = 0;
 	
-	// ¼±ÅÃµÈ ¾ÆÀÌÅÛ Ã£±â
+	// ì„ íƒëœ ì•„ì´í…œ ì°¾ê¸°
 	for(int i = 0; i < m_listctrPos.GetItemCount(); i++)
 	{
 		if( m_listctrPos.GetItemState(i, LVIS_SELECTED) != 0 )

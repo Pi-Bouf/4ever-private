@@ -1,7 +1,7 @@
-#pragma once
+ï»¿#pragma once
 
 
-//! °ø¼ºÀü ÁøÇà»óÈ² UI Class.
+//! ê³µì„±ì „ ì§„í–‰ìƒí™© UI Class.
 /*!
 *
 *

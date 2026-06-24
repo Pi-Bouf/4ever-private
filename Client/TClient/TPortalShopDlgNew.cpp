@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+ï»¿#include "Stdafx.h"
 #include "TPortalShopDlgNew.h"
 #include "TClientGame.h"
 
@@ -254,12 +254,12 @@ void CTPortalShopDlg::AddPortal( WORD wPortalID, DWORD dwPrice, DWORD dwRealPric
 
 	MAPLPVTPORTALSHOPITEM::iterator itor = m_mapVTPORTALSHOPITEM.find( pItem->m_pTPortal->m_wPortalRegionID );
 
-	// Ãß°¡µÇ´Â Æ÷Å»ÀÇ Áö¿ªÀÌ ÀÖÀ» ¶§
+	// ì¶”ê°€ë˜ëŠ” í¬íƒˆì˜ ì§€ì—­ì´ ìžˆì„ ë•Œ
 	if ( itor != m_mapVTPORTALSHOPITEM.end() )
 	{
 		m_mapVTPORTALSHOPITEM[  pItem->m_pTPortal->m_wPortalRegionID ]->push_back( pItem );
 	}
-	// »õ·ÎÀÌ Ãß°¡µÇ´Â Áö¿ª ÀÏ ¶§
+	// ìƒˆë¡œì´ ì¶”ê°€ë˜ëŠ” ì§€ì—­ ì¼ ë•Œ
 	else
 	{
 		LPVTPORTALSHOPITEM pVTPORTAL = new VTPORTALSHOPITEM();

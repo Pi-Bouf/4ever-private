@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 class CTNewQuestDlg : public CTClientUIBase
 {
@@ -35,7 +35,7 @@ public:
 	virtual BOOL DoMouseWheel( UINT nFlags, short zDelta, CPoint pt);
 	virtual void OnMouseMove(UINT nFlags, CPoint pt);
 
-	// Äù½ºÆ®Ãâ·Â
+	// í€˜ìŠ¤íŠ¸ì¶œë ¥
 	void Reset();
 	void ResetTQUEST( LPTQUEST pTQUEST);
 	void SummaryMessage( CString strText);
@@ -47,7 +47,7 @@ public:
 	CString GetSpeakerString( CString strSpeaker);
 	DWORD GetTQUESTColor(LPTQUEST pTQUEST);
 
-	// ¿ÜºÎ¿¡¼­ Á¢±Ù
+	// ì™¸ë¶€ì—ì„œ ì ‘ê·¼
 public:
 	CTClientObjBase *m_pHost;
 	DWORD m_dwCompleteID;
@@ -64,11 +64,11 @@ public:
 	CString m_strNPCTalk;
 	CString m_strAnswerWhenNPCTalk;
 
-	// °øÅë
+	// ê³µí†µ
 protected:
 	LPTREWARD 		m_pTTOPREWARD;
 
-	// Äù½ºÆ®Ãâ·Â
+	// í€˜ìŠ¤íŠ¸ì¶œë ¥
 protected:
 	TList* m_pSummary;
 	TList* m_pTerm;
@@ -129,7 +129,7 @@ public:
 
 	
  
-	// Æ®¸®
+	// íŠ¸ë¦¬
 public:
 	enum
 	{

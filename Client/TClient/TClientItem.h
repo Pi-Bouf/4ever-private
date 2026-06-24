@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 
 class CTClientItem
@@ -48,34 +48,34 @@ protected:
 	BYTE			m_bGrade;
 	BYTE			m_bGem;
 	BYTE			m_bGradeEffect;
-	BYTE			m_bInstGradeMax; //ÀÏ½ÃÀûÀÎ m_bGradeÀÇ »óÇÑ°ª - CS_ITEMLEVELREVISION_ACK¿¡ ÀÇÇØ ÄÁÆ®·Ñ
+	BYTE			m_bInstGradeMax; //ì¼ì‹œì ì¸ m_bGradeì˜ ìƒí•œê°’ - CS_ITEMLEVELREVISION_ACKì— ì˜í•´ ì»¨íŠ¸ë¡¤
 	BYTE			m_bWrap;
 	BYTE			m_bELD;
 	WORD		m_wColor;
 	BYTE			m_bRegGuild;
 
 	BOOL			m_bNeedUpdate;
-	BYTE			m_bMagicGrade;		///< ¸ÅÁ÷ ¿É¼Ç µî±Ş
-	LPTITEMMAGIC	m_pTBestOption;		///< ÃÖ°ø ¼º´ÉÀÇ ¿É¼Ç
+	BYTE			m_bMagicGrade;		///< ë§¤ì§ ì˜µì…˜ ë“±ê¸‰
+	LPTITEMMAGIC	m_pTBestOption;		///< ìµœê³µ ì„±ëŠ¥ì˜ ì˜µì…˜
 
-	WORD			m_wAttrID;			///< ÀÌ ¾ÆÀÌÅÛÀÇ ´É·ÂÄ¡ ¾ÆÀÌµğ
-	WORD			m_wAttrLevel;		///< ½ÇÁ¦ ¼º´É ·¹º§
-	WORD			m_wViewAttrLevel;	///< Ç¥½ÃµÇ´Â ¼º´É ·¹º§
-	DWORD			m_dwPrice;			///< ¼º´É °¡°İ
+	WORD			m_wAttrID;			///< ì´ ì•„ì´í…œì˜ ëŠ¥ë ¥ì¹˜ ì•„ì´ë””
+	WORD			m_wAttrLevel;		///< ì‹¤ì œ ì„±ëŠ¥ ë ˆë²¨
+	WORD			m_wViewAttrLevel;	///< í‘œì‹œë˜ëŠ” ì„±ëŠ¥ ë ˆë²¨
+	DWORD			m_dwPrice;			///< ì„±ëŠ¥ ê°€ê²©
 
-	VTMAGICOPTION m_vMagicInfos;		///< ¸ÅÁ÷¿É¼Ç Á¤º¸ ¸®½ºÆ®
+	VTMAGICOPTION m_vMagicInfos;		///< ë§¤ì§ì˜µì…˜ ì •ë³´ ë¦¬ìŠ¤íŠ¸
 
-	BOOL	 		m_bApplyAP;			///< ¸ÅÁ÷¼º´ÉÀÌ '¹°¸®°ø°İ·Â'¿¡ Àû¿ëµÇ¾ú´ÂÁö ¿©ºÎ
-	BOOL	 		m_bApplyMAP;		///< ¸ÅÁ÷¼º´ÉÀÌ '¸¶¹ı°ø°İ·Â'¿¡ Àû¿ëµÇ¾ú´ÂÁö ¿©ºÎ
-	BOOL	 		m_bApplyDP;			///< ¸ÅÁ÷¼º´ÉÀÌ '¹°¸®¹æ¾î·Â'¿¡ Àû¿ëµÇ¾ú´ÂÁö ¿©ºÎ
-	BOOL	 		m_bApplyMDP;		///< ¸ÅÁ÷¼º´ÉÀÌ '¸¶¹ı¹æ¾î·Â'¿¡ Àû¿ëµÇ¾ú´ÂÁö ¿©ºÎ
+	BOOL	 		m_bApplyAP;			///< ë§¤ì§ì„±ëŠ¥ì´ 'ë¬¼ë¦¬ê³µê²©ë ¥'ì— ì ìš©ë˜ì—ˆëŠ”ì§€ ì—¬ë¶€
+	BOOL	 		m_bApplyMAP;		///< ë§¤ì§ì„±ëŠ¥ì´ 'ë§ˆë²•ê³µê²©ë ¥'ì— ì ìš©ë˜ì—ˆëŠ”ì§€ ì—¬ë¶€
+	BOOL	 		m_bApplyDP;			///< ë§¤ì§ì„±ëŠ¥ì´ 'ë¬¼ë¦¬ë°©ì–´ë ¥'ì— ì ìš©ë˜ì—ˆëŠ”ì§€ ì—¬ë¶€
+	BOOL	 		m_bApplyMDP;		///< ë§¤ì§ì„±ëŠ¥ì´ 'ë§ˆë²•ë°©ì–´ë ¥'ì— ì ìš©ë˜ì—ˆëŠ”ì§€ ì—¬ë¶€
 
-	FLOAT			m_fOptionLv;		///< º¸Á¶ ¿É¼Ç ·¹º§
+	FLOAT			m_fOptionLv;		///< ë³´ì¡° ì˜µì…˜ ë ˆë²¨
 
-	WORD	 		m_wApplyMagicID;	///< ¼º´É·¹º§¿¡ »ç¿ëµÈ ¿É¼ÇÀÇ ¸ÅÁ÷ ¾ÆÀÌµğ
-	TITEMATTR		m_itemAttr;			///< Çâ»óµÈ ¾ÆÀÌÅÛ ¼º´É
+	WORD	 		m_wApplyMagicID;	///< ì„±ëŠ¥ë ˆë²¨ì— ì‚¬ìš©ëœ ì˜µì…˜ì˜ ë§¤ì§ ì•„ì´ë””
+	TITEMATTR		m_itemAttr;			///< í–¥ìƒëœ ì•„ì´í…œ ì„±ëŠ¥
 
-	BOOL			m_bHasMainOption;	///< ¸ŞÀÎ¿É¼ÇÀ» °¡Áö´ÂÁö ¿©ºÎ
+	BOOL			m_bHasMainOption;	///< ë©”ì¸ì˜µì…˜ì„ ê°€ì§€ëŠ”ì§€ ì—¬ë¶€
 	WORD		m_wCustomTex;
 	
 public:

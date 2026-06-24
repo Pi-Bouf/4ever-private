@@ -1,4 +1,4 @@
-// MonsterSpawn.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// MonsterSpawn.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -9,7 +9,7 @@
 #include "HappyDoc.h"
 
 
-// CMonsterSpawn ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CMonsterSpawn ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CMonsterSpawn, CDialog)
 CMonsterSpawn::CMonsterSpawn(CWnd* pParent /*=NULL*/)
@@ -51,7 +51,7 @@ BEGIN_MESSAGE_MAP(CMonsterSpawn, CDialog)
 END_MESSAGE_MAP()
 
 
-// CMonsterSpawn ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CMonsterSpawn ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 BOOL CMonsterSpawn::OnInitDialog()
 {
@@ -95,7 +95,7 @@ BOOL CMonsterSpawn::OnInitDialog()
 	m_comboAction.SetCurSel(0);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// ¿¹¿Ü: OCX ¼Ó¼º ÆäÀÌÁö´Â FALSE¸¦ ¹İÈ¯ÇØ¾ß ÇÕ´Ï´Ù.
+	// ì˜ˆì™¸: OCX ì†ì„± í˜ì´ì§€ëŠ” FALSEë¥¼ ë°˜í™˜í•´ì•¼ í•©ë‹ˆë‹¤.
 }
 
 void CMonsterSpawn::SetWorld()
@@ -122,7 +122,7 @@ void CMonsterSpawn::SetWorld()
 
 void CMonsterSpawn::OnBnClickedCancel()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	SetDlgItemText(IDC_EDIT1, _T("0"));
 	SetDlgItemText(IDC_EDIT2, _T("0"));
 	SetDlgItemText(IDC_EDIT3, _T("0"));
@@ -191,7 +191,7 @@ void CMonsterSpawn::AddItemData(DWORD dwMonID, DWORD dwHostID, BYTE bStat, float
 
 void CMonsterSpawn::OnBnClickedButton2()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	int i = m_listMon.GetSelectionMark();
 	if( i < 0 )
 		return;
@@ -215,7 +215,7 @@ void CMonsterSpawn::OnBnClickedButton2()
 			break;
 	BYTE bID = (*itG).second->m_bID;
 
-	// AT_DEAD ¿ÜÀÇ ±â´É ¸·±â
+	// AT_DEAD ì™¸ì˜ ê¸°ëŠ¥ ë§‰ê¸°
 	m_comboAction.GetLBText(m_comboAction.GetCurSel(), str);
 	if(str != _T("AT_DEAD"))
 		return;

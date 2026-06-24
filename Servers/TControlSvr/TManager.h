@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 class CTManager : public CTControlSession
 {
@@ -14,11 +14,11 @@ public:
 	~CTManager();
 
 public:
-	BYTE CheckAuthority(BYTE m_bClass); // Çö½Â·æ ±ÇÇÑÀ» °Ë»çÇÏ¿© °á°ú¸¦ ¸®ÅÏ
+	BYTE CheckAuthority(BYTE m_bClass); // í˜„ìŠ¹ë£¡ ê¶Œí•œì„ ê²€ì‚¬í•˜ì—¬ ê²°ê³¼ë¥¼ ë¦¬í„´
 
 public:
-	void SendCT_OPLOGIN_ACK(BYTE bRet, BYTE bAuthority,DWORD dwID = 0); // Çö½Â·æ ¸Å´ÏÀú ±ÇÇÑ
-	void SendCT_STLOGIN_ACK(BYTE bRet, BYTE bAuthority); // Çö½Â·æ CT_STLOGIN
+	void SendCT_OPLOGIN_ACK(BYTE bRet, BYTE bAuthority,DWORD dwID = 0); // í˜„ìŠ¹ë£¡ ë§¤ë‹ˆì € ê¶Œí•œ
+	void SendCT_STLOGIN_ACK(BYTE bRet, BYTE bAuthority); // í˜„ìŠ¹ë£¡ CT_STLOGIN
 	void SendCT_MACHINELIST_ACK(LPMAPTMACHINE pMachines);
 	void SendCT_GROUPLIST_ACK(LPMAPTGROUP pGroups);
 	void SendCT_SVRTYPELIST_ACK(LPMAPTSVRTYPE pType);
@@ -36,10 +36,10 @@ public:
 	void SendCT_SERVICEUPLOADSTART_ACK(BYTE bRet);
 	void SendCT_SERVICEUPLOAD_ACK();
 	void SendCT_SERVICEUPLOADEND_ACK(BYTE bRet);	
-	void SendCT_AUTHORITY_ACK(); // Çö½Â·æ CT_AUTHORITY_ACK
-	void SendCT_ACCOUNTINPUT_ACK(BYTE bRet); // Çö½Â·æ CT_ACCOUNTINPUT_ACK
-	void SendCT_PLATFORM_ACK(BYTE bMachineID, DWORD dwCPU, DWORD dwMEM, float fNET); // Çö½Â·æ CT_PLATFORM_ACK
-	void SendCT_MONSPAWNFIND_ACK(CPacket *pMsg); // Çö½Â·æ CT_MONSPAWNFIND_ACK
+	void SendCT_AUTHORITY_ACK(); // í˜„ìŠ¹ë£¡ CT_AUTHORITY_ACK
+	void SendCT_ACCOUNTINPUT_ACK(BYTE bRet); // í˜„ìŠ¹ë£¡ CT_ACCOUNTINPUT_ACK
+	void SendCT_PLATFORM_ACK(BYTE bMachineID, DWORD dwCPU, DWORD dwMEM, float fNET); // í˜„ìŠ¹ë£¡ CT_PLATFORM_ACK
+	void SendCT_MONSPAWNFIND_ACK(CPacket *pMsg); // í˜„ìŠ¹ë£¡ CT_MONSPAWNFIND_ACK
 	void SendCT_USERPROTECTED_ACK(BYTE bRet);
 	void SendCT_SERVICEAUTOSTART_ACK(BYTE _bAutoStart);
 	void SendCT_CHATBAN_ACK(BYTE _bRet);

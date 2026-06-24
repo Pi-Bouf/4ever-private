@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+ï»¿#include "Stdafx.h"
 #include "TKeySettingDefines.h"
 #include "TClient.h"
 #include "Resource.h"
@@ -334,7 +334,7 @@ void CTKeySetting::SetToDefault()
 		for(INT i=0; i<TKEY_COUNT; ++i)
 		{
 			if( m_vDefInfo[ i ].m_dwDefKey == MAKELONG( VK_OEM_PLUS, TKEYMOD_NONE) )
-					m_vDefInfo[ i ].m_dwDefKey = MAKELONG( VK_OEM_7, TKEYMOD_NONE); // ÀÏº» Å°º¸µå Å°¹è¿­¿¡ ÀÇÇØ ÀÌ Å°°¡ ´õ ¾î¿ï¸°´Ù.
+					m_vDefInfo[ i ].m_dwDefKey = MAKELONG( VK_OEM_7, TKEYMOD_NONE); // ì¼ë³¸ í‚¤ë³´ë“œ í‚¤ë°°ì—´ì— ì˜í•´ ì´ í‚¤ê°€ ë” ì–´ìš¸ë¦°ë‹¤.
 
 			m_vKeySet[i] = m_vDefInfo[i].m_dwDefKey;
 			m_mapWKeyToVKey.insert( make_pair(m_vKeySet[i], i) );

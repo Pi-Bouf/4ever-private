@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -89,7 +89,7 @@ struct tagTSVRTEMP
 	__int64 m_nLatestStop;
 	__int64 m_nPickTime;
 	
-	BYTE  m_bManagerControl; //¸Å´ÏÀú°¡ Start ½ÃÄ×´ÂÁö, Stop ½ÃÄ×´ÂÁö¸¦ ÀúÀå.
+	BYTE  m_bManagerControl; //ë§¤ë‹ˆì €ê°€ Start ì‹œì¼°ëŠ”ì§€, Stop ì‹œì¼°ëŠ”ì§€ë¥¼ ì €ìž¥.
 
 	BYTE m_flag; // debug test
 
@@ -195,27 +195,27 @@ struct tagLOTTERY
 struct tagEVENTINFO
 {
 	DWORD	m_dwIndex;
-    BYTE	m_bID;			// ÀÌº¥Æ® Á¾·ù
-	CString m_strTitle;		// ÀÌº¥Æ® ÀÌ¸§
-	BYTE	m_bGroupID;		// ¼­¹ö ±×·ì
+    BYTE	m_bID;			// ì´ë²¤íŠ¸ ì¢…ë¥˜
+	CString m_strTitle;		// ì´ë²¤íŠ¸ ì´ë¦„
+	BYTE	m_bGroupID;		// ì„œë²„ ê·¸ë£¹
 	BYTE	m_bSvrType;
 	BYTE	m_bSvrID;		// 0 : ALL 
-	__time64_t m_dStartDate;// ½ÃÀÛ³¯Â¥½Ã°£
-	__time64_t m_dEndDate;	// Á¾·á³¯Â¥½Ã°£
-	WORD	m_wValue;		// ÀÌº¥Æ®°ª
-	WORD	m_wMapID;		// 0xFF:ALL ¸Ê¾ÆÀÌµð
+	__time64_t m_dStartDate;// ì‹œìž‘ë‚ ì§œì‹œê°„
+	__time64_t m_dEndDate;	// ì¢…ë£Œë‚ ì§œì‹œê°„
+	WORD	m_wValue;		// ì´ë²¤íŠ¸ê°’
+	WORD	m_wMapID;		// 0xFF:ALL ë§µì•„ì´ë””
 	DWORD	m_dwStartAlarm; 
 	DWORD	m_dwEndAlarm;
 	BYTE	m_bStartAlarm;
 	BYTE	m_bEndAlarm;
 	CString m_strStartMsg;
 	CString m_strEndMsg;
-	BYTE	m_bState;		// ÀÌº¥Æ® »óÅÂ
+	BYTE	m_bState;		// ì´ë²¤íŠ¸ ìƒíƒœ
 	BYTE	m_bPartTime;
 	VTCASHITEMSALE m_vCashItem;
 	MONEVENT m_stMONEVENT;	
 	VMONREGEN m_vMONREGEN;
-	VLOTTERY m_vLOTTERY;	// °æÇ°¾ÆÀÌÅÛ
+	VLOTTERY m_vLOTTERY;	// ê²½í’ˆì•„ì´í…œ
 	CString m_strLotMsg;
 
 	void Reset()
@@ -404,12 +404,12 @@ struct tagPATCHFILE
 
 typedef enum MANAGER_CLASS
 {
-	MANAGER_ALL = 1,	// ¸ðµÎ »ç¿ë
-	MANAGER_CONTROL ,	// ÆÐÄ¡/¾÷·Îµå
-	MANAGER_USER ,		// °øÁö»çÇ×/°­Á¦ÅðÀå/À§Ä¡ÀÌµ¿
-	MANAGER_SERVICE ,	// ¼­ºñ½º ON/OFF	
-	MANAGER_GMLEVEL1 ,	// GMTool ÀÇ ¸ðµç ±â´É
-	MANAGER_GMLEVEL2 ,  // GMTool ÀÇ ÇÏÀ§±â´É
+	MANAGER_ALL = 1,	// ëª¨ë‘ ì‚¬ìš©
+	MANAGER_CONTROL ,	// íŒ¨ì¹˜/ì—…ë¡œë“œ
+	MANAGER_USER ,		// ê³µì§€ì‚¬í•­/ê°•ì œí‡´ìž¥/ìœ„ì¹˜ì´ë™
+	MANAGER_SERVICE ,	// ì„œë¹„ìŠ¤ ON/OFF	
+	MANAGER_GMLEVEL1 ,	// GMTool ì˜ ëª¨ë“  ê¸°ëŠ¥
+	MANAGER_GMLEVEL2 ,  // GMTool ì˜ í•˜ìœ„ê¸°ëŠ¥
 	MANAGER_GMLEVEL3 ,
 	MANAGER_COUNT
 

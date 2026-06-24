@@ -1,4 +1,4 @@
-// Machine.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// Machine.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -36,7 +36,7 @@ BEGIN_MESSAGE_MAP(CMachine, CFormView)
 END_MESSAGE_MAP()
 
 
-// CMachine Áø´ÜÀÔ´Ï´Ù.
+// CMachine ì§„ë‹¨ì…ë‹ˆë‹¤.
 
 #ifdef _DEBUG
 void CMachine::AssertValid() const
@@ -51,14 +51,14 @@ void CMachine::Dump(CDumpContext& dc) const
 #endif //_DEBUG
 
 
-// CMachine ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CMachine ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 void CMachine::OnSize(UINT nType, int cx, int cy)
 {
 	CFormView::OnSize(nType, cx, cy);
 
-	// TODO: ¿©±â¿¡ ¸Ş½ÃÁö Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
-	// TODO: ¿©±â¿¡ ¸Ş½ÃÁö Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ë©”ì‹œì§€ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
+	// TODO: ì—¬ê¸°ì— ë©”ì‹œì§€ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	if (GetSafeHwnd())
 	{
 		CRect rect;
@@ -69,14 +69,14 @@ void CMachine::OnSize(UINT nType, int cx, int cy)
 			ShowWindow(SW_SHOW);
 		}
 	}
-	GetClientRect(&treeRect); // Çö½Â·æ Graph
+	GetClientRect(&treeRect); // í˜„ìŠ¹ë£¡ Graph
 }
 
 void CMachine::OnInitialUpdate()
 {
 	CFormView::OnInitialUpdate();
 
-	// TODO: ¿©±â¿¡ Æ¯¼öÈ­µÈ ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº» Å¬·¡½º¸¦ È£ÃâÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— íŠ¹ìˆ˜í™”ëœ ì½”ë“œë¥¼ ì¶”ê°€ ë°/ë˜ëŠ” ê¸°ë³¸ í´ë˜ìŠ¤ë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
 	m_strSelected = _T("");
 }
 
@@ -161,7 +161,7 @@ BYTE CMachine::GetSelectedMachineID()
 void CMachine::OnTvnSelchangedTreeMachine(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	HTREEITEM hItem = pNMTreeView->itemNew.hItem;
 	m_strSelected = m_treeCtrl.GetItemText(hItem);
 	*pResult = 0;

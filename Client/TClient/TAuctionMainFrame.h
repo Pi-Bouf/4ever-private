@@ -1,7 +1,7 @@
-#pragma once
+ï»¿#pragma once
 
 
-//!	¸®½ºÆ® ¾ÆÀÌÅÛ Á¤º¸
+//!	ë¦¬ìŠ¤íŠ¸ ì•„ì´í…œ ì •ë³´
 class CTAuctionItem : public CTCtrlListItem
 {
 public :	// MEMBER DATA.
@@ -26,7 +26,7 @@ public :
 };
 
 
-//!	½½·Ô
+//!	ìŠ¬ë¡¯
 class CTAuctionSlot : public CTCtrlListSlot
 {
 public :
@@ -38,10 +38,10 @@ public :
 	TComponent*				m_pClass;
 	TComponent*				m_pNeedLevel;
 
-	/*! µî·ÏµÈ ¾ÆÀÌÅÛÀÌ ÇÑ°³ÀÏ¶§ ( ÀÔÂû, Áï±¸ Ç¥½Ã ) */
+	/*! ë“±ë¡ëœ ì•„ì´í…œì´ í•œê°œì¼ë•Œ ( ì…ì°°, ì¦‰êµ¬ í‘œì‹œ ) */
 	TComponent*				m_pBid;
 	TComponent*				m_pBuy;
-	/*! µî·ÏµÈ ¾ÆÀÌÅÛÀÌ º¹¼ö°³ ÀÏ¶§ ( ´Ü°¡, ÃÑ¾× Ç¥½Ã ) */
+	/*! ë“±ë¡ëœ ì•„ì´í…œì´ ë³µìˆ˜ê°œ ì¼ë•Œ ( ë‹¨ê°€, ì´ì•¡ í‘œì‹œ ) */
 	TComponent*				m_pPrice;
 	TComponent*				m_pTotal;
 
@@ -68,7 +68,7 @@ class CTAuctionCtrlList;
 
 //!	Auction Main Frame.
 /*!
-*	@brief	°æ¸Å ¸ŞÀÎ ÇÁ·¹ÀÓ.
+*	@brief	ê²½ë§¤ ë©”ì¸ í”„ë ˆì„.
 *
 */
 class CTAuctionMainFrame : public CTFrameGroupBase
@@ -138,15 +138,15 @@ public :	// VIRTUAL FUNCTION.
 	
 public :	// MEMBER FUNCTION.
 
-	/* ÇöÀç ¾ÆÀÌÅÛ ¸®½ºÆ®¸¦ ¸ğµÎ Å¬¸®¾îÇÑ´Ù. */
+	/* í˜„ì¬ ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ë¥¼ ëª¨ë‘ í´ë¦¬ì–´í•œë‹¤. */
 	void					ClearItems();
-	/* ÅÇÀÌ º¯°æµÇ¸é È£ÃâÇÑ´Ù. */
+	/* íƒ­ì´ ë³€ê²½ë˜ë©´ í˜¸ì¶œí•œë‹¤. */
 	void					ChangedTab( INT nSelectFrameID, INT nPrevFrameID );
-	/* ¸®½ºÆ®°ü·Ã Component ¾÷µ¥ÀÌÆ® */
+	/* ë¦¬ìŠ¤íŠ¸ê´€ë ¨ Component ì—…ë°ì´íŠ¸ */
 	void					UpdateByListComp();
-	/* ¹öÆ°È°¼º/ºñÈ°¼º Ã³¸®. ( °ü½É¹°Ç°, ÀÔÂû, Áï½Ã±¸¸Å, ±¸ÀÔ ) */
+	/* ë²„íŠ¼í™œì„±/ë¹„í™œì„± ì²˜ë¦¬. ( ê´€ì‹¬ë¬¼í’ˆ, ì…ì°°, ì¦‰ì‹œêµ¬ë§¤, êµ¬ì… ) */
 	void					UpdateByButtons();
-	/* ¸®½ºÆ®¸¦ ÀüºÎ ¾÷µ¥ÀÌÆ® ÇÑ´Ù. */
+	/* ë¦¬ìŠ¤íŠ¸ë¥¼ ì „ë¶€ ì—…ë°ì´íŠ¸ í•œë‹¤. */
 	void					RefreshList();
 
 	void					MoveNextPage();
@@ -165,7 +165,7 @@ public :	// MEMBER FUNCTION.
 	void					SetStackItem_Basket();
 	void					SetCanBidItem_Basket();
 
-	/* ÇöÀç Æ÷Ä¿½ÌµÈ ¿¡µğÆ®ÄÁÆ®·ÑÀ» ¾ò¾î¿Â´Ù. */
+	/* í˜„ì¬ í¬ì»¤ì‹±ëœ ì—ë””íŠ¸ì»¨íŠ¸ë¡¤ì„ ì–»ì–´ì˜¨ë‹¤. */
 	TEdit*					GetCurEdit();
 
 public :	// INLINE FUNCTION.

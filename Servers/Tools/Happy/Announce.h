@@ -1,25 +1,25 @@
-// Çö½Â·æ Announce.h
+ï»¿// í˜„ìŠ¹ë£¡ Announce.h
 
 #pragma once
 #include "afxwin.h"
 
 #define MAX_WORLD 10
 
-// CAnnounce ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CAnnounce ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 class CAnnounce : public CDialog
 {
 	DECLARE_DYNAMIC(CAnnounce)
 
 public:
-	CAnnounce(CWnd* pParent = NULL);   // Ç¥ÁØ »ı¼ºÀÚÀÔ´Ï´Ù.
+	CAnnounce(CWnd* pParent = NULL);   // í‘œì¤€ ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CAnnounce();
 
-// ´ëÈ­ »óÀÚ µ¥ÀÌÅÍÀÔ´Ï´Ù.
+// ëŒ€í™” ìƒì ë°ì´í„°ì…ë‹ˆë‹¤.
 	enum { IDD = IDD_ANNOUNCE };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 public:

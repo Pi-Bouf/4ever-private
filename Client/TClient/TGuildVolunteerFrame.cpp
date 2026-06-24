@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+ï»¿#include "Stdafx.h"
 #include "TGuildRTTypeFrame.h"
 #include "TGuildVolunteerFrame.h"
 #include "TClientGame.h"
@@ -44,13 +44,13 @@ m_nLastSelIdx(T_INVALID)
 	m_pColumnC->RemoveAll();
 	
 	INT i = -1;
-	// Á¤±Ô±º
+	// ì •ê·œêµ°
 	i = m_pColumnC->AddString( CTChart::LoadString( TSTR_CHAR_NAME ) );
 	m_pColumnC->SetItemString( i, 1, CTChart::LoadString( TSTR_GUILD_JOB ) );
 	m_pColumnC->SetItemString( i, 2, CTChart::LoadString( TSTR_GUILD_LEVEL ) );
 	m_pColumnC->SetItemString( i, 3, CTChart::LoadString( TSTR_GUILD_NOWPOS ) );
 
-	// ¿ëº´
+	// ìš©ë³‘
 	i = m_pColumnC->AddString( CTChart::LoadString( TSTR_CHAR_NAME ) );
 	m_pColumnC->SetItemString( i, 1, CTChart::LoadString( TSTR_GUILD_JOB ) );
 	m_pColumnC->SetItemString( i, 2, CTChart::LoadString( TSTR_GUILD_LEVEL ) );

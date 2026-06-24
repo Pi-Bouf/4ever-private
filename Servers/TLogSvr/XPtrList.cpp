@@ -1,4 +1,4 @@
-// XPtrList.cpp: implementation of the CXPtrList class.
+Ôªø// XPtrList.cpp: implementation of the CXPtrList class.
 ////////////////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -47,7 +47,7 @@ void* CXPtrList::RemoveHead()
 
 		//	pObject = CPtrList::RemoveHead();
 
-		//	2004.04.19 Duke Kim √ﬂ∞°		
+		//	2004.04.19 Duke Kim Ï∂îÍ∞Ä		
 		if( !CPtrList::IsEmpty() )
 			pObject = CPtrList::RemoveHead();
 
@@ -165,7 +165,7 @@ BOOL CXPtrList::IsEmpty()
 
 
 ////////////////////////////////////////////////////////////////////////////////////////
-//	«ÿ¥Á ∆˜¿Œ≈Õø° LIST¡§∫∏∏¶ π›»Ø Ω√≈¥
+//	Ìï¥Îãπ Ìè¨Ïù∏ÌÑ∞Ïóê LISTÏ†ïÎ≥¥Î•º Î∞òÌôò ÏãúÌÇ¥
 ////////////////////////////////////////////////////////////////////////////////////////
 int CXPtrList::CopyTmpList(void *pList[])
 {

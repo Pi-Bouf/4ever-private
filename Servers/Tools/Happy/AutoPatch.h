@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "afxcmn.h"
 #include "afxwin.h"
 
@@ -14,14 +14,14 @@
 #define  DESKTOP       8
 #define  CONTROL_PANEL 9
 
-// CAutoPatch Æû ºäÀÔ´Ï´Ù.
+// CAutoPatch í¼ ë·°ì…ë‹ˆë‹¤.
 
 class CAutoPatch : public CFormView
 {
 	DECLARE_DYNCREATE(CAutoPatch)
 
 protected:
-	CAutoPatch();           // µ¿Àû ¸¸µé±â¿¡ »ç¿ëµÇ´Â protected »ı¼ºÀÚÀÔ´Ï´Ù.
+	CAutoPatch();           // ë™ì  ë§Œë“¤ê¸°ì— ì‚¬ìš©ë˜ëŠ” protected ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CAutoPatch();
 
 	void SetImageList();
@@ -31,7 +31,7 @@ private:
 	CImageList m_imageList;
 	CString			m_strPrevFolder;
 	CString         m_strNextFolder;
-	CString			m_strMyComputer; //³»ÄÄÇ»ÅÍ
+	CString			m_strMyComputer; //ë‚´ì»´í“¨í„°
 
 public:
 	HTREEITEM AddTreeItem(CTreeCtrl * pTreeCtrl, CString strPath);
@@ -69,7 +69,7 @@ public:
 #endif
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 public:

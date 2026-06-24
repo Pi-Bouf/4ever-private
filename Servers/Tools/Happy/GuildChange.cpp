@@ -1,4 +1,4 @@
-// GuildChange.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// GuildChange.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -6,7 +6,7 @@
 #include "GuildChange.h"
 
 
-// CGuildChange ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CGuildChange ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CGuildChange, CDialog)
 CGuildChange::CGuildChange(CWnd* pParent /*=NULL*/)
@@ -28,4 +28,4 @@ BEGIN_MESSAGE_MAP(CGuildChange, CDialog)
 END_MESSAGE_MAP()
 
 
-// CGuildChange ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CGuildChange ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.

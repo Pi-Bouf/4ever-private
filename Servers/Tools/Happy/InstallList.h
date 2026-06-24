@@ -1,13 +1,13 @@
-#pragma once
+ï»¿#pragma once
 
-// CInstallList Æû ºäÀÔ´Ï´Ù.
+// CInstallList í¼ ë·°ì…ë‹ˆë‹¤.
 
 class CInstallList : public CFormView
 {
 	DECLARE_DYNCREATE(CInstallList)
 
 protected:
-	CInstallList();           // µ¿Àû ¸¸µé±â¿¡ »ç¿ëµÇ´Â protected »ı¼ºÀÚÀÔ´Ï´Ù.
+	CInstallList();           // ë™ì  ë§Œë“¤ê¸°ì— ì‚¬ìš©ë˜ëŠ” protected ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CInstallList();
 
 public:
@@ -20,7 +20,7 @@ public:
 #endif
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 public:

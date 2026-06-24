@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 #include "TSpolecnikMon.h"
 
 CTSpolecnikMon::CTSpolecnikMon(void)
@@ -54,7 +54,7 @@ void CTSpolecnikMon::OnDie( DWORD dwAttackID, BYTE bObjectType, WORD wTempMonID)
 	CTPlayer *pHOST = FindHost(m_dwHostID);
 	if(m_pMAP && pHOST)
 	{
-		// ¸»L¸±â ÇRÁ¦
+		// ë§Lë¦´Ã¢ Ã‡Rì œ
 		if(pHOST->m_dwRiding == m_dwID)
 			pHOST->PetRiding(0);
 

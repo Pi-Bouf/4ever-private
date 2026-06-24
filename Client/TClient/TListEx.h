@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 struct TITLECOMP
 {
@@ -46,7 +46,7 @@ protected:
 	TImageList*		m_pTitleImgs;
 	VTITLECOMP		m_vTitle;
 
-	// < ºôµå Àü¿¡ ¸®½ºÆ®¸¦ ±¸¼ºÇÏ±â À§ÇÑ ÇÔ¼öµé >
+	// < ë¹Œë“œ ì „ì— ë¦¬ìŠ¤íŠ¸ë¥¼ êµ¬ì„±í•˜ê¸° ìœ„í•œ í•¨ìˆ˜ë“¤ >
 public:
 	void SetCommonList(FRAMEDESC_SHAREDPTR pDesc);
 	void SetScroll(FRAMEDESC_SHAREDPTR pDesc);
@@ -55,10 +55,10 @@ public:
 	void AddPageTitle( INT nCount, TComponent** pTitles );
 	int AddPageList(FRAMEDESC_SHAREDPTR pDesc);
 	
-	// ºôµå!!
+	// ë¹Œë“œ!!
 	void Build();
 
-	// < ºôµå ÈÄ ¸®½ºÆ® ÀÌ¿ëÀ» À§ÇÑ ÇÔ¼öµé >
+	// < ë¹Œë“œ í›„ ë¦¬ìŠ¤íŠ¸ ì´ìš©ì„ ìœ„í•œ í•¨ìˆ˜ë“¤ >
 public:
 	int AddItem();
 	void DelItem(int nLine);

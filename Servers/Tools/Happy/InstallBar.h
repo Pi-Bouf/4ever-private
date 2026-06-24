@@ -1,23 +1,23 @@
-#pragma once
+ï»¿#pragma once
 
-// CInstallBar ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CInstallBar ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 class CInstallBar : public CDialogBar
 {
 	DECLARE_DYNAMIC(CInstallBar)
 
 public:
-	CInstallBar(CWnd* pParent = NULL);   // Ç¥ÁØ »ı¼ºÀÚÀÔ´Ï´Ù.
+	CInstallBar(CWnd* pParent = NULL);   // í‘œì¤€ ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CInstallBar();
 
-// ´ëÈ­ »óÀÚ µ¥ÀÌÅÍÀÔ´Ï´Ù.
+// ëŒ€í™” ìƒì ë°ì´í„°ì…ë‹ˆë‹¤.
 	enum { IDD = IDD_INSTALLBAR };
 
 	void OnUpdateUpdateEnable(CCmdUI *pCmdUI){pCmdUI->Enable(m_bEnableUpdate);}
 	void OnUpdateOpenEnable(CCmdUI *pCmdUI)	{pCmdUI->Enable(m_bEnableOpen);}
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 public:

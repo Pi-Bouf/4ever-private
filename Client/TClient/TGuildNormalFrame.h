@@ -1,25 +1,25 @@
-#pragma once
+ï»¿#pragma once
 
 class CTGuildNormalFrame : public ITInnerFrame
 {
 public:
 	enum InfoEnum
 	{
-		INFO_GNAME,							///< ±æµå¸í
-		INFO_GDATE,							///< ±æµå °³¼³ ÀÏ
-		INFO_GMASTER,						///< ±æµåÀå
-		INFO_GMASTER_PEER,					///< ±æµåÀå ÀÛÀ§
-		INFO_GSUBMASTER1,					///< ºÎ ±æµåÀå
-		INFO_GSUBMASTER2,					///< ºÎ ±æµåÀå
-		INFO_GMBCNT,						///< ±æµå¿øÀÇ ¼ö
-		INFO_GLEV,							///< ±æµå ·¹º§
-		INFO_GEXP,							///< ±æµå °æÇèÄ¡
-		INFO_MYDUTY,						///< ³ªÀÇ Á÷À§
-		INFO_MYPEER,						///< ³ªÀÇ ÀÛÀ§
-		INFO_GMONEY_RUNE,					///< ±æµå ÀÚ±Ý
-		INFO_GMONEY_LUNA,					///< ±æµå ÀÚ±Ý
-		INFO_GMONEY_CRON,					///< ±æµå ÀÚ±Ý
-		INFO_NOTIFY,						///< ±æµå °øÁö»çÇ×
+		INFO_GNAME,							///< ê¸¸ë“œëª…
+		INFO_GDATE,							///< ê¸¸ë“œ ê°œì„¤ ì¼
+		INFO_GMASTER,						///< ê¸¸ë“œìž¥
+		INFO_GMASTER_PEER,					///< ê¸¸ë“œìž¥ ìž‘ìœ„
+		INFO_GSUBMASTER1,					///< ë¶€ ê¸¸ë“œìž¥
+		INFO_GSUBMASTER2,					///< ë¶€ ê¸¸ë“œìž¥
+		INFO_GMBCNT,						///< ê¸¸ë“œì›ì˜ ìˆ˜
+		INFO_GLEV,							///< ê¸¸ë“œ ë ˆë²¨
+		INFO_GEXP,							///< ê¸¸ë“œ ê²½í—˜ì¹˜
+		INFO_MYDUTY,						///< ë‚˜ì˜ ì§ìœ„
+		INFO_MYPEER,						///< ë‚˜ì˜ ìž‘ìœ„
+		INFO_GMONEY_RUNE,					///< ê¸¸ë“œ ìžê¸ˆ
+		INFO_GMONEY_LUNA,					///< ê¸¸ë“œ ìžê¸ˆ
+		INFO_GMONEY_CRON,					///< ê¸¸ë“œ ìžê¸ˆ
+		INFO_NOTIFY,						///< ê¸¸ë“œ ê³µì§€ì‚¬í•­
 		INFO_GUILD_RANK,
 		INFO_GUILD_POINT,
 		INFO_GUILD_USEABLE_POINT,

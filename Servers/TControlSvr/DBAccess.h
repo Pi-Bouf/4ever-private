@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 class CTBLMachine : public CSqlQuery
 {
@@ -104,14 +104,14 @@ class CTBLManager : public CSqlQuery
 public:
 	TCHAR m_szID[MAX_NAME+1];
 	TCHAR m_szPasswd[MAX_NAME+1];
-	BYTE m_bAuthority; // Çö½Â·æ ¸Å´ÏÀú ±ÇÇÑ
+	BYTE m_bAuthority; // í˜„ìŠ¹ë£¡ ë§¤ë‹ˆì € ê¶Œí•œ
 
 DEF_QUERY( CTBLManager, _T("SELECT szID, szPasswd, bAuthority FROM TMANAGER"));
 
 BEGIN_COLUMN(3)
 	COLUMN_ENTRY_STR(m_szID)
 	COLUMN_ENTRY_STR(m_szPasswd)
-	COLUMN_ENTRY(m_bAuthority) // Çö½Â·æ ¸Å´ÏÀú ±ÇÇÑ
+	COLUMN_ENTRY(m_bAuthority) // í˜„ìŠ¹ë£¡ ë§¤ë‹ˆì € ê¶Œí•œ
 END_COL()
 };
  
@@ -216,7 +216,7 @@ END_COL()
 };
 
 ///////////////////////////////////////////////////////////////////
-// Çö½Â·æ CT_UPDATEPATCH_REQ
+// í˜„ìŠ¹ë£¡ CT_UPDATEPATCH_REQ
 class CSPUpdatePatch : public CSqlQuery
 {
 public:

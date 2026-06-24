@@ -1,19 +1,19 @@
-#pragma once
+ï»¿#pragma once
 #include "afxwin.h"
 #include "TGiftSet.h"
 
 
-// CTGiftItem ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CTGiftItem ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 class CTGiftItem : public CDialog
 {
 	DECLARE_DYNAMIC(CTGiftItem)
 
 public:
-	CTGiftItem(CWnd* pParent = NULL);   // Ç¥ÁØ »ı¼ºÀÚÀÔ´Ï´Ù.
+	CTGiftItem(CWnd* pParent = NULL);   // í‘œì¤€ ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CTGiftItem();
 
-// ´ëÈ­ »óÀÚ µ¥ÀÌÅÍÀÔ´Ï´Ù.
+// ëŒ€í™” ìƒì ë°ì´í„°ì…ë‹ˆë‹¤.
 	enum { IDD = IDD_GIFTTOOL };
 
 	void	Init();
@@ -28,7 +28,7 @@ public:
 	CTGiftSet* m_pDlgGiftSet;
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 public:

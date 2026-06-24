@@ -1,4 +1,4 @@
-// CHelpMessage.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// CHelpMessage.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -9,7 +9,7 @@
 #include ".\helpmessage.h"
 
 
-// CHelpMessage ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CHelpMessage ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CHelpMessage, CDialog)
 CHelpMessage::CHelpMessage(CWnd* pParent /*=NULL*/)
@@ -37,7 +37,7 @@ BEGIN_MESSAGE_MAP(CHelpMessage, CDialog)
 END_MESSAGE_MAP()
 
 
-// CHelpMessage ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CHelpMessage ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 void CHelpMessage::Init()
 {
@@ -54,7 +54,7 @@ void CHelpMessage::Init()
 		m_cbWorld.AddString(_T("SELECT"));
 		m_cbWorld.AddString( STR_WORLD_ALL );
 
-		//	¿ùµå¼­¹ö ¸®½ºÆ® ±¸ÇÏ±â
+		//	ì›”ë“œì„œë²„ ë¦¬ìŠ¤íŠ¸ êµ¬í•˜ê¸°
 		MAPGROUP::iterator itG;
 		for(itG=pDoc->m_mapGroup.begin(); itG!=pDoc->m_mapGroup.end(); itG++)
 		{	
@@ -66,7 +66,7 @@ void CHelpMessage::Init()
 	
 	if(!m_cbType.GetCount())
 	{
-		//	Å¸ÀÔ ¸®½ºÆ® ÃÊ±âÈ­
+		//	íƒ€ì… ë¦¬ìŠ¤íŠ¸ ì´ˆê¸°í™”
 		m_cbType.AddString(_T("SELECT"));
 		m_cbType.AddString(_T("Tutorial"));
 		m_cbType.AddString(_T("Normal"));
@@ -77,7 +77,7 @@ void CHelpMessage::Init()
 	m_dtStart.SetTime(CTime::GetCurrentTime().GetTime());
 	m_dtEnd.SetTime(CTime::GetCurrentTime().GetTime());
 
-	//	ÅØ½ºÆ® ¹Ú½º ÃÊ±âÈ­
+	//	í…ìŠ¤íŠ¸ ë°•ìŠ¤ ì´ˆê¸°í™”
 	SetDlgItemText(IDC_EB_HTEXT, _T(""));
 	SetDlgItemInt(IDC_EB_HSTART_HOUR, 0, FALSE);
 	SetDlgItemInt(IDC_EB_HSTART_MIN, 0, FALSE);
@@ -162,17 +162,17 @@ void CHelpMessage::OnBnClickedBtnHsend()
 
 	stHELPMSG.m_bType = m_cbType.GetCurSel();
 
-	//	Å¸ÀÔ È®ÀÎ ( 1:Tutorial 2:Normal 3:Event )
+	//	íƒ€ì… í™•ì¸ ( 1:Tutorial 2:Normal 3:Event )
 	if( !stHELPMSG.m_bType || 3 < stHELPMSG.m_bType )
 	{
 		AfxMessageBox(_T("Select Type"));
 		return;
 	}
 
-    //	ÅØ½ºÆ® ¾ò±â
+    //	í…ìŠ¤íŠ¸ ì–»ê¸°
 	GetDlgItemText(IDC_EB_HTEXT, stHELPMSG.m_strMsg);
 
-	//	Event¸¸ ³¯Â¥¾ò±â
+	//	Eventë§Œ ë‚ ì§œì–»ê¸°
 	if(stHELPMSG.m_bType == 3)
 	{
 		BYTE bStartHour, bStartMinute, bEndHour, bEndMinute;
@@ -221,7 +221,7 @@ void CHelpMessage::OnCbnSelchangeCbHtype()
 {
 	BYTE bType = m_cbType.GetCurSel();
 
-	//	Å¸ÀÔ È®ÀÎ ( 1:Tutorial 2:Normal 3:Event )
+	//	íƒ€ì… í™•ì¸ ( 1:Tutorial 2:Normal 3:Event )
 	if(bType == 3)
 		SetShow(TRUE);
 	else

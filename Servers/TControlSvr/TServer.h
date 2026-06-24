@@ -1,4 +1,4 @@
-#pragma once
+Ôªø#pragma once
 
 class CTServer : public CTControlSession
 {
@@ -14,14 +14,14 @@ public:
 
 public:
 	void SendCT_SERVICEMONITOR_ACK(DWORD dwTick);	
-	void SendCT_ANNOUNCEMENT_ACK(CString strAnnounce); // «ˆΩ¬∑Ê CT_ANNOUNCEMENT_ACK
-	void SendCT_USERKICKOUT_ACK(CString strUser); // «ˆΩ¬∑Ê CT_USERKICKOUT_ACK
-	void SendCT_USERMOVE_ACK(CString strUser, BYTE bChannel, WORD wMapID, FLOAT fPosX, FLOAT fPosY, FLOAT fPosZ); // «ˆΩ¬∑Ê CT_USERMOVE_ACK
-	void SendCT_USERPOSITION_ACK(CString strUser, CString strTarget); // «ˆΩ¬∑Ê CT_USERPOSITION_ACK
-	void SendCT_MONSPAWNFIND_ACK(DWORD dwManager, BYTE bChannel, WORD wMapID, WORD wSpawnID); // «ˆΩ¬∑Ê CT_MONSPAWNFIND_ACK
+	void SendCT_ANNOUNCEMENT_ACK(CString strAnnounce); // ÌòÑÏäπÎ£° CT_ANNOUNCEMENT_ACK
+	void SendCT_USERKICKOUT_ACK(CString strUser); // ÌòÑÏäπÎ£° CT_USERKICKOUT_ACK
+	void SendCT_USERMOVE_ACK(CString strUser, BYTE bChannel, WORD wMapID, FLOAT fPosX, FLOAT fPosY, FLOAT fPosZ); // ÌòÑÏäπÎ£° CT_USERMOVE_ACK
+	void SendCT_USERPOSITION_ACK(CString strUser, CString strTarget); // ÌòÑÏäπÎ£° CT_USERPOSITION_ACK
+	void SendCT_MONSPAWNFIND_ACK(DWORD dwManager, BYTE bChannel, WORD wMapID, WORD wSpawnID); // ÌòÑÏäπÎ£° CT_MONSPAWNFIND_ACK
 	void SendCT_MONACTION_ACK(BYTE bChannel, WORD wMapID, DWORD dwMonID, BYTE bAction, DWORD dwTriggerID, DWORD dwHostID, DWORD dwRHID, BYTE bRHType,WORD wSpawnID);
 	
-	void SendCT_CHATBAN_REQ(CString strName, WORD wMin, DWORD dwBanSeq,DWORD dwManagerID); // ∆Ø¡§ ƒ≥∏Ø≈Õ √§∆√ ±›¡ˆ ø‰√ª.
+	void SendCT_CHATBAN_REQ(CString strName, WORD wMin, DWORD dwBanSeq,DWORD dwManagerID); // ÌäπÏ†ï Ï∫êÎ¶≠ÌÑ∞ Ï±ÑÌåÖ Í∏àÏßÄ ÏöîÏ≤≠.
 	void SendCT_CHARMSG_ACK(CString strName, CString strMsg);
 	void SendCT_SERVICEDATACLEAR_ACK();
 	void SendCT_ITEMFIND_REQ(DWORD dwManagerID, WORD wItemID, CString strName);

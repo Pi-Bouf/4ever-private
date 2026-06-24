@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+ï»¿#include "Stdafx.h"
 #include "TMessengerBase.h"
 #include "TSoulmateFrame.h"
 #include "TMsgGroupList.h"
@@ -26,10 +26,10 @@ CTMessengerBase::~CTMessengerBase()
 // ======================================================================
 void CTMessengerBase::SetMsgGroupList(CTMsgGroupList* pList)
 {
-	ASSERT(!m_pGroupList && "ÀÌ ÇÔ¼ö´Â ÀÌ¹Ì ÇÑ¹ø È£ÃâµÆ½À´Ï´Ù.");
+	ASSERT(!m_pGroupList && "ì´ í•¨ìˆ˜ëŠ” ì´ë¯¸ í•œë²ˆ í˜¸ì¶œëìŠµë‹ˆë‹¤.");
 
 	TComponent* pComp = FindKid(ID_CTRLINST_GROUPLIST);
-	ASSERT(pComp && "ÇÊ¿äÇÑ ÀÚ½Ä ÄÁÆ®·ÑÀÇ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù.");
+	ASSERT(pComp && "í•„ìš”í•œ ìžì‹ ì»¨íŠ¸ë¡¤ì˜ ì¡´ìž¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
 
 	CPoint pt;
 	pComp->GetComponentPos(&pt);
@@ -44,10 +44,10 @@ void CTMessengerBase::SetMsgGroupList(CTMsgGroupList* pList)
 // ----------------------------------------------------------------------
 /*void CTMessengerBase::SetMsgChatMemberList(CTMsgChatMemberList* pList)
 {
-	ASSERT(!m_pChatList && "ÀÌ ÇÔ¼ö´Â ÀÌ¹Ì ÇÑ¹ø È£ÃâµÆ½À´Ï´Ù.");
+	ASSERT(!m_pChatList && "ì´ í•¨ìˆ˜ëŠ” ì´ë¯¸ í•œë²ˆ í˜¸ì¶œëìŠµë‹ˆë‹¤.");
 
 	TComponent* pComp = FindKid(ID_CTRLINST_COMMLIST);
-	ASSERT(pComp && "ÇÊ¿äÇÑ ÀÚ½Ä ÄÁÆ®·ÑÀÇ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù.");
+	ASSERT(pComp && "í•„ìš”í•œ ìžì‹ ì»¨íŠ¸ë¡¤ì˜ ì¡´ìž¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
 
 	CPoint pt;
 	pComp->GetComponentPos(&pt);

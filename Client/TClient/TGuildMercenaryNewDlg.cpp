@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+ï»¿#include "StdAfx.h"
 #include "TFameRank.h"
 #include "TGuildMercenaryNewDlg.h"
 #include "TClientGame.h"
@@ -33,10 +33,10 @@ const CTGuildMercenaryNewDlg::PopupBtnInfo CTGuildMercenaryNewDlg::m_PopupBtnInf
 	{TSTR_GMP_VOLUNTEER_GEHBRA,		GM_GMP_VOLUNTEER_GEHBRA	},
 	{TSTR_GMP_VOLUNTEER_CANCEL,		GM_GMP_VOLUNTEER_CANCEL	},
 
-	{TSTR_GMP_TACTICS_RE_CONTRACT,	GM_GMP_TACTICS_RE_CONTRACT	}, ///< TGM_PBTN_TACTICS_RE_CONTRACT,			///< ¿ëº´ Àç°è¾à
-	{TSTR_GMP_TACTICS_KICK,			GM_GMP_TACTICS_KICK			}, ///< TGM_PBTN_TACTICS_KICK,						///< ¿ëº´ °è¾à ÆÄ±â
-	{TSTR_GMP_TACTICS_REWARD_POINT,	GM_GMP_TACTICS_REWARD_POINT	}, ///< TGM_PBTN_TACTICS_REWARD_POINT,			///< ¿ëº´ Æ÷»ó
-	{TSTR_GMP_TACTICS_SELF_KICK,		GM_GMP_TACTICS_SELF_KICK } //TGM_PBTN_TACTICS_SELF_KICK,					///< ¿ëº´ Å»Åð
+	{TSTR_GMP_TACTICS_RE_CONTRACT,	GM_GMP_TACTICS_RE_CONTRACT	}, ///< TGM_PBTN_TACTICS_RE_CONTRACT,			///< ìš©ë³‘ ìž¬ê³„ì•½
+	{TSTR_GMP_TACTICS_KICK,			GM_GMP_TACTICS_KICK			}, ///< TGM_PBTN_TACTICS_KICK,						///< ìš©ë³‘ ê³„ì•½ íŒŒê¸°
+	{TSTR_GMP_TACTICS_REWARD_POINT,	GM_GMP_TACTICS_REWARD_POINT	}, ///< TGM_PBTN_TACTICS_REWARD_POINT,			///< ìš©ë³‘ í¬ìƒ
+	{TSTR_GMP_TACTICS_SELF_KICK,		GM_GMP_TACTICS_SELF_KICK } //TGM_PBTN_TACTICS_SELF_KICK,					///< ìš©ë³‘ íƒˆí‡´
 };
 
 
@@ -348,7 +348,7 @@ void CTGuildMercenaryNewDlg::ShowPopup(const CPoint& pt)
 		case TGM_PBTN_VOLUNTEER_GEHBRA : bADD = ShowPopupCastle( TCASTLE_GEHBRA ); break;
 		case TGM_PBTN_VOLUNTEER_TYCON : bADD = ShowPopupCastle( TCASTLE_TYCON ); break;
 
-		case TGM_PBTN_TACTICS_RE_CONTRACT: ///< ¿ëº´ Àç°è¾à
+		case TGM_PBTN_TACTICS_RE_CONTRACT: ///< ìš©ë³‘ ìž¬ê³„ì•½
 			if( m_nLastSelType == RINFO_NAME )
 			{
 				if( pMainChar->m_bGuildDuty == GUILD_DUTY_CHIEF && pMainChar->m_dwTacticsID == 0 )
@@ -358,7 +358,7 @@ void CTGuildMercenaryNewDlg::ShowPopup(const CPoint& pt)
 			}
 			break;
 
-		case TGM_PBTN_TACTICS_KICK: ///< ¿ëº´ °è¾à ÆÄ±â
+		case TGM_PBTN_TACTICS_KICK: ///< ìš©ë³‘ ê³„ì•½ íŒŒê¸°
 			if( m_nLastSelType == RINFO_NAME )
 			{
 				if( pMainChar->m_bGuildDuty == GUILD_DUTY_CHIEF && pMainChar->m_dwTacticsID == 0 )
@@ -542,7 +542,7 @@ int CTGuildMercenaryNewDlg::OnGM_GMP_DISORG_TACTICS()
 {
 	CancelPopup();
 
-	/// ¹Ì±¸Çö
+	/// ë¯¸êµ¬í˜„
 
 	return TERR_NONE;
 }

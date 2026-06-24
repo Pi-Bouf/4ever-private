@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "TClientGame.h"
 #include "TCompanionInner.h"
 #include "TClientCompanion.h"
@@ -500,7 +500,7 @@ HRESULT CTCompanionDlg::Render(DWORD dwTickCount)
 					CTClientCompanion* pCompanion = GetSelectedCompanion( i );
 
 					GetAttrString( pSTATS->m_pAttr[ i ]->m_strText, pCompanion );
-					pSTATS->m_pAttrV[ i ]->m_strText.Format( pCompanion->GetBonusID() == 88 ? "+%.1f%%" : "+%g", pCompanion->GetBonusValue() ); //nevieme kade is�
+					pSTATS->m_pAttrV[ i ]->m_strText.Format( pCompanion->GetBonusID() == 88 ? "+%.1f%%" : "+%g", pCompanion->GetBonusValue() ); //nevieme kade is
 					if( ( m_bSummonedSlot < 0 || m_bSummonedSlot > 4 ) || pCompanion->GetLevel() <= 11 || pCompanion->GetLife() < 2400 )
 						pSTATS->m_pAttrV[ i ]->SetTextClr( TCOLOR_COMPANION_EXHAUSTED );
 					if( m_bSummonedSlot >= 0 && m_bSummonedSlot <= 4 )

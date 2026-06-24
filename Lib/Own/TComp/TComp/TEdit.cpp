@@ -1,4 +1,4 @@
-// TEdit.cpp: implementation of the TEdit class.
+ï»¿// TEdit.cpp: implementation of the TEdit class.
 //
 //////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
@@ -717,7 +717,7 @@ void TEdit::OnImeComposition(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 		if( bAttr == ATTR_TARGET_CONVERTED || bAttr == ATTR_TARGET_NOTCONVERTED )
 		{
-			// nCurPos¿¡¼­ nCurPos+nCharLength-1 ±îÁö Å¸°Ù¹®ÀÚ¿­ÀÌ´Ù. ÀÌ°ÍÀÌ È­¸é¿¡ º¸ÀÌµµ·Ï nCaretÀ» Á¶Á¤ÇØ¾ßµÈ´Ù.
+			// nCurPosì—ì„œ nCurPos+nCharLength-1 ê¹Œì§€ íƒ€ê²Ÿë¬¸ìžì—´ì´ë‹¤. ì´ê²ƒì´ í™”ë©´ì— ë³´ì´ë„ë¡ nCaretì„ ì¡°ì •í•´ì•¼ëœë‹¤.
 			INT nTargetCompOffsetStart = nCurPos;
 			INT nTargetCompOffsetEnd = nCurPos+nCharLength;
 
@@ -791,7 +791,7 @@ void TEdit::OnImeNotify(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 						LPCANDIDATELIST pCandiList = (LPCANDIDATELIST) pBuf;
 
-						// ÀÏ¾îIME ¹ö±×. ImmGetCandidateListWÇÔ¼ö¿¡¼­ ³ª¿Â °ÍÀÓ¿¡µµ ºÒ±¸ÇÏ°í pCandi->dwPageStart°¡ Àß¸ø³ª¿Â´Ù.
+						// ì¼ì–´IME ë²„ê·¸. ImmGetCandidateListWí•¨ìˆ˜ì—ì„œ ë‚˜ì˜¨ ê²ƒìž„ì—ë„ ë¶ˆêµ¬í•˜ê³  pCandi->dwPageStartê°€ ìž˜ëª»ë‚˜ì˜¨ë‹¤.
 						DWORD dwRealStart = (pCandiList->dwSelection / pCandiList->dwPageSize) * pCandiList->dwPageSize;
 						if(pCandiList->dwPageStart != dwRealStart)
 						{
@@ -857,11 +857,11 @@ void TEdit::OnImeNotify(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				{
 					if( m_strText.IsEmpty() && m_strComposition.IsEmpty() )
 					{
-						// º¯°æÇã¿ë
+						// ë³€ê²½í—ˆìš©
 					}
 					else
 					{
-						// º¯°æºÒÇã - ´Ù½Ã ¿øÀÔ·Â»óÅÂ·Î µÇµ¹¾Æ°¨.
+						// ë³€ê²½ë¶ˆí—ˆ - ë‹¤ì‹œ ì›ìž…ë ¥ìƒíƒœë¡œ ë˜ëŒì•„ê°.
 						TEdit::g_bPassImeNotify = TRUE;
 
 						DWORD dwConv, dwSent, dwTemp;
@@ -1098,14 +1098,14 @@ INT GetAttrToType( BYTE bType )
 {
 	switch( bType )
 	{
-		case ATTR_INPUT: // Á¡¼±
+		case ATTR_INPUT: // ì ì„ 
 			return TTEXTSETTINGTYPE_LINE_DOT;
 
-		case ATTR_TARGET_CONVERTED: // µÎ²¨¿î ½Ç¼±
+		case ATTR_TARGET_CONVERTED: // ë‘êº¼ìš´ ì‹¤ì„ 
 		case ATTR_TARGET_NOTCONVERTED:
 			return TTEXTSETTINGTYPE_LINE_THICK;
 
-		case ATTR_CONVERTED: // ½Ç¼±
+		case ATTR_CONVERTED: // ì‹¤ì„ 
 		case ATTR_INPUT_ERROR:
 		case ATTR_FIXEDCONVERTED:
 			return TTEXTSETTINGTYPE_LINE;
@@ -1130,7 +1130,7 @@ void TEdit::ResetCompTextSetting(
 			BYTE bAttr = m_pCompAttr[ m_pCompClause[i-1] ];
 			INT nCharLength = m_pCompClause[i] - m_pCompClause[i-1];
 
-			// ¹®ÀÚ¿­ÀÇ szComp+dwPrevPos¿¡¼­ nCharLength¸¸Å­ ÇØ´çÀÌ´Ù.
+			// ë¬¸ìžì—´ì˜ szComp+dwPrevPosì—ì„œ nCharLengthë§Œí¼ í•´ë‹¹ì´ë‹¤.
 
 			AddTextSetting(
 				nCurPos,
@@ -1149,7 +1149,7 @@ void TEdit::ResetTextSettingLine(
 								 const CRect& rectScreenText,
 								 TextOutputData& sTextOutputData)
 {
-	// ¹ØÁÙ ±×¸®±â
+	// ë°‘ì¤„ ê·¸ë¦¬ê¸°
 	if( (data.iType&TTEXTSETTINGTYPE_LINE) == TTEXTSETTINGTYPE_LINE ||
 		(data.iType&TTEXTSETTINGTYPE_LINE_THICK) == TTEXTSETTINGTYPE_LINE_THICK ||
 		(data.iType&TTEXTSETTINGTYPE_LINE_DOT) == TTEXTSETTINGTYPE_LINE_DOT )
@@ -1695,7 +1695,7 @@ BOOL TEdit::CheckCountryCharCode(  TCHAR chCharCode  )
 
 		return FALSE;
 	}
-	else	// ÀÏº», ÇÑ±¹, µ¶ÀÏ
+	else	// ì¼ë³¸, í•œêµ­, ë…ì¼
 	{
 		if( (chCharCode == ' ') ||
 			(chCharCode >=33 && chCharCode <=126) ||

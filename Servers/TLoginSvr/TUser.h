@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  *	TUser.h
  */
 #pragma once
@@ -100,7 +100,7 @@ public:
 		BYTE bServerID);
 
 	
-	void SendCS_TESTVERSION_ACK(WORD wVersion);			// Çö½Â·æ CS_TESTVERSION_ACK
+	void SendCS_TESTVERSION_ACK(WORD wVersion);			// í˜„ìŠ¹ë£¡ CS_TESTVERSION_ACK
 	void SendCS_HOTSEND_ACK();
 	void SendCS_VETERAN_ACK(BYTE bOption, BYTE bFirstLevel, BYTE bSecondLevel, BYTE bThirdLevel);
 	void SendCS_SECURITYCONFIRM_REQ();

@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+Ôªø#include "Stdafx.h"
 #include "HappyDoc.h"
 
 void CHappyDoc::SendCT_OPLOGIN_REQ()
@@ -30,7 +30,7 @@ void CHappyDoc::SendCT_SERVICECONTROL_REQ(BYTE bStart)
 		Say(pMsg);
 	}
 	else
-		AfxMessageBox("Select the service");//º≠∫ÒΩ∫∏¶ º±≈√«œººø‰
+		AfxMessageBox("Select the service");//ÏÑúÎπÑÏä§Î•º ÏÑ†ÌÉùÌïòÏÑ∏Ïöî
 }
 void CHappyDoc::SendCT_SERVICECONTROL_REQ(DWORD dwID, BYTE bStart)
 {
@@ -128,7 +128,7 @@ void CHappyDoc::SendCT_UPDATEPATCH_REQ()
 //	Say(pMsg);
 //}
 
-//	TPREVERSION ≈◊¿Ã∫Ìø° µÓ∑œµ» ∆ƒ¿œ ∏Ò∑œ ∞°¡Æø¿±‚
+//	TPREVERSION ÌÖåÏù¥Î∏îÏóê Îì±Î°ùÎêú ÌååÏùº Î™©Î°ù Í∞ÄÏ†∏Ïò§Í∏∞
 void CHappyDoc::SendCT_PREVERSIONTABLE_REQ()
 {
 	CPacket * pMsg = new CPacket();
@@ -136,9 +136,9 @@ void CHappyDoc::SendCT_PREVERSIONTABLE_REQ()
 
 	Say(pMsg);
 }
-// TPREVERSION Ω≈±‘µÓ∑œ
-// TPREVERSION ø°º≠ TVERSION¿∏∑Œ ¿Ãµø
-// TRPEVERSION ¡¶∞≈
+// TPREVERSION Ïã†Í∑úÎì±Î°ù
+// TPREVERSION ÏóêÏÑú TVERSIONÏúºÎ°ú Ïù¥Îèô
+// TRPEVERSION Ï†úÍ±∞
 
 void CHappyDoc::SendCT_PREVERSIONUPDATE_REQ(WORD wMoveCount, WORD wDelCount, WORD wNewCount, LPVPATFILE pPatch)
 {
@@ -198,7 +198,7 @@ void CHappyDoc::SendCT_PREVERSIONUPDATE_REQ(WORD wMoveCount, WORD wDelCount, WOR
 }
 
 /////////////////////////////////////////////////////
-// «ˆΩ¬∑Ê CT_ANNOUNCEMENT_REQ
+// ÌòÑÏäπÎ£° CT_ANNOUNCEMENT_REQ
 void CHappyDoc::SendCT_ANNOUNCEMENT_REQ(DWORD nID, CString strAnnounce)
 {
 	CPacket * pMsg = new CPacket();
@@ -208,7 +208,7 @@ void CHappyDoc::SendCT_ANNOUNCEMENT_REQ(DWORD nID, CString strAnnounce)
 
 	Say(pMsg);
 }
-// «ˆΩ¬∑Ê CT_USERKICKOUT_REQ
+// ÌòÑÏäπÎ£° CT_USERKICKOUT_REQ
 void CHappyDoc::SendCT_USERKICKOUT_REQ(CString strUser)
 {
 	CPacket * pMsg = new CPacket();
@@ -217,7 +217,7 @@ void CHappyDoc::SendCT_USERKICKOUT_REQ(CString strUser)
 
 	Say(pMsg);
 }
-// «ˆΩ¬∑Ê CT_USERMOVE_REQ
+// ÌòÑÏäπÎ£° CT_USERMOVE_REQ
 void CHappyDoc::SendCT_USERMOVE_REQ(queue<CString>* pqStrUser, BYTE bWorld, BYTE bChannel, WORD wMapID, FLOAT fPosX, FLOAT fPosY, FLOAT fPosZ)
 {
 	CPacket * pMsg = new CPacket();
@@ -239,7 +239,7 @@ void CHappyDoc::SendCT_USERMOVE_REQ(queue<CString>* pqStrUser, BYTE bWorld, BYTE
 
 	Say(pMsg);
 }
-// «ˆΩ¬∑Ê CT_USERPOSITION_REQ
+// ÌòÑÏäπÎ£° CT_USERPOSITION_REQ
 void CHappyDoc::SendCT_USERPOSITION_REQ(BYTE bWorld, queue<CString>* pqStrUser, CString strTarget)
 {
 	CPacket * pMsg = new CPacket();
@@ -257,7 +257,7 @@ void CHappyDoc::SendCT_USERPOSITION_REQ(BYTE bWorld, queue<CString>* pqStrUser, 
 
 	Say(pMsg);
 }
-// «ˆΩ¬∑Ê CT_MONSPAWNFIND_REQ
+// ÌòÑÏäπÎ£° CT_MONSPAWNFIND_REQ
 void CHappyDoc::SendCT_MONSPAWNFIND_REQ(BYTE bGroupID, BYTE bChannel, WORD wMapID, WORD wSpawnID)
 {
 	CPacket * pMsg = new CPacket();
@@ -269,7 +269,7 @@ void CHappyDoc::SendCT_MONSPAWNFIND_REQ(BYTE bGroupID, BYTE bChannel, WORD wMapI
 
 	Say(pMsg);
 }
-// «ˆΩ¬∑Ê CT_MONACTION_REQ
+// ÌòÑÏäπÎ£° CT_MONACTION_REQ
 void CHappyDoc::SendCT_MONACTION_REQ(BYTE bGroup, BYTE bChannel, WORD wMapID, DWORD dwMonID, BYTE bAction, DWORD dwTriggerID, DWORD dwHostID, DWORD dwRHID, BYTE bRHType,WORD wSpawnID)
 {
 	CPacket * pMsg = new CPacket();

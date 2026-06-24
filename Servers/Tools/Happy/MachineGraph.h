@@ -1,15 +1,15 @@
-#pragma once
+ï»¿#pragma once
 
 
 
-// CMachineGraph Æû ºäÀÔ´Ï´Ù.
+// CMachineGraph í¼ ë·°ì…ë‹ˆë‹¤.
 
 class CMachineGraph : public CFormView
 {
 	DECLARE_DYNCREATE(CMachineGraph)
 
 protected:
-	CMachineGraph();           // µ¿Àû ¸¸µé±â¿¡ »ç¿ëµÇ´Â protected »ı¼ºÀÚÀÔ´Ï´Ù.
+	CMachineGraph();           // ë™ì  ë§Œë“¤ê¸°ì— ì‚¬ìš©ë˜ëŠ” protected ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CMachineGraph();
 
 public:
@@ -20,7 +20,7 @@ public:
 #endif
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 

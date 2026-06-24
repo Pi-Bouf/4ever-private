@@ -1,16 +1,16 @@
-// Happy.h : Happy ÀÀ¿ë ÇÁ·Î±×·¥¿¡ ´ëÇÑ ÁÖ Çì´õ ÆÄÀÏ
+ï»¿// Happy.h : Happy ì‘ìš© í”„ë¡œê·¸ë¨ì— ëŒ€í•œ ì£¼ í—¤ë” íŒŒì¼
 //
 #pragma once
 
 #ifndef __AFXWIN_H__
-	#error PCH¿¡¼­ ÀÌ ÆÄÀÏÀ» Æ÷ÇÔÇÏ±â Àü¿¡ 'stdafx.h'¸¦ Æ÷ÇÔÇÏ½Ê½Ã¿À.
+	#error PCHì—ì„œ ì´ íŒŒì¼ì„ í¬í•¨í•˜ê¸° ì „ì— 'stdafx.h'ë¥¼ í¬í•¨í•˜ì‹­ì‹œì˜¤.
 #endif
 
-#include "resource.h"       // ÁÖ ±âÈ£
+#include "resource.h"       // ì£¼ ê¸°í˜¸
 
 
 // CHappyApp:
-// ÀÌ Å¬·¡½ºÀÇ ±¸Çö¿¡ ´ëÇØ¼­´Â Happy.cppÀ» ÂüÁ¶ÇÏ½Ê½Ã¿À.
+// ì´ í´ë˜ìŠ¤ì˜ êµ¬í˜„ì— ëŒ€í•´ì„œëŠ” Happy.cppì„ ì°¸ì¡°í•˜ì‹­ì‹œì˜¤.
 //
 
 class CHappyApp : public CWinApp
@@ -19,11 +19,11 @@ public:
 	CHappyApp();
 	void Beep();
 
-// ÀçÁ¤ÀÇ
+// ì¬ì •ì˜
 public:
 	virtual BOOL InitInstance();
 
-// ±¸Çö
+// êµ¬í˜„
 	afx_msg void OnAppAbout();
 	DECLARE_MESSAGE_MAP()
 };

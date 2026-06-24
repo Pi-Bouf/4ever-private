@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "afxcmn.h"
 
 typedef enum TREE_IMAGE
@@ -13,14 +13,14 @@ typedef enum TREE_IMAGE
 	IMAGE_WORLD_SELECTED
 } *LPTREE_IMAGE;
 
-// CServiceTree Æû ºäÀÔ´Ï´Ù.
+// CServiceTree í¼ ë·°ì…ë‹ˆë‹¤.
 class CHappyDoc;
 class CServiceTree : public CFormView
 {
 	DECLARE_DYNCREATE(CServiceTree)
 
 protected:
-	CServiceTree();           // µ¿Àû ¸¸µé±â¿¡ »ç¿ëµÇ´Â protected »ı¼ºÀÚÀÔ´Ï´Ù.
+	CServiceTree();           // ë™ì  ë§Œë“¤ê¸°ì— ì‚¬ìš©ë˜ëŠ” protected ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CServiceTree();
 
 public:
@@ -37,7 +37,7 @@ public:
 #endif
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 public:
@@ -51,7 +51,7 @@ public:
 	afx_msg void OnTvnBegindragTreeService(NMHDR *pNMHDR, LRESULT *pResult);
 public:
 	/////////////////////////////////////////////////////
-	// Çö½Â·æ Graph
+	// í˜„ìŠ¹ë£¡ Graph
 	HTREEITEM  m_hDragItem; 
 	int m_DragFlag;
     HCURSOR m_Cursor;

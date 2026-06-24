@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "TCharInfoNewWarDlg.h"
 #include "TClientGame.h"
 #include "TCharInfoNewInner.h"
@@ -239,7 +239,7 @@ void CTCharNewPVPDlg::ResetData(
 	m_pHL_TITLE->m_strText = CTChart::LoadString( TSTR_CHARPVP_WAR_MONTH_SUMMARY ); 
 	m_pHR_TITLE->m_strText = CTChart::LoadString( TSTR_CHARPVP_WAR_TOTAL_SUMMARY );
 
-	// ·©Å·
+	// ëž­í‚¹
 	m_pH_COL[0][0]->m_strText = CTChart::LoadString( TSTR_CHARPVP_RANK );
 	m_pH_VALUE[0][0]->m_strText.Format("%d (%d%%)",
 		dwMonthRankOrder,
@@ -250,7 +250,7 @@ void CTCharNewPVPDlg::ResetData(
 		dwRankOrder,
 		bRankPercent);
 
-	// ¸í¼º
+	// ëª…ì„±
 	m_pH_COL[0][1]->m_strText = CTChart::LoadString( TSTR_CHARPVP_FAME );
 	m_pH_VALUE[0][1]->m_strText.Format( "%d",
 		CTClientGame::GetInstance()->GetMainChar()->m_dwPvPMonthPoint );
@@ -259,7 +259,7 @@ void CTCharNewPVPDlg::ResetData(
 	m_pH_VALUE[1][1]->m_strText.Format( "%d",
 		CTClientGame::GetInstance()->GetMainChar()->m_dwPvPTotalPoint );
 
-	// ÃÑÀüÀû
+	// ì´ì „ì 
 	m_pH_COL[0][2]->m_strText = CTChart::LoadString( TSTR_CHARPVP_TOTAL_RECORD );
 	m_pH_VALUE[0][2]->m_strText.Format( "%d / %d",
 		wMonthWin, wMonthLose );
@@ -268,7 +268,7 @@ void CTCharNewPVPDlg::ResetData(
 	m_pH_VALUE[1][2]->m_strText.Format( "%d / %d",
 		dwTotalWin, dwTotalLose );
 
-	// ½Â·ü
+	// ìŠ¹ë¥ 
 	m_pH_COL[0][3]->m_strText = CTChart::LoadString( TSTR_CHARPVP_POFV );
 	m_pH_VALUE[0][3]->m_strText.Format( "%.0f",
 		wMonthWin ? FLOAT(wMonthWin) / FLOAT(wMonthWin + wMonthLose) * 100.0f : 0 );

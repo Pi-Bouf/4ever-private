@@ -1,13 +1,13 @@
-#pragma once
+ï»¿#pragma once
 
 class CTGuildRTTypeFrame : public ITInnerFrame
 {
 public:
 	struct InfoPos
 	{
-		BOOL	m_bCommon;	///< °øÅë ÆäÀÌÁö ¿©ºÎ
-		UINT	m_nPage;	///< ÆäÀÌÁö ¹øÈ£
-		UINT	m_nColumn;	///< Ä®·³ ¹øÈ£
+		BOOL	m_bCommon;	///< ê³µí†µ íŽ˜ì´ì§€ ì—¬ë¶€
+		UINT	m_nPage;	///< íŽ˜ì´ì§€ ë²ˆí˜¸
+		UINT	m_nColumn;	///< ì¹¼ëŸ¼ ë²ˆí˜¸
 	};
 
 public:

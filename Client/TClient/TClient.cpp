@@ -1,4 +1,4 @@
-// TClient.cpp : Defines the class behaviors for the application.
+ï»¿// TClient.cpp : Defines the class behaviors for the application.
 //
 
 #include "stdafx.h"
@@ -46,7 +46,7 @@ typedef enum TMP_HACK_DETECT_TYPE
 } *LPTMP_HACK_DETECT_TYPE;
 
 #ifdef USE_GG
-// °ÔÀÓ°¡µå.
+// ê²Œì„ê°€ë“œ.
 BOOL CALLBACK NPGameMonCallback(DWORD dwMsg, DWORD dwArg)
 {
 	theApp.m_strNPMSG.Empty();
@@ -387,13 +387,13 @@ BOOL CTClientApp::InitInstance()
 	{
 		SetThreadLocale( MAKELCID( MAKELANGID(LANG_PORTUGUESE, SUBLANG_DEFAULT) , SORT_DEFAULT ) );
 	}
-	else	// ±¹³». ´Ü¾î´ÜÀ§·Î ÀÚ¸£´Ùº¸´Ï ±ä ´Ü¾î ÀÏ ¶§ ³Ê¹« ¸¹ÀÌ Àß·Á¼­ ¾Æ¸§´äÁö ¾ÊÀ½.
+	else	// êµ­ë‚´. ë‹¨ì–´ë‹¨ìœ„ë¡œ ìë¥´ë‹¤ë³´ë‹ˆ ê¸´ ë‹¨ì–´ ì¼ ë•Œ ë„ˆë¬´ ë§ì´ ì˜ë ¤ì„œ ì•„ë¦„ë‹µì§€ ì•ŠìŒ.
 	{
 		TComponent::m_bUseWordBreak = FALSE;
 	}
 
 #ifdef USE_GG
-	// °ÔÀÓ°¡µå.
+	// ê²Œì„ê°€ë“œ.
 		m_pNpgl = NULL;
 	/*	m_pNpgl = new CNPGameLib( "4StoryEU" );
 		DWORD dwResult = m_pNpgl->Init();
@@ -456,7 +456,7 @@ BOOL CTClientApp::InitInstance()
 				strMsg = CTChart::Format( TSTR_NPGG_ERROR_COLLISION );
 				break;
 			default:
-				// ÀûÀıÇÑ Á¾·á ¸Ş½ÃÁö Ãâ·Â
+				// ì ì ˆí•œ ì¢…ë£Œ ë©”ì‹œì§€ ì¶œë ¥
 				strMsg = CTChart::Format( TSTR_NPGG_ERROR );
 					break;
 			}
@@ -586,7 +586,7 @@ BOOL CTClientApp::InitInstance()
 
 //	JHWIDLib::Start();
 
-	// °ÔÀÓ°¡µå.
+	// ê²Œì„ê°€ë“œ.
 	/*if( CTNationOption::RUSSIA )
 
 
@@ -846,7 +846,7 @@ int CTClientApp::ExitInstance()
 #endif
 
 #ifdef USE_GG
-	// °ÔÀÓ°¡µå.
+	// ê²Œì„ê°€ë“œ.
 	if( m_pNpgl )
 	{
 		delete m_pNpgl;
@@ -911,7 +911,7 @@ void CTClientApp::ExitLoadThread( BYTE bCancelCMD)
 	m_bLoadRun = TRUE;
 }
 
-#define REG_SETTINGS_RESET_IDENTITY		(0x00000001)		// ±âÁ¸ °ªÀ» ´Ù¸¥ °ªÀ¸·Î ¼¼ÆÃÇÏ¸é µğÆúÆ®·Î ¸®¼ÂµÈ´Ù. ( 0À» Á¦¿ÜÇÑ °ª )
+#define REG_SETTINGS_RESET_IDENTITY		(0x00000001)		// ê¸°ì¡´ ê°’ì„ ë‹¤ë¥¸ ê°’ìœ¼ë¡œ ì„¸íŒ…í•˜ë©´ ë””í´íŠ¸ë¡œ ë¦¬ì…‹ëœë‹¤. ( 0ì„ ì œì™¸í•œ ê°’ )
 
 void CTClientApp::LoadStdProfileSettings()
 {
@@ -1668,7 +1668,7 @@ BOOL CTClientApp::HackShield_Update()
 		HsExtError,
 		1000 * 20 ); 
 	
-	if ( dwRet != ERROR_SUCCESS) { // ¿¡·¯ Ã³¸® 
+	if ( dwRet != ERROR_SUCCESS) { // ì—ëŸ¬ ì²˜ë¦¬ 
 
 		switch ( dwRet ) { 
 

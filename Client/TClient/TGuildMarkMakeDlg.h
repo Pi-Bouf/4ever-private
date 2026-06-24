@@ -1,15 +1,15 @@
-#pragma once
+ï»¿#pragma once
 
 class CTGuildMarkMakeDlg : public CTClientUIBase
 {
 public:
 	enum TYPE
 	{
-		TYPE_MARK,			///< ¹®¾ç
-		TYPE_BACK,			///< ¹ÙÅÁ
-		TYPE_MARKCOLOR,		///< ¹®¾ç»ö
-		TYPE_BACKCOLOR1,	///< ¹ÙÅÁ»ö1
-		TYPE_BACKCOLOR2,	///< ¹ÙÅÁ»ö2
+		TYPE_MARK,			///< ë¬¸ì–‘
+		TYPE_BACK,			///< ë°”íƒ•
+		TYPE_MARKCOLOR,		///< ë¬¸ì–‘ìƒ‰
+		TYPE_BACKCOLOR1,	///< ë°”íƒ•ìƒ‰1
+		TYPE_BACKCOLOR2,	///< ë°”íƒ•ìƒ‰2
 		TYPE_COUNT
 	};
 

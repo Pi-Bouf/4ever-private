@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 class CTTournamentMode;
 
@@ -10,7 +10,7 @@ public:
 	BYTE m_bShowPath;
 	BYTE m_bAutoPath;
 	TList* m_pQList;
-	TComponent *m_pLUCKY;														// Çà¿î¹øÈ£ Ç¥½Ã (ÀÌº¥Æ®¿ë)
+	TComponent *m_pLUCKY;														// í–‰ìš´ë²ˆí˜¸ í‘œì‹œ (ì´ë²¤íŠ¸ìš©)
 	TComponent *m_pLUCKY2;
 
 	TComponent *m_pLUCKY3;

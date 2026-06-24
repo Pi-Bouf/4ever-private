@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+ï»¿#include "Stdafx.h"
 #include "TGuildCommander.h"
 #include "Resource.h"
 #include "TClientGame.h"
@@ -10,62 +10,62 @@
 // ====================================================================
 const DWORD CTGuildCommander::CMD_AUTHORITY[] = 
 {
-	AUTHORITY_ALL,						///< ±æµå ¸ðÁýÃ¢ ¶ç¿ì±â
-	AUTHORITY_SUBMASTER,				///< ±æµå ÃÊ´ë
-	AUTHORITY_MEMBER,					///< ±æµå Å»Åð
-	AUTHORITY_SUBMASTER,				///< ±æµå¿ø Ãß¹æ
-	AUTHORITY_MASTER,					///< ±æµå ÇØÃ¼ ½ÅÃ»
-	AUTHORITY_MASTER,					///< ±æµå ÇØÃ¼ Ãë¼Ò
-	AUTHORITY_MASTER,					///< ±æµåÀå À§ÀÓ
-	AUTHORITY_MASTER,					///< ºÎ±æµåÀå À§ÀÓ
-	AUTHORITY_MASTER,					///< ºÎ±æµåÀå ÇØÀÓ
-	AUTHORITY_MASTER,					///< ÁÖ¾îÁø ÀÛÀ§¸¦ Ãë¼Ò
-	AUTHORITY_MASTER,					///< ³²ÀÛ¿¡ ÀÓ¸í
-	AUTHORITY_MASTER,					///< ÀÚÀÛ¿¡ ÀÓ¸í
-	AUTHORITY_MASTER,					///< ¹éÀÛ¿¡ ÀÓ¸í
-	AUTHORITY_MASTER,					///< ÈÄÀÛ¿¡ ÀÓ¸í
-	AUTHORITY_MASTER,					///< °øÀÛ¿¡ ÀÓ¸í
-	AUTHORITY_SUBMASTER,					///< ¿ëº´ ÃÊ´ë
+	AUTHORITY_ALL,						///< ê¸¸ë“œ ëª¨ì§‘ì°½ ë„ìš°ê¸°
+	AUTHORITY_SUBMASTER,				///< ê¸¸ë“œ ì´ˆëŒ€
+	AUTHORITY_MEMBER,					///< ê¸¸ë“œ íƒˆí‡´
+	AUTHORITY_SUBMASTER,				///< ê¸¸ë“œì› ì¶”ë°©
+	AUTHORITY_MASTER,					///< ê¸¸ë“œ í•´ì²´ ì‹ ì²­
+	AUTHORITY_MASTER,					///< ê¸¸ë“œ í•´ì²´ ì·¨ì†Œ
+	AUTHORITY_MASTER,					///< ê¸¸ë“œìž¥ ìœ„ìž„
+	AUTHORITY_MASTER,					///< ë¶€ê¸¸ë“œìž¥ ìœ„ìž„
+	AUTHORITY_MASTER,					///< ë¶€ê¸¸ë“œìž¥ í•´ìž„
+	AUTHORITY_MASTER,					///< ì£¼ì–´ì§„ ìž‘ìœ„ë¥¼ ì·¨ì†Œ
+	AUTHORITY_MASTER,					///< ë‚¨ìž‘ì— ìž„ëª…
+	AUTHORITY_MASTER,					///< ìžìž‘ì— ìž„ëª…
+	AUTHORITY_MASTER,					///< ë°±ìž‘ì— ìž„ëª…
+	AUTHORITY_MASTER,					///< í›„ìž‘ì— ìž„ëª…
+	AUTHORITY_MASTER,					///< ê³µìž‘ì— ìž„ëª…
+	AUTHORITY_SUBMASTER,					///< ìš©ë³‘ ì´ˆëŒ€
 };
 // --------------------------------------------------------------------
 const DWORD CTGuildCommander::CMD_STRING[] = 
 {
-	TSTR_CMD_SHOW_GUILDAPPDLG,			///< ±æµå ¸ðÁýÃ¢ ¶ç¿ì±â
-	TSTR_CMD_GUILD_INVITE,				///< ±æµå ÃÊ´ë
-	TSTR_CMD_GUILD_OUT,					///< ±æµå Å»Åð
-	TSTR_CMD_GUILD_KICK,					///< ±æµå¿ø Ãß¹æ
-	TSTR_CMD_GUILD_DISORG,				///< ±æµå ÇØÃ¼ ½ÅÃ»
-	TSTR_CMD_GUILD_DISORGCANCEL,			///< ±æµå ÇØÃ¼ Ãë¼Ò
-	TSTR_CMD_GUILD_MASTER,				///< ±æµåÀå À§ÀÓ
-	TSTR_CMD_GUILD_SUBMASTER,			///< ºÎ±æµåÀå À§ÀÓ
-	TSTR_CMD_GUILD_DISUBMASTER,			///< ºÎ±æµåÀå ÇØÀÓ
-	TSTR_CMD_GUILD_PEER_CANCEL,			///< ÁÖ¾îÁø ÀÛÀ§¸¦ Ãë¼Ò
-	TSTR_CMD_GUILD_BARON,				///< ³²ÀÛ¿¡ ÀÓ¸í
-	TSTR_CMD_GUILD_VISCOUNT,				///< ÀÚÀÛ¿¡ ÀÓ¸í
-	TSTR_CMD_GUILD_COUNT,				///< ¹éÀÛ¿¡ ÀÓ¸í
-	TSTR_CMD_GUILD_MARQUIS,				///< ÈÄÀÛ¿¡ ÀÓ¸í
-	TSTR_CMD_GUILD_DUKE,					///< °øÀÛ¿¡ ÀÓ¸í
-	TSTR_CMD_GUILD_INVITE_TACTICS		///<  ¿ëº´ ÃÊ´ë
+	TSTR_CMD_SHOW_GUILDAPPDLG,			///< ê¸¸ë“œ ëª¨ì§‘ì°½ ë„ìš°ê¸°
+	TSTR_CMD_GUILD_INVITE,				///< ê¸¸ë“œ ì´ˆëŒ€
+	TSTR_CMD_GUILD_OUT,					///< ê¸¸ë“œ íƒˆí‡´
+	TSTR_CMD_GUILD_KICK,					///< ê¸¸ë“œì› ì¶”ë°©
+	TSTR_CMD_GUILD_DISORG,				///< ê¸¸ë“œ í•´ì²´ ì‹ ì²­
+	TSTR_CMD_GUILD_DISORGCANCEL,			///< ê¸¸ë“œ í•´ì²´ ì·¨ì†Œ
+	TSTR_CMD_GUILD_MASTER,				///< ê¸¸ë“œìž¥ ìœ„ìž„
+	TSTR_CMD_GUILD_SUBMASTER,			///< ë¶€ê¸¸ë“œìž¥ ìœ„ìž„
+	TSTR_CMD_GUILD_DISUBMASTER,			///< ë¶€ê¸¸ë“œìž¥ í•´ìž„
+	TSTR_CMD_GUILD_PEER_CANCEL,			///< ì£¼ì–´ì§„ ìž‘ìœ„ë¥¼ ì·¨ì†Œ
+	TSTR_CMD_GUILD_BARON,				///< ë‚¨ìž‘ì— ìž„ëª…
+	TSTR_CMD_GUILD_VISCOUNT,				///< ìžìž‘ì— ìž„ëª…
+	TSTR_CMD_GUILD_COUNT,				///< ë°±ìž‘ì— ìž„ëª…
+	TSTR_CMD_GUILD_MARQUIS,				///< í›„ìž‘ì— ìž„ëª…
+	TSTR_CMD_GUILD_DUKE,					///< ê³µìž‘ì— ìž„ëª…
+	TSTR_CMD_GUILD_INVITE_TACTICS		///<  ìš©ë³‘ ì´ˆëŒ€
 };
 // --------------------------------------------------------------------
 const DWORD CTGuildCommander::CMD_DESC_STRING[] = 
 {
-	TSTR_CMDESC_SHOW_GUILDAPPDLG,		///< ±æµå ¸ðÁýÃ¢ ¶ç¿ì±â
-	TSTR_CMDESC_GUILD_INVITE,			///< ±æµå ÃÊ´ë
-	TSTR_CMDESC_GUILD_OUT,				///< ±æµå Å»Åð
-	TSTR_CMDESC_GUILD_KICK,				///< ±æµå¿ø Ãß¹æ
-	TSTR_CMDESC_GUILD_DISORG,			///< ±æµå ÇØÃ¼ ½ÅÃ»
-	TSTR_CMDESC_GUILD_DISORGCANCEL,		///< ±æµå ÇØÃ¼ Ãë¼Ò
-	TSTR_CMDESC_GUILD_MASTER,			///< ±æµåÀå À§ÀÓ
-	TSTR_CMDESC_GUILD_SUBMASTER,			///< ºÎ±æµåÀå À§ÀÓ
-	TSTR_CMDESC_GUILD_DISUBMASTER,		///< ºÎ±æµåÀå ÇØÀÓ
-	TSTR_CMDESC_GUILD_PEER_CANCEL,		///< ÁÖ¾îÁø ÀÛÀ§¸¦ Ãë¼Ò
-	TSTR_CMDESC_GUILD_BARON,				///< ³²ÀÛ¿¡ ÀÓ¸í
-	TSTR_CMDESC_GUILD_VISCOUNT,			///< ÀÚÀÛ¿¡ ÀÓ¸í
-	TSTR_CMDESC_GUILD_COUNT,				///< ¹éÀÛ¿¡ ÀÓ¸í
-	TSTR_CMDESC_GUILD_MARQUIS,			///< ÈÄÀÛ¿¡ ÀÓ¸í
-	TSTR_CMDESC_GUILD_DUKE,				///< °øÀÛ¿¡ ÀÓ¸í
-	TSTR_CMDESC_GUILD_INVITE_TACTICS		///< ¿ëº´ ÃÊ´ë
+	TSTR_CMDESC_SHOW_GUILDAPPDLG,		///< ê¸¸ë“œ ëª¨ì§‘ì°½ ë„ìš°ê¸°
+	TSTR_CMDESC_GUILD_INVITE,			///< ê¸¸ë“œ ì´ˆëŒ€
+	TSTR_CMDESC_GUILD_OUT,				///< ê¸¸ë“œ íƒˆí‡´
+	TSTR_CMDESC_GUILD_KICK,				///< ê¸¸ë“œì› ì¶”ë°©
+	TSTR_CMDESC_GUILD_DISORG,			///< ê¸¸ë“œ í•´ì²´ ì‹ ì²­
+	TSTR_CMDESC_GUILD_DISORGCANCEL,		///< ê¸¸ë“œ í•´ì²´ ì·¨ì†Œ
+	TSTR_CMDESC_GUILD_MASTER,			///< ê¸¸ë“œìž¥ ìœ„ìž„
+	TSTR_CMDESC_GUILD_SUBMASTER,			///< ë¶€ê¸¸ë“œìž¥ ìœ„ìž„
+	TSTR_CMDESC_GUILD_DISUBMASTER,		///< ë¶€ê¸¸ë“œìž¥ í•´ìž„
+	TSTR_CMDESC_GUILD_PEER_CANCEL,		///< ì£¼ì–´ì§„ ìž‘ìœ„ë¥¼ ì·¨ì†Œ
+	TSTR_CMDESC_GUILD_BARON,				///< ë‚¨ìž‘ì— ìž„ëª…
+	TSTR_CMDESC_GUILD_VISCOUNT,			///< ìžìž‘ì— ìž„ëª…
+	TSTR_CMDESC_GUILD_COUNT,				///< ë°±ìž‘ì— ìž„ëª…
+	TSTR_CMDESC_GUILD_MARQUIS,			///< í›„ìž‘ì— ìž„ëª…
+	TSTR_CMDESC_GUILD_DUKE,				///< ê³µìž‘ì— ìž„ëª…
+	TSTR_CMDESC_GUILD_INVITE_TACTICS		///< ìš©ë³‘ ì´ˆëŒ€
 };
 // ====================================================================
 

@@ -1,4 +1,4 @@
-// HappyView.cpp : CHappyView Å¬·¡½ºÀÇ ±¸Çö
+ï»¿// HappyView.cpp : CHappyView í´ë˜ìŠ¤ì˜ êµ¬í˜„
 //
 
 #include "stdafx.h"
@@ -19,7 +19,7 @@
 IMPLEMENT_DYNCREATE(CHappyView, CView)
 
 BEGIN_MESSAGE_MAP(CHappyView, CView)
-	// Ç¥ÁØ ÀÎ¼â ¸í·ÉÀÔ´Ï´Ù.
+	// í‘œì¤€ ì¸ì‡„ ëª…ë ¹ì…ë‹ˆë‹¤.
 	ON_COMMAND(ID_FILE_PRINT, CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, CView::OnFilePrintPreview)
@@ -39,11 +39,11 @@ BEGIN_MESSAGE_MAP(CHappyView, CView)
 	ON_COMMAND(ID_USERADMIN_CHATBANLIST, OnUseradminChatbanlist)
 END_MESSAGE_MAP()
 
-// CHappyView »ı¼º/¼Ò¸ê
+// CHappyView ìƒì„±/ì†Œë©¸
 
 CHappyView::CHappyView()
 {
-	// TODO: ¿©±â¿¡ »ı¼º ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ìƒì„± ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	m_dlgGMTool = new CGMToolDlg();
 	m_dlgGMTool->Create(IDD_GMTOOLDLG);
 
@@ -63,13 +63,13 @@ CHappyView::~CHappyView()
 
 BOOL CHappyView::PreCreateWindow(CREATESTRUCT& cs)
 {
-	// TODO: CREATESTRUCT cs¸¦ ¼öÁ¤ÇÏ¿© ¿©±â¿¡¼­
-	// Window Å¬·¡½º ¶Ç´Â ½ºÅ¸ÀÏÀ» ¼öÁ¤ÇÕ´Ï´Ù.
+	// TODO: CREATESTRUCT csë¥¼ ìˆ˜ì •í•˜ì—¬ ì—¬ê¸°ì—ì„œ
+	// Window í´ë˜ìŠ¤ ë˜ëŠ” ìŠ¤íƒ€ì¼ì„ ìˆ˜ì •í•©ë‹ˆë‹¤.
 
 	return CView::PreCreateWindow(cs);
 }
 
-// CHappyView ±×¸®±â
+// CHappyView ê·¸ë¦¬ê¸°
 
 void CHappyView::OnDraw(CDC* /*pDC*/)
 {
@@ -78,30 +78,30 @@ void CHappyView::OnDraw(CDC* /*pDC*/)
 	if (!pDoc)
 		return;
 
-	// TODO: ¿©±â¿¡ ¿ø½Ã µ¥ÀÌÅÍ¿¡ ´ëÇÑ ±×¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì›ì‹œ ë°ì´í„°ì— ëŒ€í•œ ê·¸ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 }
 
 
-// CHappyView ÀÎ¼â
+// CHappyView ì¸ì‡„
 
 BOOL CHappyView::OnPreparePrinting(CPrintInfo* pInfo)
 {
-	// ±âº»ÀûÀÎ ÁØºñ
+	// ê¸°ë³¸ì ì¸ ì¤€ë¹„
 	return DoPreparePrinting(pInfo);
 }
 
 void CHappyView::OnBeginPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
 {
-	// TODO: ÀÎ¼âÇÏ±â Àü¿¡ Ãß°¡ ÃÊ±âÈ­ ÀÛ¾÷À» Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì¸ì‡„í•˜ê¸° ì „ì— ì¶”ê°€ ì´ˆê¸°í™” ì‘ì—…ì„ ì¶”ê°€í•©ë‹ˆë‹¤.
 }
 
 void CHappyView::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
 {
-	// TODO: ÀÎ¼â ÈÄ Á¤¸® ÀÛ¾÷À» Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì¸ì‡„ í›„ ì •ë¦¬ ì‘ì—…ì„ ì¶”ê°€í•©ë‹ˆë‹¤.
 }
 
 
-// CHappyView Áø´Ü
+// CHappyView ì§„ë‹¨
 
 #ifdef _DEBUG
 void CHappyView::AssertValid() const
@@ -114,7 +114,7 @@ void CHappyView::Dump(CDumpContext& dc) const
 	CView::Dump(dc);
 }
 
-CHappyDoc* CHappyView::GetDocument() const // µğ¹ö±×µÇÁö ¾ÊÀº ¹öÀüÀº ÀÎ¶óÀÎÀ¸·Î ÁöÁ¤µË´Ï´Ù.
+CHappyDoc* CHappyView::GetDocument() const // ë””ë²„ê·¸ë˜ì§€ ì•Šì€ ë²„ì „ì€ ì¸ë¼ì¸ìœ¼ë¡œ ì§€ì •ë©ë‹ˆë‹¤.
 {
 	ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CHappyDoc)));
 	return (CHappyDoc*)m_pDocument;
@@ -156,15 +156,15 @@ void CHappyView::OnServerConnect()
 }
 void CHappyView::OnServerDisconnect()
 {
-	int nRet = AfxMessageBox(_T("Are you sure you want to disconnect?"),MB_YESNO); // ÁøÁ¤ Á¢¼ÓÀ» Á¾·áÇÏ°Ú½À´Ï±î?
+	int nRet = AfxMessageBox(_T("Are you sure you want to disconnect?"),MB_YESNO); // ì§„ì • ì ‘ì†ì„ ì¢…ë£Œí•˜ê² ìŠµë‹ˆê¹Œ?
 	if(nRet == IDYES)
 	{
 		GetDocument()->DisconnectServer();
 		CMainFrame * pFrm = (CMainFrame *)AfxGetMainWnd();
-		pFrm->SetPatchBarCompareVisible(FALSE);			// 06/02/02 ¹Ú»ó¿¬ ¿¬°áÁ¾·á½Ã Compare ¹öÆ° ºñÈ°¼ºÈ­
-		pFrm->SetPatchBarPatchUpdateVisible(FALSE);		// 06/02/02 ¹Ú»ó¿¬ ¿¬°áÁ¾·á½Ã PatchUpdate ¹öÆ° ºñÈ°¼ºÈ­
+		pFrm->SetPatchBarCompareVisible(FALSE);			// 06/02/02 ë°•ìƒì—° ì—°ê²°ì¢…ë£Œì‹œ Compare ë²„íŠ¼ ë¹„í™œì„±í™”
+		pFrm->SetPatchBarPatchUpdateVisible(FALSE);		// 06/02/02 ë°•ìƒì—° ì—°ê²°ì¢…ë£Œì‹œ PatchUpdate ë²„íŠ¼ ë¹„í™œì„±í™”
 
-		// Çö½Â·æ Service Graph
+		// í˜„ìŠ¹ë£¡ Service Graph
 		CServiceGraph * pGraph = (CServiceGraph *)pFrm->m_wndSplitter.GetView(pFrm->m_nGraph);
 		pGraph->ClearGraph();		
 		
@@ -174,7 +174,7 @@ void CHappyView::OnServerDisconnect()
 			pFrm->m_wndSplitter.ShowView(pFrm->m_nList);
 		}
 
-		// Çö½Â·æ ¹öÆ° È°¼ºÈ­/ºñÈ°¼ºÈ­
+		// í˜„ìŠ¹ë£¡ ë²„íŠ¼ í™œì„±í™”/ë¹„í™œì„±í™”
 		pFrm->SetAllControlEnable(FALSE,FALSE);
 
 		CMachineGraph * pMachine = (CMachineGraph *)pFrm->m_wndSplitter.GetView(pFrm->m_nMachineGraph);
@@ -182,7 +182,7 @@ void CHappyView::OnServerDisconnect()
 
 		m_dlgGMTool->OnBnClickedOk();
 
-		// ¸ŞÀÎ À©µµ¿ì Å¸ÀÌÆ² ¹Ù²Ù±â		
+		// ë©”ì¸ ìœˆë„ìš° íƒ€ì´í‹€ ë°”ê¾¸ê¸°		
 		CString strTitle = _T(" - Happy ");
 		CWnd* pWnd = AfxGetMainWnd();	
 		pWnd->SetWindowText(strTitle);
@@ -196,25 +196,25 @@ void CHappyView::OnServiceStart()
 	else if(GetDocument()->IsGroup())
 		GetDocument()->GroupStart();
 	else
-		AfxMessageBox(_T("Select the group/service")); //±×·ì/¼­ºñ½º¸¦ ¼±ÅÃÇÏ¼¼¿ä
+		AfxMessageBox(_T("Select the group/service")); //ê·¸ë£¹/ì„œë¹„ìŠ¤ë¥¼ ì„ íƒí•˜ì„¸ìš”
 }
 
 void CHappyView::OnServiceStop()
 {
 	if(SVRID(GetDocument()->m_dwSelectedService) != 0)
 	{
-		int nRet = AfxMessageBox(_T("Are you sure you want to close the service?"),MB_YESNO);//ÁøÁ¤ ¼­ºñ½º¸¦ Á¾·áÇÏ°Ú½À´Ï±î?
+		int nRet = AfxMessageBox(_T("Are you sure you want to close the service?"),MB_YESNO);//ì§„ì • ì„œë¹„ìŠ¤ë¥¼ ì¢…ë£Œí•˜ê² ìŠµë‹ˆê¹Œ?
 		if(nRet == IDYES)
 			GetDocument()->SendCT_SERVICECONTROL_REQ(FALSE);
 	}
 	else if(GetDocument()->IsGroup())
 	{
-		int nRet = AfxMessageBox(_T("Are you sure you want to close the service?"),MB_YESNO);//ÁøÁ¤ ¼­ºñ½º¸¦ Á¾·áÇÏ°Ú½À´Ï±î?
+		int nRet = AfxMessageBox(_T("Are you sure you want to close the service?"),MB_YESNO);//ì§„ì • ì„œë¹„ìŠ¤ë¥¼ ì¢…ë£Œí•˜ê² ìŠµë‹ˆê¹Œ?
 		if(nRet == IDYES)
 			GetDocument()->GroupStop();
 	}
 	else
-		AfxMessageBox(_T("Select the group/service"));//±×·ì/¼­ºñ½º¸¦ ¼±ÅÃÇÏ¼¼¿ä
+		AfxMessageBox(_T("Select the group/service"));//ê·¸ë£¹/ì„œë¹„ìŠ¤ë¥¼ ì„ íƒí•˜ì„¸ìš”
 }
 
 void CHappyView::OnServiceAllView()
@@ -256,10 +256,10 @@ void CHappyView::OnServiceUpload()
 	*/
 }
 ///////////////////////////////////////////////////////////////////////////////
-// Çö½Â·æ Graph
+// í˜„ìŠ¹ë£¡ Graph
 void CHappyView::OnCuruserGraph()
 {
-	// TODO: ¿©±â¿¡ ¸í·É Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ëª…ë ¹ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	CHappyDoc * pDoc = (CHappyDoc *)GetDocument();
 	if(!pDoc)
 		return;
@@ -284,7 +284,7 @@ void CHappyView::OnCuruserGraph()
 		pFrm->m_wndSplitter.ShowView(pFrm->m_nList);
 	}
 }
-// Çö½Â·æ ¿î¿µÀÚ Åø
+// í˜„ìŠ¹ë£¡ ìš´ì˜ì íˆ´
 void CHappyView::OnGmtool()
 {
 	if(!m_dlgGMTool)
@@ -293,7 +293,7 @@ void CHappyView::OnGmtool()
 	m_dlgGMTool->Init();
 	m_dlgGMTool->ShowWindow(SW_SHOW);	
 }
-// Çö½Â·æ ·Î±× ±â¾ï
+// í˜„ìŠ¹ë£¡ ë¡œê·¸ ê¸°ì–µ
 void CHappyView::OnServcieLog()
 {
 	CDlgServiceLog dlg;
@@ -322,7 +322,7 @@ void CHappyView::OnServcieLog()
 
 	}
 }
-// Çö½Â·æ À¯Àú°ü¸® À¥
+// í˜„ìŠ¹ë£¡ ìœ ì €ê´€ë¦¬ ì›¹
 void CHappyView::OnUserweb()
 {
 	CString strWeb;		
@@ -337,7 +337,7 @@ void CHappyView::OnUserweb()
 ///////////////////////////////////////////////////////////////////////////////
 void CHappyView::OnServiceAutoStart()
 {
-	// TODO: ¿©±â¿¡ ¸í·É Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.	
+	// TODO: ì—¬ê¸°ì— ëª…ë ¹ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.	
 	CHappyDoc * pDoc = (CHappyDoc *)GetDocument();
 	if(!pDoc)
 		return;
@@ -351,7 +351,7 @@ void CHappyView::OnServiceAutoStart()
 
 void CHappyView::OnServiceDataClear()
 {
-	// TODO: ¿©±â¿¡ ¸í·É Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ëª…ë ¹ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	CHappyDoc* pDoc = (CHappyDoc*)GetDocument();
 	if(!pDoc)
 		return;
@@ -364,7 +364,7 @@ void CHappyView::OnServiceDataClear()
 
 void CHappyView::OnExportHappydata()
 {
-	// TODO: ¿©±â¿¡ ¸í·É Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ëª…ë ¹ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	CHappyDoc* pDoc = (CHappyDoc*)GetDocument();
 	if(!pDoc)
 		return;
@@ -436,7 +436,7 @@ void CHappyView::OnExportHappydata()
 
 void CHappyView::OnUseradminChatbanlist()
 {
-	// TODO: ¿©±â¿¡ ¸í·É Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ëª…ë ¹ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	if(!m_dlgChatBanList)
 		return;
 	

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "TTournament.h"
 #include "TClientGame.h"
 #include "TClientWnd.h"
@@ -681,7 +681,7 @@ void CTTournament::UpdateMatch( TTMODE mode )
 	m_pMATCHLIST->RemoveAll();
 	m_bShowJoinBtn = TRUE;
 
-	// ¸ÅÄ¡¸®½ºÆ®
+	// ë§¤ì¹˜ë¦¬ìŠ¤íŠ¸
 	VTMATCH::iterator itMATCH, endMATCH;
 	itMATCH = m_vMatch.begin();
 	endMATCH = m_vMatch.end();
@@ -977,11 +977,11 @@ void CTTournament::OnSelectMatch( TMATCH* pMATCH )
 			{
 			case 0:
 				break;
-			case 1: // ¹æÆÐ¸¦ Â÷°í ÀÖÀ¸¸é º¸¿©ÁØ´Ù.
+			case 1: // ë°©íŒ¨ë¥¼ ì°¨ê³  ìžˆìœ¼ë©´ ë³´ì—¬ì¤€ë‹¤.
 				if( !pMainChar->GetHasShield() )
 					continue;
 				break;
-			case 2: // ¹æÆÐ¸¦ Â÷°íÀÖÁö ¾ÊÀ¸¸é º¸¿©ÁØ´Ù.
+			case 2: // ë°©íŒ¨ë¥¼ ì°¨ê³ ìžˆì§€ ì•Šìœ¼ë©´ ë³´ì—¬ì¤€ë‹¤.
 				if( pMainChar->GetHasShield() )
 					continue;
 				break;
@@ -989,7 +989,7 @@ void CTTournament::OnSelectMatch( TMATCH* pMATCH )
 
 			switch( (*itREWARD)->m_bChartType )
 			{
-			case 0: // Äù½ºÆ®
+			case 0: // í€˜ìŠ¤íŠ¸
 				{
 					LPTQUESTITEM pQuestItem = CTChart::FindTQUESTMAGICITEM( (*itREWARD)->m_wItemID );
 
@@ -1004,7 +1004,7 @@ void CTTournament::OnSelectMatch( TMATCH* pMATCH )
 				}
 				break;
 
-			case 1: // ¾ÆÀÌÅÛÂ÷Æ®
+			case 1: // ì•„ì´í…œì°¨íŠ¸
 				{
 					LPTITEM pTITEM = NULL;
 					pTITEM = CTChart::FindTITEMTEMP( (*itREWARD)->m_wItemID );
@@ -1049,7 +1049,7 @@ void CTTournament::OnSelectMatch( TMATCH* pMATCH )
 				}
 				else
 				{
-					nLine = m_pREWARD->GetItemCount()-1; // ¸¶Áö¸· ¶óÀÎ
+					nLine = m_pREWARD->GetItemCount()-1; // ë§ˆì§€ë§‰ ë¼ì¸
 					m_pREWARD->SetItemString(
 						nLine,
 						nCol,
@@ -1232,7 +1232,7 @@ HRESULT CTTournament::Render( DWORD dwTickCount )
 					LPTITEM pTITEM = NULL;
 					switch( pTREWARD[i]->m_bChartType )
 					{
-					case 0: // Äù½ºÆ®
+					case 0: // í€˜ìŠ¤íŠ¸
 						{
 							LPTQUESTITEM pQuestItem = CTChart::FindTQUESTMAGICITEM( pTREWARD[i]->m_wItemID );
 							if( pQuestItem )
@@ -1240,7 +1240,7 @@ HRESULT CTTournament::Render( DWORD dwTickCount )
 						}
 						break;
 
-					case 1: // ¾ÆÀÌÅÛÂ÷Æ®
+					case 1: // ì•„ì´í…œì°¨íŠ¸
 						{
 							pTITEM = CTChart::FindTITEMTEMP( pTREWARD[i]->m_wItemID );
 						}
@@ -1601,8 +1601,8 @@ ITDetailInfoPtr CTTournament::GetTInfoKey(const CPoint& point)
 		{
 			switch(pTREWARD->m_bChartType)
 			{
-			case 0:// 0:Äù½ºÆ®
-			case 1	://  1:¾ÆÀÌÅÛÂ÷Æ®
+			case 0:// 0:í€˜ìŠ¤íŠ¸
+			case 1	://  1:ì•„ì´í…œì°¨íŠ¸
 				if(m_pITEM[i]->HitTest(point))
 				{
 					if( pTREWARD->m_bChartType == 1 )

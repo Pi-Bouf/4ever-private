@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 class CTItemUpCashDlg;
 class CTItemUpCashSlot;
@@ -38,29 +38,29 @@ public:
 	};
 	enum 
 	{
-		MAINTAIN_POTIONOFFORTUNE = 905,				// Çà¿îÀÇ ¹°¾à100%
-		MAINTAIN_POTIONOFFORTUNE150 = 921,				// Çà¿îÀÇ ¹°¾à150%
-		MAINTAIN_POTIONOFFORTUNE200 = 922,				// Çà¿îÀÇ ¹°¾à200%
-		MAINTAIN_PROTECTIONOFUPGRADING = 919,		// °­È­ º¸È£Á¦
-		MAINTAIN_LEGENDENCHARTBOOK = 911,			// Àü¼³ÀÇ Á¦ÀÛ ºñÀü¼­
-		MAINTAIN_LEGENDREFINEBOOK = 912,			// Àü¼³ÀÇ Á¦·Ã ºñÀü¼­
-		MAINTAIN_MAGICTRANSFERSPELL = 913,			// ¸¶¹ý¼Ó¼º ÀüÀÌ ÁÖ¹®¼­
+		MAINTAIN_POTIONOFFORTUNE = 905,				// í–‰ìš´ì˜ ë¬¼ì•½100%
+		MAINTAIN_POTIONOFFORTUNE150 = 921,				// í–‰ìš´ì˜ ë¬¼ì•½150%
+		MAINTAIN_POTIONOFFORTUNE200 = 922,				// í–‰ìš´ì˜ ë¬¼ì•½200%
+		MAINTAIN_PROTECTIONOFUPGRADING = 919,		// ê°•í™” ë³´í˜¸ì œ
+		MAINTAIN_LEGENDENCHARTBOOK = 911,			// ì „ì„¤ì˜ ì œìž‘ ë¹„ì „ì„œ
+		MAINTAIN_LEGENDREFINEBOOK = 912,			// ì „ì„¤ì˜ ì œë ¨ ë¹„ì „ì„œ
+		MAINTAIN_MAGICTRANSFERSPELL = 913,			// ë§ˆë²•ì†ì„± ì „ì´ ì£¼ë¬¸ì„œ
 	};
 
 	enum
 	{
-		CASHITEM_POTIONOFFORTUNE = 7609,			// Çà¿îÀÇ ¹°¾à
-		CASHITEM_PROTECTIONOFUPGRADING = 7654,		// °­È­ º¸È£Á¦
-		CASHITEM_LEGENDENCHARTBOOK = 7611,			// Àü¼³ÀÇ Á¦ÀÛ ºñÀü¼­
-		CASHITEM_LEGENDREFINEBOOK = 7612,			// Àü¼³ÀÇ Á¦·Ã ºñÀü¼­
-		CASHITEM_MAGICTRANSFERSPELL = 7613,			// ¸¶¹ý¼Ó¼º ÀüÀÌ ÁÖ¹®¼­
+		CASHITEM_POTIONOFFORTUNE = 7609,			// í–‰ìš´ì˜ ë¬¼ì•½
+		CASHITEM_PROTECTIONOFUPGRADING = 7654,		// ê°•í™” ë³´í˜¸ì œ
+		CASHITEM_LEGENDENCHARTBOOK = 7611,			// ì „ì„¤ì˜ ì œìž‘ ë¹„ì „ì„œ
+		CASHITEM_LEGENDREFINEBOOK = 7612,			// ì „ì„¤ì˜ ì œë ¨ ë¹„ì „ì„œ
+		CASHITEM_MAGICTRANSFERSPELL = 7613,			// ë§ˆë²•ì†ì„± ì „ì´ ì£¼ë¬¸ì„œ
 	};
 
-	TComponent*		m_pTopMessage;		// »ó´Ü ¸Þ½ÃÁö
-	TComponent*		m_pBottonMessage;	// ÇÏ´Ü ¸Þ½ÃÁö
-	TComponent*		m_pBottonMessage2;	// ÇÏ´Ü ¸Þ½ÃÁö
+	TComponent*		m_pTopMessage;		// ìƒë‹¨ ë©”ì‹œì§€
+	TComponent*		m_pBottonMessage;	// í•˜ë‹¨ ë©”ì‹œì§€
+	TComponent*		m_pBottonMessage2;	// í•˜ë‹¨ ë©”ì‹œì§€
 
-	TEdit*			m_pItemMessage;		// ¾ÆÀÌÅÛ Á¤º¸ Ãâ·Â
+	TEdit*			m_pItemMessage;		// ì•„ì´í…œ ì •ë³´ ì¶œë ¥
 
 	INT				m_nSlotNum;
 	INT				m_nMode;

@@ -1,4 +1,4 @@
-// HappyView.h : iCHappyView Å¬·¡½ºÀÇ ÀÎÅÍÆäÀÌ½º
+ï»¿// HappyView.h : iCHappyView í´ë˜ìŠ¤ì˜ ì¸í„°í˜ì´ìŠ¤
 //
 
 
@@ -13,7 +13,7 @@
 
 class CHappyView : public CView
 {
-protected: // serialization¿¡¼­¸¸ ¸¸µé¾îÁı´Ï´Ù.
+protected: // serializationì—ì„œë§Œ ë§Œë“¤ì–´ì§‘ë‹ˆë‹¤.
 	CHappyView();
 	DECLARE_DYNCREATE(CHappyView)
 
@@ -23,22 +23,22 @@ public:
 	CGMToolDlg *m_dlgGMTool;
 	CChatBanList* m_dlgChatBanList;
 	
-// ÀÛ¾÷
+// ì‘ì—…
 
-// Æ¯¼º
+// íŠ¹ì„±
 public:
 	CHappyDoc* GetDocument() const;
 
-// ÀçÁ¤ÀÇ
+// ì¬ì •ì˜
 	public:
-	virtual void OnDraw(CDC* pDC);  // ÀÌ ºä¸¦ ±×¸®±â À§ÇØ ÀçÁ¤ÀÇµÇ¾ú½À´Ï´Ù.
+	virtual void OnDraw(CDC* pDC);  // ì´ ë·°ë¥¼ ê·¸ë¦¬ê¸° ìœ„í•´ ì¬ì •ì˜ë˜ì—ˆìŠµë‹ˆë‹¤.
 virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 protected:
 	virtual BOOL OnPreparePrinting(CPrintInfo* pInfo);
 	virtual void OnBeginPrinting(CDC* pDC, CPrintInfo* pInfo);
 	virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);
 
-// ±¸Çö
+// êµ¬í˜„
 public:
 	virtual ~CHappyView();
 #ifdef _DEBUG
@@ -48,7 +48,7 @@ public:
 
 protected:
 
-// ¸Ş½ÃÁö ¸Ê ÇÔ¼ö¸¦ »ı¼ºÇß½À´Ï´Ù.
+// ë©”ì‹œì§€ ë§µ í•¨ìˆ˜ë¥¼ ìƒì„±í–ˆìŠµë‹ˆë‹¤.
 protected:
 	DECLARE_MESSAGE_MAP()
 
@@ -69,7 +69,7 @@ public:
 	afx_msg void OnUseradminChatbanlist();
 };
 
-#ifndef _DEBUG  // HappyView.cppÀÇ µğ¹ö±× ¹öÀü
+#ifndef _DEBUG  // HappyView.cppì˜ ë””ë²„ê·¸ ë²„ì „
 inline CHappyDoc* CHappyView::GetDocument() const
    { return reinterpret_cast<CHappyDoc*>(m_pDocument); }
 #endif

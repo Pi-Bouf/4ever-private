@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  *	CUdpSocket.Cpp
  *
  */
@@ -107,7 +107,7 @@ DWORD WINAPI CUdpSocket::ReadThreadRunner(LPVOID parameter)
 
 
 /*
- *	Work TickÃ³¸® Thread
+ *	Work Tickì²˜ë¦¬ Thread
  *
  *	- DB Connection Check
  */
@@ -140,7 +140,7 @@ void CUdpSocket::ListenThreadProc()
 			LogFileWrite( "(X) ERROR: recvfrom failed with error %d\n", WSAGetLastError());
 		}
 
-		if( !_Module.m_bService )			break;			// ÇÁ·Î±×·¥ Á¾·á
+		if( !_Module.m_bService )			break;			// í”„ë¡œê·¸ë¨ ì¢…ë£Œ
 
 		_LPUDPPACKET cTmpIO = m_pIOPool->Alloc() ;
 
@@ -174,7 +174,7 @@ void CUdpSocket::WorkTickProc()
 
 		if(ret == WAIT_OBJECT_0)
 		{
-			//Á¾·á ÀÌº¥Æ® ¹ß»ı
+			//ì¢…ë£Œ ì´ë²¤íŠ¸ ë°œìƒ
 			break;
 		}
 		else if(ret == WAIT_TIMEOUT)
@@ -445,7 +445,7 @@ BOOL CUdpSocket::Initialize(char *pIPAddr, int iPort)
 	}
 
 	//
-	//	È£ÃâÇÒ ÇÔ¼ö ÀÌ¸§À» ÇÔ¼ö Æ÷ÀÎÅÍ ¹è¿­¿¡ Áı¾î ³Ö´Â´Ù. 
+	//	í˜¸ì¶œí•  í•¨ìˆ˜ ì´ë¦„ì„ í•¨ìˆ˜ í¬ì¸í„° ë°°ì—´ì— ì§‘ì–´ ë„£ëŠ”ë‹¤. 
 	//
 	OnTransFunc[LP_LOG].proc	= Packet_LogDB;
 
@@ -505,10 +505,10 @@ BOOL CUdpSocket::InitializeDB()
 
 
 /*
- *	Purpose: ¸Ê¼­¹öÀÇ ·Î±×¸¦ ÀúÀåÇÑ´Ù.
+ *	Purpose: ë§µì„œë²„ì˜ ë¡œê·¸ë¥¼ ì €ì¥í•œë‹¤.
  *
- *		Input  : lpData - ·Î±× µ¥ÀÌÅÍ 
- *		bForceSave - ¼­¹ö Á¾·á½Ã
+ *		Input  : lpData - ë¡œê·¸ ë°ì´í„° 
+ *		bForceSave - ì„œë²„ ì¢…ë£Œì‹œ
  */
 
 BOOL CUdpSocket::LogDBSave(_LPLOG_DATA_ pPacket, bool bForceSave)
@@ -600,7 +600,7 @@ BOOL Packet_LogDB(CUdpSocket* pUdpSocket, _LPUDPPACKET pUDPPacket)
 
 
 /*
- *	Àß¸øµÈ ¸Ş¼¼Áö°¡ ¿Â °æ¿ì¸¦ ´ëºñÇØ¼­ ¸¸µç ÇÔ¼ö 
+ *	ì˜ëª»ëœ ë©”ì„¸ì§€ê°€ ì˜¨ ê²½ìš°ë¥¼ ëŒ€ë¹„í•´ì„œ ë§Œë“  í•¨ìˆ˜ 
  */
 BOOL Packet_Nothing(CUdpSocket* lpUdpSocket  ,_LPUDPPACKET lpControlPacket) 
 {

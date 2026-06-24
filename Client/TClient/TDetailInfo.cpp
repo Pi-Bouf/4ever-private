@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+Ôªø#include "Stdafx.h"
 #include "TDetailInfo.h"
 #include "TClientGame.h"
 #include "TClient.h"
@@ -2910,14 +2910,14 @@ void CTPlayerDetInfo::Build()
 
 	if( m_bSenior )
 	{
-		_AddLine( "ªÛ∞¸", TDEFAULT_TEXT_COLOR);
+		_AddLine( "ÏÉÅÍ¥Ä", TDEFAULT_TEXT_COLOR);
 	}
 
 	CString strMSG;
-	strMSG.Format( "≈¨∑°Ω∫ : %s", CTChart::LoadString( (TSTRING) CTClientGame::m_vTCLASSSTR[ m_bClass ] ) );
+	strMSG.Format( "ÌÅ¥ÎûòÏä§ : %s", CTChart::LoadString( (TSTRING) CTClientGame::m_vTCLASSSTR[ m_bClass ] ) );
 	_AddLine( strMSG, TDEFAULT_TEXT_COLOR);
 
-	strMSG.Format( "∑π∫ß : %d", m_bLevel );
+	strMSG.Format( "Î†àÎ≤® : %d", m_bLevel );
 	_AddLine( strMSG, TDEFAULT_TEXT_COLOR);
 
 	m_TitleB.m_strText = m_strName;

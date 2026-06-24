@@ -1,24 +1,24 @@
-#pragma once
+ï»¿#pragma once
 #include "afxcmn.h"
 #include "afxwin.h"
 #include "afxdtctl.h"
 
 
-// CCastleSettingDlg ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CCastleSettingDlg ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 class CCastleSettingDlg : public CDialog
 {
 	DECLARE_DYNAMIC(CCastleSettingDlg)
 
 public:
-	CCastleSettingDlg(CWnd* pParent = NULL);   // Ç¥ÁØ »ı¼ºÀÚÀÔ´Ï´Ù.
+	CCastleSettingDlg(CWnd* pParent = NULL);   // í‘œì¤€ ìƒì„±ìì…ë‹ˆë‹¤.
 	virtual ~CCastleSettingDlg();
 
-// ´ëÈ­ »óÀÚ µ¥ÀÌÅÍÀÔ´Ï´Ù.
+// ëŒ€í™” ìƒì ë°ì´í„°ì…ë‹ˆë‹¤.
 	enum { IDD = IDD_CASTLE };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
 	DECLARE_MESSAGE_MAP()
 public:

@@ -1,4 +1,4 @@
-// ChatBanList.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// ChatBanList.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 
 #include "stdafx.h"
@@ -9,7 +9,7 @@
 #include "HappyDoc.h"
 
 
-// CChatBanList ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CChatBanList ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 IMPLEMENT_DYNAMIC(CChatBanList, CDialog)
 CChatBanList::CChatBanList(CWnd* pParent /*=NULL*/)
@@ -38,11 +38,11 @@ BEGIN_MESSAGE_MAP(CChatBanList, CDialog)
 END_MESSAGE_MAP()
 
 
-// CChatBanList ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CChatBanList ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 void CChatBanList::Init()
 {
-	// ¸®½ºÆ® ÄÁÆ®·ÑÀÇ ¸ğµç ÄÃ·³ »èÁ¦	
+	// ë¦¬ìŠ¤íŠ¸ ì»¨íŠ¸ë¡¤ì˜ ëª¨ë“  ì»¬ëŸ¼ ì‚­ì œ	
 	for(int i = 0; i < MAX_CHATBANLIST_COLUMN ; i++)
         m_lcChatBanList.DeleteColumn(0);
 
@@ -62,7 +62,7 @@ void CChatBanList::Init()
 		m_lcChatBanList.InsertColumn(i,&lvColumn);		
 	}
 	
-	// ÇÏ³ªÀÇ ¶óÀÎ ÀüÃ¼°¡ ¼±ÅÃµÇµµ·Ï ¼³Á¤
+	// í•˜ë‚˜ì˜ ë¼ì¸ ì „ì²´ê°€ ì„ íƒë˜ë„ë¡ ì„¤ì •
 	m_lcChatBanList.SetExtendedStyle(LVS_EX_FULLROWSELECT);	
 }
 
@@ -87,7 +87,7 @@ void CChatBanList::InsertToListCtrl(DWORD dwID,CString strName, __time64_t time,
 	m_mapBANLIST.insert(MAPBANLIST::value_type(dwID,pBANLIST));
 
 	lvItem.mask		= LVIF_TEXT;
-	lvItem.iItem	= dwIndex; // Row ÀÎµ¦½º
+	lvItem.iItem	= dwIndex; // Row ì¸ë±ìŠ¤
 	
 	for(int iCol = 0; iCol < MAX_CHATBANLIST_COLUMN ; iCol++)
 	{
@@ -100,7 +100,7 @@ void CChatBanList::InsertToListCtrl(DWORD dwID,CString strName, __time64_t time,
 		case 4 : strTmp.Format("%d",wMin );		break;		
 		}
 		
-		lvItem.iSubItem = iCol ; // ÄÃ·³ ÀÎµ¦½º
+		lvItem.iSubItem = iCol ; // ì»¬ëŸ¼ ì¸ë±ìŠ¤
 		lvItem.pszText	= strTmp.GetBuffer(0);
 		
 		if( iCol == 0 )
@@ -114,8 +114,8 @@ void CChatBanList::InsertToListCtrl(DWORD dwID,CString strName, __time64_t time,
 
 void CChatBanList::OnBnClickedBtnViewbanlist()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -132,15 +132,15 @@ void CChatBanList::OnBnClickedBtnViewbanlist()
 
 void CChatBanList::OnBnClickedBtnDeleteban()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	if( !m_lcChatBanList.GetItemCount())
 		return;
 
-	if(AfxMessageBox("Are you sure you want to delete?",MB_YESNO) == IDNO ) //ÁøÁ¤ »èÁ¦ÇÏ½Ã°Ú½À´Ï±î
+	if(AfxMessageBox("Are you sure you want to delete?",MB_YESNO) == IDNO ) //ì§„ì • ì‚­ì œí•˜ì‹œê² ìŠµë‹ˆê¹Œ
 		return;
 	
 
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -150,7 +150,7 @@ void CChatBanList::OnBnClickedBtnDeleteban()
 			return;
 	}
 	
-	// ¼±ÅÃµÈ ¾ÆÀÌÅÛ Ã£±â	
+	// ì„ íƒëœ ì•„ì´í…œ ì°¾ê¸°	
 	int iCount = m_lcChatBanList.GetItemCount();
 	for(int i = 0; i < iCount; i++)
 	{
@@ -167,7 +167,7 @@ void CChatBanList::OnBnClickedBtnDeleteban()
 
 			dwID = (*itF).second->m_dwID;
 			pDoc->SendCT_CHATBANLISTDEL_REQ(dwID);
-			// list control °»½Å
+			// list control ê°±ì‹ 
 			m_lcChatBanList.DeleteItem(i);
 			m_lcChatBanList.UpdateData();
 
@@ -183,15 +183,15 @@ void CChatBanList::OnBnClickedBtnDeleteban()
 
 void CChatBanList::OnBnClickedBtnClearbanlist()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 
 	if( !m_lcChatBanList.GetItemCount())
 		return;
 
-	if(AfxMessageBox("Are you sure you want to clear all ?",MB_YESNO) == IDNO ) //ÁøÁ¤ »èÁ¦ÇÏ½Ã°Ú½À´Ï±î
+	if(AfxMessageBox("Are you sure you want to clear all ?",MB_YESNO) == IDNO ) //ì§„ì • ì‚­ì œí•˜ì‹œê² ìŠµë‹ˆê¹Œ
 		return;
 
-	// Document Æ÷ÀÎÆ® ¾ò±â
+	// Document í¬ì¸íŠ¸ ì–»ê¸°
 	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
 	CHappyDoc* pDoc = (CHappyDoc*)pFrame->GetActiveDocument();
 	if(!pDoc)
@@ -209,7 +209,7 @@ void CChatBanList::OnBnClickedBtnClearbanlist()
 
 void CChatBanList::OnBnClickedCancel()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	ClearListCtrl();
 	SetDlgItemText(IDC_EB_BANREASON,_T(""));
 
@@ -235,7 +235,7 @@ void CChatBanList::ClearListCtrl()
 
 BOOL CChatBanList::PreTranslateMessage(MSG* pMsg)
 {
-	// TODO: ¿©±â¿¡ Æ¯¼öÈ­µÈ ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº» Å¬·¡½º¸¦ È£ÃâÇÕ´Ï´Ù.	
+	// TODO: ì—¬ê¸°ì— íŠ¹ìˆ˜í™”ëœ ì½”ë“œë¥¼ ì¶”ê°€ ë°/ë˜ëŠ” ê¸°ë³¸ í´ë˜ìŠ¤ë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.	
 	if( (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN) ||
         (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_ESCAPE) )	
 		return FALSE;
@@ -267,7 +267,7 @@ BOOL CChatBanList::PreTranslateMessage(MSG* pMsg)
 
 void CChatBanList::OnNMClickLcBanlist(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì»¨íŠ¸ë¡¤ ì•Œë¦¼ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	*pResult = 0;
 	
 	SelectItem();	
@@ -275,7 +275,7 @@ void CChatBanList::OnNMClickLcBanlist(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CChatBanList::SelectItem()
 {
-	// ¼±ÅÃµÈ ¾ÆÀÌÅÛ Ã£±â	
+	// ì„ íƒëœ ì•„ì´í…œ ì°¾ê¸°	
 	int iCount = m_lcChatBanList.GetItemCount();
 	for(int i = 0; i < iCount; i++)
 	{

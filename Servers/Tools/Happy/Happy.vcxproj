@@ -79,6 +79,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:.949 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\..\TProtocol;..\..\TServer\TNetLib;..\zlib114;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG; PACKET_CRYPT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -110,6 +111,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:.949 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <AdditionalIncludeDirectories>..\..\..\Lib\Own\TProtocol\Include;..\..\..\Lib\Own\TNetLib;..\..\..\Lib\3rdParty\zlib\include\minizip;..\..\..\Lib\3rdParty\zlib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;PACKET_CRYPT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -142,6 +144,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release RPS|Win32'">
     <ClCompile>
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:.949 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <AdditionalIncludeDirectories>..\..\..\Lib\Own\TProtocol\Include;..\..\..\Lib\Own\TNetLib;..\..\..\Lib\3rdParty\zlib\include\minizip;..\..\..\Lib\3rdParty\zlib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;PACKET_CRYPT;RPSGAME_ON;%(PreprocessorDefinitions)</PreprocessorDefinitions>

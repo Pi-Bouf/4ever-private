@@ -1,4 +1,4 @@
-// MainFrm.h : CMainFrame Å¬·¡½ºÀÇ ÀÎÅÍÆäÀÌ½º
+ï»¿// MainFrm.h : CMainFrame í´ë˜ìŠ¤ì˜ ì¸í„°í˜ì´ìŠ¤
 //
 
 #pragma once
@@ -17,7 +17,7 @@ public:
 
 	void GetFtpAddAndAcc(DWORD *dwAddr, CString *strUser, DWORD *dwPort);
 	void SetFtpAddAndAcc(DWORD *dwAddr, CString *strUser, DWORD *dwPort);
-// Æ¯¼º
+// íŠ¹ì„±
 public:
 	CHappySplitter m_wndSplitter;
 	int m_nGroup;
@@ -27,17 +27,17 @@ public:
 	int m_nListPatch;
 
 	///////////////////////////////////////////////////////////
-	// Çö½Â·æ Graph
+	// í˜„ìŠ¹ë£¡ Graph
 	BYTE m_bGraph;
 	int m_nGraph; 
 	BYTE GetCurView();
 	void SetCurView(BYTE bCur);
 	void SetGraphButton(BYTE bGraph);	
 	
-	BYTE GetGraphCheck(); // Çö½Â·æ Graph
+	BYTE GetGraphCheck(); // í˜„ìŠ¹ë£¡ Graph
 	void SetGraphCheck();
 
-	// Çö½Â·æ °æº¸À½, ¼­ºñ½º ÀüÃ¼º¸±â, ¼­ºñ½º ½ÃÀÛ/Á¤Áö ¹öÆ° È°¼ºÈ­/ºñÈ°¼ºÈ­
+	// í˜„ìŠ¹ë£¡ ê²½ë³´ìŒ, ì„œë¹„ìŠ¤ ì „ì²´ë³´ê¸°, ì„œë¹„ìŠ¤ ì‹œì‘/ì •ì§€ ë²„íŠ¼ í™œì„±í™”/ë¹„í™œì„±í™”
 	BYTE m_bAllView;
 	BYTE m_bAlert;
 	BYTE m_bService;
@@ -57,7 +57,7 @@ public:
 	void SetExportHappyData(BYTE bView);
 	void SetChatBanList(BYTE bView);
 
-	// Çö½Â·æ À¯Àú°ü¸® È°¼ºÈ­/ºñÈ°¼ºÈ­
+	// í˜„ìŠ¹ë£¡ ìœ ì €ê´€ë¦¬ í™œì„±í™”/ë¹„í™œì„±í™”
 	BYTE m_bLog;
 	BYTE m_bUserWeb;
 	BYTE m_bGMTool;
@@ -69,16 +69,16 @@ public:
 	void SetLogTimer(BYTE bResult, DWORD dwTime);
 
 	void SetAllControlEnable(BYTE bEnable, BYTE bServiceChange = TRUE );
-	// Çö½Â·æ Machine
+	// í˜„ìŠ¹ë£¡ Machine
 	int m_nMachine;
 	int m_nMachineGraph;
 	///////////////////////////////////////////////////////////
 
-// ÀçÁ¤ÀÇ
+// ì¬ì •ì˜
 public:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 
-// ±¸Çö
+// êµ¬í˜„
 public:
 	virtual ~CMainFrame();
 #ifdef _DEBUG
@@ -86,12 +86,12 @@ public:
 	virtual void Dump(CDumpContext& dc) const;
 #endif
 
-protected:  // ÄÁÆ®·Ñ ¸ğÀ½ÀÌ Æ÷ÇÔµÈ ¸â¹öÀÔ´Ï´Ù.
+protected:  // ì»¨íŠ¸ë¡¤ ëª¨ìŒì´ í¬í•¨ëœ ë©¤ë²„ì…ë‹ˆë‹¤.
 	CStatusBar  m_wndStatusBar;
 	CToolBar    m_wndToolBar;
 	CPatchBar	m_wndPatchBar;
 
-// ¸Ş½ÃÁö ¸Ê ÇÔ¼ö¸¦ »ı¼ºÇß½À´Ï´Ù.
+// ë©”ì‹œì§€ ë§µ í•¨ìˆ˜ë¥¼ ìƒì„±í–ˆìŠµë‹ˆë‹¤.
 protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	DECLARE_MESSAGE_MAP()
@@ -104,19 +104,19 @@ public:
 	afx_msg void OnUpdateServerDisconnect(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateServiceAlert(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateServiceAllView(CCmdUI *pCmdUI);	
-	void SetPatchBarCompareVisible(BYTE bCompare); // PatchBarÀÇ Compare ¹öÆ° Visible Setting	
-	void SetPatchBarPatchUpdateVisible(BYTE bPatchUpdate);// PatchBarÀÇ PatchUpdate ¹öÆ° Visible Setting
+	void SetPatchBarCompareVisible(BYTE bCompare); // PatchBarì˜ Compare ë²„íŠ¼ Visible Setting	
+	void SetPatchBarPatchUpdateVisible(BYTE bPatchUpdate);// PatchBarì˜ PatchUpdate ë²„íŠ¼ Visible Setting
 	afx_msg void OnUpdateServiceUpload(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateButtonCompare(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateButtonPatchup(CCmdUI *pCmdUI);	
-	afx_msg void OnUpdateCuruserGraph(CCmdUI *pCmdUI);// Çö½Â·æ ¼­¹ö ±×·¡ÇÁ È°¼ºÈ­/ºñÈ°¼ºÈ­	
-	afx_msg void OnUpdateAnnounce(CCmdUI *pCmdUI);// Çö½Â·æ °øÁö»çÇ× È°¼ºÈ­/ºñÈ°¼ºÈ­
-	afx_msg void OnUpdateUserkickout(CCmdUI *pCmdUI);// Çö½Â·æ À¯Àú °­Á¦ÅğÀå È°¼ºÈ­/ºñÈ°¼ºÈ­	
-	afx_msg void OnUpdateUsermove(CCmdUI *pCmdUI);// Çö½Â·æ À¯Àú À§Ä¡ÀÌµ¿ È°¼ºÈ­/ºñÈ°¼ºÈ­	
-	afx_msg void OnUpdateMonsterspawn(CCmdUI *pCmdUI);// Çö½Â·æ ¸ó½ºÅÍ °ü¸® È°¼ºÈ­/ºñÈ°¼ºÈ­	
-	afx_msg void OnUpdateServcieLog(CCmdUI *pCmdUI);// Çö½Â·æ ·Î±× ±â·Ï È°¼ºÈ­/ºñÈ°¼ºÈ­	
-	afx_msg void OnUpdateUserweb(CCmdUI *pCmdUI);// Çö½Â·æ À¯Àú°ü¸® À¥ È°¼ºÈ­/ºñÈ°¼ºÈ­	
-	afx_msg void OnUpdateGmtool(CCmdUI *pCmdUI);// Çö½Â·æ ¿î¿µÀÚ Åø È°¼ºÈ­/ºñÈ°¼ºÈ­
+	afx_msg void OnUpdateCuruserGraph(CCmdUI *pCmdUI);// í˜„ìŠ¹ë£¡ ì„œë²„ ê·¸ë˜í”„ í™œì„±í™”/ë¹„í™œì„±í™”	
+	afx_msg void OnUpdateAnnounce(CCmdUI *pCmdUI);// í˜„ìŠ¹ë£¡ ê³µì§€ì‚¬í•­ í™œì„±í™”/ë¹„í™œì„±í™”
+	afx_msg void OnUpdateUserkickout(CCmdUI *pCmdUI);// í˜„ìŠ¹ë£¡ ìœ ì € ê°•ì œí‡´ì¥ í™œì„±í™”/ë¹„í™œì„±í™”	
+	afx_msg void OnUpdateUsermove(CCmdUI *pCmdUI);// í˜„ìŠ¹ë£¡ ìœ ì € ìœ„ì¹˜ì´ë™ í™œì„±í™”/ë¹„í™œì„±í™”	
+	afx_msg void OnUpdateMonsterspawn(CCmdUI *pCmdUI);// í˜„ìŠ¹ë£¡ ëª¬ìŠ¤í„° ê´€ë¦¬ í™œì„±í™”/ë¹„í™œì„±í™”	
+	afx_msg void OnUpdateServcieLog(CCmdUI *pCmdUI);// í˜„ìŠ¹ë£¡ ë¡œê·¸ ê¸°ë¡ í™œì„±í™”/ë¹„í™œì„±í™”	
+	afx_msg void OnUpdateUserweb(CCmdUI *pCmdUI);// í˜„ìŠ¹ë£¡ ìœ ì €ê´€ë¦¬ ì›¹ í™œì„±í™”/ë¹„í™œì„±í™”	
+	afx_msg void OnUpdateGmtool(CCmdUI *pCmdUI);// í˜„ìŠ¹ë£¡ ìš´ì˜ì íˆ´ í™œì„±í™”/ë¹„í™œì„±í™”
 	afx_msg void OnUpdateServiceAutoStart(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateServiceDataClear(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateExportHappydata(CCmdUI *pCmdUI);

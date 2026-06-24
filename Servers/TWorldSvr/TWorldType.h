@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <math.h>
 
@@ -215,9 +215,9 @@ typedef enum GUILDAPP_TYPE
 
 typedef enum EXPIRED_TYPE
 {
-	EXPIRED_GMW = 1,//±æµå¿ø ¸ğÁı±¤°í
-	EXPIRED_GTW,	//¿ëº´ ¸ğÁı±¤°í
-	EXPIRED_GT		//¿ëº´ °è¾à ±â°£
+	EXPIRED_GMW = 1,//ê¸¸ë“œì› ëª¨ì§‘ê´‘ê³ 
+	EXPIRED_GTW,	//ìš©ë³‘ ëª¨ì§‘ê´‘ê³ 
+	EXPIRED_GT		//ìš©ë³‘ ê³„ì•½ ê¸°ê°„
 } *LPEXPIRED_TYPE;
 
 typedef enum SAVE_TYPE
@@ -344,7 +344,7 @@ struct tagTGUILDPOINTREWARD
 };
 
 ///////////////////////////////////////////////////////////////////////////
-// ±æµå
+// ê¸¸ë“œ
 struct tagTGUILDLEVEL
 {
 	BYTE	m_bLevel;
@@ -724,27 +724,27 @@ struct tagLOTTERY
 struct tagEVENTINFO
 {
 	DWORD	m_dwIndex;
-    BYTE	m_bID;			// ÀÌº¥Æ® Á¾·ù
-	CString m_strTitle;		// ÀÌº¥Æ® ÀÌ¸§
-	BYTE	m_bGroupID;		// ¼­¹ö ±×·ì
+    BYTE	m_bID;			// ì´ë²¤íŠ¸ ì¢…ë¥˜
+	CString m_strTitle;		// ì´ë²¤íŠ¸ ì´ë¦„
+	BYTE	m_bGroupID;		// ì„œë²„ ê·¸ë£¹
 	BYTE	m_bSvrType;
 	BYTE	m_bSvrID;		// 0 : ALL 
-	__time64_t m_dStartDate;// ½ÃÀÛ³¯Â¥½Ã°£
-	__time64_t m_dEndDate;	// Á¾·á³¯Â¥½Ã°£
-	WORD	m_wValue;		// ÀÌº¥Æ®°ª
-	WORD	m_wMapID;		// 0xFF:ALL ¸Ê¾ÆÀÌµğ
+	__time64_t m_dStartDate;// ì‹œì‘ë‚ ì§œì‹œê°„
+	__time64_t m_dEndDate;	// ì¢…ë£Œë‚ ì§œì‹œê°„
+	WORD	m_wValue;		// ì´ë²¤íŠ¸ê°’
+	WORD	m_wMapID;		// 0xFF:ALL ë§µì•„ì´ë””
 	DWORD	m_dwStartAlarm; 
 	DWORD	m_dwEndAlarm;
 	BYTE	m_bStartAlarm;
 	BYTE	m_bEndAlarm;
 	CString m_strStartMsg;
 	CString m_strEndMsg;
-	BYTE	m_bState;		// ÀÌº¥Æ® »óÅÂ
+	BYTE	m_bState;		// ì´ë²¤íŠ¸ ìƒíƒœ
 	BYTE	m_bPartTime;
 	VTCASHITEMSALE m_vCashItem;
 	MONEVENT m_stMONEVENT;	
 	VMONREGEN m_vMONREGEN;
-	VLOTTERY m_vLOTTERY;	// °æÇ°¾ÆÀÌÅÛ
+	VLOTTERY m_vLOTTERY;	// ê²½í’ˆì•„ì´í…œ
 	CString m_strLotMsg;
 
 	void Reset()

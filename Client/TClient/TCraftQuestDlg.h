@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 
 class CTCraftCategory
@@ -37,7 +37,7 @@ public:
 
 
 //!	Craft Quest Dialog Class.
-/*! ¾ÆÀÌÅÛÁ¦ÀÛ ´ÙÀÌ¾ó·Î±×.
+/*! ì•„ì´í…œì œì‘ ë‹¤ì´ì–¼ë¡œê·¸.
 *
 *
 */

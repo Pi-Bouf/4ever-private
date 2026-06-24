@@ -1,4 +1,4 @@
-#include "stdafx.h"
+Ôªø#include "stdafx.h"
 #include "TClientGame.h"
 
 
@@ -59,7 +59,7 @@ void CTAuctionItem::ReflectSlot(CTCtrlListSlot* pSlot)
 
 	CTAuctionSlot* pAuctionSlot = static_cast< CTAuctionSlot* >( pSlot );
 
-	// æ∆¿Ã≈€ æ∆¿Ãƒ‹¿ÃπÃ¡ˆ ºº∆√.
+	// ÏïÑÏù¥ÌÖú ÏïÑÏù¥ÏΩòÏù¥ÎØ∏ÏßÄ ÏÑ∏ÌåÖ.
 	LPTITEMVISUAL pVisual = m_pItem->GetDefaultVisual();
 	if( pVisual )
 		pAuctionSlot->m_pImageList->SetCurImage( pVisual->m_wIcon );
@@ -78,7 +78,7 @@ void CTAuctionItem::ReflectSlot(CTCtrlListSlot* pSlot)
 		pAuctionSlot->m_pImageList->SetSkinImageEmpty();
 
 
-	// æ∆¿Ã≈€ ∞πºˆø° µ˚∂Û √≥∏Æ.
+	// ÏïÑÏù¥ÌÖú Í∞ØÏàòÏóê Îî∞Îùº Ï≤òÎ¶¨.
 	if( m_pItem->GetTITEM()->m_bStack > 1 )
 	{
 		pAuctionSlot->m_pImageList->m_strText = CTChart::Format( TSTR_FMT_NUMBER, m_pItem->GetCount() );
@@ -99,22 +99,22 @@ void CTAuctionItem::ReflectSlot(CTCtrlListSlot* pSlot)
 	}
 
 	if( m_pItem->GetGrade() > 0 )
-		pAuctionSlot->m_pUpgrade->m_strText.Format( "+%d", m_pItem->GetGrade() );	// ∞≠»≠∑π∫ß
+		pAuctionSlot->m_pUpgrade->m_strText.Format( "+%d", m_pItem->GetGrade() );	// Í∞ïÌôîÎ†àÎ≤®
 	else
 		pAuctionSlot->m_pUpgrade->m_strText.Empty();
 
-	pAuctionSlot->m_pName->m_strText = m_pItem->GetTITEM()->m_strNAME; // æ∆¿Ã≈€¿Ã∏ß
-	pAuctionSlot->m_pNeedLevel->m_strText = CTChart::Format( TSTR_FMT_NUMBER, m_pItem->GetTITEM()->m_bLevel ); // ¬¯øÎ∑π∫ß
+	pAuctionSlot->m_pName->m_strText = m_pItem->GetTITEM()->m_strNAME; // ÏïÑÏù¥ÌÖúÏù¥Î¶Ñ
+	pAuctionSlot->m_pNeedLevel->m_strText = CTChart::Format( TSTR_FMT_NUMBER, m_pItem->GetTITEM()->m_bLevel ); // Ï∞©Ïö©Î†àÎ≤®
 
-	// ¬¯øÎ ¡˜æ˜.
+	// Ï∞©Ïö© ÏßÅÏóÖ.
 	static CString strClassName[TCLASS_COUNT] = 
 	{
-		CTChart::Format( TSTR_TCLASS_WARRIOR ),	// ¿¸ªÁ
-		CTChart::Format( TSTR_TCLASS_RANGER ),	// ªÏºˆ
-		CTChart::Format( TSTR_TCLASS_ARCHER ),	// ±√ªÁ
-		CTChart::Format( TSTR_TCLASS_WIZARD ),	// ∏∂π˝ªÁ
-		CTChart::Format( TSTR_TCLASS_PRIEST ),	// ªÁ¡¶
-		CTChart::Format( TSTR_TCLASS_SORCERER )	// º“»ØªÁ
+		CTChart::Format( TSTR_TCLASS_WARRIOR ),	// Ï†ÑÏÇ¨
+		CTChart::Format( TSTR_TCLASS_RANGER ),	// ÏÇ¥Ïàò
+		CTChart::Format( TSTR_TCLASS_ARCHER ),	// Í∂ÅÏÇ¨
+		CTChart::Format( TSTR_TCLASS_WIZARD ),	// ÎßàÎ≤ïÏÇ¨
+		CTChart::Format( TSTR_TCLASS_PRIEST ),	// ÏÇ¨Ï†ú
+		CTChart::Format( TSTR_TCLASS_SORCERER )	// ÏÜåÌôòÏÇ¨
 	};
 
 	CString strClass = "";
@@ -122,7 +122,7 @@ void CTAuctionItem::ReflectSlot(CTCtrlListSlot* pSlot)
 	
 	if( dwClassID == ( 1 << TCLASS_COUNT ) - 1 )
 	{
-		strClass = CTChart::Format( TSTR_CHAT_NATION );	// ¿¸√º
+		strClass = CTChart::Format( TSTR_CHAT_NATION );	// Ï†ÑÏ≤¥
 	}
 	else
 	{
@@ -158,7 +158,7 @@ void CTAuctionItem::ReflectSlot(CTCtrlListSlot* pSlot)
 	WORD m = 0;
 	WORD s = 0;
 
-	_get_hmsTime( m_dwRemainTick, &h, &m, &s );	// m_dwRemainTick -> √ ¥‹¿ß.
+	_get_hmsTime( m_dwRemainTick, &h, &m, &s );	// m_dwRemainTick -> Ï¥àÎã®ÏúÑ.
 	pAuctionSlot->m_pLeftTime->m_strText.Format( "%02d : %02d", h, m );
 
 	pAuctionSlot->m_pBidCount->m_strText = CTChart::Format( TSTR_FMT_NUMBER, m_bBidCount );
@@ -616,7 +616,7 @@ void	CTAuctionMainFrame::OnLButtonDown( UINT nFlags, CPoint pt )
 	if( pItem )
 	{
 		UINT selected = pItem->GetIndex() % TAUCTION_SLOT_COUNT;
-		if( selected != m_pAuctionList->GetSelectedIndex() )	// æ∆¿Ã≈€º±≈√.
+		if( selected != m_pAuctionList->GetSelectedIndex() )	// ÏïÑÏù¥ÌÖúÏÑ†ÌÉù.
 		{
 			m_pAuctionList->Select( selected );
 
@@ -638,7 +638,7 @@ void	CTAuctionMainFrame::OnLButtonDown( UINT nFlags, CPoint pt )
 
 void	CTAuctionMainFrame::OnRButtonDown( UINT nFlags, CPoint pt )
 {
-	// øÏ≈¨∏Ø πÊ¡ˆ.
+	// Ïö∞ÌÅ¥Î¶≠ Î∞©ÏßÄ.
 }
 
 BOOL	CTAuctionMainFrame::DoMouseWheel( UINT nFlags, short zDelta, CPoint pt)
@@ -810,7 +810,7 @@ void	CTAuctionMainFrame::UpdateByButtons()
 
 		return ;
 	}
-	if( pSelItem->m_pItem->GetTITEM()->m_bStack > 1 )	// ∫πºˆ∞≥¿« æ∆¿Ã≈€.
+	if( pSelItem->m_pItem->GetTITEM()->m_bStack > 1 )	// Î≥µÏàòÍ∞úÏùò ÏïÑÏù¥ÌÖú.
 	{
 		if( GetSelectedFrame() == TAUCTION_SEARCH )
 			SetStackItem_Search();
@@ -988,7 +988,7 @@ void	CTAuctionMainFrame::SetSearchFrame()
 	SetButton( m_pBtn[TBUTTON_THIRD], CTChart::LoadString( TSTR_AUCTION_BUY ), GM_AUCTION_BUY );
 }
 
-// ≥ª∞° µÓ∑œ«— π∞«∞∏ÆΩ∫∆Æ «¡∑π¿”.
+// ÎÇ¥Í∞Ä Îì±Î°ùÌïú Î¨ºÌíàÎ¶¨Ïä§Ìä∏ ÌîÑÎ†àÏûÑ.
 void	CTAuctionMainFrame::SetRegistFrame()
 {
 	m_pBtn[TBUTTON_FIRST]->ShowComponent( FALSE );
@@ -1000,7 +1000,7 @@ void	CTAuctionMainFrame::SetRegistFrame()
 	SetButton( m_pBtn[TBUTTON_THIRD], CTChart::LoadString( TSTR_CANCEL_REG ), GM_AUCTION_CANCEL_REG );
 }
 
-// ≥ª∞° ¿‘¬˚¡ﬂ¿Œ ∏ÆΩ∫∆Æ «¡∑π¿”.
+// ÎÇ¥Í∞Ä ÏûÖÏ∞∞Ï§ëÏù∏ Î¶¨Ïä§Ìä∏ ÌîÑÎ†àÏûÑ.
 void	CTAuctionMainFrame::SetMyBidFrame()
 {
 	if( !AvailableBID() )
@@ -1020,7 +1020,7 @@ void	CTAuctionMainFrame::SetMyBidFrame()
 	SetButton( m_pBtn[TBUTTON_THIRD], CTChart::LoadString( TSTR_AUCTION_BUY ), GM_AUCTION_BUY );
 }
 
-// ∞¸Ω…π∞«∞ «¡∑π¿”.
+// Í¥ÄÏã¨Î¨ºÌíà ÌîÑÎ†àÏûÑ.
 void	CTAuctionMainFrame::SetBasketFrame()
 {
 	if( !AvailableBID() )
@@ -1052,7 +1052,7 @@ void	CTAuctionMainFrame::SetStackItem_Search()
 
 	m_pBtn[TBUTTON_FIRST]->ShowComponent( TRUE );
 	m_pBtn[TBUTTON_SECOND]->ShowComponent( FALSE );
-	m_pBtn[TBUTTON_THIRD]->ShowComponent( TRUE );	// ¡ÔΩ√±∏∏≈ »∞º∫ (±∏¿‘).
+	m_pBtn[TBUTTON_THIRD]->ShowComponent( TRUE );	// Ï¶âÏãúÍµ¨Îß§ ÌôúÏÑ± (Íµ¨ÏûÖ).
 
 	SetButton( m_pBtn[TBUTTON_FIRST], CTChart::LoadString( TSTR_INSERT_BASKET ), GM_AUCTION_INSERT_BASKET );
 	SetButton( m_pBtn[TBUTTON_THIRD], CTChart::LoadString( TSTR_BUY ), GM_AUCTION_BUY );
@@ -1089,7 +1089,7 @@ void	CTAuctionMainFrame::SetStackItem_Basket()
 
 	m_pBtn[TBUTTON_FIRST]->ShowComponent( TRUE );
 	m_pBtn[TBUTTON_SECOND]->ShowComponent( FALSE );
-	m_pBtn[TBUTTON_THIRD]->ShowComponent( TRUE );	// ¡ÔΩ√±∏∏≈ »∞º∫ (±∏¿‘).
+	m_pBtn[TBUTTON_THIRD]->ShowComponent( TRUE );	// Ï¶âÏãúÍµ¨Îß§ ÌôúÏÑ± (Íµ¨ÏûÖ).
 
 	SetButton( m_pBtn[TBUTTON_FIRST], CTChart::LoadString( TSTR_ERASE_BASKET ), GM_AUCTION_ERASE_BASKET );
 	SetButton( m_pBtn[TBUTTON_THIRD], CTChart::LoadString( TSTR_BUY ), GM_AUCTION_BUY );	

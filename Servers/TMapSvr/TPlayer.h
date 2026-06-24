@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 
 class CTPlayer : public CTMapSession, public CTObjBase
@@ -47,7 +47,7 @@ MAPTINVEN m_mapTINVEN_bak;
 	VDWORD	m_vAuctionReg;
 
 	BYTE m_bLoadCharError;
-	// ±æµå
+	// ê¸¸ë“œ
 	CTItem * m_guildItem;
 
 	CPacket m_mainchar;
@@ -254,8 +254,8 @@ public:
 	FLOAT m_fSpeed;
 	DWORD m_dwRankPoint;
 public:
-	// ÁÖÀÇ : PushTItem() È£ÃâÀü¿¡ ¹İµå½Ã CanPush()°¡ ¼º°øÀÎÁö È®ÀÎÇØ¾ß ÇÏ¸ç CanPush()¿Í PushTItem()»çÀÌ¿¡
-	//		  ¾ÆÀÌÅÛ »èÁ¦¸¦ Á¦¿ÜÇÑ ´Ù¸¥ ÀÎº¥Åä¸® ÀÛ¾÷À» ÇÏ¸é ¹«ÇÑ·çÇÁ¿¡ ºüÁú ¼ö ÀÖ´Ù.
+	// ì£¼ì˜ : PushTItem() í˜¸ì¶œì „ì— ë°˜ë“œì‹œ CanPush()ê°€ ì„±ê³µì¸ì§€ í™•ì¸í•´ì•¼ í•˜ë©° CanPush()ì™€ PushTItem()ì‚¬ì´ì—
+	//		  ì•„ì´í…œ ì‚­ì œë¥¼ ì œì™¸í•œ ë‹¤ë¥¸ ì¸ë²¤í† ë¦¬ ì‘ì—…ì„ í•˜ë©´ ë¬´í•œë£¨í”„ì— ë¹ ì§ˆ ìˆ˜ ìˆë‹¤.
 	virtual void ResetSize( WORD wMonTempID);
 	virtual void PushTItem( LPVTITEM pTITEM);
 	virtual BYTE PushTItem(
@@ -334,7 +334,7 @@ public:
 	void ClearPet();
 	void ClearTitle();
 	void ClearDuel();
-	void ClearGuildItem(); // ±æµå
+	void ClearGuildItem(); // ê¸¸ë“œ
 	void ClearDuringItem();
 	void ClearProtected();
 	void ClearUsedSkills();
@@ -975,7 +975,7 @@ public:
 		DWORD dwTick);
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
-	// ±æµå
+	// ê¸¸ë“œ
 	void SendCS_GUILDESTABLISH_ACK(BYTE bResult, DWORD dwID=0, CString strName=NAME_NULL);
 	void SendCS_GUILDDISORGANIZATION_ACK(BYTE bResult);
 	void SendCS_GUILDINVITE_ACK(BYTE bResult, CString strGuildName, DWORD dwInviter, CString strInviterName);
@@ -1110,7 +1110,7 @@ public:
 		DWORD dwTarget = 0,
 		BYTE bCamp = 0);
 	void SendCS_ITEMUSE_ACK(BYTE bResult, WORD wDelayGroupID, BYTE bKind, DWORD dwTick);
-	void SendCS_ANNOUNCEMENTCHAT_ACK(CString strAnnounce); // Çö½Â·æ °øÁö»çÇ×
+	void SendCS_ANNOUNCEMENTCHAT_ACK(CString strAnnounce); // í˜„ìŠ¹ë£¡ ê³µì§€ì‚¬í•­
 	void SendCS_MONSETSKILL_ACK(DWORD dwMonID, WORD wSkillID, WORD wAtkRange);
 	void SendCS_NPCTALK_ACK(DWORD dwQuestID, WORD wNpcID);
 	void SendCS_CHAPTERMSG_ACK(DWORD dwQuestID);

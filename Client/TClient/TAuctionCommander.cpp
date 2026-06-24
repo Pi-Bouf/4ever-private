@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "TClientGame.h"
 #include "TClientWnd.h"
 
@@ -218,7 +218,7 @@ void CTAuctionCommander::RequestBuy()
 	pWnd->CloseMessageBox();
 }
 
-/*! °ü½É¹°Ç° µî·Ï ¿äÃ» */
+/*! ê´€ì‹¬ë¬¼í’ˆ ë“±ë¡ ìš”ì²­ */
 void	CTAuctionCommander::RequestInsertBasket()
 {
 	CTAuctionMainFrame* pFrame = CTAuctionMainFrame::GetInstance();
@@ -236,7 +236,7 @@ void	CTAuctionCommander::RequestInsertBasket()
 	}
 }
 
-/*! °ü½É¹°Ç° µî·ÏÇØÁ¦ ¿äÃ» */
+/*! ê´€ì‹¬ë¬¼í’ˆ ë“±ë¡í•´ì œ ìš”ì²­ */
 void	CTAuctionCommander::RequestEraseBasket()
 {
 	CTAuctionMainFrame* pFrame = CTAuctionMainFrame::GetInstance();
@@ -412,7 +412,7 @@ BOOL	CTAuctionCommander::RecvRegCancel_Result( BYTE bResult )
 
 //////////////////////////////////////////////////////////////////////////
 //	MEMBER FUNCTION IMPLEMENTATION.
-/*! MainFrame( ÀÔÂû¹öÆ°Å¬¸¯ Ã³¸® ) */
+/*! MainFrame( ìž…ì°°ë²„íŠ¼í´ë¦­ ì²˜ë¦¬ ) */
 void	CTAuctionCommander::OnClicked_BidButton()
 {
 	CTClientGame* pGame = CTClientGame::GetInstance();
@@ -460,7 +460,7 @@ void	CTAuctionCommander::OnClicked_BidButton()
 	}
 }
 
-/*! MainFrame( Áï½Ã±¸¸Å¹öÆ°Å¬¸¯ Ã³¸® ) */
+/*! MainFrame( ì¦‰ì‹œêµ¬ë§¤ë²„íŠ¼í´ë¦­ ì²˜ë¦¬ ) */
 void	CTAuctionCommander::OnClicked_BuyButton()
 {
 	CTClientGame* pGame = CTClientGame::GetInstance();
@@ -538,32 +538,32 @@ void	CTAuctionCommander::OnClicked_BuyButton()
 	}
 }
 
-/*! MainFrame( °ü½É¹°Ç°¹öÆ°Å¬¸¯ Ã³¸® ) */
+/*! MainFrame( ê´€ì‹¬ë¬¼í’ˆë²„íŠ¼í´ë¦­ ì²˜ë¦¬ ) */
 void	CTAuctionCommander::OnClicked_InsertBasketButton()
 {
 
 }
 
-/*! BasketFrame( °ü½Å¹°Ç° ÇØÁ¦ ¹öÆ°Å¬¸¯ Ã³¸® ) */
+/*! BasketFrame( ê´€ì‹ ë¬¼í’ˆ í•´ì œ ë²„íŠ¼í´ë¦­ ì²˜ë¦¬ ) */
 void	CTAuctionCommander::OnClicked_DeleteBasketButton()
 {
 
 }
 
-/*! SearchFrame( °Ë»ö¹öÆ°Å¬¸¯ Ã³¸® ) */
+/*! SearchFrame( ê²€ìƒ‰ë²„íŠ¼í´ë¦­ ì²˜ë¦¬ ) */
 void	CTAuctionCommander::OnClicked_SearchButton()
 {
 
 }
 
-/*! SearchFrame( °Ë»öÁ¤º¸ ÃÊ±âÈ­ Ã³¸® ) */
+/*! SearchFrame( ê²€ìƒ‰ì •ë³´ ì´ˆê¸°í™” ì²˜ë¦¬ ) */
 void	CTAuctionCommander::OnClicked_SearchResetButton()
 {
 	CTAuctionMainFrame::GetInstance()
 		->ResetColumnString();
 }
 
-/*! RegistFrame( µî·Ï¹öÆ°Å¬¸¯ Ã³¸® ) */
+/*! RegistFrame( ë“±ë¡ë²„íŠ¼í´ë¦­ ì²˜ë¦¬ ) */
 void	CTAuctionCommander::OnClicked_RegistButton()
 {
 	CTClientGame* pGame = CTClientGame::GetInstance();
@@ -612,7 +612,7 @@ void	CTAuctionCommander::OnClicked_RegistButton()
 	}
 }
 
-/*! RegistFrame( ¾ÆÀÌÅÛ µî·ÏÁ¤º¸ ÃÊ±âÈ­ ) */
+/*! RegistFrame( ì•„ì´í…œ ë“±ë¡ì •ë³´ ì´ˆê¸°í™” ) */
 void	CTAuctionCommander::OnClicked_RegistResetButton()
 {
 	CTAuctionMainFrame* pFrame = CTAuctionMainFrame::GetInstance();
@@ -624,7 +624,7 @@ void	CTAuctionCommander::OnClicked_RegistResetButton()
 	}
 }
 
-/*! RegistFrame( µî·ÏÃë¼Ò¹öÆ°Å¬¸¯ Ã³¸® ) */
+/*! RegistFrame( ë“±ë¡ì·¨ì†Œë²„íŠ¼í´ë¦­ ì²˜ë¦¬ ) */
 void	CTAuctionCommander::OnClicked_RegistCancelButton()
 {
 	CTClientWnd* pWnd = CTClientGame::GetInstance()->GetMainWnd();
