@@ -93,7 +93,9 @@ Desktop.ini
 $RECYCLE.BIN/
 .DS_Store
 *.orig
-*_BACKUP_*
-*_BASE_*
-*_LOCAL_*
-*_REMOTE_*
+# git mergetool conflict backups: <file>_BASE_<pid>.<ext> (require the numeric PID
+# so these don't match real assets like updater_base_v2.bmp on case-insensitive Windows)
+*_BACKUP_[0-9]*
+*_BASE_[0-9]*
+*_LOCAL_[0-9]*
+*_REMOTE_[0-9]*
