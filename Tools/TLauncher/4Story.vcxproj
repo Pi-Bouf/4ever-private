@@ -74,7 +74,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>winmm.lib;shlwapi.lib;Ws2_32.lib;zlibstat.lib;XTrap4Launcher_mt.lib;d3d9.lib;d3dx9.lib;Engine Libd.lib;Psapi.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\Lib\3rdParty\zlib\lib\zlibstat;..\..\Lib\3rdParty\XTrap\client\Lib\x86;..\..\Lib\Own\Engine Lib\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\Lib\3rdParty\zlib\lib\zlibstat;..\..\Lib\3rdParty\XTrap\client\Lib\x86;..\..\Lib\Own\Engine Lib\Lib\x86;..\..\Lib\3rdParty\VLD\lib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
