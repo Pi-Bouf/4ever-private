@@ -4208,6 +4208,23 @@ BEGIN_COLUMN(3)
 	COLUMN_ENTRY(m_fMultiplier)
 END_COL()
 };
+
+class CTBLCompanionRuneChart : public CSqlQuery
+{
+public:
+	WORD m_wItemID;
+	WORD m_wMonID;
+
+DEF_QUERY(CTBLCompanionRuneChart, _T("SELECT \
+	wItemID, \
+	wMonID \
+	FROM TCOMPANIONRUNECHART"))
+
+BEGIN_COLUMN(2)
+	COLUMN_ENTRY(m_wItemID)
+	COLUMN_ENTRY(m_wMonID)
+END_COL()
+};
 class CTBLMonthRankTable : public CSqlQuery
 {
 public:

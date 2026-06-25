@@ -4034,13 +4034,24 @@ DWORD CTMapSvrModule::LoadData()
 			pBONUS->m_fMultiplier = query->m_fMultiplier;
 
 			m_mapCompBonus.insert(MAPTCOMPBONUS::value_type(query->m_bBonusID, pBONUS));
-		}			
+		}
 
 		query->Close();
 
 	}
 	UNDEFINE_QUERY()
-	
+
+	LOAD_STEP("CTBLCompanionRuneChart");
+	DEFINE_QUERY( &m_db, CTBLCompanionRuneChart)
+	if(query->Open())
+	{
+		while(query->Fetch())
+			m_mapCompRune[query->m_wItemID] = query->m_wMonID;
+
+		query->Close();
+	}
+	UNDEFINE_QUERY()
+
 	MAPTAUCTIONBIDDER mapTAUCTIONBIDDER;
 	mapTAUCTIONBIDDER.clear();
 
@@ -6945,6 +6956,16 @@ void CTMapSvrModule::SetItemAttr(CTItem * pItem, BYTE bLevel)
 		pItem->m_pTITEMATTR = (*it).second;
 	else
 		pItem->m_pTITEMATTR = (*(m_mapTItemAttr.begin())).second;
+
+	// Companion runes carry no species in their (generic) template, so stamp the species onto the
+	// instance from TCOMPANIONRUNECHART when it isn't already set. This is the one chokepoint every
+	// item-creation path funnels through, so runes work however they're granted (shop/drop/quest/GM/mail).
+	if(pItem->m_pTITEM->m_bType == IT_COMPANION && !pItem->m_dwExtValue[IEV_COMPANION])
+	{
+		MAPCOMPRUNE::iterator itRune = m_mapCompRune.find(pItem->m_wItemID);
+		if(itRune != m_mapCompRune.end())
+			pItem->m_dwExtValue[IEV_COMPANION] = (*itRune).second;	// persists to TITEMTABLE.dwTime5
+	}
 
 	SetAlarmTime(pItem);
 }

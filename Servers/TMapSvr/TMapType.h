@@ -930,6 +930,7 @@ typedef map< DWORD, CTSelfObj *>			MAPTSELFOBJ, *LPTMAPTSELFOBJ;
 typedef map< DWORD, CTCompanion*>           MAPTCOMPANION, *LPTMAPTCOMPANION;
 typedef map< BYTE, LPTCOMP>                 MAPTCOMP, *LPMAPTCOMP;
 typedef map< BYTE, LPTCOMPBONUS>            MAPTCOMPBONUS, *LPMAPTCOMPBONUS;
+typedef map< WORD, WORD>                    MAPCOMPRUNE, *LPMAPCOMPRUNE;	// rune item id -> companion monster id
 
 typedef map< DWORD, CString>				MAPTSTRING, *LPMAPTSTRING;
 typedef map< DWORD, LPTPOST>				MAPTPOST, *LPMAPTPOST;

@@ -99,6 +99,7 @@ public:
 	MAPQLOADTERM		m_mapQLoadTerm;				// Load-time staging: quest terms by questID
 
 	MAPTCOMPBONUS       m_mapCompBonus;
+	MAPCOMPRUNE         m_mapCompRune;				// companion rune item id -> monster id (TCOMPANIONRUNECHART)
 
 	MAPTITEMATTR m_mapTItemAttr;
 	MAPTITEMATTR m_mapTITEMKINDATTR[IK_COUNT];
