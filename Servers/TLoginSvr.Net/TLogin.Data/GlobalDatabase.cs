@@ -33,6 +33,17 @@ public sealed class GlobalDatabase
         return ret.AsInt();
     }
 
+    /// <summary>Deletes the account's TCURRENTUSER login lock. Used to recover from a stale lock when the
+    /// same account re-logs in (returning from in-game to character-select, or re-entering) — the .NET port
+    /// otherwise leaves the lock behind so TLogin returns Duplicate. Mirrors the C++ TLogout cleanup.</summary>
+    public async Task ReleaseCurrentUserAsync(uint userId, CancellationToken ct = default)
+    {
+        await using var c = await OpenAsync(ct);
+        await using var cmd = new SqlCommand("DELETE FROM TCURRENTUSER WHERE dwUserID = @id", c);
+        cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int) { Value = unchecked((int)userId) });
+        await cmd.ExecuteNonQueryAsync(ct);
+    }
+
     /// <summary>TLogin — authenticates the account and prepares the session. CSPLogin.</summary>
     public async Task<LoginRow> LoginAsync(string userId, string password, string loginIp, byte ipCheck, CancellationToken ct = default)
     {

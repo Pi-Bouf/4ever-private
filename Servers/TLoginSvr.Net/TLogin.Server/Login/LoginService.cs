@@ -146,6 +146,17 @@ public sealed class LoginService
             ? await _global.LoginJpAsync(st.UserName, st.Password, ip, (byte)ipCheck, channeling)
             : await _global.LoginAsync(st.UserName, st.Password, ip, (byte)ipCheck);
 
+        // Re-login recovery: returning from in-game to character-select (and re-entering) reconnects and
+        // re-runs TLogin, which still finds this account's TCURRENTUSER lock and returns Duplicate. Since
+        // it's the same account reconnecting, kick the stale lock and retry once (single-world semantics).
+        if ((LoginResult)login.Ret == LoginResult.Duplicate && login.UserId != 0)
+        {
+            await _global.ReleaseCurrentUserAsync(login.UserId);
+            login = _nation == Nation.Japan
+                ? await _global.LoginJpAsync(st.UserName, st.Password, ip, (byte)ipCheck, channeling)
+                : await _global.LoginAsync(st.UserName, st.Password, ip, (byte)ipCheck);
+        }
+
         var result = (LoginResult)login.Ret;
 
         // 2FA is wired but auto-passing: a Security result on a trusted device becomes Success.
