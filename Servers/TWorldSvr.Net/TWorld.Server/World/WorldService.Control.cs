@@ -33,20 +33,7 @@ public sealed partial class WorldService
             case Msg.CT_RPSGAMEDATA_REQ: OnCT_RPSGAMEDATA_REQ(session, r); return true;
             case Msg.CT_RPSGAMECHANGE_REQ: OnCT_RPSGAMECHANGE_REQ(session, r, packet); return true;
             case Msg.CT_CMGIFTLIST_REQ: OnCT_CMGIFTLIST_REQ(r); return true;
-            case Msg.CT_CMGIFT_REQ: OnCT_CMGIFT_REQ(r); return true;
             case Msg.CT_CASHITEMSALE_REQ: OnCT_CASHITEMSALE_REQ(r); return true;
-
-            // Recognized but deferred — these need the un-ported DM/DB-job plane or the event/tournament
-            // subsystems. Recognizing them keeps the CT plane dispatch-complete (no "unhandled" fallthrough).
-            case Msg.CT_ITEMFIND_REQ:
-            case Msg.CT_ITEMSTATE_REQ:
-            case Msg.CT_EVENTQUARTERLIST_REQ:
-            case Msg.CT_EVENTQUARTERUPDATE_REQ:
-            case Msg.CT_CMGIFTCHARTUPDATE_REQ:
-            case Msg.CT_EVENTUPDATE_REQ:
-            case Msg.CT_TOURNAMENTEVENT_REQ:
-                _log.LogDebug("CT 0x{Id:X4} recognized but deferred (DM/DB plane or event/tournament subsystem).", r.Id);
-                return true;
         }
         return false;
     }
@@ -118,6 +105,7 @@ public sealed partial class WorldService
             map.Send(w.ToArray());
         }
         _state.ChatBans[name] = banUntil;
+        RelayChatBan(name, banUntil); // relay visibility index (no-op without a relay peer)
         session.Send(BuildChatBanAck(true, banSeq, managerId));
     }
 
@@ -196,7 +184,7 @@ public sealed partial class WorldService
         var w = new PacketWriter(Msg.MW_HELPMESSAGE_REQ);
         w.WriteByte(id); w.WriteInt64(start); w.WriteInt64(end); w.WriteString(msg);
         BroadcastServers(w.ToArray());
-        // SendDM_HELPMESSAGE_REQ persistence rides the un-ported DM plane.
+        _ = PersistGame(() => _gameDb!.HelpMessageAsync(id, start, end, msg), "THelpMessage"); // C++ SendDM_HELPMESSAGE_REQ
     }
 
     /// <summary>Read the current RPS config. C++ OnCT_RPSGAMEDATA_REQ.</summary>
@@ -250,26 +238,6 @@ public sealed partial class WorldService
             w.WriteString(g.Title); w.WriteString(g.Msg);
         }
         ctrl.Send(w.ToArray());
-    }
-
-    /// <summary>GM tool sends a cash-mall gift to a named char. C++ OnCT_CMGIFT_REQ.</summary>
-    private void OnCT_CMGIFT_REQ(PacketReader r)
-    {
-        string target = r.ReadString();
-        ushort giftId = r.ReadUInt16();
-        uint managerId = r.ReadUInt32();
-
-        if (_state.CmGifts.TryGetValue(giftId, out var gift))
-        {
-            if (gift.TakeType != 0)
-            {
-                _log.LogDebug("CT_CMGIFT {GiftId} for '{Target}' needs a DB take-check; deferred (DM plane).", giftId, target);
-                return;
-            }
-            RouteCmGift((byte)CmGiftResult.Success, target, giftId, tool: 1, managerId);
-            return;
-        }
-        RouteCmGift((byte)CmGiftResult.Id, target, giftId, tool: 1, managerId);
     }
 
     /// <summary>Push (or clear, when value==0) a cash-item sale. The event is recorded in the catalog, every

@@ -116,6 +116,7 @@ public sealed partial class WorldService
             t.Selected = false;
         }
         t.Step = step;
+        _ = PersistGame(() => _gameDb!.TournamentStatusAsync(t.Id, group, step), "TTournamentStatus"); // C++ SendDM_TOURNAMENTSTATUS_REQ
 
         long nextStart = t.Steps.FirstOrDefault(s => s.Group == group && s.StepId == step + 1)?.Start ?? 0;
         var enable = BuildTournamentEnable(group, step, period, nextStart);
@@ -147,6 +148,7 @@ public sealed partial class WorldService
     private void TournamentClear()
     {
         var t = _state.Tournament!;
+        _ = PersistGame(() => _gameDb!.TournamentClearAsync(), "TTournamentClear"); // C++ SendDM_TOURNAMENTCLEAR_REQ
         t.Group = 0;
         t.Step = (byte)TnmtStep.Ready;
         t.Selected = false;
@@ -224,8 +226,15 @@ public sealed partial class WorldService
             TnmtSeedBracket(entry, first, normal);
         }
 
-        // unseeded leftovers are dropped from the active set (fee-back is a deferred DB step)
-        foreach (var p in pool.Values) t.Players.Remove(p.CharId);
+        // unseeded leftovers are dropped from the active set; C++ mails each their entry fee back
+        // (SendDM_TOURNAMENTPAYBACK_REQ) and unregisters them (SendDM_TOURNAMENTAPPLY_REQ(FALSE)).
+        foreach (var p in pool.Values)
+        {
+            t.Players.Remove(p.CharId);
+            uint feeBack = t.Entry(p.EntryId)?.FeeBack ?? 0;
+            if (feeBack != 0) _ = PersistGame(() => _gameDb!.TournamentPaybackAsync(p.CharId, feeBack), "TTournamentPayback");
+            _ = PersistGame(() => _gameDb!.TournamentApplyAsync(0, p.CharId, 0, 0, "", 0), "TTournamentApply(unseed)");
+        }
         foreach (var charId in t.Players.Keys.Where(id => t.Players[id].SlotId == Proto.TournamentSlot).ToList())
             t.Players.Remove(charId);
     }

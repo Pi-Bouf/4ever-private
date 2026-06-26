@@ -12,6 +12,19 @@ public sealed class TournamentStep
     public long End { get; set; }
 }
 
+/// <summary>A registered GM event-tournament schedule (C++ <c>TOURNAMENTSCHEDULE</c> + its
+/// <c>m_mapTournamentTime</c> battle-window). Each carries the Nth-weekday window the steps key off and the
+/// computed step list; the earliest-starting schedule becomes the running tournament (C++ TournamentUpdate).</summary>
+public sealed class EventTournamentSchedule
+{
+    public ushort Id { get; set; }
+    public bool Enable { get; set; }
+    public byte Week { get; set; }        // window: Nth occurrence
+    public byte Day { get; set; }         // window: MFC day-of-week (1=Sun..7=Sat)
+    public uint BattleStart { get; set; } // window: seconds-into-day offset
+    public List<TournamentStep> Steps { get; } = new();
+}
+
 /// <summary>A tournament reward row (C++ <c>TNMTREWARD</c>).</summary>
 public sealed class TournamentReward
 {

@@ -1,3 +1,4 @@
+using TWorld.Data;
 using TWorld.Protocol;
 using TWorld.Server.Net;
 
@@ -8,9 +9,10 @@ namespace TWorld.Server.World;
 /// <c>TWorldSvr.cpp</c> (SetCharLevel / GetWarCountry / GetWarCountryGap). Online level-130..179 characters
 /// are bucketed by war-country (their aid-country if any, else their country) and 10-level gap; a map can
 /// ask how many Defugel vs Craxion players share a character's gap so it can apply the under-dog war bonus.
-/// (The C++ also rebuilds these buckets from a periodic active-char DB refresh, <c>DM_ACTIVECHARUPDATE</c>;
-/// that cross-server aggregate refresh is a separate deferred DM flow — here the buckets track this world's
-/// online characters, which is exact for a single-server deployment.)
+/// The C++ also rebuilds these buckets from the active-char DB table (<c>DM_ACTIVECHARUPDATE</c>); that
+/// reconciliation is ported here as <see cref="RefreshActiveCharBucketsAsync"/> (run best-effort at startup),
+/// guarded so an empty/absent table never wipes the live buckets — which are exact for a single-server
+/// deployment.
 /// </summary>
 public sealed partial class WorldService
 {
@@ -64,6 +66,39 @@ public sealed partial class WorldService
         foreach (var byGap in _state.WarCountry)
             foreach (var bucket in byGap)
                 bucket.Remove(ch.CharId);
+    }
+
+    /// <summary>DM_ACTIVECHARUPDATE — rebuild the war-country buckets from the active-char DB table (the C++
+    /// periodic/cross-server reconciliation). Single-world the live buckets are already exact, and the
+    /// active-char table is not written by this deployment, so an empty result is treated as "no data" and the
+    /// live buckets are kept rather than wiped (the C++ rebuilds unconditionally). Run best-effort at startup.</summary>
+    public async Task RefreshActiveCharBucketsAsync()
+    {
+        if (_gameDb is null) return;
+        try { await _gameDb.ActiveCharDeleteOldAsync(DateTime.UtcNow.AddDays(-7)); }
+        catch (Exception ex) { _log.LogWarning(ex, "TACTIVECHARTABLE cleanup failed."); }
+
+        List<ActiveCharRow> rows;
+        try { rows = await _gameDb.LoadActiveCharsAsync(); }
+        catch (Exception ex) { _log.LogWarning(ex, "Active-char load failed; keeping live nation buckets."); return; }
+
+        if (rows.Count == 0) { _log.LogInformation("No active-char rows; nation buckets kept live."); return; }
+
+        foreach (var byGap in _state.WarCountry)
+            foreach (var bucket in byGap) bucket.Clear();
+
+        int n = 0;
+        foreach (var row in rows)
+        {
+            // C++ DM logic: country if < Broa, else the aid-country (None when there's no aid row).
+            byte warCountry = row.Country < (byte)Contry.Broa ? row.Country : (row.AidCountry ?? (byte)Contry.None);
+            if (warCountry >= (byte)Contry.Broa) continue;
+            byte gap = GetWarCountryGap(row.Level);
+            if (gap >= Proto.WarCountryMaxGap) continue;
+            _state.WarCountry[warCountry][gap].Add(row.CharId);
+            n++;
+        }
+        _log.LogInformation("Nation buckets rebuilt from active-char table: {N} chars.", n);
     }
 
     /// <summary>A char asks for the nation balance in its level-gap: reply with the online Defugel/Craxion

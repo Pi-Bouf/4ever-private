@@ -42,4 +42,17 @@ public sealed class GlobalDatabase
         }
         return nation.AsByte();
     }
+
+    /// <summary>Releases the login lock (deletes the TCURRENTUSER row) for a user who has left the game,
+    /// so a return-to-character-select reconnect isn't rejected by TLogin as a duplicate login. The C++
+    /// TLogout did this on session end; the .NET port previously only cleared TCURRENTUSER on shutdown,
+    /// so every reconnect hit the duplicate check. Char-stat persistence is left to the map server, so we
+    /// delete the lock row directly rather than calling TLogout (which would also rewrite level/exp).</summary>
+    public async Task ReleaseCurrentUserAsync(uint userId, CancellationToken ct = default)
+    {
+        await using var c = await OpenAsync(ct);
+        await using var cmd = new SqlCommand("DELETE FROM TCURRENTUSER WHERE dwUserID = @id", c);
+        cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int) { Value = unchecked((int)userId) });
+        await cmd.ExecuteNonQueryAsync(ct);
+    }
 }

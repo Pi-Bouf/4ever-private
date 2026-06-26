@@ -8,8 +8,9 @@ namespace TWorld.Server.World;
 /// <c>OnMW_TOURNAMENTRESULT_ACK</c>/<c>OnMW_TOURNAMENTENTERGATE_ACK</c> + the <c>TournamentEvent*</c>
 /// (betting) functions + <c>TNMTEnterGate</c>/<c>JoinBatting</c>/<c>GetBattingAmount</c> in
 /// <c>TWorldSvr.cpp</c>. A reported match outcome marks the round result for the winner/loser (and their
-/// party), is fanned out to every map, and on the final pays each backer of the champion. The reward
-/// fee-back/payback DB posts remain a documented best-effort gap.
+/// party), is fanned out to every map, and on the final pays each backer of the champion. The result is
+/// persisted via TTournamentResult (and the unseeded fee-back/unapply via TTournamentPayback/TTournamentApply
+/// in the bracket build), best-effort.
 /// </summary>
 public sealed partial class WorldService
 {
@@ -55,6 +56,7 @@ public sealed partial class WorldService
 
         if (step != (byte)TnmtStep.QFinal && step != (byte)TnmtStep.SFinal && step != (byte)TnmtStep.Final) return;
         int bid = step == (byte)TnmtStep.Final ? 2 : step == (byte)TnmtStep.SFinal ? 1 : 0;
+        _ = PersistGame(() => _gameDb!.TournamentResultAsync(step, ret, win, lose), "TTournamentResult"); // C++ SendDM_TOURNAMENTRESULT_REQ
 
         var pWin = FindTnmtPlayer(win);
         var pLose = FindTnmtPlayer(lose);

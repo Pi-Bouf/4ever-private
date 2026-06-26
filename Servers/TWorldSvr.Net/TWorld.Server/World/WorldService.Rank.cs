@@ -148,6 +148,14 @@ public sealed partial class WorldService
         if (_state.RankMonth != 0 && curMonth != _state.RankMonth && !_state.FameRankSave)
             await MonthRankSaveAsync();
 
+        // Guild auto-extinction: disband guilds whose 7-day disband grace has elapsed (C++ CheckTGuildExtinction).
+        await CheckGuildExtinctionAsync();
+
+        // Event subsystem ticks: lucky-event quarter schedule + timed-expiry queue (C++ CheckEventQuarter /
+        // CheckEventExpired).
+        CheckEventQuarter();
+        CheckEventExpired();
+
         // Phase 4: drive the BoW + BR phase machines and the battle-time machine off the same 1-second tick.
         uint nowSec = (uint)DateTime.UtcNow.TimeOfDay.TotalSeconds;
         if (_state.Bow is not null) await BowOnTimerAsync(nowSec);

@@ -177,6 +177,7 @@ public sealed partial class WorldService
         };
         GetRanking(ch.CharId, out var rk, out var mrk); player.Rank = rk; player.MonthRank = mrk;
         AddTnmtPlayer(entry, player, step, player);
+        _ = PersistGame(() => _gameDb!.TournamentApplyAsync(1, ch.CharId, entryId, ch.CharId, hwid, ip), "TTournamentApply(apply)");
 
         var w = new PacketWriter(Msg.MW_TOURNAMENT_REQ);
         w.WriteUInt32(ch.CharId); w.WriteUInt32(ch.Key); w.WriteUInt16(Msg.MW_TOURNAMENTAPPLY_REQ);
@@ -270,6 +271,7 @@ public sealed partial class WorldService
         if (_state.CharGuild.TryGetValue(targetId, out var gid) && _state.FindGuild(gid) is { } g) tgt.GuildName = g.Name;
         GetRanking(targetId, out var rk, out var mrk); tgt.Rank = rk; tgt.MonthRank = mrk;
         AddTnmtPlayer(entry, tgt, (byte)TnmtStep.Party, chief);
+        _ = PersistGame(() => _gameDb!.TournamentApplyAsync(1, targetId, entry.EntryId, ch.CharId, "", 0), "TTournamentApply(partyadd)");
 
         var w = new PacketWriter(Msg.MW_TOURNAMENT_REQ);
         w.WriteUInt32(ch.CharId); w.WriteUInt32(ch.Key); w.WriteUInt16(Msg.MW_TOURNAMENTPARTYADD_REQ);
@@ -288,6 +290,7 @@ public sealed partial class WorldService
 
         uint chief = player.ChiefId;
         DelTnmtPlayer(_state.Tournament!.Entry(player.EntryId), player);
+        _ = PersistGame(() => _gameDb!.TournamentApplyAsync(0, targetId, 0, 0, "", 0), "TTournamentApply(partydel)");
         TournamentPartyList(session, ch, chief);
     }
 

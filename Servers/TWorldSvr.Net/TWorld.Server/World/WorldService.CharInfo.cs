@@ -105,7 +105,7 @@ public sealed partial class WorldService
                 if (!string.IsNullOrEmpty(name)) _state.CharactersByName[name] = ch;
                 if (ch.Guild?.FindMember(charId) is { } gm) gm.Name = name;
                 if (_state.FindTacticsGuild(charId)?.FindTactics(charId) is { } tm) tm.Name = name;
-                // Relay RW_CHANGENAME is skipped — the relay plane isn't ported (cross-map rename visibility).
+                RelayChangeName(charId, type, value, name); // relay visibility index (no-op without a relay peer)
                 break;
             case IkTitle: ch.TitleId = titleId; break;
             default: break;
@@ -186,6 +186,8 @@ public sealed partial class WorldService
         {
             ch.AidCountry = value;
         }
+
+        RelayChangeName(ch.CharId, type, value, ""); // relay visibility index — C++ forwards country change as NAME_NULL
 
         byte[] req = BuildChangeCharBaseReq(ch.CharId, ch.Key, type, value, ch.TitleId, "");
         foreach (var sid in ch.Connections.Keys.ToList())

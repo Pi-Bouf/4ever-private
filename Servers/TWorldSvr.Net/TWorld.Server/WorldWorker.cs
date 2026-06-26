@@ -39,13 +39,14 @@ public sealed class WorldWorker : BackgroundService
         // Phase 1 DB use is limited to the server nation + a connectivity check; the world coordinates
         // in-memory and does not require the DB to accept peers.
         byte nation = _opt.Nation ?? 0;
+        GlobalDatabase? globalDb = null;
         if (!string.IsNullOrWhiteSpace(_opt.Db.GlobalConnectionString))
         {
             try
             {
-                var global = new GlobalDatabase(_opt.Db.GlobalConnectionString);
-                await global.PingAsync(stoppingToken);
-                if (_opt.Nation is null) nation = await global.GetNationAsync(stoppingToken);
+                globalDb = new GlobalDatabase(_opt.Db.GlobalConnectionString);
+                await globalDb.PingAsync(stoppingToken);
+                if (_opt.Nation is null) nation = await globalDb.GetNationAsync(stoppingToken);
             }
             catch (Exception ex)
             {
@@ -67,6 +68,7 @@ public sealed class WorldWorker : BackgroundService
                 state.GenRecallId = await gameDb.GetRecallIdAsync(stoppingToken);
                 await LoadServerMessagesAsync(gameDb, state, stoppingToken);
                 await LoadRpsAsync(gameDb, state, stoppingToken);
+                await LoadCmGiftsAsync(gameDb, state, stoppingToken);
             }
             catch (Exception ex) { _log.LogWarning(ex, "Game DB unavailable at startup."); }
 
@@ -93,7 +95,14 @@ public sealed class WorldWorker : BackgroundService
         if (state.RankMonth == 0) state.RankMonth = (byte)DateTime.UtcNow.Month;
         state.Nation = nation;
 
-        var service = new WorldService(state, guildDb, _loggerFactory.CreateLogger<WorldService>(), socialDb, rankDb, bowDb, brDb, gameDb);
+        var service = new WorldService(state, guildDb, _loggerFactory.CreateLogger<WorldService>(), socialDb, rankDb, bowDb, brDb, gameDb, globalDb);
+        // DM_ACTIVECHARUPDATE: seed nation-balance buckets from the active-char table (best-effort; no-op when
+        // the table is empty/absent so the live buckets are never wiped).
+        if (gameDb is not null)
+        {
+            try { await service.RefreshActiveCharBucketsAsync(); }
+            catch (Exception ex) { _log.LogWarning(ex, "Active-char nation refresh failed."); }
+        }
         _log.LogInformation("World group={Grp} server={Sid} nation={Nation} guilds={G} guildLevels={L} rankMonth={RM} bow={Bow} br={Br} battles={Bt} tnmt={Tn} recallId={Rid}",
             _opt.GroupId, _opt.ServerId, nation, state.Guilds.Count, state.GuildLevels.Count, state.RankMonth, state.Bow is not null, state.Br is not null, state.Battles is not null, state.Tournament is not null, state.GenRecallId);
 
@@ -352,6 +361,21 @@ public sealed class WorldWorker : BackgroundService
             if (state.RpsGames.TryGetValue((ushort)(rec.Type | (rec.WinCount << 8)), out var rps))
                 rps.WinDates.Add(rec.WinDate);
         _log.LogInformation("RPS chart loaded: {Count} entries.", state.RpsGames.Count);
+    }
+
+    /// <summary>Load the cash-mall gift catalog (CTBLCMGiftChart → m_mapCMGift) and seed the fallback id seq.</summary>
+    private async Task LoadCmGiftsAsync(GameDatabase db, WorldState state, CancellationToken ct)
+    {
+        foreach (var g in await db.LoadCmGiftChartAsync(ct))
+        {
+            state.CmGifts[g.GiftId] = new CmGift
+            {
+                GiftId = g.GiftId, GiftType = g.GiftType, Value = g.Value, Count = g.Count, TakeType = g.TakeType,
+                MaxTakeCount = g.MaxTakeCount, ToolOnly = g.ToolOnly, ErrGiftId = g.ErrGiftId, Title = g.Title, Msg = g.Msg,
+            };
+            if (g.GiftId > state.CmGiftSeq) state.CmGiftSeq = g.GiftId;
+        }
+        _log.LogInformation("Cash-mall gift catalog loaded: {Count} gifts.", state.CmGifts.Count);
     }
 
     private async Task LoadBowAsync(BowDatabase db, WorldState state, CancellationToken ct)

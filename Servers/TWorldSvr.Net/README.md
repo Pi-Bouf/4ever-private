@@ -310,4 +310,11 @@ state; Phase 1 emits the faithful field order with zeros for the deferred subsys
   battle-time machine + the **full tournament** (config/announce, registration & parties, scheduler
   date-math, rank-seeded bracket build, match results, and betting). The only tournament remainder is the
   event sub-tournament admin commands, which ride the not-yet-implemented `CT_*` control plane.
-- **P5** Remaining `CT_*`/`RW_*` admin + the long tail of `MW_*` handlers.
+- **P5 (done — full handler surface)** The remaining `CT_*` admin (item find/state, cash-mall gift catalog +
+  take-check, the event/lottery/quarter subsystem, the **complete** GM tournament-event admin incl. the
+  per-event schedule machinery + the PLAYERADD char-info lookup), the `RW_*` relay plane (registration +
+  inbound char query + all forwarders), `DM_ACTIVECHARUPDATE` (active-char nation rebuild), and
+  `SM_GUILDDISORGANIZATION` + the guild auto-extinction timer. Every `TWorldSvr` handler is now ported, and the
+  DM-thread DB persistence the C++ does (tournament apply/clear/status/result/payback, cash-item sale,
+  tournament-event schedule/entry/reward, help message — 17 procs, all verified present in `TGame_gsp`) is
+  wired. What remains is only peer-gated behaviors (relay / second world). See `PORT_STATUS.md`.

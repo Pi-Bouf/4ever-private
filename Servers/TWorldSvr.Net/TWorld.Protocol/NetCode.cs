@@ -8,6 +8,13 @@ public static class Msg
 {
     // Plane bases (ProtocolBase.h)
     public const ushort SM_BASE = 0x1581; // system / batch / timer
+    public const ushort SM_GUILDDISORGANIZATION_REQ = SM_BASE + 0x000C; // cross-instance guild-disband-timer sync
+    public const ushort SM_EVENTQUARTER_REQ = SM_BASE + 0x0017;        // timed lucky-event draw -> fan to maps
+    public const ushort SM_EVENTQUARTERNOTIFY_REQ = SM_BASE + 0x0018;  // lucky-event pre-announce -> world chat
+    public const ushort SM_EVENTEXPIRED_REQ = SM_BASE + 0x0023;        // insert/remove a timed-expiry entry
+    public const ushort SM_EVENTEXPIRED_ACK = SM_BASE + 0x0024;        // an expiry fired -> delete the target
+    public const ushort SM_TOURNAMENTEVENT_REQ = SM_BASE + 0x0028;     // GM tournament-event admin (timer leg)
+    public const ushort SM_TOURNAMENTEVENT_ACK = SM_BASE + 0x0029;     // GM tournament-event admin (batch leg)
     public const ushort MW_BASE = 0x9001; // map ↔ world (the main inter-server plane)
     public const ushort DM_BASE = 0x5891; // world ↔ db (async)
     public const ushort CT_CONTROL = 0x9301; // control server ↔ world
@@ -140,13 +147,31 @@ public static class Msg
     public const ushort MW_INVALIDCHAR_REQ = MW_BASE + 0x0009; // world -> map: reject (charId,key,bReleaseMain)
     public const ushort MW_CLOSECHAR_ACK = MW_BASE + 0x000C;   // map -> world: char logout/leave
     public const ushort MW_DELCHAR_REQ = MW_BASE + 0x000D;     // world -> map: drop char (charId,key,bLogout,bSave)
+    public const ushort MW_CHAT_REQ = MW_BASE + 0x003D;        // world -> map: a chat line (e.g. world announce)
     public const ushort MW_CHAT_ACK = MW_BASE + 0x003E;        // chat relay
     public const ushort MW_CHECKCONNECT_ACK = MW_BASE + 0x00C9; // keepalive
 
     // --- CT / RW: peer registration ---
     public const ushort CT_CTRLSVR_REQ = CT_CONTROL + 0x0058;  // control server announces itself (CTProtocol.h; +0x0001 is CT_OPLOGIN)
     public const ushort RW_RELAYSVR_REQ = RW_RELAY + 0x0001;   // relay server announces itself
-    public const ushort RW_RELAYSVR_ACK = RW_RELAY + 0x0002;
+    public const ushort RW_RELAYSVR_ACK = RW_RELAY + 0x0002;   // world -> relay: nation + operators + svr-msgs
+    // RW relay forwarding (world -> relay): cross-map-instance visibility broadcasts (CTProtocol.h).
+    public const ushort RW_ENTERCHAR_REQ = RW_RELAY + 0x0003;  // relay -> world: is this char online?
+    public const ushort RW_ENTERCHAR_ACK = RW_RELAY + 0x0004;  // world -> relay: char online + full state
+    public const ushort RW_PARTYADD_ACK = RW_RELAY + 0x0005;
+    public const ushort RW_PARTYDEL_ACK = RW_RELAY + 0x0006;
+    public const ushort RW_PARTYCHGCHIEF_ACK = RW_RELAY + 0x0007;
+    public const ushort RW_GUILDADD_ACK = RW_RELAY + 0x0008;
+    public const ushort RW_GUILDDEL_ACK = RW_RELAY + 0x0009;
+    public const ushort RW_GUILDCHGMASTER_ACK = RW_RELAY + 0x000A;
+    public const ushort RW_CORPSJOIN_ACK = RW_RELAY + 0x000B;
+    public const ushort RW_RELAYCONNECT_REQ = RW_RELAY + 0x000C; // relay -> world: open a char's relay connection
+    public const ushort RW_CHANGENAME_ACK = RW_RELAY + 0x000D;
+    public const ushort RW_TACTICSADD_ACK = RW_RELAY + 0x000E;
+    public const ushort RW_TACTICSDEL_ACK = RW_RELAY + 0x000F;
+    public const ushort RW_CHATBAN_ACK = RW_RELAY + 0x0010;
+    public const ushort RW_CHANGEMAP_ACK = RW_RELAY + 0x0011;
+    public const ushort MW_RELAYCONNECT_REQ = MW_BASE + 0x011D; // world -> map: (re)connect to the relay
 
     // --- MW guild (Phase 2). Convention: map sends *_ACK to world; world replies *_REQ to maps. ---
     public const ushort MW_GUILDESTABLISH_REQ = MW_BASE + 0x002A;
@@ -450,13 +475,16 @@ public static class Msg
     public const ushort CT_CMGIFTLIST_ACK = CT_CONTROL + 0x0080;     // world -> control: gift catalog
     public const ushort CT_CASHITEMSALE_REQ = CT_CONTROL + 0x0069;   // control -> world: push/clear a cash-item sale
 
-    // --- CT handlers recognized but deferred (need the DM/DB-job plane or the event/tournament subsystems) ---
-    public const ushort CT_ITEMFIND_REQ = CT_CONTROL + 0x0050;       // DM: find who holds an item
-    public const ushort CT_ITEMSTATE_REQ = CT_CONTROL + 0x0052;      // DM: set item states
+    // --- CT item-admin (control -> world -> game DB; inline-DB port) ---
+    public const ushort CT_ITEMFIND_REQ = CT_CONTROL + 0x0050;       // find item-chart rows by name/id
+    public const ushort CT_ITEMFIND_ACK = CT_CONTROL + 0x0051;       // world -> control: matching rows
+    public const ushort CT_ITEMSTATE_REQ = CT_CONTROL + 0x0052;      // set item init-states
+    public const ushort CT_ITEMSTATE_ACK = CT_CONTROL + 0x0053;      // world -> control: applied states
     public const ushort CT_EVENTUPDATE_REQ = CT_CONTROL + 0x005F;    // event/lottery/gift subsystem
     public const ushort CT_EVENTQUARTERUPDATE_REQ = CT_CONTROL + 0x006D; // DM: event-quarter config
     public const ushort CT_EVENTQUARTERLIST_REQ = CT_CONTROL + 0x006F;   // DM: event-quarter list
-    public const ushort CT_TOURNAMENTEVENT_REQ = CT_CONTROL + 0x0071;    // tournament-event admin/DB
+    public const ushort CT_TOURNAMENTEVENT_REQ = CT_CONTROL + 0x0071;    // tournament-event admin (TET_* commands)
+    public const ushort CT_TOURNAMENTEVENT_ACK = CT_CONTROL + 0x0072;    // world -> control: tournament-event result
     public const ushort CT_CMGIFTCHARTUPDATE_REQ = CT_CONTROL + 0x0081;  // DM: gift-catalog add/update/del (DB-assigned ids)
 
     // --- MW relay targets used by the CT handlers (world -> map) ---
@@ -467,6 +495,42 @@ public static class Msg
     public const ushort MW_EVENTMSG_REQ = MW_BASE + 0x0131;          // world -> all maps: event message
     public const ushort MW_CASHSHOPSTOP_REQ = MW_BASE + 0x0132;      // world -> all maps: stop/resume cash shop
     public const ushort MW_HELPMESSAGE_REQ = MW_BASE + 0x0164;       // world -> all maps: scheduled help message
+    public const ushort MW_ITEMSTATE_REQ = MW_BASE + 0x011F;         // world -> all maps: item init-states changed (GM)
+
+    // --- Event subsystem (world -> maps) ---
+    public const ushort MW_EVENTUPDATE_REQ = MW_BASE + 0x012F;       // world -> all maps: an event's config/state
+    public const ushort MW_EVENTQUARTER_REQ = MW_BASE + 0x0100;      // world -> all maps: a lucky-event quarter draw
+    public const ushort MW_EVENTMSGLOTTERY_REQ = MW_BASE + 0x0168;   // world -> all maps: lottery winners announce
+    public const ushort MW_WORLDPOSTSEND_REQ = MW_BASE + 0x013B;     // world -> a map: deliver a system post/mail
+    public const ushort CT_EVENTQUARTERLIST_ACK = CT_CONTROL + 0x0070; // world -> control: lucky-event list
+    public const ushort CT_EVENTQUARTERUPDATE_ACK = CT_CONTROL + 0x006E; // world -> control: lucky-event edit result
+}
+
+/// <summary>enum EVENT_TYPE (NetCode.h) — only the ids the world branches on.</summary>
+public enum EventType : byte
+{
+    Lottery = 14,  // EVENT_LOTTERY — item raffle to online chars
+    GiftTime = 15, // EVENT_GIFTTIME — timed handout to a level range
+    Count = 16,    // EVENT_COUNT
+}
+
+/// <summary>enum (TWorldType.h) — a lucky-event chart edit op (CT_EVENTQUARTERUPDATE).</summary>
+public enum EventQuarterEdit : byte { Del = 0, Add = 1, Update = 2 } // EK_DEL/EK_ADD/EK_UPDATE
+
+/// <summary>enum EXPIRED_TYPE (TWorldType.h) — what a timed-expiry entry deletes when it fires.</summary>
+public enum ExpiredType : byte { GuildWanted = 1, GuildTacticsWanted = 2, GuildTactics = 3 } // EXPIRED_GMW/GTW/GT
+
+/// <summary>enum TOURNAMENT_EVENT_TYPE (NetCode.h) — the GM tournament-event admin sub-commands.</summary>
+public enum TournamentEventCmd : byte
+{
+    None = 0, List = 1, ScheduleAdd = 2, ScheduleDel = 3,
+    EntryAdd = 4, EntryDel = 5, PlayerAdd = 6, PlayerDel = 7, PlayerEnd = 8,
+}
+
+/// <summary>enum TOURNAMENT_STEP (NetCode.h) — the running tournament's step (subset used by the admin).</summary>
+public enum TournamentStepId : byte
+{
+    Ready = 0, First = 1, Normal = 2, Party = 3, Match = 4, Enter = 5,
 }
 
 /// <summary>System-message ids into TSVRMSGCHART (CTProtocol.h SVRMSG enum; the chart starts at 1).
@@ -512,6 +576,15 @@ public enum MeetingResult : byte
     NoTarget,    // MTR_NOTARGET
     NotChief,    // MTR_NOTCHIEF
     InRoom,      // MTR_INROOM
+}
+
+/// <summary>enum CMGIFTUPDATE_TYPE (NetCode.h): a gift-catalog edit op (CT_CMGIFTCHARTUPDATE).</summary>
+public enum CmGiftUpdate : byte
+{
+    None = 0,   // CGU_NONE
+    Del = 1,    // CGU_DEL
+    Add = 2,    // CGU_ADD
+    Update = 3, // CGU_UPDATE
 }
 
 /// <summary>enum CMGIFT_RESULT (NetCode.h): cash-mall gift outcome.</summary>

@@ -88,6 +88,18 @@ public sealed class WorldState
     // --- Phase 4d: tournament config + announce state (null until config loads at startup). ---
     public TournamentState? Tournament { get; set; }
 
+    /// <summary>GM event-tournament config (m_mapTournament): tournament-event id → its entries by entryId.
+    /// Fed by the control server's CT_TOURNAMENTEVENT TET_ENTRYADD.</summary>
+    public Dictionary<ushort, Dictionary<byte, TournamentEntry>> EventTournaments { get; } = new();
+
+    /// <summary>GM event-tournament schedules (m_mapTournamentSchedule + m_mapTournamentTime): id → schedule.
+    /// The earliest-starting becomes the running tournament.</summary>
+    public Dictionary<ushort, EventTournamentSchedule> EventSchedules { get; } = new();
+
+    /// <summary>Allocator for event-tournament schedule ids (m_wTournamentID); GM event ids start above the
+    /// reserved base id 1.</summary>
+    public ushort EventTournamentIdSeq { get; set; } = 1;
+
     // --- Final MW slice: minigame / cash-mall / summon state. ---
     /// <summary>RPS chart keyed by MAKEWORD(type, winCount) (m_mapRPSGame). Seeded from TRPSGAMECHART at startup.</summary>
     public Dictionary<ushort, RpsGame> RpsGames { get; } = new();
@@ -98,8 +110,13 @@ public sealed class WorldState
     /// <summary>System-message text for an id, or "" if absent. CTWorldSvrModule::GetSvrMsg.</summary>
     public string GetSvrMsg(uint id) => ServerMessages.TryGetValue(id, out var s) ? s : "";
 
-    /// <summary>Cash-mall gift catalog keyed by gift id (m_mapCMGift). Fed by the un-ported CT plane, so empty.</summary>
+    /// <summary>Cash-mall gift catalog keyed by gift id (m_mapCMGift). Fed by the control server via
+    /// CT_CMGIFTCHARTUPDATE; loaded from TCMGIFTCHART at startup.</summary>
     public Dictionary<ushort, CmGift> CmGifts { get; } = new();
+
+    /// <summary>Fallback gift-id allocator used only when no DB is configured (tests); live, the DB assigns
+    /// ids via CSPCMGiftAdd.</summary>
+    public ushort CmGiftSeq { get; set; }
 
     /// <summary>Active cash-item sale events keyed by index (m_mapTCashItemSale), pushed by CT_CASHITEMSALE.</summary>
     public Dictionary<uint, CashItemSaleEvent> CashItemSales { get; } = new();
@@ -109,6 +126,14 @@ public sealed class WorldState
 
     /// <summary>The next recall-monster id (++m_dwGenRecallID). CTWorldSvrModule::GenRecallID.</summary>
     public uint NextRecallId() => ++GenRecallId;
+
+    // --- Event subsystem (m_mapEVENT / m_mapEVQT / m_vExpired). Fed by the control server (CT_EVENT*). ---
+    /// <summary>Active server events keyed by index (m_mapEVENT).</summary>
+    public Dictionary<uint, EventInfo> EventInfos { get; } = new();
+    /// <summary>Scheduled lucky-event quarters keyed by id (m_mapEVQT); each carries its next-fire time.</summary>
+    public Dictionary<ushort, EventQuarter> EventQuarters { get; } = new();
+    /// <summary>Timed-expiry queue, kept sorted ascending by fire time (m_vExpired).</summary>
+    public List<ExpiredBuf> Expired { get; } = new();
 
     /// <summary>Active chat bans (name → ban-until unix seconds), set by the control server's CT_CHATBAN.
     /// Mirrors AddChatBan; consulted when re-applying a ban on a banned char's re-entry (hook-up deferred).</summary>

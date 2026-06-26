@@ -20,12 +20,13 @@ public sealed partial class WorldService
     private readonly BowDatabase? _bowDb;
     private readonly BrDatabase? _brDb;
     private readonly GameDatabase? _gameDb;
+    private readonly GlobalDatabase? _globalDb;
     private readonly ILogger<WorldService> _log;
     private uint _fakeGuildSeq; // used only when no DB is configured (tests)
 
     public WorldService(WorldState state, GuildDatabase? guildDb, ILogger<WorldService> log,
         SocialDatabase? socialDb = null, RankDatabase? rankDb = null, BowDatabase? bowDb = null,
-        BrDatabase? brDb = null, GameDatabase? gameDb = null)
+        BrDatabase? brDb = null, GameDatabase? gameDb = null, GlobalDatabase? globalDb = null)
     {
         _state = state;
         _guildDb = guildDb;
@@ -34,6 +35,7 @@ public sealed partial class WorldService
         _bowDb = bowDb;
         _brDb = brDb;
         _gameDb = gameDb;
+        _globalDb = globalDb;
         _log = log;
     }
 
@@ -96,8 +98,13 @@ public sealed partial class WorldService
                     if (DispatchTms(session, r)) break;
                     if (DispatchMisc(session, r)) break;
                     if (DispatchMinigame(session, r)) break;
-                    if (DispatchMall(session, r)) break;
+                    if (await DispatchMallAsync(session, r)) break;
                     if (DispatchControl(session, r, packet)) break;
+                    if (await DispatchControlDbAsync(session, r, packet)) break;
+                    if (DispatchRelay(session, r)) break;
+                    if (DispatchSm(session, r)) break;
+                    if (DispatchEvent(session, r)) break;
+                    if (await DispatchTournamentEventAsync(session, r)) break;
                     if (DispatchNation(session, r)) break;
                     if (await DispatchCastleAsync(session, r, packet)) break;
                     if (await DispatchGuild2bAsync(session, r, packet)) break;
@@ -464,6 +471,8 @@ public sealed partial class WorldService
         session.WId = r.ReadUInt16();
         _state.RelayServer = session;
         _log.LogInformation("Relay server registered (id {Id}).", session.WId);
+        // Reply with nation + operators + server messages, then tell every map to connect to the relay.
+        SendRelaySvrAck();
     }
 
     // ===== Phase 2: guild handlers =====
@@ -516,6 +525,7 @@ public sealed partial class WorldService
         ch.Guild = guild;
 
         SendToChar(ch, BuildGuildEstablishReq(charId, key, (byte)GuildResult.Success, guildId, name));
+        RelayGuildAdd(charId, guildId, charId); // forward to the relay visibility index (no-op without a relay peer)
         _log.LogInformation("Guild '{Name}' (id {Id}) established by char {Char}.", name, guildId, charId);
     }
 
@@ -638,6 +648,7 @@ public sealed partial class WorldService
             }
             guild.Chief = mem.CharId;
             guild.ChiefName = mem.Name;
+            RelayGuildChgMaster(guild.Id, mem.CharId); // relay visibility index
         }
         mem.Duty = duty;
         if (_guildDb is not null) { try { await _guildDb.DutyAsync(mem.CharId, guild.Id, duty); } catch (Exception ex) { _log.LogWarning(ex, "TGuildDuty failed."); } }
@@ -722,9 +733,11 @@ public sealed partial class WorldService
             _state.Parties[party.Id] = party;
             party.AddMember(org);
             SendPartyJoinReq(party, org);   // seed origin into its own new party
+            RelayPartyAdd(org.CharId, party.Id, party.ChiefId); // relay visibility index
         }
         party.AddMember(tgt);
         SendPartyJoinReq(party, tgt);
+        RelayPartyAdd(tgt.CharId, party.Id, party.ChiefId); // relay visibility index
         _log.LogInformation("Char {T} joined party {P} (chief {C}).", tgt.CharId, party.Id, party.ChiefId);
     }
 
@@ -751,6 +764,7 @@ public sealed partial class WorldService
         byte[] del = BuildPartyDelReq(charId, leaving.Key, charId, party.ChiefId, party.CorpsId, party.Id, kick);
         foreach (var m in party.Members) SendToChar(m, del);
         SendToChar(leaving, del);
+        RelayPartyDel(charId, party.Id, party.ChiefId); // relay visibility index
 
         if (party.Size <= 1)
         {
@@ -775,6 +789,7 @@ public sealed partial class WorldService
         }
         party.ChiefId = targetId;
         foreach (var m in party.Members) SendToChar(m, BuildChgPartyChiefReq(chiefId, key, (byte)GuildResult.Success));
+        RelayPartyChgChief(party.Id, party.ChiefId); // relay visibility index
     }
 
     private void OnChgPartyType(PacketReader r)
@@ -843,6 +858,16 @@ public sealed partial class WorldService
         _state.Characters.Remove(ch.CharId);
         if (!string.IsNullOrEmpty(ch.Name)) _state.CharactersByName.Remove(ch.Name);
         _log.LogInformation("Char {Char} closed.", ch.CharId);
+
+        // Release the account's login lock so a return-to-character-select reconnect isn't rejected as a
+        // duplicate login (TLogin's TCURRENTUSER check). The C++ TLogout did this; the .NET port omitted it.
+        if (_globalDb is not null) _ = ReleaseLoginLockAsync(ch.UserId);
+    }
+
+    private async Task ReleaseLoginLockAsync(uint userId)
+    {
+        try { await _globalDb!.ReleaseCurrentUserAsync(userId); }
+        catch (Exception ex) { _log.LogWarning(ex, "Release login lock (TCURRENTUSER) failed for user {User}.", userId); }
     }
 
     private ServerSession? MapOf(Character ch) => _state.FindMapSvr(ch.MainId);

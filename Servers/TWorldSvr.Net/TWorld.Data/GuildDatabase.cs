@@ -194,6 +194,16 @@ FROM TGUILDMEMBER";
             SqlProc.In("@dwGuildID", SqlDbType.Int, unchecked((int)guildId)),
             SqlProc.In("@dwCharID", SqlDbType.Int, unchecked((int)charId)));
 
+    /// <summary>TGuildDelete — fully delete a guild (CSPGuildDelete); returns the proc result (0 = success).
+    /// Used by the guild auto-extinction timer after the disband grace period.</summary>
+    public async Task<int> DeleteAsync(uint guildId, CancellationToken ct = default)
+    {
+        await using var c = await OpenAsync(ct);
+        var ret = SqlProc.Ret();
+        await SqlProc.ExecAsync(c, "TGuildDelete", ret, new[] { SqlProc.In("@dwGuildID", SqlDbType.Int, unchecked((int)guildId)) }, ct);
+        return ret.AsInt();
+    }
+
     // ----- Phase 2b persistence procs (param orders verbatim from DBAccess.h) -----
 
     private static DateTime FromUnix(long s) => s <= 0 ? new DateTime(1900, 1, 1) : DateTimeOffset.FromUnixTimeSeconds(s).UtcDateTime;
