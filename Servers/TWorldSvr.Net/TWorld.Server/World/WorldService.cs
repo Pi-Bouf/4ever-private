@@ -67,7 +67,6 @@ public sealed partial class WorldService
                 case Msg.MW_CHECKCONNECT_ACK: OnMW_CHECKCONNECT_ACK(session, packet); break;
                 case Msg.MW_CHAT_ACK: OnMW_CHAT_ACK(session, packet); break;
                 case Msg.CT_CTRLSVR_REQ: _state.ControlServer = session; _log.LogInformation("Control server registered."); break;
-                case Msg.RW_RELAYSVR_REQ: OnRW_RELAYSVR_REQ(session, r); break;
 
                 // --- Phase 2: guild ---
                 case Msg.MW_GUILDESTABLISH_ACK: await OnGuildEstablish(r); break;
@@ -101,7 +100,6 @@ public sealed partial class WorldService
                     if (await DispatchMallAsync(session, r)) break;
                     if (DispatchControl(session, r, packet)) break;
                     if (await DispatchControlDbAsync(session, r, packet)) break;
-                    if (DispatchRelay(session, r)) break;
                     if (DispatchSm(session, r)) break;
                     if (DispatchEvent(session, r)) break;
                     if (await DispatchTournamentEventAsync(session, r)) break;
@@ -129,7 +127,6 @@ public sealed partial class WorldService
     {
         if (conn.State is not ServerSession session) return;
         if (_state.ControlServer == session) _state.ControlServer = null;
-        if (_state.RelayServer == session) _state.RelayServer = null;
         if (_state.Bow?.BowServer == session) _state.Bow.BowServer = null;
         if (_state.Br?.BrServer == session) _state.Br.BrServer = null;
         if (session.WId != 0 && _state.Servers.TryGetValue(session.WId, out var s) && s == session)
@@ -466,15 +463,6 @@ public sealed partial class WorldService
         foreach (var s in _state.Servers.Values) s.Conn.Send(packet);
     }
 
-    private void OnRW_RELAYSVR_REQ(ServerSession session, PacketReader r)
-    {
-        session.WId = r.ReadUInt16();
-        _state.RelayServer = session;
-        _log.LogInformation("Relay server registered (id {Id}).", session.WId);
-        // Reply with nation + operators + server messages, then tell every map to connect to the relay.
-        SendRelaySvrAck();
-    }
-
     // ===== Phase 2: guild handlers =====
 
     private async Task OnGuildEstablish(PacketReader r)
@@ -525,7 +513,6 @@ public sealed partial class WorldService
         ch.Guild = guild;
 
         SendToChar(ch, BuildGuildEstablishReq(charId, key, (byte)GuildResult.Success, guildId, name));
-        RelayGuildAdd(charId, guildId, charId); // forward to the relay visibility index (no-op without a relay peer)
         _log.LogInformation("Guild '{Name}' (id {Id}) established by char {Char}.", name, guildId, charId);
     }
 
@@ -648,7 +635,6 @@ public sealed partial class WorldService
             }
             guild.Chief = mem.CharId;
             guild.ChiefName = mem.Name;
-            RelayGuildChgMaster(guild.Id, mem.CharId); // relay visibility index
         }
         mem.Duty = duty;
         if (_guildDb is not null) { try { await _guildDb.DutyAsync(mem.CharId, guild.Id, duty); } catch (Exception ex) { _log.LogWarning(ex, "TGuildDuty failed."); } }
@@ -733,11 +719,9 @@ public sealed partial class WorldService
             _state.Parties[party.Id] = party;
             party.AddMember(org);
             SendPartyJoinReq(party, org);   // seed origin into its own new party
-            RelayPartyAdd(org.CharId, party.Id, party.ChiefId); // relay visibility index
         }
         party.AddMember(tgt);
         SendPartyJoinReq(party, tgt);
-        RelayPartyAdd(tgt.CharId, party.Id, party.ChiefId); // relay visibility index
         _log.LogInformation("Char {T} joined party {P} (chief {C}).", tgt.CharId, party.Id, party.ChiefId);
     }
 
@@ -764,7 +748,6 @@ public sealed partial class WorldService
         byte[] del = BuildPartyDelReq(charId, leaving.Key, charId, party.ChiefId, party.CorpsId, party.Id, kick);
         foreach (var m in party.Members) SendToChar(m, del);
         SendToChar(leaving, del);
-        RelayPartyDel(charId, party.Id, party.ChiefId); // relay visibility index
 
         if (party.Size <= 1)
         {
@@ -789,7 +772,6 @@ public sealed partial class WorldService
         }
         party.ChiefId = targetId;
         foreach (var m in party.Members) SendToChar(m, BuildChgPartyChiefReq(chiefId, key, (byte)GuildResult.Success));
-        RelayPartyChgChief(party.Id, party.ChiefId); // relay visibility index
     }
 
     private void OnChgPartyType(PacketReader r)

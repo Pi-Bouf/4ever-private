@@ -379,7 +379,6 @@ public sealed partial class WorldService
             long money = ((long)gold << 40) | ((long)silver << 20) | cooper; // packed money (best-effort)
             g.Tactics[charId] = new TacticsMember { CharId = charId, Name = ch.Name, Level = ch.Level, Class = ch.Class, RewardPoint = point, RewardMoney = money, Day = day, EndTime = end, OnlineChar = ch };
             _state.CharTactics[charId] = g.Id;
-            RelayTacticsAdd(charId, g.Id, g.Chief); // relay visibility index
             await Persist("tacticsAdd", async db => await db.TacticsAddAsync(g.Id, charId, point, money, day, end));
         }
         // SSSender: charId, key, bResult, guildId, guildName, memberId, memberName, gold, silver, cooper
@@ -396,7 +395,6 @@ public sealed partial class WorldService
         var g = _state.FindGuildByChar(charId);
         if (g is null || !g.Tactics.Remove(targetId)) { SendToCharId(charId, key, BuildResult(Msg.MW_GUILDTACTICSKICKOUT_REQ, charId, key, GuildResult.Fail)); return; }
         _state.CharTactics.Remove(targetId);
-        RelayTacticsDel(targetId, g.Id); // relay visibility index
         if (_state.Characters.TryGetValue(targetId, out var tc)) tc.Guild = null;
         await Persist("tacticsDel", async db => await db.TacticsDelAsync(targetId));
         var w = new PacketWriter(Msg.MW_GUILDTACTICSKICKOUT_REQ);

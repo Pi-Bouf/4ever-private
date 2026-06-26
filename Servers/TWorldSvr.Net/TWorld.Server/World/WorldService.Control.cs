@@ -105,7 +105,6 @@ public sealed partial class WorldService
             map.Send(w.ToArray());
         }
         _state.ChatBans[name] = banUntil;
-        RelayChatBan(name, banUntil); // relay visibility index (no-op without a relay peer)
         session.Send(BuildChatBanAck(true, banSeq, managerId));
     }
 

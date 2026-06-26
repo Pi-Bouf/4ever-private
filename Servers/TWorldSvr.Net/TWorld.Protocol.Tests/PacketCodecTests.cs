@@ -63,6 +63,5 @@ public class PacketCodecTests
         Assert.Equal(0x900A, Msg.MW_INVALIDCHAR_REQ);
         Assert.Equal(0x903F, Msg.MW_CHAT_ACK);
         Assert.Equal(0x9359, Msg.CT_CTRLSVR_REQ);   // CT_CONTROL + 0x0058 (CTProtocol.h; 0x9302 is CT_OPLOGIN)
-        Assert.Equal(0x999A, Msg.RW_RELAYSVR_REQ);
     }
 }

@@ -15,7 +15,6 @@ public sealed class WorldState
     public HashSet<uint> ActiveUsers { get; } = new();
 
     public ServerSession? ControlServer { get; set; }
-    public ServerSession? RelayServer { get; set; }
 
     public byte Nation { get; set; }
 

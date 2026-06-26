@@ -4,9 +4,9 @@ using TWorld.Server.Net;
 namespace TWorld.Server.World;
 
 /// <summary>
-/// Per-connection peer state — the ported subset of the C++ <c>CTServer</c>. A peer is a map, control,
-/// or relay server. <see cref="WId"/> is <c>MAKEWORD(serverId, serverType)</c>, set when the peer
-/// registers (MW_CONNECT_ACK / CT_CTRLSVR_REQ / RW_RELAYSVR_REQ).
+/// Per-connection peer state — the ported subset of the C++ <c>CTServer</c>. A peer is a map or control
+/// server. <see cref="WId"/> is <c>MAKEWORD(serverId, serverType)</c>, set when the peer
+/// registers (MW_CONNECT_ACK / CT_CTRLSVR_REQ).
 /// </summary>
 public sealed class ServerSession
 {

@@ -230,7 +230,6 @@ public sealed partial class WorldService
             SendToChar(m, w.ToArray());
             PartyAttr(m);
         }
-        RelayCorpsJoin(party.Id, party.CorpsId, commander); // relay visibility index (no-op without a relay peer)
     }
 
     /// <summary>PartyAttr — sync a character's party id/type/chief/commander to its map.</summary>

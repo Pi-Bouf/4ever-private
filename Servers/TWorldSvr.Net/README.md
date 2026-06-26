@@ -26,8 +26,9 @@ Mirrors the `TLoginSvr.Net` layout (net10, multi-project, Docker, same SQL Serve
 TWorld is **accept-only** and speaks **server↔server, plaintext** (no RC4/XOR — unlike the login
 server, which encrypts client traffic). Its peers are:
 
-- **TMapSvr** over the `MW_*` plane (`MW_BASE 0x9001`) — the main plane, and the one Phase 1 implements.
-- **TControlSvr** over `CT_*` (`0x9301`) and **TRelaySvr** over `RW_*` (`0x9999`) — registration only in Phase 1.
+- **TMapSvr** over the `MW_*` plane (`MW_BASE 0x9001`) — the main plane.
+- **TControlSvr** over `CT_*` (`0x9301`). (There is no `TRelaySvr` in this release, so the `RW_*` relay plane
+  is intentionally not ported.)
 
 It listens on **port 3815** (`DEF_WORLDPORT`). The wire framing is the same 16-byte TNetLib header as
 TLogin, but server traffic is plaintext so the `dwNumber`/`llChkSUM` header fields stay zero.
@@ -55,7 +56,7 @@ TLogin, but server traffic is plaintext so the `dwNumber`/`llChkSUM` header fiel
 `MW_CONNECT_ACK` (map registers), `MW_ADDCHAR_ACK` (validate `dwKEY`, create character, → `MW_ENTERSVR_REQ`),
 `MW_CHARDATA_ACK` (→ `MW_ENTERCHAR_REQ` with full state; guild/party fields zeroed), `MW_ENTERCHAR_ACK`
 (mark ready), `MW_CLOSECHAR_ACK` (cleanup), `MW_CHECKCONNECT_ACK` (keepalive), `MW_CHAT_ACK` (relay),
-`CT_CTRLSVR_REQ` / `RW_RELAYSVR_REQ` (peer registration). Every other message id falls through to a
+`CT_CTRLSVR_REQ` (control-server registration). Every other message id falls through to a
 logged no-op, so the ~270 deferred handlers can't crash the server.
 
 ## Phase-2 handlers
@@ -283,7 +284,7 @@ docker compose up --build worldsvr
 ```
 
 Brings up SQL Server (if not already), then the world server on port **3815**. **It will boot, load the
-nation, and listen — but stay idle until a map server connects**, because TMap/TControl/TRelay are the
+nation, and listen — but stay idle until a map server connects**, because TMap/TControl are the
 C++ cluster and aren't part of this stack.
 
 ### Console executable
@@ -312,9 +313,9 @@ state; Phase 1 emits the faithful field order with zeros for the deferred subsys
   event sub-tournament admin commands, which ride the not-yet-implemented `CT_*` control plane.
 - **P5 (done — full handler surface)** The remaining `CT_*` admin (item find/state, cash-mall gift catalog +
   take-check, the event/lottery/quarter subsystem, the **complete** GM tournament-event admin incl. the
-  per-event schedule machinery + the PLAYERADD char-info lookup), the `RW_*` relay plane (registration +
-  inbound char query + all forwarders), `DM_ACTIVECHARUPDATE` (active-char nation rebuild), and
-  `SM_GUILDDISORGANIZATION` + the guild auto-extinction timer. Every `TWorldSvr` handler is now ported, and the
-  DM-thread DB persistence the C++ does (tournament apply/clear/status/result/payback, cash-item sale,
-  tournament-event schedule/entry/reward, help message — 17 procs, all verified present in `TGame_gsp`) is
-  wired. What remains is only peer-gated behaviors (relay / second world). See `PORT_STATUS.md`.
+  per-event schedule machinery + the PLAYERADD char-info lookup), `DM_ACTIVECHARUPDATE` (active-char nation
+  rebuild), and `SM_GUILDDISORGANIZATION` + the guild auto-extinction timer. Every `TWorldSvr` handler is now
+  ported, and the DM-thread DB persistence the C++ does (tournament apply/clear/status/result/payback,
+  cash-item sale, tournament-event schedule/entry/reward, help message — 17 procs, all verified present in
+  `TGame_gsp`) is wired. The `RW_*` relay plane is intentionally **not** ported — there is no `TRelaySvr` in
+  these sources. See `PORT_STATUS.md`.

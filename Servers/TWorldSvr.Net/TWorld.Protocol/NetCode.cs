@@ -18,7 +18,6 @@ public static class Msg
     public const ushort MW_BASE = 0x9001; // map ↔ world (the main inter-server plane)
     public const ushort DM_BASE = 0x5891; // world ↔ db (async)
     public const ushort CT_CONTROL = 0x9301; // control server ↔ world
-    public const ushort RW_RELAY = 0x9999; // relay server ↔ world
 
     // --- MW: map-server connect + character session (MWProtocol.h offsets) ---
     public const ushort MW_CONNECT_ACK = MW_BASE + 0x0001;     // map registers (wServerID + channels)
@@ -151,27 +150,8 @@ public static class Msg
     public const ushort MW_CHAT_ACK = MW_BASE + 0x003E;        // chat relay
     public const ushort MW_CHECKCONNECT_ACK = MW_BASE + 0x00C9; // keepalive
 
-    // --- CT / RW: peer registration ---
+    // --- CT: peer registration (TRelaySvr / the RW_* plane is not part of these sources) ---
     public const ushort CT_CTRLSVR_REQ = CT_CONTROL + 0x0058;  // control server announces itself (CTProtocol.h; +0x0001 is CT_OPLOGIN)
-    public const ushort RW_RELAYSVR_REQ = RW_RELAY + 0x0001;   // relay server announces itself
-    public const ushort RW_RELAYSVR_ACK = RW_RELAY + 0x0002;   // world -> relay: nation + operators + svr-msgs
-    // RW relay forwarding (world -> relay): cross-map-instance visibility broadcasts (CTProtocol.h).
-    public const ushort RW_ENTERCHAR_REQ = RW_RELAY + 0x0003;  // relay -> world: is this char online?
-    public const ushort RW_ENTERCHAR_ACK = RW_RELAY + 0x0004;  // world -> relay: char online + full state
-    public const ushort RW_PARTYADD_ACK = RW_RELAY + 0x0005;
-    public const ushort RW_PARTYDEL_ACK = RW_RELAY + 0x0006;
-    public const ushort RW_PARTYCHGCHIEF_ACK = RW_RELAY + 0x0007;
-    public const ushort RW_GUILDADD_ACK = RW_RELAY + 0x0008;
-    public const ushort RW_GUILDDEL_ACK = RW_RELAY + 0x0009;
-    public const ushort RW_GUILDCHGMASTER_ACK = RW_RELAY + 0x000A;
-    public const ushort RW_CORPSJOIN_ACK = RW_RELAY + 0x000B;
-    public const ushort RW_RELAYCONNECT_REQ = RW_RELAY + 0x000C; // relay -> world: open a char's relay connection
-    public const ushort RW_CHANGENAME_ACK = RW_RELAY + 0x000D;
-    public const ushort RW_TACTICSADD_ACK = RW_RELAY + 0x000E;
-    public const ushort RW_TACTICSDEL_ACK = RW_RELAY + 0x000F;
-    public const ushort RW_CHATBAN_ACK = RW_RELAY + 0x0010;
-    public const ushort RW_CHANGEMAP_ACK = RW_RELAY + 0x0011;
-    public const ushort MW_RELAYCONNECT_REQ = MW_BASE + 0x011D; // world -> map: (re)connect to the relay
 
     // --- MW guild (Phase 2). Convention: map sends *_ACK to world; world replies *_REQ to maps. ---
     public const ushort MW_GUILDESTABLISH_REQ = MW_BASE + 0x002A;

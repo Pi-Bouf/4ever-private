@@ -105,7 +105,6 @@ public sealed partial class WorldService
                 if (!string.IsNullOrEmpty(name)) _state.CharactersByName[name] = ch;
                 if (ch.Guild?.FindMember(charId) is { } gm) gm.Name = name;
                 if (_state.FindTacticsGuild(charId)?.FindTactics(charId) is { } tm) tm.Name = name;
-                RelayChangeName(charId, type, value, name); // relay visibility index (no-op without a relay peer)
                 break;
             case IkTitle: ch.TitleId = titleId; break;
             default: break;
@@ -133,8 +132,8 @@ public sealed partial class WorldService
     /// <summary>A character's country (or aid-country) changed. Leaves the party, drops tactics-wanted apps and
     /// any mercenary membership, re-buckets nation balance, and — for a primary country change — leaves the
     /// guild and erases friends/soulmates (those bonds are country-scoped). Then fans the change to every map
-    /// the char is on. C++ CTWorldSvrModule::ChangeCountry. (Relay RW_CHANGENAME + RecalcCountryBalance are
-    /// skipped: the relay plane isn't ported and balance is recomputed on demand.)</summary>
+    /// the char is on. C++ CTWorldSvrModule::ChangeCountry. (The cross-server RecalcCountryBalance is skipped:
+    /// nation balance is recomputed on demand.)</summary>
     private void ChangeCountry(Character ch, byte type, byte value)
     {
         if (ch.Party is { } party) LeaveParty(party, ch.CharId, 0);
@@ -186,8 +185,6 @@ public sealed partial class WorldService
         {
             ch.AidCountry = value;
         }
-
-        RelayChangeName(ch.CharId, type, value, ""); // relay visibility index — C++ forwards country change as NAME_NULL
 
         byte[] req = BuildChangeCharBaseReq(ch.CharId, ch.Key, type, value, ch.TitleId, "");
         foreach (var sid in ch.Connections.Keys.ToList())

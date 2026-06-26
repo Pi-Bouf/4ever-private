@@ -1,10 +1,10 @@
 # TWorldSvr → TWorldSvr.Net — Port Status
 
 Faithful C#/.NET 10 port of the C++/ATL `TWorldSvr`. Byte-exact wire/DB compat with this repo's
-client + SQL baselines. **123 tests passing** (xUnit, DB-free harness) · container boots on **:3816**.
+client + SQL baselines. **119 tests passing** (xUnit, DB-free harness) · container boots on **:3816**.
 
 **Every `TWorldSvr` handler is now ported — including the GM-only subsystems.** Beyond the
-single-world-complete core, a later pass ported the relay plane (`RW_*`), the active-char nation refresh
+single-world-complete core, a later pass ported the active-char nation refresh
 (`DM_ACTIVECHARUPDATE`), guild auto-extinction (`SM_GUILDDISORGANIZATION`), the CT item-admin + cash-mall
 gift-catalog/take-check handlers, the full **event/lottery/quarter subsystem** (`CT_EVENTUPDATE` +
 `CT_EVENTQUARTER*` + `SM_EVENTQUARTER*` / `SM_EVENTEXPIRED`), and the complete **GM tournament-event admin**
@@ -72,11 +72,6 @@ Test count rose **97 → 109**.
 - [x] **Cash-mall gift take-check** — `CSPCMGiftCanTake` wired into the `CT_CMGIFT` / `MW_CMGIFT` paths; the
   full `RouteCmGift` now implements the `CMGIFT_DUPLICATE → errGift` refetch (`→ CMGIFT_ERRPOST`) that was
   previously deferred (`World/WorldService.Mall.cs`).
-- [x] **`RW_*` relay plane** — registration ack (`RW_RELAYSVR_ACK` + `MW_RELAYCONNECT_REQ` fan-out), the
-  inbound `RW_ENTERCHAR` char query and `RW_RELAYCONNECT`, and all forwarders (enter-char, party
-  add/del/chgchief, guild add/del/chgmaster, corps-join, tactics add/del, change-name, chat-ban, change-map)
-  hooked at the live state transitions, each a no-op without a relay peer (`World/WorldService.Relay.cs`).
-  Tests: `RelayTests`.
 - [x] **`DM_ACTIVECHARUPDATE`** — the active-char nation-balance rebuild (`CTBLActiveCharTable/Del`), ported as
   `RefreshActiveCharBucketsAsync` (best-effort at startup), **guarded** so an empty/absent table never wipes
   the live single-world buckets (`World/WorldService.Nation.cs`).
@@ -114,4 +109,10 @@ Test count rose **97 → 109**.
 
 - `SM_*` already covered via direct ticks/disconnect: `DELSESSION`, `QUITSERVICE` (no-op in C++ too),
   `BATTLESTATUS`, `MONTHRANKSAVE`, `TOURNAMENT`/`TOURNAMENTUPDATE`, `CHANGEDAY`.
-- `RW_*` forwarding + `DM_ACTIVECHARUPDATE`: ported, but inert without a relay peer / second world.
+- `DM_ACTIVECHARUPDATE`: ported, but a no-op reconcile single-world (the live buckets are exact).
+
+## Not ported — not in these sources
+
+- **`RW_*` relay plane** — there is no `TRelaySvr` in this release, so the relay plane is intentionally not
+  ported (the world never gets a relay peer). The C++ `TWorldSvr` carries `RWHandler`/`RWSender`, but with no
+  relay server they are dead code here.

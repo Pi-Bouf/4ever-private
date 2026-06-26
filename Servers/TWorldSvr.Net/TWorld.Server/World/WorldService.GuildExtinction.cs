@@ -93,7 +93,6 @@ public sealed partial class WorldService
         guild.Tactics.Clear();
 
         _state.Guilds.Remove(guild.Id);
-        RelayGuildDel(guild.Chief, guild.Id); // relay visibility index (no-op without a relay peer)
 
         if (_guildDb is not null)
         {
