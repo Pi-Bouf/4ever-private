@@ -105,6 +105,9 @@
     <Link>
       <AdditionalDependencies>winmm.lib;shlwapi.lib;Ws2_32.lib;zlibstat.lib;XTrap4Launcher_mt.lib;d3d9.lib;d3dx9.lib;Engine Lib.lib;Psapi.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\Lib\3rdParty\zlib\lib\zlibstat;..\..\Lib\3rdParty\XTrap\client\Lib\x86;..\..\Lib\Own\Engine Lib\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <!-- Ship the final launcher exe next to the client (TClient.exe) in the game folder so
+           both read the same config.ini. Intermediates/PDB stay in $(OutDir) (Release\). -->
+      <OutputFile>..\..\Game\$(TargetName)$(TargetExt)</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
