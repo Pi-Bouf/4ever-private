@@ -1,0 +1,37 @@
+{
+  "name": "araz-web",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "4Story item browser — TypeScript + Prisma + Vite 8 + Tailwind. Extracts item icons from the client and the item catalog from SQL Server, and serves a searchable React catalog.",
+  "scripts": {
+    "extract": "tsx script/extract.ts",
+    "extract:mounts": "tsx script/extract-mounts.ts",
+    "gen:missing": "tsx script/gen-missing.ts",
+    "db:generate": "prisma generate --config prisma/prisma.config.ts",
+    "db:pull": "prisma db pull --config prisma/prisma.config.ts",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@prisma/adapter-mssql": "7.8.0",
+    "@prisma/client": "7.8.0",
+    "mssql": "^12.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "4.3.2",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "6.0.3",
+    "prisma": "7.8.0",
+    "tailwindcss": "4.3.2",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vite": "8.1.4"
+  }
+}

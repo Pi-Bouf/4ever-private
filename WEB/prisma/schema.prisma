@@ -1,0 +1,36 @@
+// Minimal Prisma schema for the item catalog (SQL Server, TGame_gsp).
+// Only the tables the extractor reads are modelled — icons/visuals are
+// client-only and come from the game files, not the DB.
+//
+// Prisma 7: the new `prisma-client` generator (custom output, no node_modules)
+// and the DB connection lives in prisma.config.ts (via the mssql adapter), not
+// here — so the datasource block carries only the provider.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../script/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlserver"
+}
+
+/// The server copy of the item catalog (== Game/Tcd/TItem.tcd, minus visuals).
+model TitemChart {
+  wItemID    Int     @id @map("wItemID")
+  bType      Int     @map("bType")
+  bKind      Int?    @map("bKind")
+  szNAME     String? @map("szNAME")
+  bLevel     Int?    @map("bLevel")
+  fPrice     Float?  @map("fPrice")
+  dwDuraMax  Int?    @map("dwDuraMax")
+  bRefineMax Int?    @map("bRefineMax")
+  bStack     Int?    @map("bStack")
+  wAttrID    Int?    @map("wAttrID")
+  dwSlotID   Int?    @map("dwSlotID")
+  dwClassID  Int?    @map("dwClassID")
+  wUseValue  Int?    @map("wUseValue")
+  wUseTime   Int?    @map("wUseTime")
+
+  @@map("TITEMCHART")
+}
