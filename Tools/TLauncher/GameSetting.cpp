@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include "GameConfig.h"
 #include "4Story.h"
 #include "GameSetting.h"
 #include ".\gamesetting.h"
@@ -194,350 +195,56 @@ void CGameSetting::SetRadioButtons(DWORD _char, DWORD _map, DWORD _texture)
 }
 
 BOOL CGameSetting::ReadRegistry()
-{	
-	HKEY hKeyRet;	
-	HKEY hKey = HKEY_CURRENT_USER;
-	
+{
+	m_bWindow              = (g_Config.GetString(_T("Settings"), _T("WindowedMode")) == _T("TRUE")) ? 1 : 0;
+	m_bBGShadow            = g_Config.GetInt(_T("Settings"), _T("MapSHADOW"));
+	m_bDLightMap           = g_Config.GetInt(_T("Settings"), _T("DLIGHTMAP"));
+	m_bBGSFX               = g_Config.GetInt(_T("Settings"), _T("MapSFX"));
+	m_bFLightMap           = g_Config.GetInt(_T("Settings"), _T("FLIGHTMAP"));
+	m_bFarImg              = g_Config.GetInt(_T("Settings"), _T("FarIMAGE"));
+	m_dwObjDetailValue     = g_Config.GetInt(_T("Settings"), _T("ObjDETAIL"));
+	m_dwMapDetailValue     = g_Config.GetInt(_T("Settings"), _T("MapDETAIL"));
+	m_dwTextureDetailValue = g_Config.GetInt(_T("Settings"), _T("TextureDETAIL"));
+	m_dwObjRange           = (DWORD)(_tstof(g_Config.GetString(_T("Settings"), _T("OBJRange"))) * 100);
+	m_bVolume              = g_Config.GetInt(_T("Settings"), _T("MASTER"));
+	m_dwMainVolume         = g_Config.GetInt(_T("Settings"), _T("MainVolume"));
+	m_bBGM                 = g_Config.GetInt(_T("Settings"), _T("BGM"));
+	m_dwBGMVolume          = g_Config.GetInt(_T("Settings"), _T("BGMVolume"));
+	m_bSFXVolume           = g_Config.GetInt(_T("Settings"), _T("SOUND"));
+	m_dwSFXVolume          = g_Config.GetInt(_T("Settings"), _T("SFXVolume"));
+	m_dwScreenWidth        = g_Config.GetInt(_T("Settings"), _T("ScreenX"));
+	m_dwScreenHeight       = g_Config.GetInt(_T("Settings"), _T("ScreenY"));
 
-	int err = 0;
-	CString strSubkey;
-	CString strRegSubKey;
-	CString strAppName;
-	CString strBuf;
-	
-	
-	strAppName = APP_NAME;	
-	strSubkey = _T("");
-	strSubkey = strAppName + REG_COUNTRY;
-	strSubkey += _T("\\Settings");
-
-	strRegSubKey.Format(_T("%s%s"), REG_SUBKEY, strSubkey);
-
-	err = RegOpenKey(hKey, strRegSubKey, &hKeyRet);
-	if(ERROR_SUCCESS != err)
-	{
-		RegCloseKey(hKeyRet);
-		hKey = HKEY_LOCAL_MACHINE;		
-	}
-
-	BYTE	data[1024] = {0,};
-	DWORD   type;
-	DWORD   cbdata =1024;
-
-
-
-	// 창모드
-	cbdata = 1024;
-	memset(data, 0, 1024);	
-	err = RegQueryValueEx(hKeyRet, _T("WindowedMode"), NULL, &type, data, &cbdata);
-
-	if( ERROR_SUCCESS != err || type != REG_SZ)
-		return TRUE;
-
-	strBuf = data;
-
-	if( strBuf == _T("TRUE") )
-		m_bWindow = 1;
-	else
-		m_bWindow = 0;
-
-
-	// 배경 그림자
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("MapSHADOW") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return TRUE;
-	m_bBGShadow = *((LPWORD)data);
-
-	// 던전 라이트 맵
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("DLIGHTMAP") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return TRUE;
-	m_bDLightMap = *((LPWORD)data);
-
-	// 배경 특수효과
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("MapSFX") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return TRUE;
-	m_bBGSFX = *((LPWORD)data);
-
-	// 필드 라이트 맵
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("FLIGHTMAP") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return TRUE;
-	m_bFLightMap = *((LPWORD)data);
-
-	// 원경 이미지
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("FarIMAGE") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return TRUE;
-	m_bFarImg = *((LPWORD)data);
-
-
-	// 캐릭터 품질	
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("ObjDETAIL") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return TRUE;
-	m_dwObjDetailValue = *((LPWORD)data);
-
-	// 지형품질
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("MapDETAIL") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return TRUE;
-	m_dwMapDetailValue = *((LPWORD)data);
-
-	// 텍스쳐품질
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("TextureDETAIL") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return TRUE;
-	m_dwTextureDetailValue = *((LPWORD)data);
-
-	// 시야 거리
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("OBJRange") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_SZ)
-		return TRUE;
-	strBuf = data;
-	m_dwObjRange = (DWORD)(_tstof(strBuf) * 100) ;	
-
-
-	// 전체 볼륨 사용 여부
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("MASTER") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return TRUE;
-	m_bVolume = *((LPWORD)data);
-
-	// 전체 볼륨 Value
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("MainVolume") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return TRUE;
-	m_dwMainVolume = *((LPWORD)data);
-
-	// 배경음악 사용 여부
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("BGM") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return TRUE;
-	m_bBGM = *((LPWORD)data);
-
-	// 배경음악 Value
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("BGMVolume") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return TRUE;
-	m_dwBGMVolume = *((LPWORD)data);
-
-	// 효과음 사용 여부
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("SOUND") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return TRUE;
-	m_bSFXVolume = *((LPWORD)data);
-
-	// 효과음 Value
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("SFXVolume") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return TRUE;
-	m_dwSFXVolume = *((LPWORD)data);
-
-	// 해상도 Width
-	cbdata = 1024;
-	memset(data, 0, 1024);
-
-	err = RegQueryValueEx(hKeyRet, _T("ScreenX") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return TRUE;
-	m_dwScreenWidth = *((LPWORD)data);
-
-	// 해상도 Height
-	cbdata = 1024;
-	memset(data, 0, 1024);
-
-	err = RegQueryValueEx(hKeyRet, _T("ScreenY") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return TRUE;
-	m_dwScreenHeight = *((LPWORD)data);
-
-	m_strResolution.Format(_T("%d X %d"),m_dwScreenWidth,m_dwScreenHeight);
-
+	m_strResolution.Format(_T("%d X %d"), m_dwScreenWidth, m_dwScreenHeight);
 	return TRUE;
 }
 
 
 BOOL CGameSetting::WriteRegistry()
 {
-	HKEY hKeyRet;	
-	HKEY hKey = HKEY_CURRENT_USER;
-	
+	g_Config.SetString(_T("Settings"), _T("WindowedMode"), (m_bWindow == 1) ? _T("TRUE") : _T("FALSE"));
 
-	int err = 0;	
-	CString strSubkey;
-	CString strRegSubKey;
-	CString strAppName;
-	
-	
-	strAppName = APP_NAME;	
-	strSubkey = _T("");
-	strSubkey = strAppName + REG_COUNTRY;
-	strSubkey += _T("\\Settings");
-
-	strRegSubKey.Format(_T("%s%s"), REG_SUBKEY, strSubkey);
-
-	err = RegOpenKey(hKey, strRegSubKey, &hKeyRet);
-	if(ERROR_SUCCESS != err)
-	{
-		RegCloseKey(hKeyRet);
-		hKey = HKEY_LOCAL_MACHINE;		
-	}
-
-	char	strTmp[1024] = {0,};
-	BYTE	data[1024] = {0,};	
-	DWORD   cbData = 4;
-	DWORD	cbData1 = sizeof(BOOL);
-
-
-	// 창모드
-	if(m_bWindow == 1)
-		strcpy(strTmp,"TRUE");
-	else
-		strcpy(strTmp,"FALSE");
-
-	err = RegSetValueEx(hKeyRet, _T("WindowedMode"), 0, REG_SZ, (BYTE*)strTmp, (DWORD)strlen(strTmp));
-	if(ERROR_SUCCESS != err)
-		return FALSE;
-
-	// 시야 거리.Client에서 공식 가져옴	
 	float fObjRange = TMIN_RANGEOPTION + (TMAX_RANGEOPTION - TMIN_RANGEOPTION) * FLOAT(m_dwObjRange) / FLOAT(100);
+	CString strObjRange;
+	strObjRange.Format(_T("%f"), fObjRange);
+	g_Config.SetString(_T("Settings"), _T("OBJRange"), strObjRange);
 
-	sprintf(strTmp,"%f",fObjRange);
-	err = RegSetValueEx(hKeyRet, _T("OBJRange"), 0, REG_SZ, (BYTE*)strTmp, (DWORD)strlen(strTmp));
-
-	if(ERROR_SUCCESS != err)
-		return FALSE;
-
-	// 배경그림자
-	memcpy(data, &m_bBGShadow, sizeof(BOOL));
-	err = RegSetValueEx(hKeyRet, _T("MapSHADOW"), 0, REG_DWORD, data, cbData1 );
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-	// 던전 라이트 맵
-	memcpy(data, &m_bDLightMap, sizeof(BOOL));
-	err = RegSetValueEx(hKeyRet, _T("DLIGHTMAP"), 0, REG_DWORD, data, cbData1 );
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-	// 배경 특수 효과
-	memcpy(data, &m_bBGSFX, sizeof(BOOL));
-	err = RegSetValueEx(hKeyRet, _T("MapSFX"), 0, REG_DWORD, data, cbData1 );
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-	// 필드 라이트 맵
-	memcpy(data, &m_bFLightMap, sizeof(BOOL));
-	err = RegSetValueEx(hKeyRet, _T("FLIGHTMAP"), 0, REG_DWORD, data, cbData1);
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-	// 원경 이미지
-	memcpy(data, &m_bFarImg, sizeof(BOOL));
-	err = RegSetValueEx(hKeyRet, _T("FarIMAGE"), 0, REG_DWORD, data, cbData1);
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-	// 캐릭터 품질
-	memcpy(data, &m_dwObjDetailValue, sizeof(DWORD));
-	err = RegSetValueEx(hKeyRet, _T("ObjDETAIL"), 0, REG_DWORD, data, cbData);
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-	// 지형 품질
-	memcpy(data, &m_dwMapDetailValue, sizeof(DWORD));
-	err = RegSetValueEx(hKeyRet, _T("MapDETAIL"), 0, REG_DWORD, data, cbData);
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-	// 텍스쳐 품질
-	memcpy(data, &m_dwTextureDetailValue, sizeof(DWORD));
-	err = RegSetValueEx(hKeyRet, _T("TextureDETAIL"), 0, REG_DWORD, data, cbData);
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-	// 전체 볼륨 사용여부
-	memset(data,0,sizeof(data));
-	memcpy(data, &m_bVolume, sizeof(BOOL));
-	err = RegSetValueEx(hKeyRet, _T("MASTER"), 0, REG_DWORD, data, cbData1);
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-	// 배경음악 사용여부	
-	memcpy(data, &m_bBGM, sizeof(BOOL));
-	err = RegSetValueEx(hKeyRet, _T("BGM"), 0, REG_DWORD, data, cbData1);
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-	// 효과음 사용여부	
-	memcpy(data, &m_bSFXVolume, sizeof(BOOL));
-	err = RegSetValueEx(hKeyRet, _T("SOUND"), 0, REG_DWORD, data, cbData1);
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-
-	// 전체 볼륨 값	
-	memset(data,0,sizeof(data) );
-	memcpy(data, &m_dwMainVolume, sizeof(DWORD));
-	err = RegSetValueEx(hKeyRet, _T("MainVolume"), 0, REG_DWORD, data, cbData);
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-	// 배경음악 볼륨 값
-	memcpy(data, &m_dwBGMVolume, sizeof(DWORD));
-	err = RegSetValueEx(hKeyRet, _T("BGMVolume"), 0, REG_DWORD, data, cbData);
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-	// 효과음 볼륨 값
-	memcpy(data, &m_dwSFXVolume, sizeof(DWORD));
-	err = RegSetValueEx(hKeyRet, _T("SFXVolume"), 0, REG_DWORD, data, cbData);
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-	// 해상도 width
-	memcpy(data, &m_dwScreenWidth, sizeof(DWORD));
-	err = RegSetValueEx(hKeyRet, _T("ScreenX"), 0, REG_DWORD, data, cbData);
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-	// 해상도 height
-	memcpy(data, &m_dwScreenHeight, sizeof(DWORD));
-	err = RegSetValueEx(hKeyRet, _T("ScreenY"), 0, REG_DWORD, data, cbData);
-	if( ERROR_SUCCESS != err )
-		return FALSE;
+	g_Config.SetInt(_T("Settings"), _T("MapSHADOW"),     m_bBGShadow);
+	g_Config.SetInt(_T("Settings"), _T("DLIGHTMAP"),     m_bDLightMap);
+	g_Config.SetInt(_T("Settings"), _T("MapSFX"),        m_bBGSFX);
+	g_Config.SetInt(_T("Settings"), _T("FLIGHTMAP"),     m_bFLightMap);
+	g_Config.SetInt(_T("Settings"), _T("FarIMAGE"),      m_bFarImg);
+	g_Config.SetInt(_T("Settings"), _T("ObjDETAIL"),     m_dwObjDetailValue);
+	g_Config.SetInt(_T("Settings"), _T("MapDETAIL"),     m_dwMapDetailValue);
+	g_Config.SetInt(_T("Settings"), _T("TextureDETAIL"), m_dwTextureDetailValue);
+	g_Config.SetInt(_T("Settings"), _T("MASTER"),        m_bVolume);
+	g_Config.SetInt(_T("Settings"), _T("BGM"),           m_bBGM);
+	g_Config.SetInt(_T("Settings"), _T("SOUND"),         m_bSFXVolume);
+	g_Config.SetInt(_T("Settings"), _T("MainVolume"),    m_dwMainVolume);
+	g_Config.SetInt(_T("Settings"), _T("BGMVolume"),     m_dwBGMVolume);
+	g_Config.SetInt(_T("Settings"), _T("SFXVolume"),     m_dwSFXVolume);
+	g_Config.SetInt(_T("Settings"), _T("ScreenX"),       m_dwScreenWidth);
+	g_Config.SetInt(_T("Settings"), _T("ScreenY"),       m_dwScreenHeight);
 
 	return TRUE;
 }

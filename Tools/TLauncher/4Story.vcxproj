@@ -62,7 +62,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\Lib\Own\TProtocol\Include;..\..\Lib\3rdParty\zlib\include;..\..\Lib\3rdParty\zlib\include\minizip;..\..\Lib\3rdParty\XTrap\client\Include;..\..\Lib\Own\TachyonControl;..\..\Lib\Own\Engine Lib\Engine Lib;..\..\Lib\Own\TComp\TComp;..\..\Lib\Own\TCML\TCML;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Lib\Own\GameConfig;..\..\Lib\Own\TProtocol\Include;..\..\Lib\3rdParty\zlib\include;..\..\Lib\3rdParty\zlib\include\minizip;..\..\Lib\3rdParty\XTrap\client\Include;..\..\Lib\Own\TachyonControl;..\..\Lib\Own\Engine Lib\Engine Lib;..\..\Lib\Own\TComp\TComp;..\..\Lib\Own\TCML\TCML;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;ZLIB_WINAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -93,7 +93,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\Lib\Own\TProtocol\Include;..\..\Lib\3rdParty\zlib\include;..\..\Lib\3rdParty\zlib\include\minizip;..\..\Lib\3rdParty\XTrap\client\Include;..\..\Lib\Own\TachyonControl;..\..\Lib\Own\Engine Lib\Engine Lib;..\..\Lib\Own\TComp\TComp;..\..\Lib\Own\TCML\TCML;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Lib\Own\GameConfig;..\..\Lib\Own\TProtocol\Include;..\..\Lib\3rdParty\zlib\include;..\..\Lib\3rdParty\zlib\include\minizip;..\..\Lib\3rdParty\XTrap\client\Include;..\..\Lib\Own\TachyonControl;..\..\Lib\Own\Engine Lib\Engine Lib;..\..\Lib\Own\TComp\TComp;..\..\Lib\Own\TCML\TCML;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;ZLIB_WINAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -125,6 +125,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="4Story.cpp" />
+    <ClCompile Include="..\..\Lib\Own\GameConfig\GameConfig.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="4StoryDlg.cpp" />
     <ClCompile Include="BitmapPickerCombo.cpp" />
     <ClCompile Include="BitmapSlider.cpp" />
@@ -142,6 +145,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="4Story.h" />
+    <ClInclude Include="..\..\Lib\Own\GameConfig\GameConfig.h" />
     <ClInclude Include="4StoryDlg.h" />
     <ClInclude Include="BitmapPickerCombo.h" />
     <ClInclude Include="BitmapSlider.h" />

@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "TClient.h"
+#include "GameConfig.h"
 #include "TClientWnd.h"
 #include "PacketSpyDlg.h"
 #include "PacketSpyAcks.h"
@@ -527,11 +528,12 @@ BOOL CTClientApp::InitInstance()
 		FALSE,
 		NULL);
 
-#ifdef NEW_IF
-	SetRegistryKey(_T("4Story"));
-#else
-	SetRegistryKey(_T("4Story"));
-#endif
+	// Settings live in config.ini in the game folder, not the Windows registry.
+	// Resolve the file path, and (since we never call SetRegistryKey) point the MFC
+	// profile name at the same file so any framework-internal profile I/O lands there too.
+	g_Config.Init();
+	free((void*)m_pszProfileName);
+	m_pszProfileName = _tcsdup(g_Config.FilePath());
 
 	m_hAccel = LoadAccelerators(
 		m_hInstance,

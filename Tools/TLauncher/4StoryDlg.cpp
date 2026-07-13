@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include "GameConfig.h"
 #include "Unzip.h"
 #include "4Story.h"
 #include "4StoryDlg.h"
@@ -337,197 +338,38 @@ void CStoryDlg::InitWeb()
 
 BYTE CStoryDlg::ReadRegistry()
 {
-	CString strDisclaimer;
-	BYTE bCurrent = FALSE;
-
-	HKEY hKeyRet;	
-	HKEY hKey = HKEY_LOCAL_MACHINE;
-	
-	CString strSubkey;
-	strSubkey = m_strSubkey;
-	if(strSubkey == _T(""))
-        strSubkey = m_strAppName + REG_COUNTRY;
-
-	strSubkey += _T("\\PB");	
-
-	m_strRegSubKey.Format(_T("%s%s"), REG_SUBKEY, strSubkey);
-
-	int err = RegOpenKey(hKey, m_strRegSubKey, &hKeyRet);
-	if(ERROR_SUCCESS != err)
-	{
-		RegCloseKey(hKeyRet);
-		hKey = HKEY_CURRENT_USER;
-
-		bCurrent = TRUE;
-	}
-
-	err = RegCreateKey(hKey, m_strRegSubKey, &hKeyRet);
-	if(ERROR_SUCCESS != err)
-		return FALSE;
-
-	BYTE	data[1024];
-	DWORD   type;
-	DWORD   cbdata =1024;
-
-	//version
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, REG_VALUE_VERSION, NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return FALSE;
-
-	m_dwVersion = *((LPDWORD)data);
+	// Patch configuration now lives in config.ini ([Launcher] section) instead of the
+	// registry. Missing values fall back to the CGameConfig defaults table, so the launcher
+	// still starts on a fresh install (the old code aborted when the registry was empty).
+	m_dwVersion     = (DWORD)g_Config.GetInt(_T("Launcher"), REG_VALUE_VERSION);
 	m_dwNextVersion = m_dwVersion;
 
-	//local path 
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, REG_VALUE_LOCAL, NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_SZ)
-		return FALSE;
-	
-	m_strLocal = m_strDownload = data;
+	m_strLocal = m_strDownload = g_Config.GetString(_T("Launcher"), REG_VALUE_LOCAL);
+	if(m_strLocal == _T(""))
+	{
+		// Default the game directory to the launcher's own folder (kept with a trailing '\\').
+		TCHAR szDir[MAX_PATH] = { 0 };
+		::GetModuleFileName(NULL, szDir, MAX_PATH);
+		LPTSTR pSlash = _tcsrchr(szDir, _T('\\'));
+		if(pSlash) *(pSlash + 1) = _T('\0');
+		m_strLocal = m_strDownload = szDir;
+	}
 	m_strDownload += _T("\\_download");
 
-	//exe file
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, REG_VALUE_EXE, NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_SZ)
-		return FALSE;
+	m_strGame = g_Config.GetString(_T("Launcher"), REG_VALUE_EXE);
+	m_strIP   = g_Config.GetString(_T("Launcher"), REG_VALUE_PATCHSVR);
+	m_wPort   = (WORD)g_Config.GetInt(_T("Launcher"), REG_VALUE_PATCHPORT);
 
-	m_strGame = data;
+	CString strDisclaimer = g_Config.GetString(_T("Launcher"), REG_VALUE_DISCLAIMER);
+	strDisclaimer.MakeUpper();
+	m_bDisclaimer = (strDisclaimer == CString(_T("TRUE"))) ? TRUE : FALSE;
 
-	//patch svr address
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, REG_VALUE_PATCHSVR, NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_SZ)
-		return FALSE;
-
-	m_strIP = data;
-
-	//patch svr port
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, REG_VALUE_PATCHPORT, NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return FALSE;
-
-	m_wPort = *((LPWORD)data);
-
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, REG_VALUE_DISCLAIMER, NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_SZ)
-		m_bDisclaimer = FALSE;
-	else
-	{
-		strDisclaimer = data;
-		strDisclaimer.MakeUpper();
-
-		if ( strDisclaimer == CString(_T("TRUE")) )
-			m_bDisclaimer = TRUE;
-		else
-			m_bDisclaimer = FALSE;
-	}
-
-	//	PrePatch 처음 설치 체크
-	if(RegQueryValueEx(hKeyRet, _T("PrePatchFirst"), NULL, NULL, NULL, NULL) != ERROR_SUCCESS)
+	// PrePatch first-run marker.
+	if(g_Config.GetInt(_T("Launcher"), _T("PrePatchFirst"), 0) == 0)
 	{
 		m_bFirstPrePatch = TRUE;
-
-		//version
-		err = RegSetValueEx(hKeyRet, _T("PrePatchFirst"), 0, REG_NONE, NULL, NULL);
-		if( ERROR_SUCCESS != err)
-			return FALSE;
+		g_Config.SetInt(_T("Launcher"), _T("PrePatchFirst"), 1);
 	}
-		
-	RegCloseKey(hKeyRet);
-
-	if(bCurrent)
-	{
-		if(!CopyRegistry())
-			return FALSE;
-	}
-
-	/////////////////////////////////////////////////////////////////////////////////////
-	// 그래픽 설정 JINUK
-/*
-	char strBuf[1024];	
-	hKey = HKEY_CURRENT_USER;
-	strSubkey = _T("");
-	strSubkey = m_strAppName;
-	strSubkey += _T("\\Settings");
-
-	m_strRegSubKey.Format(_T("%s%s"), REG_SUBKEY, strSubkey);
-
-	err = RegOpenKey(hKey, m_strRegSubKey, &hKeyRet);
-	if(ERROR_SUCCESS != err)
-	{
-		RegCloseKey(hKeyRet);
-		hKey = HKEY_LOCAL_MACHINE;
-
-		bCurrent = TRUE;
-	}
-
-
-	// window mode
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, REG_WINDOW, NULL, &type, (LPBYTE)strBuf, &cbdata);
-	if( ERROR_SUCCESS != err )
-		return TRUE;
-
-	if( strcmp(strBuf,"TRUE") == 0 )
-		m_dwWindowMode = 1;
-	else
-		m_dwWindowMode = 0;	
-	
-	// shader mode
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, REG_SHADER, NULL, &type, (LPBYTE)strBuf, &cbdata);
-	if( ERROR_SUCCESS != err)
-		return TRUE;
-
-	if( strcmp(strBuf,"TRUE") == 0)
-		m_dwShaderMode = 1;
-	else
-		m_dwShaderMode = 0;	
-
-	// character mode
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, REG_CHARACTER, NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return TRUE;
-
-	m_dwCharMode = *((LPWORD)data);
-
-	// paper matrix mode
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, REG_MAPDETAIL, NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return TRUE;
-
-	m_dwPaperMode = *((LPWORD)data);
-
-	// background mode
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, REG_TEXDETAIL, NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return TRUE;
-
-	m_dwBackMode = *((LPWORD)data);	
-
-	RegCloseKey(hKeyRet);
-*/
-
-	/////////////////////////////////////////////////////////////////////////////////////
-
-
 
 	return TRUE;
 }
@@ -568,71 +410,7 @@ void CStoryDlg::ReadTextFile()
 
 BYTE CStoryDlg::CopyRegistry()
 {
-	HKEY hKeyRet;
-	HKEY hKey = HKEY_LOCAL_MACHINE;
-
-	CString strSubkey;
-	strSubkey = m_strSubkey;
-	if(strSubkey == _T(""))
-		strSubkey = m_strAppName + REG_COUNTRY;
-	strSubkey += _T("\\PB");
-
-	m_strRegSubKey.Format(_T("%s%s"), REG_SUBKEY, strSubkey);
-
-	int err = RegCreateKey(hKey, m_strRegSubKey, &hKeyRet);
-	if(ERROR_SUCCESS != err)
-		return FALSE;
-
-	BYTE	data[1024];
-	DWORD   type = REG_DWORD;
-	DWORD   cbData = 4;
-	
-	memcpy(data, &m_dwVersion, sizeof(DWORD));
-	err = RegSetValueEx(hKeyRet, REG_VALUE_VERSION, 0, REG_DWORD, data, cbData);
-	if(ERROR_SUCCESS != err)
-		return FALSE;
-
-	LPCSTR strLocal = m_strLocal;
-	err = RegSetValueEx(
-		hKeyRet,
-		REG_VALUE_LOCAL, 
-		0, 
-		REG_SZ, 
-		(LPBYTE)strLocal, 
-		(DWORD) (lstrlen(strLocal)+1)*sizeof(TCHAR));
-	if(ERROR_SUCCESS != err)
-		return FALSE;
-
-	LPCSTR strGame = m_strGame;
-	err = RegSetValueEx(
-		hKeyRet,
-		REG_VALUE_EXE, 
-		0, 
-		REG_SZ, 
-		(LPBYTE)strGame, 
-		(DWORD) (lstrlen(strGame)+1)*sizeof(TCHAR));
-	if(ERROR_SUCCESS != err)
-		return FALSE;
-
-	LPCSTR strIP = m_strIP;
-	err = RegSetValueEx(
-		hKeyRet,
-		REG_VALUE_PATCHSVR, 
-		0, 
-		REG_SZ, 
-		(LPBYTE)strIP, 
-		(DWORD) (lstrlen(strIP)+1)*sizeof(TCHAR));
-	if(ERROR_SUCCESS != err)
-		return FALSE;
-
-	DWORD dwPort = m_wPort;
-	memcpy(data, &dwPort, sizeof(DWORD));
-	err = RegSetValueEx(hKeyRet, REG_VALUE_PATCHPORT, 0, REG_DWORD, data, cbData);
-	if(ERROR_SUCCESS != err)
-		return FALSE;
-
-
-	RegCloseKey(hKeyRet);
+	// Obsolete: with a single shared config.ini there is no HKCU->HKLM copy step.
 	return TRUE;
 }
 void CStoryDlg::LoadSkin()
@@ -1266,32 +1044,7 @@ int CStoryDlg::Unzip(LPCTSTR strZip, LPCTSTR strDirectory)
 }
 BYTE CStoryDlg::SetVersion(DWORD dwVer)
 {
-	HKEY hKeyRet;
-	HKEY hKey = HKEY_LOCAL_MACHINE;
-
-	CString strSubkey;
-	strSubkey = m_strSubkey;
-	if(strSubkey == _T(""))
-		strSubkey = m_strAppName + REG_COUNTRY;
-	strSubkey += _T("\\PB");
-
-	m_strRegSubKey.Format(_T("%s%s"), REG_SUBKEY, strSubkey);
-
-	int err = RegCreateKey(hKey, m_strRegSubKey, &hKeyRet);
-	if(ERROR_SUCCESS != err)
-		return FALSE;
-
-	BYTE	data[1024];
-	DWORD   type = REG_DWORD;
-	DWORD   cbData = 4;
-	
-	memcpy(data, &dwVer, sizeof(DWORD));
-
-	err = RegSetValueEx(hKeyRet, REG_VALUE_VERSION, 0, REG_DWORD, data, cbData);
-	if(ERROR_SUCCESS != err)
-		return FALSE;
-
-	RegCloseKey(hKeyRet);
+	g_Config.SetInt(_T("Launcher"), REG_VALUE_VERSION, (int)dwVer);
 	return TRUE;
 }
 void CStoryDlg::VerifyDirectory(LPCTSTR target, LPCTSTR path, BYTE bHaveFile)
@@ -1563,72 +1316,7 @@ void CStoryDlg::OnBnClickedButtonSetting()
 
 BYTE CStoryDlg::WriteRegistry()
 {
-	HKEY hKeyRet;
-	HKEY hKey = HKEY_CURRENT_USER; //HKEY_LOCAL_MACHINE;
-
-	CString strSubkey;
-	strSubkey = m_strSubkey;
-	if(strSubkey == _T(""))
-		strSubkey = m_strAppName + REG_COUNTRY;
-	strSubkey += _T("\\Settings"); //_T("\\PB");
-
-	m_strRegSubKey.Format(_T("%s%s"), REG_SUBKEY, strSubkey);
-
-	int err = RegCreateKey(hKey, m_strRegSubKey, &hKeyRet);
-	if(ERROR_SUCCESS != err)
-		return FALSE;
-
-	char	strBuf[1024];
-	BYTE	data[1024];
-	DWORD   type = REG_DWORD;
-	DWORD   cbData = 4;
-
-	// window mode
-	//memcpy(data, &m_dwWindowMode, sizeof(DWORD));
-	//err = RegSetValueEx(hKeyRet, REG_VALUE_WINDOW, 0, REG_DWORD, data, cbData);
-
-	if(m_dwWindowMode == 1)
-		strcpy(strBuf,"TRUE");
-	else
-		strcpy(strBuf,"FALSE");
-
-	err = RegSetValueEx(hKeyRet, REG_WINDOW, 0, REG_SZ, (BYTE*)strBuf, (DWORD)strlen(strBuf));
-
-	if(ERROR_SUCCESS != err)
-		return FALSE;
-
-	// shader mode
-	//memcpy(data, &m_dwShaderMode, sizeof(DWORD));
-
-	if(m_dwShaderMode == 1)
-		strcpy(strBuf,"TRUE");
-	else
-		strcpy(strBuf,"FALSE");
-
-	err = RegSetValueEx(hKeyRet, REG_SHADER, 0, REG_SZ, (BYTE*)strBuf, (DWORD)strlen(strBuf));
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return FALSE;
-
-	// character mode // 캐릭터 품질
-	memcpy(data, &m_dwCharMode, sizeof(DWORD));
-	err = RegSetValueEx(hKeyRet, REG_CHARACTER, 0, REG_DWORD, data, cbData);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return FALSE;
-
-	// paper matrix mode // 지형 품질
-	memcpy(data, &m_dwPaperMode, sizeof(DWORD));
-	err = RegSetValueEx(hKeyRet, REG_MAPDETAIL, 0, REG_DWORD, data, cbData);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return FALSE;
-
-	// background mode // 텍스쳐 품질
-	memcpy(data, &m_dwBackMode, sizeof(DWORD));
-	err = RegSetValueEx(hKeyRet, REG_TEXDETAIL, 0, REG_DWORD, data, cbData);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return FALSE;
-
-	RegCloseKey(hKeyRet);
-	
+	// Obsolete graphics writer (superseded by CGameSetting). No-op; no registry access.
 	return TRUE;
 }
 
@@ -2070,36 +1758,7 @@ void CStoryDlg::ReadDisclaimerFile()
 
 BYTE CStoryDlg::SetDisclaimer(BYTE bDisclaimer)
 {
-	HKEY hKeyRet;
-	HKEY hKey = HKEY_LOCAL_MACHINE;
-
-	CString strSubkey;
-	strSubkey = m_strSubkey;
-	if(strSubkey == _T(""))
-		strSubkey = m_strAppName + REG_COUNTRY;
-	strSubkey += _T("\\PB");
-
-	m_strRegSubKey.Format(_T("%s%s"), REG_SUBKEY, strSubkey);
-
-	int err = RegCreateKey(hKey, m_strRegSubKey, &hKeyRet);
-	if(ERROR_SUCCESS != err)
-		return FALSE;
-
-	char	strBuf[1024];
-	DWORD   type = REG_DWORD;
-	DWORD   cbData = 4;
-
-
-	if(bDisclaimer == TRUE)
-		strcpy(strBuf,"TRUE");
-	else
-		strcpy(strBuf,"FALSE");
-
-	err = RegSetValueEx(hKeyRet, REG_VALUE_DISCLAIMER, 0, REG_SZ, (BYTE*)strBuf, (DWORD)strlen(strBuf));
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-	RegCloseKey(hKeyRet);
+	g_Config.SetString(_T("Launcher"), REG_VALUE_DISCLAIMER, (bDisclaimer == TRUE) ? _T("TRUE") : _T("FALSE"));
 	return TRUE;
 }
 
@@ -2170,48 +1829,14 @@ BYTE CStoryDlg::FindPatchFile(CString strPathName)
 
 BYTE CStoryDlg::CheakStartRegistry()
 {
-	HKEY hKeyRet;	
-	
-	int err = RegOpenKey(HKEY_LOCAL_MACHINE, _T("Software\\Microsoft\\Windows\\CurrentVersion\\run"), &hKeyRet);
-	if(ERROR_SUCCESS != err)
-	{
-		RegCloseKey(hKeyRet);
-		return FALSE;
-	}
-	err = RegQueryValueEx(hKeyRet, _T("4StoryPrePatch"), NULL, NULL, NULL, NULL);
-	if( ERROR_SUCCESS != err)
-	{
-		RegCloseKey(hKeyRet);
-		return FALSE;
-	}
-	RegCloseKey(hKeyRet);
-	return TRUE;
+	// Auto-start preference is stored in config.ini. NOTE: unlike the old HKLM Run key this
+	// only remembers the checkbox state; it does not register PrePatch.exe with Windows startup.
+	return (BYTE)g_Config.GetInt(_T("Launcher"), _T("PrePatchAutoStart"), 0);
 }
 
 BYTE CStoryDlg::WriteStartRegistry(BYTE bCheak)
 {
-	HKEY hKeyRet;
-
-	int err = RegOpenKey(HKEY_LOCAL_MACHINE,_T("Software\\Microsoft\\Windows\\CurrentVersion\\run"), &hKeyRet);
-	if(ERROR_SUCCESS != err)
-	{
-		RegCloseKey(hKeyRet);
-		return FALSE;
-	}
-	if(bCheak)
-	{
-		CString strPath = m_strLocal + _T("PrePatch.exe");
-		err = RegSetValueEx(hKeyRet, _T("4StoryPrePatch"), 0, REG_SZ, (LPBYTE)strPath.GetBuffer(), (DWORD) (lstrlen(strPath)+1)*sizeof(TCHAR));
-		if(ERROR_SUCCESS != err)
-		{
-			RegCloseKey(hKeyRet);
-			return FALSE;
-		}
-	}
-	else
-		RegDeleteValue(hKeyRet, _T("4StoryPrePatch"));
-
-	RegCloseKey(hKeyRet);
+	g_Config.SetInt(_T("Launcher"), _T("PrePatchAutoStart"), bCheak ? 1 : 0);
 	return TRUE;
 }
 

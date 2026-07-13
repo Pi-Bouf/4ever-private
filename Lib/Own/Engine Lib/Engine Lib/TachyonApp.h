@@ -30,6 +30,14 @@ public:
 	virtual void SaveStdProfileSettings();
 	virtual BYTE MainProc();
 
+	// Settings are stored in a config.ini file (see CGameConfig), not the Windows registry.
+	// These shadow the CWinApp profile methods so every existing GetProfile*/WriteProfile*
+	// call site is transparently redirected to the file-based loader.
+	UINT    GetProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nDefault);
+	CString GetProfileString(LPCTSTR lpszSection, LPCTSTR lpszEntry, LPCTSTR lpszDefault = NULL);
+	BOOL    WriteProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nValue);
+	BOOL    WriteProfileString(LPCTSTR lpszSection, LPCTSTR lpszEntry, LPCTSTR lpszValue);
+
 protected:
 	CTachyonWnd *m_pTachyonWnd;
 

@@ -3,10 +3,37 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+#include "GameConfig.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CTachyonApp
+
+// ---------------------------------------------------------------------------
+// Profile-method forwarders: redirect all settings I/O to the config.ini file
+// via CGameConfig instead of the Windows registry.
+// ---------------------------------------------------------------------------
+UINT CTachyonApp::GetProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nDefault)
+{
+	return (UINT)g_Config.GetInt(lpszSection, lpszEntry, nDefault);
+}
+
+CString CTachyonApp::GetProfileString(LPCTSTR lpszSection, LPCTSTR lpszEntry, LPCTSTR lpszDefault)
+{
+	return g_Config.GetString(lpszSection, lpszEntry, lpszDefault);
+}
+
+BOOL CTachyonApp::WriteProfileInt(LPCTSTR lpszSection, LPCTSTR lpszEntry, int nValue)
+{
+	g_Config.SetInt(lpszSection, lpszEntry, nValue);
+	return TRUE;
+}
+
+BOOL CTachyonApp::WriteProfileString(LPCTSTR lpszSection, LPCTSTR lpszEntry, LPCTSTR lpszValue)
+{
+	g_Config.SetString(lpszSection, lpszEntry, lpszValue);
+	return TRUE;
+}
 
 BEGIN_MESSAGE_MAP(CTachyonApp, CWinApp)
 	//{{AFX_MSG_MAP(CTachyonApp)

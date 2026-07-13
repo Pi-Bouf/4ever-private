@@ -156,7 +156,7 @@
       <AdditionalOptions>/source-charset:utf-8 /execution-charset:.949 
       </AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\Lib\Own\HwidLib\HwidLib;..\..\Lib\Own\TProtocol\Include;..\..\Lib\Own\Engine Lib\Engine Lib;..\..\Lib\Own\TCML\TCML;..\..\Lib\Own\TChart\TChart;..\..\Lib\Own\TComp\TComp;..\History Files;..\..\Lib\3rdParty\VLD\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Lib\Own\GameConfig;..\..\Lib\Own\HwidLib\HwidLib;..\..\Lib\Own\TProtocol\Include;..\..\Lib\Own\Engine Lib\Engine Lib;..\..\Lib\Own\TCML\TCML;..\..\Lib\Own\TChart\TChart;..\..\Lib\Own\TComp\TComp;..\History Files;..\..\Lib\3rdParty\VLD\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_HWID_AUTH;USE_VLD;WIN32;_DEBUG;TEST_MODE;KOREA;NEW_IF;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
@@ -196,7 +196,7 @@
       <AdditionalOptions>/source-charset:utf-8 /execution-charset:.949 
       </AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\Lib\Own\HwidLib\HwidLib;..\..\Lib\Own\TProtocol\Include;..\..\Lib\Own\Engine Lib\Engine Lib;..\..\Lib\Own\TCML\TCML;..\..\Lib\Own\TChart\TChart;..\..\Lib\Own\TComp\TComp;..\History Files;..\..\Lib\3rdParty\VLD\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Lib\Own\GameConfig;..\..\Lib\Own\HwidLib\HwidLib;..\..\Lib\Own\TProtocol\Include;..\..\Lib\Own\Engine Lib\Engine Lib;..\..\Lib\Own\TCML\TCML;..\..\Lib\Own\TChart\TChart;..\..\Lib\Own\TComp\TComp;..\History Files;..\..\Lib\3rdParty\VLD\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_HWID_AUTH;USE_VLD;_DEBUG;TEST_MODE;KOREA;NEW_IF;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -244,7 +244,7 @@
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
-      <AdditionalIncludeDirectories>..\..\Lib\Own\HwidLib\HwidLib;..\..\Lib\3rdParty\HShield\Include;..\..\Lib\Own\TProtocol\Include;..\..\Lib\Own\Engine Lib\Engine Lib;..\..\Lib\Own\TCML\TCML;..\..\Lib\Own\TChart\TChart;..\..\Lib\Own\TComp\TComp;..\History Files;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Lib\Own\GameConfig;..\..\Lib\Own\HwidLib\HwidLib;..\..\Lib\3rdParty\HShield\Include;..\..\Lib\Own\TProtocol\Include;..\..\Lib\Own\Engine Lib\Engine Lib;..\..\Lib\Own\TCML\TCML;..\..\Lib\Own\TChart\TChart;..\..\Lib\Own\TComp\TComp;..\History Files;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NEW_IF;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -299,7 +299,7 @@
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
-      <AdditionalIncludeDirectories>..\..\Lib\Own\HwidLib\HwidLib;..\..\Lib\Own\TProtocol\Include;..\..\Lib\Own\Engine Lib\Engine Lib;..\..\Lib\Own\TCML\TCML;..\..\Lib\Own\TChart\TChart;..\..\Lib\Own\TComp\TComp;..\History Files;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Lib\Own\GameConfig;..\..\Lib\Own\HwidLib\HwidLib;..\..\Lib\Own\TProtocol\Include;..\..\Lib\Own\Engine Lib\Engine Lib;..\..\Lib\Own\TCML\TCML;..\..\Lib\Own\TChart\TChart;..\..\Lib\Own\TComp\TComp;..\History Files;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_HWID_AUTH;NEW_IF;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -348,7 +348,7 @@
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>..\..\Lib\Own\HwidLib\HwidLib;..\..\Lib\Own\TProtocol\Include;..\..\Lib\Own\Engine Lib\Engine Lib;..\..\Lib\Own\TCML\TCML;..\..\Lib\Own\TChart\TChart;..\..\Lib\Own\TComp\TComp;..\History Files;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Lib\Own\GameConfig;..\..\Lib\Own\HwidLib\HwidLib;..\..\Lib\Own\TProtocol\Include;..\..\Lib\Own\Engine Lib\Engine Lib;..\..\Lib\Own\TCML\TCML;..\..\Lib\Own\TChart\TChart;..\..\Lib\Own\TComp\TComp;..\History Files;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_HWID_AUTH;WIN32;USE_PACKETSPY;TEST_MODE;KOREA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -395,7 +395,7 @@
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>..\..\Lib\Own\HwidLib\HwidLib;..\..\Lib\Own\TProtocol\Include;..\..\Lib\Own\Engine Lib\Engine Lib;..\..\Lib\Own\TCML\TCML;..\..\Lib\Own\TChart\TChart;..\..\Lib\Own\TComp\TComp;..\History Files;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Lib\Own\GameConfig;..\..\Lib\Own\HwidLib\HwidLib;..\..\Lib\Own\TProtocol\Include;..\..\Lib\Own\Engine Lib\Engine Lib;..\..\Lib\Own\TCML\TCML;..\..\Lib\Own\TChart\TChart;..\..\Lib\Own\TComp\TComp;..\History Files;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_HWID_AUTH;USE_PACKETSPY;TEST_MODE;KOREA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -743,6 +743,9 @@
     <ClCompile Include="TChatTabButton.cpp" />
     <ClCompile Include="TCinematicDlg.cpp" />
     <ClCompile Include="TClient.cpp" />
+    <ClCompile Include="..\..\Lib\Own\GameConfig\GameConfig.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="TClientArrow.cpp" />
     <ClCompile Include="TClientBSP.cpp" />
     <ClCompile Include="TClientCAM.cpp" />
@@ -1007,6 +1010,7 @@
     <ClInclude Include="TChatTabButton.h" />
     <ClInclude Include="TCinematicDlg.h" />
     <ClInclude Include="TClient.h" />
+    <ClInclude Include="..\..\Lib\Own\GameConfig\GameConfig.h" />
     <ClInclude Include="TClientArrow.h" />
     <ClInclude Include="TClientBSP.h" />
     <ClInclude Include="TClientCAM.h" />

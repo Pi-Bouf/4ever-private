@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include "GameConfig.h"
 #include "4Story.h"
 #include "4StoryDlg.h"
 
@@ -51,7 +52,7 @@ BOOL CStoryApp::InitInstance()
 	// 해당 설정이 저장된 레지스트리 키를 변경하십시오.
 	// TODO: 이 문자열을 회사 또는 조직의 이름과 같은
 	// 적절한 내용으로 수정해야 합니다.
-	SetRegistryKey(_T("로컬 응용 프로그램 마법사에서 생성한 응용 프로그램"));
+	g_Config.Init();   // load settings from config.ini in the game folder (no registry)
 
 	CStoryDlg dlg;
 

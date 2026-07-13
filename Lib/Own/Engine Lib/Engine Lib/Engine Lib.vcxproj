@@ -139,7 +139,7 @@
     <ClCompile>
       <AdditionalOptions>/source-charset:utf-8 /execution-charset:.949 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.\;..\..\TComp\TComp;..\..\TCML\TCML;..\..\..\3rdParty\zlib\include;..\..\..\3rdParty\VLD\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\..\GameConfig;..\..\TComp\TComp;..\..\TCML\TCML;..\..\..\3rdParty\zlib\include;..\..\..\3rdParty\VLD\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_VLD;WIN32;_DEBUG;_WINDOWS;TEST_MODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -171,7 +171,7 @@
     <ClCompile>
       <AdditionalOptions>/source-charset:utf-8 /execution-charset:.949 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.\;..\..\TComp\TComp;..\..\TCML\TCML;..\..\..\3rdParty\zlib\include;..\..\..\3rdParty\VLD\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\..\GameConfig;..\..\TComp\TComp;..\..\TCML\TCML;..\..\..\3rdParty\zlib\include;..\..\..\3rdParty\VLD\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_VLD;_DEBUG;_WINDOWS;TEST_MODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -205,7 +205,7 @@
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>.\;..\..\TComp\TComp;..\..\TCML\TCML;..\..\..\3rdParty\zlib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\..\GameConfig;..\..\TComp\TComp;..\..\TCML\TCML;..\..\..\3rdParty\zlib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -246,7 +246,7 @@
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>.\;..\..\TComp\TComp;..\..\TCML\TCML;..\..\..\3rdParty\zlib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\..\GameConfig;..\..\TComp\TComp;..\..\TCML\TCML;..\..\..\3rdParty\zlib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -287,7 +287,7 @@
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>.\;..\..\TComp\TComp;..\..\TCML\TCML;..\..\..\3rdParty\zlib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\..\GameConfig;..\..\TComp\TComp;..\..\TCML\TCML;..\..\..\3rdParty\zlib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;USE_NVPERFHUD;USE_CONSOLE;TEST_MODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -328,7 +328,7 @@
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>.\;..\..\TComp\TComp;..\..\TCML\TCML;..\..\..\3rdParty\zlib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\..\GameConfig;..\..\TComp\TComp;..\..\TCML\TCML;..\..\..\3rdParty\zlib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;USE_NVPERFHUD;USE_CONSOLE;TEST_MODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>

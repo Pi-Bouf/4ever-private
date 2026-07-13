@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include "GameConfig.h"
 #include "4Story.h"
 #include "PlaySetting.h"
 #include ".\playsetting.h"
@@ -193,209 +194,32 @@ void CPlaySetting::OnBnClickedBtnSetTab()
 
 BOOL CPlaySetting::ReadRegistry()
 {
-	HKEY hKeyRet;	
-	HKEY hKey = HKEY_CURRENT_USER;
-	
-
-	int err = 0;
-	CString strSubkey;
-	CString strRegSubKey;
-	CString strAppName;
-	CString strBuf;
-	
-	
-	strAppName = APP_NAME;	
-	strSubkey = _T("");
-	strSubkey = strAppName + REG_COUNTRY;
-	strSubkey += _T("\\Settings");
-
-	strRegSubKey.Format(_T("%s%s"), REG_SUBKEY, strSubkey);
-
-	err = RegOpenKey(hKey, strRegSubKey, &hKeyRet);
-	if(ERROR_SUCCESS != err)
-	{
-		RegCloseKey(hKeyRet);
-		hKey = HKEY_LOCAL_MACHINE;		
-	}
-
-	BYTE	data[1024];
-	DWORD   type;
-	DWORD   cbdata =1024;
-
-	// NPC 이름
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("NpcNAME") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return FALSE;
-	m_bNPCName = *((LPWORD)data);
-
-	// 캐릭터 이름
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("PcNAME") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return FALSE;
-	m_bCharName = *((LPWORD)data);
-
-	// 몬스터 이름
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("MonNAME") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return FALSE;
-	m_bMonName = *((LPWORD)data);
-
-	// 자동 도움말
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("AUTOHELP") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return FALSE;
-	m_bAutoHelp = *((LPWORD)data);
-
-	// 말풍선 보이기
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("TALKBOX") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return FALSE;
-	m_bTalkBox = *((LPWORD)data);
-
-	// HUD 보이기
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("HUD") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return FALSE;
-	m_bHUD = *((LPWORD)data);
-
-	// 귓말 거부
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("DENYWHI") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return FALSE;
-	m_bDenyWhisper = *((LPWORD)data);
-
-	// 커뮤니티 거부
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("DENYCOM") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return FALSE;
-	m_bDenyCom = *((LPWORD)data);
-
-	// 커뮤니티 거부
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("CONCHAT") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return FALSE;
-	m_bConChat = *((LPWORD)data);
-
-	// 마우스 클릭 이동 MOUSECLICKMOVE
-	cbdata = 1024;
-	memset(data, 0, 1024);
-	err = RegQueryValueEx(hKeyRet, _T("MOUSECLICKMOVE") , NULL, &type, data, &cbdata);
-	if( ERROR_SUCCESS != err || type != REG_DWORD)
-		return FALSE;
-	m_bClickMove = *((LPWORD)data);
+	m_bNPCName     = g_Config.GetInt(_T("Settings"), _T("NpcNAME"));
+	m_bCharName    = g_Config.GetInt(_T("Settings"), _T("PcNAME"));
+	m_bMonName     = g_Config.GetInt(_T("Settings"), _T("MonNAME"));
+	m_bAutoHelp    = g_Config.GetInt(_T("Settings"), _T("AUTOHELP"));
+	m_bTalkBox     = g_Config.GetInt(_T("Settings"), _T("TALKBOX"));
+	m_bHUD         = g_Config.GetInt(_T("Settings"), _T("HUD"));
+	m_bDenyWhisper = g_Config.GetInt(_T("Settings"), _T("DENYWHI"));
+	m_bDenyCom     = g_Config.GetInt(_T("Settings"), _T("DENYCOM"));
+	m_bConChat     = g_Config.GetInt(_T("Settings"), _T("CONCHAT"));
+	m_bClickMove   = g_Config.GetInt(_T("Settings"), _T("MOUSECLICKMOVE"));
 
 	return TRUE;
 }
 
 BOOL CPlaySetting::WriteRegistry()
 {
-	HKEY hKeyRet;	
-	HKEY hKey = HKEY_CURRENT_USER;
-	
-
-	int err = 0;	
-	CString strSubkey;
-	CString strRegSubKey;
-	CString strAppName;
-	
-	
-	strAppName = APP_NAME;	
-	strSubkey = _T("");
-	strSubkey = strAppName + REG_COUNTRY;
-	strSubkey += _T("\\Settings");
-
-	strRegSubKey.Format(_T("%s%s"), REG_SUBKEY, strSubkey);
-
-	err = RegOpenKey(hKey, strRegSubKey, &hKeyRet);
-	if(ERROR_SUCCESS != err)
-	{
-		RegCloseKey(hKeyRet);
-		hKey = HKEY_LOCAL_MACHINE;		
-	}
-
-	char	strTmp[1024] = {0,};
-	BYTE	data[1024] = {0};	
-	DWORD   cbData = 4;
-	DWORD	cbData1 = sizeof(BOOL);
-
-
-	// NPC 이름
-	memcpy(data, &m_bNPCName, sizeof(BOOL));
-	err = RegSetValueEx(hKeyRet, _T("NpcNAME"), 0, REG_DWORD, data, cbData1 );
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-	// 캐릭터 이름
-	memcpy(data, &m_bCharName, sizeof(BOOL));
-	err = RegSetValueEx(hKeyRet, _T("PcNAME"), 0, REG_DWORD, data, cbData1 );
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-	// 몬스터 이름
-	memcpy(data, &m_bMonName, sizeof(BOOL));
-	err = RegSetValueEx(hKeyRet, _T("MonNAME"), 0, REG_DWORD, data, cbData1 );
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-	// 자동 도움말
-	memcpy(data, &m_bAutoHelp, sizeof(BOOL));
-	err = RegSetValueEx(hKeyRet, _T("AUTOHELP"), 0, REG_DWORD, data, cbData1 );
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-	// 말풍선 보이기
-	memcpy(data, &m_bTalkBox, sizeof(BOOL));
-	err = RegSetValueEx(hKeyRet, _T("TALKBOX"), 0, REG_DWORD, data, cbData1 );
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-	// HUD 보이기
-	memcpy(data, &m_bHUD, sizeof(BOOL));
-	err = RegSetValueEx(hKeyRet, _T("HUD"), 0, REG_DWORD, data, cbData1 );
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-	// 귓말 거부
-	memcpy(data, &m_bDenyWhisper, sizeof(BOOL));
-	err = RegSetValueEx(hKeyRet, _T("DENYWHI"), 0, REG_DWORD, data, cbData1 );
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-	// 커뮤니티 거부
-	memcpy(data, &m_bDenyCom, sizeof(BOOL));
-	err = RegSetValueEx(hKeyRet, _T("DENYCOM"), 0, REG_DWORD, data, cbData1 );
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-	// 연속채팅 지원
-	memcpy(data, &m_bConChat, sizeof(BOOL));
-	err = RegSetValueEx(hKeyRet, _T("CONCHAT"), 0, REG_DWORD, data, cbData1 );
-	if( ERROR_SUCCESS != err )
-		return FALSE;
-
-	// 마우스 클릭 이동
-	memcpy(data, &m_bClickMove, sizeof(BOOL));
-	err = RegSetValueEx(hKeyRet, _T("MOUSECLICKMOVE"), 0, REG_DWORD, data, cbData1 );
-	if( ERROR_SUCCESS != err )
-		return FALSE;
+	g_Config.SetInt(_T("Settings"), _T("NpcNAME"),        m_bNPCName);
+	g_Config.SetInt(_T("Settings"), _T("PcNAME"),         m_bCharName);
+	g_Config.SetInt(_T("Settings"), _T("MonNAME"),        m_bMonName);
+	g_Config.SetInt(_T("Settings"), _T("AUTOHELP"),       m_bAutoHelp);
+	g_Config.SetInt(_T("Settings"), _T("TALKBOX"),        m_bTalkBox);
+	g_Config.SetInt(_T("Settings"), _T("HUD"),            m_bHUD);
+	g_Config.SetInt(_T("Settings"), _T("DENYWHI"),        m_bDenyWhisper);
+	g_Config.SetInt(_T("Settings"), _T("DENYCOM"),        m_bDenyCom);
+	g_Config.SetInt(_T("Settings"), _T("CONCHAT"),        m_bConChat);
+	g_Config.SetInt(_T("Settings"), _T("MOUSECLICKMOVE"), m_bClickMove);
 
 	return TRUE;
 }
