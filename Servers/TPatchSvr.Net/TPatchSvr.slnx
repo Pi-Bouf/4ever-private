@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="TPatch.Protocol/TPatch.Protocol.csproj" />
+  <Project Path="TPatch.Protocol.Tests/TPatch.Protocol.Tests.csproj" />
+  <Project Path="TPatch.Data/TPatch.Data.csproj" />
+  <Project Path="TPatch.Server/TPatch.Server.csproj" />
+  <Project Path="TPatch.Server.Tests/TPatch.Server.Tests.csproj" />
+</Solution>

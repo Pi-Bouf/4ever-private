@@ -4,6 +4,9 @@ name: araz
 #   mssql           - SQL Server 2022
 #   mssql-importer  - one-shot: restores the .bak baselines (once), then runs Database/migrations in order
 #   loginsvr        - the .NET TLogin server (Servers/TLoginSvr.Net)
+#   worldsvr        - the .NET TWorld server (Servers/TWorldSvr.Net)
+#   patchsvr        - the .NET TPatch server (Servers/TPatchSvr.Net)
+#   controlsvr      - the .NET TControl server (Servers/TControlSvr.Net)
 #
 #   docker compose up --build
 #
@@ -74,6 +77,58 @@ services:
       World__Db__GlobalConnectionString: "Server=mssql,1433;Database=TGlobal_gsp;User ID=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;Encrypt=False"
     ports:
       - "3816:3816"
+
+  # Patch server (Servers/TPatchSvr.Net). The launcher connects here first; the server replies with the
+  # download base URL + login endpoint + the list of patch files newer than the client's version (from
+  # TVERSION / TPREVERSION). Boots DB-less too (empty file lists). See Servers/TPatchSvr.Net/README.md.
+  patchsvr:
+    build:
+      context: ./Servers/TPatchSvr.Net
+      dockerfile: Dockerfile
+    container_name: araz-patchsvr
+    depends_on:
+      mssql-importer:
+        condition: service_completed_successfully
+    environment:
+      Patch__Port: "3716"
+      Patch__ServerId: "1"
+      Patch__GroupId: "0"
+      # Patch tables + topology procs live in TGlobal (TLoadService / TVERSION / TPREVERSION / TUSER_INTERFACE).
+      Patch__Db__ConnectionString: "Server=mssql,1433;Database=TGlobal_gsp;User ID=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;Encrypt=False"
+      # Login endpoint handed to clients when TLoadService has no topology row (else the DB value wins).
+      Patch__LoginAddress: "127.0.0.1"
+      Patch__LoginPort: "4816"
+    ports:
+      - "3716:3716"
+
+  # Control server (Servers/TControlSvr.Net). Connects OUT to the world server, registers via
+  # CT_CTRLSVR_REQ, and would relay GM commands from an admin tool. The DB gives it operator auth + the
+  # scheduled-event set; the explicit Servers__0 dial entry redirects the world dial to the in-network
+  # `worldsvr:3816` (the baseline TIPADDR points at a LAN IP not reachable here). NOTE: the live monitor
+  # poll requires the CT_SERVICEMONITOR REQ/ACK swap in TWorldSvr.Net/NetCode.cs to be reconciled first
+  # (see Servers/TControlSvr.Net/PORT_STATUS.md). See Servers/TControlSvr.Net/README.md.
+  controlsvr:
+    build:
+      context: ./Servers/TControlSvr.Net
+      dockerfile: Dockerfile
+    container_name: araz-controlsvr
+    depends_on:
+      mssql-importer:
+        condition: service_completed_successfully
+      worldsvr:
+        condition: service_started
+    environment:
+      Control__Port: "3615"
+      Control__ConnectIntervalSeconds: "5"
+      Control__Db__GlobalConnectionString: "Server=mssql,1433;Database=TGlobal_gsp;User ID=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;Encrypt=False"
+      Control__Servers__0__Host: "worldsvr"
+      Control__Servers__0__Port: "3816"
+      Control__Servers__0__Group: "1"
+      Control__Servers__0__Type: "3"       # SVRGRP_WORLDSVR
+      Control__Servers__0__ServerId: "1"
+      Control__Servers__0__Name: "TWORLD_GSP"
+    ports:
+      - "3615:3615"
 
 volumes:
   mssql-data:
