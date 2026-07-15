@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="TMap.Protocol/TMap.Protocol.csproj" />
+  <Project Path="TMap.Protocol.Tests/TMap.Protocol.Tests.csproj" />
+  <Project Path="TMap.Data/TMap.Data.csproj" />
+  <Project Path="TMap.Data.Tests/TMap.Data.Tests.csproj" />
+  <Project Path="TMap.Server/TMap.Server.csproj" />
+  <Project Path="TMap.Server.Tests/TMap.Server.Tests.csproj" />
+</Solution>

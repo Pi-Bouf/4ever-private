@@ -1,0 +1,706 @@
+using Microsoft.Extensions.Logging;
+using TMap.Data;
+using TMap.Protocol;
+
+namespace TMap.Server.Map;
+
+/// <summary>
+/// The client-enter handshake — the C# port of the C++ connect/session flow spread across
+/// <c>CSHandler.cpp</c> (client side) and <c>SSHandler.cpp</c> (map↔world side). The sequence:
+/// <code>
+/// client CS_CONNECT_REQ                      → map SendMW_ADDCHAR_ACK
+/// world  MW_ENTERSVR_REQ   → map SendMW_ENTERSVR_ACK  (loads char from DB here, DB-manager role in-process)
+/// world  MW_CHARDATA_REQ   → map SendMW_CHARDATA_ACK
+/// world  MW_CHARINFO_REQ   → map SendCS_CHARINFO_ACK  (the client gets its char here)
+/// world  MW_ROUTE_REQ      → map SendMW_ROUTE_ACK
+/// world  MW_ENTERCHAR_REQ  → map SendMW_ENTERCHAR_ACK
+/// world  MW_CHECKMAIN_REQ  → map SendMW_CHECKMAIN_ACK
+/// world  MW_CONRESULT_REQ  → map SendCS_CONNECT_ACK   (the "enter granted" signal)
+/// client CS_CONREADY_REQ                     → place player into cell, broadcast CS_ENTER_ACK
+/// </code>
+/// The map does not control the order — the world drives it — so each MW handler responds independently.
+/// </summary>
+public sealed partial class MapService
+{
+    // Default spawn used when a character cannot be loaded from the DB (DB-free operation). Matches the
+    // fresh-newbie spawn observed against the deployed stack (map 0, ~(3663, 0, 557), dir 762).
+    private const float SpawnX = 3663f, SpawnY = 0f, SpawnZ = 557f;
+    private const ushort SpawnDir = 762;
+
+    // ---- startup: announce this map server to the world ----
+
+    private void SendMW_CONNECT_ACK()
+    {
+        var w = new PacketWriter(Msg.MW_CONNECT_ACK);
+        w.WriteUInt16(Proto.MakeServerId(_opt.ServerId, SvrType.Map)); // MAKEWORD(serverId, SVRGRP_MAPSVR)
+        w.WriteByte((byte)_opt.Channels.Length);
+        foreach (var ch in _opt.Channels) w.WriteByte(ch);
+        _world.Send(w);
+    }
+
+    // ---- client's first packet ----
+
+    private async Task OnCS_CONNECT_REQ(ClientSession s, PacketReader r)
+    {
+        ushort version = r.ReadUInt16();
+        byte channel = r.ReadByte();
+        uint userId = r.ReadUInt32();
+        uint charId = r.ReadUInt32();
+        uint key = r.ReadUInt32();
+        uint ip = r.ReadUInt32();
+        ushort port = r.ReadUInt16();
+        long checksum = r.ReadInt64();
+
+        if (version != Proto.ClientVersion)
+        {
+            SendCS_CONNECT_ACK(s, ConnectResult.InvalidVer, null);
+            _log.LogWarning("CONNECT rejected (bad version 0x{V:X4}) for char {Char}.", version, charId);
+            return;
+        }
+
+        long expected = Proto.ComputeConnectChecksum(version, userId, key, charId);
+        if (checksum != expected)
+        {
+            // The C++ silently drops (no ACK) on checksum mismatch.
+            _log.LogWarning("CONNECT rejected (bad checksum) for char {Char}.", charId);
+            s.Conn.Close();
+            return;
+        }
+
+        if (s.CharId != 0 && s.CharId != charId)
+        {
+            _log.LogWarning("CONNECT for char {New} on a session already bound to {Old}.", charId, s.CharId);
+            return;
+        }
+
+        // Reject a duplicate of a char already live on this map (the C++ CloseSession/suspend dance).
+        if (_state.FindByChar(charId) is { } existing && !ReferenceEquals(existing, s))
+        {
+            SendCS_CONNECT_ACK(s, ConnectResult.AlreadyExist, null);
+            s.Conn.Close();
+            return;
+        }
+
+        s.Version = version;
+        s.Channel = channel;
+        s.UserId = userId;
+        s.CharId = charId;
+        s.Key = key;
+        s.ClientIp = ip;
+        s.ClientPort = port;
+        s.State = EnterState.Entering;
+        _state.Register(s);
+
+        // Resolve the character up front (DB or synthesized) so the handshake ACKs carry real data.
+        await EnsureCharAsync(s);
+
+        SendMW_ADDCHAR_ACK(s);
+        _log.LogInformation("Char {Char} (user {User}, ch {Ch}) entering; announced to world.", charId, userId, channel);
+    }
+
+    private void SendMW_ADDCHAR_ACK(ClientSession s)
+    {
+        var w = new PacketWriter(Msg.MW_ADDCHAR_ACK);
+        w.WriteUInt32(s.CharId);
+        w.WriteUInt32(s.Key);
+        w.WriteUInt32(s.ClientIp);
+        w.WriteUInt16(s.ClientPort);
+        w.WriteUInt32(s.UserId);
+        _world.Send(w);
+    }
+
+    // ---- world-driven handshake steps ----
+
+    private async Task OnMW_ENTERSVR_REQ(PacketReader r)
+    {
+        byte dbLoad = r.ReadByte();
+        uint charId = r.ReadUInt32();
+        uint key = r.ReadUInt32();
+        var s = _state.FindByChar(charId);
+        if (s is null) return;
+
+        await EnsureCharAsync(s);
+        var ch = s.Char!;
+
+        // The C++ routes this through DM_ENTERMAPSVR (TEnterServer) then DM_LOADCHAR before replying. We fold
+        // that into an inline best-effort load and reply directly, with CN_SUCCESS.
+        var w = new PacketWriter(Msg.MW_ENTERSVR_ACK);
+        w.WriteUInt32(charId);
+        w.WriteUInt32(key);
+        w.WriteString(ch.Name);
+        w.WriteByte(ch.Level);
+        w.WriteByte(ch.Sex);       // realSex
+        w.WriteByte(ch.Class);
+        w.WriteByte(ch.Race);
+        w.WriteByte(ch.Sex);
+        w.WriteByte(ch.Face);
+        w.WriteByte(ch.Hair);
+        w.WriteByte(ch.HelmetHide);
+        w.WriteByte(ch.Country);
+        w.WriteByte(ch.AidCountry);
+        w.WriteUInt32(ch.RegionId);
+        w.WriteByte(s.Channel);
+        w.WriteUInt16(ch.MapId);
+        w.WriteFloat(ch.PosX);
+        w.WriteFloat(ch.PosY);
+        w.WriteFloat(ch.PosZ);
+        w.WriteByte(0);            // bLogout
+        w.WriteByte(1);            // bSave
+        w.WriteByte((byte)ConnectResult.Success);
+        w.WriteUInt16(0);         // wTitleID
+        w.WriteUInt32(0);         // dwRankPoint
+        w.WriteUInt32(s.ClientIp); // dwUserIP
+        _world.Send(w);
+    }
+
+    private void OnMW_CHARDATA_REQ(PacketReader r)
+    {
+        uint charId = r.ReadUInt32();
+        uint key = r.ReadUInt32();
+        var s = _state.FindByChar(charId);
+        if (s?.Char is not { } ch) return;
+
+        var w = new PacketWriter(Msg.MW_CHARDATA_ACK);
+        w.WriteUInt32(charId);
+        w.WriteUInt32(key);
+        w.WriteByte(ch.StartAct);
+        w.WriteByte(ch.Level);
+        uint maxHp = MaxHpFor(ch), maxMp = MaxMpFor(ch);
+        w.WriteUInt32(maxHp);
+        w.WriteUInt32(Math.Min(ch.Hp, maxHp));
+        w.WriteUInt32(maxMp);
+        w.WriteUInt32(Math.Min(ch.Mp, maxMp));
+        w.WriteByte(ch.Country);
+        w.WriteByte(ch.Mode);
+        w.WriteByte(0);            // recall-mon count (Phase-1: none)
+        w.WriteString("");         // m_strComment
+        _world.Send(w);
+    }
+
+    private void OnMW_CHARINFO_REQ(PacketReader r)
+    {
+        uint charId = r.ReadUInt32();
+        uint key = r.ReadUInt32();
+        var s = _state.FindByChar(charId);
+        if (s?.Char is not { } ch) return;
+
+        // Guild / party / title context the world resolved for this char.
+        ch.GuildId = r.ReadUInt32();
+        r.ReadByte();                     // bGuildCountry
+        ch.GuildName = r.ReadString();
+        ch.Fame = r.ReadUInt32();
+        ch.FameColor = r.ReadUInt32();
+        ch.TacticsId = r.ReadUInt32();
+        ch.TacticsName = r.ReadString();
+        ch.GuildDuty = r.ReadByte();
+        ch.GuildPeer = r.ReadByte();
+        r.ReadUInt16();                   // wCastle
+        r.ReadByte();                     // bCamp
+        ch.PartyId = r.ReadUInt16();
+        ch.PartyType = r.ReadByte();      // bPartyType (loot/exp mode; PT_SOLO opts out of party sharing)
+        ch.PartyChiefId = r.ReadUInt32();
+        // trailing wTitleID / dwRankPoint / BOWRelease ignored (Phase-1)
+
+        // This is where the client actually receives its character (see agent analysis, item 5).
+        SendCS_CHARINFO_ACK(s);
+        // C++ sends the running-quest list here (OnMW_CHARINFO_REQ, right after CHARINFO_ACK) so the client
+        // rebuilds its quest log; the completed-quest list (CS_QUESTLIST_COMPLETE_ACK) is never dispatched by
+        // the C++, so it's not ported.
+        SendCS_QUESTLIST_ACK(s, ch);
+        SendQuestTimers(s, ch);   // C++ SendQuestTimer(m_dwTick) — restores active-timer countdowns on relog
+    }
+
+    private void OnMW_ROUTE_REQ(PacketReader r)
+    {
+        uint charId = r.ReadUInt32();
+        uint key = r.ReadUInt32();
+        // channel, mapId, pos follow — validated in the C++; single-map deployment needs no cross-routing.
+        var s = _state.FindByChar(charId);
+        if (s is null) return;
+
+        var w = new PacketWriter(Msg.MW_ROUTE_ACK);
+        w.WriteUInt32(charId);
+        w.WriteUInt32(key);
+        w.WriteByte(0); // no neighbouring map servers to route to (single-server Phase-1)
+        _world.Send(w);
+    }
+
+    private void OnMW_ENTERCHAR_REQ(PacketReader r)
+    {
+        uint charId = r.ReadUInt32();
+        uint key = r.ReadUInt32();
+        var s = _state.FindByChar(charId);
+        if (s?.Char is not { } ch) { return; }
+
+        // The world tells the map the char's live state. We read the leading fields we model and overlay
+        // them onto the loaded character (the deep block — recall-mons, soulmate, comment — is skipped;
+        // the reader tolerates a partial read).
+        ch.StartAct = r.ReadByte();
+        ch.Name = r.ReadString();
+        ch.MapId = r.ReadUInt16();
+        ch.PosX = r.ReadFloat();
+        ch.PosY = r.ReadFloat();
+        ch.PosZ = r.ReadFloat();
+        ch.GuildId = r.ReadUInt32();
+        ch.Fame = r.ReadUInt32();
+        ch.FameColor = r.ReadUInt32();
+        ch.GuildName = r.ReadString();
+        ch.GuildDuty = r.ReadByte();
+        ch.GuildPeer = r.ReadByte();
+        r.ReadUInt16();                   // wCastle
+        r.ReadByte();                     // bCamp
+        ch.TacticsId = r.ReadUInt32();
+        ch.TacticsName = r.ReadString();
+        ch.PartyId = r.ReadUInt16();
+        ch.PartyType = r.ReadByte();      // bPartyType (loot/exp mode; PT_SOLO opts out of party sharing)
+        ch.PartyChiefId = r.ReadUInt32();
+        ch.CommanderId = r.ReadUInt16();
+        ch.Level = r.ReadByte();
+        ch.HelmetHide = r.ReadByte();
+        ch.Country = r.ReadByte();
+        ch.AidCountry = r.ReadByte();
+        ch.Mode = r.ReadByte();
+        // remaining fields (riding, chat-ban, soulmate, class, recall-mons, comment) are Phase-1 deferred
+
+        var w = new PacketWriter(Msg.MW_ENTERCHAR_ACK);
+        w.WriteUInt32(charId);
+        w.WriteUInt32(key);
+        _world.Send(w);
+    }
+
+    private void OnMW_CHECKMAIN_REQ(PacketReader r)
+    {
+        uint charId = r.ReadUInt32();
+        uint key = r.ReadUInt32();
+        // channel, mapId, pos follow; single-server → this map is always the main cell.
+        var s = _state.FindByChar(charId);
+        if (s is null) return;
+
+        s.IsMain = true;
+        var w = new PacketWriter(Msg.MW_CHECKMAIN_ACK);
+        w.WriteUInt32(charId);
+        w.WriteUInt32(key);
+        _world.Send(w);
+    }
+
+    private void OnMW_CONRESULT_REQ(PacketReader r)
+    {
+        uint charId = r.ReadUInt32();
+        uint key = r.ReadUInt32();
+        var result = (ConnectResult)r.ReadByte();
+        var serverIds = new List<byte>();
+        int count = r.ReadByte();
+        for (int i = 0; i < count; i++) serverIds.Add(r.ReadByte());
+
+        var s = _state.FindByChar(charId);
+        if (s is null) return;
+
+        SendCS_CONNECT_ACK(s, result, serverIds);
+
+        if (result == ConnectResult.Success)
+        {
+            s.IsMain = true;
+            s.State = EnterState.Granted;
+            _log.LogInformation("Char {Char} enter granted.", charId);
+        }
+        else
+        {
+            _log.LogWarning("Char {Char} enter denied ({Result}).", charId, result);
+            s.Conn.Close();
+        }
+    }
+
+    private void OnMW_CLOSECHAR_REQ(PacketReader r)
+    {
+        uint charId = r.ReadUInt32();
+        uint key = r.ReadUInt32();
+        var s = _state.FindByChar(charId);
+        s?.Conn.Close();
+    }
+
+    private void OnMW_TERMINATE_REQ(PacketReader r)
+    {
+        // World asked the map to drop a char (kick / world shutdown).
+        uint charId = r.ReadUInt32();
+        var s = _state.FindByChar(charId);
+        s?.Conn.Close();
+    }
+
+    private void SendMW_CLOSECHAR_ACK(uint charId, uint key)
+    {
+        var w = new PacketWriter(Msg.MW_CLOSECHAR_ACK);
+        w.WriteUInt32(charId);
+        w.WriteUInt32(key);
+        _world.Send(w);
+    }
+
+    // ---- client "ready" → live in the world ----
+
+    private void OnCS_CONREADY_REQ(ClientSession s, PacketReader r)
+    {
+        if (s.State is not (EnterState.Granted or EnterState.InGame)) return;
+        if (s.Char is null) return;
+
+        bool firstEntry = s.State != EnterState.InGame;
+        s.State = EnterState.InGame;
+
+        if (firstEntry)
+        {
+            // Place into the world grid, then exchange CS_ENTER_ACK with the 3×3-cell neighbours
+            // (CTMap::EnterMAP adds the player to its centre cell, then CTCell::EnterPlayer runs the
+            // bidirectional exchange across the neighbour block). The player must be in the grid first so
+            // subsequently-entering players can see it.
+            _state.EnterWorld(s);
+            foreach (var other in _state.Neighbors(s))
+            {
+                other.Send(BuildCS_ENTER_ACK(s, newMember: true)); // existing players see the newcomer (flagged new)
+                s.Send(BuildCS_ENTER_ACK(other));                  // the newcomer sees existing players (not new)
+            }
+            SendMonstersInView(s); // and the newcomer learns of the monsters already in its view (CTCell::EnterPlayer)
+            SendSwitchesAndGatesInView(s); // + the switches/gates already in view (CTCell::EnterPlayer switch/gate loops)
+            _log.LogInformation("Char {Char} live on map {Map} ch {Ch}.", s.CharId, s.Char.MapId, s.Channel);
+        }
+    }
+
+    // ---- senders to the client ----
+
+    private static void SendCS_CONNECT_ACK(ClientSession s, ConnectResult result, IReadOnlyList<byte>? serverIds)
+    {
+        var w = new PacketWriter(Msg.CS_CONNECT_ACK);
+        w.WriteByte((byte)result);
+        w.WriteByte((byte)(serverIds?.Count ?? 0));
+        if (serverIds is not null)
+            foreach (var id in serverIds) w.WriteByte(id);
+        s.Send(w);
+    }
+
+    private void SendCS_CHARINFO_ACK(ClientSession s)
+    {
+        var ch = s.Char!;
+        var w = new PacketWriter(Msg.CS_CHARINFO_ACK, capacity: 512);
+        w.WriteUInt32(ch.CharId);
+        w.WriteByte(0);              // secure code created
+        w.WriteByte(0);              // secure code currently unlocked
+        w.WriteByte(0);              // secure code disabled
+        w.WriteUInt16(0);            // wTitleID
+        w.WriteString(ch.Name);
+        w.WriteByte(ch.StartAct);
+        w.WriteByte(ch.Class);
+        w.WriteByte(ch.Race);
+        w.WriteByte(ch.Country);
+        w.WriteByte(ch.AidCountry);
+        w.WriteByte(ch.Sex);
+        w.WriteByte(ch.Hair);
+        w.WriteByte(ch.Face);
+        w.WriteByte(ch.Body);
+        w.WriteByte(ch.Pants);
+        w.WriteByte(ch.Hand);
+        w.WriteByte(ch.Foot);
+        w.WriteByte(ch.HelmetHide);
+        w.WriteByte(ch.Level);
+        w.WriteUInt16(ch.PartyId);
+        w.WriteUInt32(ch.GuildId);
+        w.WriteUInt32(ch.Fame);
+        w.WriteUInt32(ch.FameColor);
+        w.WriteByte(ch.GuildDuty);
+        w.WriteByte(ch.GuildPeer);
+        w.WriteString(ch.GuildName);
+        w.WriteUInt32(ch.TacticsId);
+        w.WriteString(ch.TacticsName);
+        w.WriteUInt32(ch.Gold);
+        w.WriteUInt32(ch.Silver);
+        w.WriteUInt32(ch.Cooper);
+        w.WriteUInt32(ch.PrevExp);
+        w.WriteUInt32(ch.NextExp);
+        w.WriteUInt32(ch.Exp);
+        uint maxHp = MaxHpFor(ch), maxMp = MaxMpFor(ch); // C++ GetMaxHP/GetMaxMP; current HP/MP clamped down
+        w.WriteUInt32(maxHp);
+        w.WriteUInt32(Math.Min(ch.Hp, maxHp));
+        w.WriteUInt32(maxMp);
+        w.WriteUInt32(Math.Min(ch.Mp, maxMp));
+        w.WriteUInt32(ch.PartyChiefId);
+        w.WriteUInt16((ushort)ch.CommanderId); // wCommanderID (header contract is WORD)
+        w.WriteUInt32(ch.RegionId);
+        w.WriteUInt16(ch.MapId);
+        w.WriteFloat(ch.PosX);
+        w.WriteFloat(ch.PosY);
+        w.WriteFloat(ch.PosZ);
+        w.WriteUInt16(ch.Dir);
+        w.WriteUInt16(0);            // wSkillPoint (my)
+        w.WriteByte(0);              // bLuckyNumber
+        w.WriteUInt32(0);            // aid left time
+        w.WriteUInt16(0);            // skill kind point 1
+        w.WriteUInt16(0);            // skill kind point 2
+        w.WriteUInt16(0);            // skill kind point 3
+        w.WriteUInt16(0);            // skill kind point 4
+        w.WriteUInt32(0);            // dwRankPoint
+        w.WriteByte(0);              // non-BOW build flag (FALSE)
+
+        // Inventory containers + items (each item via CTItem::WrapPacketClient). The C++ holds these in
+        // map<BYTE invenId> / map<BYTE slot>, so it emits containers by ascending id and items by ascending
+        // slot — sort to match the on-wire byte sequence (the client self-keys, so this is parity, not correctness).
+        w.WriteByte((byte)ch.Invens.Count);
+        foreach (var inv in ch.Invens.OrderBy(i => i.InvenId))
+        {
+            w.WriteByte(inv.InvenId);
+            w.WriteUInt16(inv.TemplateId);
+            w.WriteInt64(inv.EndTime);
+            w.WriteByte((byte)inv.Items.Count);
+            foreach (var it in inv.Items.OrderBy(x => x.ItemSlot)) it.WrapPacketClient(w, ch.CharId);
+        }
+
+        // Learned skills (C++ map<WORD skillId> → ascending by id).
+        w.WriteByte((byte)ch.Skills.Count);
+        foreach (var sk in ch.Skills.OrderBy(s => s.SkillId))
+        {
+            w.WriteUInt16(sk.SkillId);
+            w.WriteByte(sk.Level);
+            w.WriteUInt32(sk.ReuseRemainTick);
+        }
+
+        // Maintained (buff) skills.
+        w.WriteByte((byte)ch.MaintainSkills.Count);
+        foreach (var m in ch.MaintainSkills) WriteMaintainSkill(w, m, NowMs);
+
+        // Hotkey pages (MAX_HOTKEY_POS slots each; C++ map<BYTE invenKey> → ascending by key).
+        w.WriteByte((byte)ch.HotkeyPages.Count);
+        foreach (var pg in ch.HotkeyPages.OrderBy(p => p.InvenKey))
+        {
+            w.WriteByte(pg.InvenKey);
+            for (int i = 0; i < HotkeyPage.SlotCount; i++)
+            {
+                w.WriteByte(pg.Slots[i].Type);
+                w.WriteUInt16(pg.Slots[i].Id);
+            }
+        }
+
+        w.WriteByte(0);              // item-cooltime count (Phase-2: none)
+        w.WriteUInt32(ch.PvpTotalPoint);
+        w.WriteUInt32(ch.PvpUseablePoint);
+        w.WriteUInt32(0);            // month PvP point
+        w.WriteString(DateTime.Now.ToString("tt hh : mm")); // strTajm (server clock)
+        w.WriteUInt32(0);            // medals
+        s.Send(w);
+    }
+
+    // ---- character resolution ----
+
+    private async Task EnsureCharAsync(ClientSession s)
+    {
+        if (s.Char is not null) return;
+
+        var ch = new Character
+        {
+            CharId = s.CharId,
+            Country = 4,       // neutral until the world/DB says otherwise
+            Level = 1,
+            MaxHp = 100, Hp = 100, MaxMp = 100, Mp = 100,
+            MapId = 0,
+            PosX = SpawnX, PosY = SpawnY, PosZ = SpawnZ, Dir = SpawnDir,
+            Name = $"Char{s.CharId}",
+        };
+
+        if (_gameDb is not null)
+        {
+            try
+            {
+                var row = await _gameDb.LoadCharAsync(s.CharId);
+                if (row is CharLoadRow c)
+                {
+                    ch.Name = string.IsNullOrEmpty(c.Name) ? ch.Name : c.Name;
+                    ch.StartAct = c.StartAct;
+                    ch.Class = c.Class; ch.Race = c.Race; ch.Country = c.Country; ch.Sex = c.Sex;
+                    ch.Hair = c.Hair; ch.Face = c.Face; ch.Body = c.Body; ch.Pants = c.Pants;
+                    ch.Hand = c.Hand; ch.Foot = c.Foot; ch.Level = c.Level == 0 ? (byte)1 : c.Level;
+                    ch.RegionId = c.Region; ch.HelmetHide = c.HelmetHide;
+                    ch.Hp = c.Hp; ch.Mp = c.Mp; // persisted CURRENT hp/mp; max is computed + clamped at serialize
+                    ch.Gold = c.Gold; ch.Silver = c.Silver; ch.Cooper = c.Cooper;
+                    ch.Exp = c.Exp; ch.SkillPoint = c.SkillPoint;
+                    // Round-trip-only columns (unused by the map, saved back unchanged by TSaveChar).
+                    ch.Persist.GuildLeave = c.GuildLeave; ch.Persist.GuildLeaveTime = c.GuildLeaveTime;
+                    ch.Persist.SpawnId = c.SpawnId; ch.Persist.LastSpawnId = c.LastSpawnId;
+                    ch.Persist.LastDestination = c.LastDestination; ch.Persist.TemptedMon = c.TemptedMon;
+                    ch.Persist.Aftermath = c.Aftermath; ch.Persist.StatLevel = c.StatLevel;
+                    ch.Persist.StatPoint = c.StatPoint; ch.Persist.StatExp = c.StatExp;
+                    ch.DbLoaded = true;          // a real row ⇒ eligible to be saved back
+                    ch.LastSaveMs = NowMs;       // first periodic save one interval after load (C++ m_dwSaveTick)
+                }
+                else
+                {
+                    _log.LogWarning("Char {Char} not found in TCHARTABLE; using defaults.", s.CharId);
+                }
+
+                await TryLoadInventoryAsync(ch);
+
+                // C++ clamps the persisted current HP/MP DOWN to the computed max at load (no refill), so the
+                // in-memory value is never over-max (matters once regen/damage/save read it). Charts-gated.
+                if (_templates.HasStats)
+                {
+                    ch.Hp = Math.Min(ch.Hp, StatEngine.MaxHp(ch, _templates));
+                    ch.Mp = Math.Min(ch.Mp, StatEngine.MaxMp(ch, _templates));
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.LogWarning(ex, "Char {Char} DB load failed; using defaults.", s.CharId);
+            }
+        }
+
+        s.Char = ch;
+    }
+
+    /// <summary>
+    /// Loads the character's inventory containers + items, learned/maintained skills and hotkey pages
+    /// (CTBLInven/CTBLItem/CTBLSkill/CTBLSkillMaintain/CTBLHotKey), building the in-memory model the
+    /// CS_CHARINFO_ACK / CS_ENTER_ACK sub-loops serialize. Best-effort — any failure leaves the char with
+    /// whatever loaded so far. Only <c>STORAGE_INVEN</c> (0) items land in the inventory containers; the
+    /// backpack (0xFF) and equipped (0xFE) containers always exist.
+    /// </summary>
+    private async Task TryLoadInventoryAsync(Character ch)
+    {
+        if (_gameDb is null) return;
+
+        // Containers: seed backpack + equipped, add the loaded bags, then bucket items by storage id.
+        var byId = new Dictionary<byte, Inven>
+        {
+            [Proto.InvenDefault] = new Inven { InvenId = Proto.InvenDefault },
+            [Proto.InvenEquip] = new Inven { InvenId = Proto.InvenEquip },
+        };
+        foreach (var b in await _gameDb.LoadInvensAsync(ch.CharId))
+            byId[b.InvenId] = new Inven { InvenId = b.InvenId, TemplateId = b.TemplateId, EndTime = b.EndTime, Eld = b.Eld };
+
+        // Cabinet open-state headers BEFORE items (C++ OnDM_LOADCHAR_ACK applies bCabinetID/bUse first, so the
+        // per-item GetCabinet(m_bItemID) lands in an existing record).
+        foreach (var cab in await _gameDb.LoadCabinetsAsync(ch.CharId))
+            ch.GetOrCreateCabinet(cab.CabinetId).Use = cab.Use;
+
+        foreach (var row in await _gameDb.LoadItemsAsync(ch.CharId))
+        {
+            // STORAGE_INVEN (bags) and STORAGE_CABINET (warehouse) both ride this load; STORAGE_POST (mail) is
+            // already excluded by the query (bStorageType <> 2). Anything else is dropped.
+            if (row.StorageType is not (Proto.StorageInven or Proto.StorageCabinet)) continue;
+
+            var template = _templates.Item(row.TemplateId);
+            // C++ drops any persisted item whose wItemID has no TITEMCHART template (FindTItem == NULL). Only
+            // apply that once the chart is loaded — DB-free/degraded operation would otherwise drop everything.
+            if (template is null && _templates.HasItems) continue;
+
+            var item = new Item
+            {
+                DlId = row.DlId,
+                ItemSlot = row.ItemSlot, TemplateId = row.TemplateId, Level = row.Level, Count = row.Count,
+                GLevel = row.GLevel, DuraMax = row.DuraMax, DuraCur = row.DuraCur, RefineCur = row.RefineCur,
+                EndTime = row.EndTime, GradeEffect = row.GradeEffect, Gem = row.Gem, MoggItemId = row.MoggItemId,
+                Template = template,
+            };
+            for (int i = 0; i < 6; i++) item.Ext[i] = row.Ext[i];
+            // C++ CreateItem filter: skip id/value-0 slots, drop unknown-magic-id (chart-gated), dedup by id.
+            Item.AddPersistedMagic(item, row.Magic, row.Value, _templates);
+            LinkItemAttr(item);
+
+            if (row.StorageType == Proto.StorageCabinet)
+            {
+                // C++: dwStorageID → m_dwStItemID; bItemID (the row's ItemSlot) → cabinet id.
+                item.StItemId = row.StorageId;
+                ch.GetOrCreateCabinet(row.ItemSlot).Items.Add(item);
+            }
+            else
+            {
+                byte id = (byte)row.StorageId;
+                if (!byId.TryGetValue(id, out var inv)) { inv = new Inven { InvenId = id }; byId[id] = inv; }
+                inv.Items.Add(item);
+            }
+        }
+
+        ch.Invens.Clear();
+        ch.Invens.AddRange(byId.Values);
+
+        foreach (var sk in await _gameDb.LoadSkillsAsync(ch.CharId))
+            ch.Skills.Add(new Skill
+            {
+                SkillId = sk.SkillId, Level = sk.Level, ReuseRemainTick = sk.RemainTick,
+                Template = _templates.Skill(sk.SkillId), // C++ CTSkill::m_pTSKILL link
+            });
+
+        foreach (var m in await _gameDb.LoadMaintainAsync(ch.CharId))
+        {
+            var buff = new MaintainSkill
+            {
+                SkillId = m.SkillId, Level = m.Level, RemainTick = m.RemainTick, AttackType = m.AttackType,
+                AttackId = m.AttackId, HostType = m.HostType, HostId = m.HostId, AttackCountry = m.AttackCountry,
+                Template = _templates.Skill(m.SkillId),  // C++ CTSkill::m_pTSKILL link — needed for stat effect + expiry
+            };
+            // C++ enter reconstruction (SSHandler.cpp:4955): the saved REMAINING becomes the buff's full duration
+            // measured from the login tick; a 0-remain (permanent) buff keeps StartTick 0 (never expires). The 11
+            // non-persisted combat fields keep their MaintainSkill ctor defaults (CanSelect 1, powers 0).
+            if (m.RemainTick != 0) buff.SetLoopEndTick(NowMs, m.RemainTick);
+            ch.MaintainSkills.Add(buff);
+        }
+
+        try
+        {
+            foreach (var hk in await _gameDb.LoadHotkeysAsync(ch.CharId))
+            {
+                var page = new HotkeyPage { InvenKey = hk.InvenKey };
+                for (int i = 0; i < HotkeyPage.SlotCount && i < hk.Slots.Length; i++)
+                    page.Slots[i] = new HotkeySlot(hk.Slots[i].Type, hk.Slots[i].Id);
+                ch.HotkeyPages.Add(page);
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.LogWarning(ex, "Char {Char} hotkey load failed; continuing without hotkeys.", ch.CharId);
+        }
+
+        // Quest progress (C++ char-enter quest load): rebuild m_mapQUEST from the saved rows — the read-back
+        // counterpart of the Phase-25 quest save, so accepted quests survive relog. Best-effort.
+        try
+        {
+            var (qRows, qTerms) = await _gameDb.LoadQuestsAsync(ch.CharId);
+            LoadQuestProgress(ch, qRows, qTerms);
+        }
+        catch (Exception ex)
+        {
+            _log.LogWarning(ex, "Char {Char} quest-progress load failed; continuing without quests.", ch.CharId);
+        }
+    }
+
+    /// <summary>
+    /// C++ <c>CTMapSvrModule::SetItemAttr</c> — links the item's <c>m_pTITEMATTR</c> by the key
+    /// (<c>wAttrID + m_itemgrade[level].m_bGrade + gem</c>), truncated to 16 bits (the C++ <c>std::map&lt;WORD&gt;</c>
+    /// key), with the lowest-id row as fallback (<c>m_mapTItemAttr.begin()</c>). No-op if the attr chart
+    /// isn't loaded.
+    /// </summary>
+    private void LinkItemAttr(Item item)
+    {
+        if (item.Template is null || !_templates.HasItemAttrs) return;
+        ushort key = (ushort)(item.Template.AttrId + _templates.GradeForLevel(item.Level) + item.Gem);
+        item.Attr = _templates.Attr(key) ?? _templates.DefaultAttr;
+    }
+
+    /// <summary>Writes one maintained/buff skill block, shared by CS_CHARINFO_ACK / CS_ENTER_ACK / CS_ADDMON_ACK.
+    /// The remaining tick is computed live off <paramref name="now"/> (C++ <c>GetRemainTick(dwTick)</c>) so a
+    /// running buff's countdown is current on the wire; 0 for a permanent or elapsed buff.</summary>
+    internal static void WriteMaintainSkill(PacketWriter w, MaintainSkill m, uint now)
+    {
+        w.WriteUInt16(m.SkillId);
+        w.WriteByte(m.Level);
+        w.WriteUInt32(m.GetRemainTick(now));
+        w.WriteUInt32(m.AttackId);
+        w.WriteByte(m.AttackType);
+        w.WriteUInt32(m.HostId);
+        w.WriteByte(m.HostType);
+        w.WriteByte(m.Hit);
+        w.WriteUInt16(m.AttackLevel);
+        w.WriteByte(m.AttackerLevel);
+        w.WriteUInt32(m.PysMinPower);
+        w.WriteUInt32(m.PysMaxPower);
+        w.WriteUInt32(m.MgMinPower);
+        w.WriteUInt32(m.MgMaxPower);
+        w.WriteByte(m.CanSelect);
+        w.WriteByte(m.AttackCountry);
+        w.WriteFloat(m.PosX);
+        w.WriteFloat(m.PosY);
+        w.WriteFloat(m.PosZ);
+    }
+}
