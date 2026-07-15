@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="TControl.Protocol/TControl.Protocol.csproj" />
+  <Project Path="TControl.Protocol.Tests/TControl.Protocol.Tests.csproj" />
+  <Project Path="TControl.Data/TControl.Data.csproj" />
+  <Project Path="TControl.Data.Tests/TControl.Data.Tests.csproj" />
+  <Project Path="TControl.Server/TControl.Server.csproj" />
+  <Project Path="TControl.Server.Tests/TControl.Server.Tests.csproj" />
+</Solution>

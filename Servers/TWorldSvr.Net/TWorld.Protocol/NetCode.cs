@@ -435,8 +435,11 @@ public static class Msg
     public const ushort CT_CMGIFT_ACK = CT_CONTROL + 0x007E;         // world -> control: cash-mall gift result
 
     // --- CT control plane (TControlSvr <-> world): self-contained admin/monitoring handlers ---
-    public const ushort CT_SERVICEMONITOR_ACK = CT_CONTROL + 0x001D; // control -> world: poll live counts
-    public const ushort CT_SERVICEMONITOR_REQ = CT_CONTROL + 0x001E; // world -> control: counts reply
+    // NOTE: offsets follow CTProtocol.h — _ACK(0x1E) is the control->world poll the world RECEIVES,
+    // _REQ(0x1D) is the world->control counts reply. (These two were previously swapped, which broke the
+    // live-count poll against TControlSvr.Net; the direction/usage in the handlers is unchanged.)
+    public const ushort CT_SERVICEMONITOR_REQ = CT_CONTROL + 0x001D; // world -> control: counts reply
+    public const ushort CT_SERVICEMONITOR_ACK = CT_CONTROL + 0x001E; // control -> world: poll live counts
     public const ushort CT_CHARMSG_ACK = CT_CONTROL + 0x003D;        // control -> world: send a system message to a char
     public const ushort CT_USERPOSITION_ACK = CT_CONTROL + 0x0044;   // control -> world: GM asks a char's position
     public const ushort CT_CHATBAN_REQ = CT_CONTROL + 0x004C;        // control -> world: chat-ban a char
