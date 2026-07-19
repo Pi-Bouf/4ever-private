@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>TLauncher</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The 8-byte patch wire protocol, shared with the TPatchSvr.Net port. -->
+    <ProjectReference Include="..\..\Servers\TPatchSvr.Net\TPatch.Protocol\TPatch.Protocol.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,12 +1,42 @@
 {
   "version": 4,
   "targets": {
-    "net10.0": {},
-    "net10.0/osx-arm64": {}
+    "net10.0": {
+      "TPatch.Protocol/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/TPatch.Protocol.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/TPatch.Protocol.dll": {}
+        }
+      }
+    },
+    "net10.0/osx-arm64": {
+      "TPatch.Protocol/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/TPatch.Protocol.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/TPatch.Protocol.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "TPatch.Protocol/1.0.0": {
+      "type": "project",
+      "path": "../../Servers/TPatchSvr.Net/TPatch.Protocol/TPatch.Protocol.csproj",
+      "msbuildProject": "../../Servers/TPatchSvr.Net/TPatch.Protocol/TPatch.Protocol.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net10.0": []
+    "net10.0": [
+      "TPatch.Protocol >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\pierr\\.nuget\\packages\\": {}
@@ -14,11 +44,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\Projects\\4Story\\Araz-4ever\\Servers\\TPatchSvr.Net\\TPatch.Protocol\\TPatch.Protocol.csproj",
-      "projectName": "TPatch.Protocol",
-      "projectPath": "E:\\Projects\\4Story\\Araz-4ever\\Servers\\TPatchSvr.Net\\TPatch.Protocol\\TPatch.Protocol.csproj",
+      "projectUniqueName": "E:\\Projects\\4Story\\Araz-4ever\\Tools\\TLauncher.Core\\TLauncher.Core.csproj",
+      "projectName": "TLauncher.Core",
+      "projectPath": "E:\\Projects\\4Story\\Araz-4ever\\Tools\\TLauncher.Core\\TLauncher.Core.csproj",
       "packagesPath": "C:\\Users\\pierr\\.nuget\\packages\\",
-      "outputPath": "E:\\Projects\\4Story\\Araz-4ever\\Servers\\TPatchSvr.Net\\TPatch.Protocol\\obj\\",
+      "outputPath": "E:\\Projects\\4Story\\Araz-4ever\\Tools\\TLauncher.Core\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\pierr\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -35,7 +65,11 @@
         "net10.0": {
           "framework": "net10.0",
           "targetAlias": "net10.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "E:\\Projects\\4Story\\Araz-4ever\\Servers\\TPatchSvr.Net\\TPatch.Protocol\\TPatch.Protocol.csproj": {
+              "projectPath": "E:\\Projects\\4Story\\Araz-4ever\\Servers\\TPatchSvr.Net\\TPatch.Protocol\\TPatch.Protocol.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

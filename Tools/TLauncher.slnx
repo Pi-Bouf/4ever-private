@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="TLauncher.Core/TLauncher.Core.csproj" />
+  <Project Path="TLauncher.Net/TLauncher.Net.csproj" />
+  <Project Path="TLauncher.Wpf/TLauncher.Wpf.csproj" />
+  <Project Path="../Servers/TPatchSvr.Net/TPatch.Protocol/TPatch.Protocol.csproj" />
+</Solution>

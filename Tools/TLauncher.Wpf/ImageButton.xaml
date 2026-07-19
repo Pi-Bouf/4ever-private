@@ -1,0 +1,6 @@
+<UserControl x:Class="TLauncher.Wpf.ImageButton"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Cursor="Hand" Background="Transparent">
+    <Image x:Name="Img" Stretch="Fill" SnapsToDevicePixels="True" />
+</UserControl>

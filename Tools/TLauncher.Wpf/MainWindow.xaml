@@ -1,0 +1,73 @@
+<Window x:Class="TLauncher.Wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:TLauncher.Wpf"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        Title="4Story" Width="800" Height="600"
+        WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
+        UseLayoutRounding="True" SnapsToDevicePixels="True"
+        MouseLeftButtonDown="Window_Drag">
+
+    <Window.Resources>
+        <!-- thin progress fill matching the C++ colours (current=orange, total=red) over the skin trough -->
+        <Style x:Key="SkinBar" TargetType="ProgressBar">
+            <Setter Property="Minimum" Value="0" />
+            <Setter Property="Maximum" Value="100" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Grid>
+                            <Border Background="#66000000" CornerRadius="2" />
+                            <Border x:Name="PART_Track" />
+                            <Border x:Name="PART_Indicator" HorizontalAlignment="Left" CornerRadius="2"
+                                    Background="{TemplateBinding Foreground}" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Canvas x:Name="Root" Width="800" Height="600">
+        <!-- background skin -->
+        <Image Source="/Assets/updater_base_v2.bmp" Width="800" Height="600" Stretch="Fill" />
+
+        <!-- clickable logo → homepage (the fork ships no Home-button art) -->
+        <Border Canvas.Left="18" Canvas.Top="28" Width="180" Height="64" Background="Transparent"
+                Cursor="Hand" ToolTip="Homepage" MouseLeftButtonDown="Home_Click" />
+
+        <!-- top-right window buttons -->
+        <local:ImageButton x:Name="SettingsBtn" Canvas.Left="738" Canvas.Top="11" Width="24" Height="24"
+                           ToolTip="Options"
+                           NormalSource="/Assets/settings_normal.bmp" HoverSource="/Assets/settings_hover.bmp"
+                           PressedSource="/Assets/settings_push.bmp" DisabledSource="/Assets/settings_disable.bmp"
+                           Click="Settings_Click" />
+        <local:ImageButton x:Name="CloseBtn" Canvas.Left="765" Canvas.Top="11" Width="24" Height="24"
+                           ToolTip="Close"
+                           NormalSource="/Assets/close_normal.bmp" HoverSource="/Assets/close_hover.bmp"
+                           PressedSource="/Assets/close_push.bmp"
+                           Click="Close_Click" />
+
+        <!-- news browser — the launcher's embedded CWebBrowser2, in the bordered panel of the skin -->
+        <Border Canvas.Left="35" Canvas.Top="158" Width="732" Height="334" Background="#FF05070B" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <wv2:WebView2 x:Name="NewsBrowser" />
+        </Border>
+
+        <!-- status line above the bars -->
+        <TextBlock x:Name="StatusText" Canvas.Left="156" Canvas.Top="499" Width="446" Height="16"
+                   Foreground="#FFD9C089" FontSize="11" Text="Ready." TextTrimming="CharacterEllipsis" />
+
+        <!-- progress bars (Soubor / Celkem troughs are painted into the skin) -->
+        <ProgressBar x:Name="CurrentBar" Style="{StaticResource SkinBar}" Foreground="#FFF29400"
+                     Canvas.Left="155" Canvas.Top="518" Width="446" Height="6" />
+        <ProgressBar x:Name="TotalBar" Style="{StaticResource SkinBar}" Foreground="#FFF21900"
+                     Canvas.Left="155" Canvas.Top="535" Width="446" Height="6" />
+
+        <!-- play (start the game) -->
+        <local:ImageButton x:Name="PlayBtn" Canvas.Left="631" Canvas.Top="513" Width="130" Height="30"
+                           ToolTip="Start the game"
+                           NormalSource="/Assets/play_normal.bmp" HoverSource="/Assets/play_hover.bmp"
+                           PressedSource="/Assets/play_push.bmp" DisabledSource="/Assets/play_disable.bmp"
+                           Click="Play_Click" />
+    </Canvas>
+</Window>
