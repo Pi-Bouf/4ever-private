@@ -43,6 +43,11 @@ public sealed partial class MapService
         ch.Pitch = pitch; ch.Dir = dir;
         ch.MouseDir = mouseDir; ch.KeyDir = keyDir; ch.Action = action;
 
+        // Monster host-acquisition inputs (C++ CSHandler.cpp:517/555): every move stamps the recency clock and
+        // makes the player host-eligible, so a nearby aggressive monster can aggro it on sight (Phase 45).
+        ch.LastMoveMs = NowMs;
+        ch.CanHost = true;
+
         RelocateAndExchangeView(s, posX, posY, posZ);
 
         var w = new PacketWriter(Msg.CS_MOVE_ACK);

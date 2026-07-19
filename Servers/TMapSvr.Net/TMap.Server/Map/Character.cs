@@ -78,6 +78,17 @@ public sealed class Character
     public byte MouseDir { get; set; }
     public byte KeyDir { get; set; }
 
+    // ---- Phase 45: monster host-acquisition inputs (C++ CTPlayer, read by CTAICmdSetHost). ----
+    /// <summary>C++ <c>m_bCanHost</c> (TPlayer.h:109) — whether this player is eligible to become a monster's
+    /// host/target. Sticky: set the first time the player moves (C++ CSHandler.cpp:555; here on any MOVE — the
+    /// C++ "not alone in a cell" guard is a harmless simplification since acquisition only reads it when a
+    /// monster is already nearby). <c>CanHost</c>-the-method's ghost branch is deferred (the port doesn't model
+    /// ghost); a dead player is excluded by the acquisition scan's HP guard instead.</summary>
+    public bool CanHost { get; set; }
+    /// <summary>C++ <c>m_dwMoveTick</c> (TPlayer.h:121) — the map-clock (ms) of this player's last MOVE packet
+    /// (C++ CSHandler.cpp:517). Feeds <c>SetHost</c>'s "moved within the last 3000 ms" recency filter.</summary>
+    public uint LastMoveMs { get; set; }
+
     // PvP points
     public uint PvpTotalPoint { get; set; }
     public uint PvpUseablePoint { get; set; }

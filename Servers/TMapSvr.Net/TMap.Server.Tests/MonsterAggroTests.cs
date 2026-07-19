@@ -13,7 +13,8 @@ public class MonsterAggroTests
         float startX = 100, float startZ = 100)
         => new() { Id = id, ChartId = 500, Level = 5, MaxHp = 100, Hp = hp, MaxMp = 50, Mp = 50,
             DefendPower = 100, PosX = startX, PosZ = startZ, StartX = startX, StartY = 0, StartZ = startZ,
-            Mode = mode, TargetId = targetId, Region = 7, Channel = 1, MapId = 0, RoamNextMs = 0 };
+            Mode = mode, TargetId = targetId, Region = 7, Channel = 1, MapId = 0, RoamNextMs = 0,
+            Country = 3 /* TCONTRY_N — a neutral field mob (Phase 44: aggro needs attacker country ≠ mob country) */ };
 
     [Fact]
     public async Task Hit_AggrosAttacker_AndEntersBattle()

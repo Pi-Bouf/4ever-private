@@ -39,6 +39,7 @@ public static class Msg
     public const ushort CS_JUMP_ACK = CS_MAP + 0x000C;
     public const ushort CS_BLOCK_REQ = CS_MAP + 0x000D;
     public const ushort CS_BLOCK_ACK = CS_MAP + 0x000E;
+    public const ushort CS_MONHOST_ACK = CS_MAP + 0x000F;  // monster retarget/host-change (dwMonID + bSet: TRUE to the new host, FALSE to others)
     public const ushort CS_MOVEITEM_REQ = CS_MAP + 0x0028;  // move/swap/split/merge/drop/equip an item
     public const ushort CS_MOVEITEM_ACK = CS_MAP + 0x0029;  // BYTE result (TMOVEITEM_RESULT)
     public const ushort CS_UPDATEITEM_ACK = CS_MAP + 0x002A; // bInvenID + item block (count/slot changed)
@@ -185,6 +186,7 @@ public static class Msg
     public const ushort MW_CHAT_ACK = MW_BASE + 0x003E;
     public const ushort MW_RESETCONNECTION_REQ = MW_BASE + 0x0040;
     public const ushort MW_RESETCONNECTION_ACK = MW_BASE + 0x0041;
+    public const ushort MW_GETBLOOD_ACK = MW_BASE + 0x008A;   // HP/MP lifedrain (MTYPE_HI/MI) → world grants it to the attacker
     public const ushort MW_CONLIST_REQ = MW_BASE + 0x00BF;
     public const ushort MW_CONLIST_ACK = MW_BASE + 0x00C0;
     public const ushort MW_ENTERSOLOMAP_REQ = MW_BASE + 0x00C1;

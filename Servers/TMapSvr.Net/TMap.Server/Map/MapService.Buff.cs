@@ -27,8 +27,8 @@ namespace TMap.Server.Map;
 public sealed partial class MapService
 {
     private const byte SaBuff = 3;   // SKILL_ACTION SA_BUFF
-    // SKILL_CURE_TYPE (NetCode.h:1554) — the SDT_CURE execs the cure/dispel path handles (Phase 35).
-    private const byte SctPosRemove = 6, SctNegRemove = 7, SctHp = 8, SctMp = 19;
+    // SKILL_CURE_TYPE (NetCode.h:1554) — the SDT_CURE execs the cure/dispel path handles (Phase 35 + 43).
+    private const byte SctPosRemove = 6, SctNegRemove = 7, SctHp = 8, SctMp = 19, SctHpTrans = 15, SctMpTrans = 16;
 
     /// <summary>The 15 combat/context fields snapshotted onto a new maintained skill (C++ <c>SetMaintain</c>,
     /// TSkill.cpp:35).</summary>
@@ -212,12 +212,14 @@ public sealed partial class MapService
     ///
     /// <para><b>Handled execs:</b> <c>SCT_POSREMOVE</c> (strip buffs), <c>SCT_NEGREMOVE</c> (strip debuffs —
     /// C++ <c>== SPT_NEGATIVE</c>, so <c>SPT_NONE</c> buffs are NOT stripped), <c>SCT_HP</c>/<c>SCT_MP</c>
-    /// (instant heal with the 0-15% over-heal roll). <b>Deferred (documented):</b> the <c>CalcCure</c> stat-layer
-    /// counteraction (needs the mid-cast instance-skill threading), <c>SCT_CANCEL</c>/<c>SCT_DIE</c> (block/die
-    /// buff flags aren't loaded), the recall/aftermath/revival/reset/trans execs (unported subsystems), and the
+    /// (instant heal with the 0-15% over-heal roll), and <c>SCT_HPTRANS</c>/<c>SCT_MPTRANS</c> (Phase 43 — add
+    /// HP/MP from the attacker's transferred amount <paramref name="transHp"/>/<paramref name="transMp"/>, no
+    /// over-heal roll). <b>Deferred (documented):</b> the <c>CalcCure</c> stat-layer counteraction (needs the
+    /// mid-cast instance-skill threading), <c>SCT_CANCEL</c>/<c>SCT_DIE</c> (block/die buff flags aren't loaded),
+    /// the recall/aftermath/revival/reset execs (unported subsystems), and the
     /// <c>SCT_MCPOWER/POISON/WOUND/DISEASE</c> no-ops.</para></summary>
     private void ApplyPlayerCure(ClientSession casterSession, Character caster, uint targetId, SkillTemplate tpl,
-                                 byte level, uint attackId, float px, float py, float pz)
+                                 byte level, uint attackId, ushort transHp, ushort transMp, float px, float py, float pz)
     {
         ClientSession targetSession;
         Character target;
@@ -250,10 +252,76 @@ public sealed partial class MapService
                     changed = true;
                     break;
                 }
+                case SctHpTrans:   // C++ m_dwHP += Calculate(level, i, wTransHP) — no over-heal roll; clamped by the Defend tail
+                {
+                    int n = tpl.Calculate(level, i, transHp);
+                    target.Hp = (uint)Math.Min(Math.Max((long)target.Hp + n, 0), MaxHpFor(target));
+                    changed = true;
+                    break;
+                }
+                case SctMpTrans:
+                {
+                    int n = tpl.Calculate(level, i, transMp);
+                    target.Mp = (uint)Math.Min(Math.Max((long)target.Mp + n, 0), MaxMpFor(target));
+                    changed = true;
+                    break;
+                }
             }
         }
 
         if (changed) BroadcastHpMp(targetSession, target);   // C++ Defend re-clamps + broadcasts CS_HPMP_ACK
+        var ack = BuildDefendAckMaintain(attackId, OtPc, target.CharId, OtPc, tpl.Id, level, isMaintain: 0, 0, px, py, pz);
+        foreach (var p in _state.NearView(targetSession)) p.Send(ack);
+    }
+
+    /// <summary>C++ <c>PerformSkill</c>'s <c>SDT_STATUS</c> HP↔MP execs (TObjBase.cpp:3688) on a self/ally
+    /// <c>CS_DEFEND</c> target: <c>SDT_STATUS_HPMPCHANGE</c> swaps HP↔MP (each side self-clamped to its own max),
+    /// <c>SDT_STATUS_HPTOMP</c> sacrifices half the current HP and adds <c>Calculate(...)</c> of it to MP. Both
+    /// fail silently (C++ <c>PERFORM_FAIL</c>) when the required pool is empty (MP == 0 / HP == 0). Broadcasts
+    /// <c>CS_HPMP_ACK</c> on a change (Phase 43).
+    ///
+    /// <para><b>Deferred (documented):</b> the non-vitals <c>SDT_STATUS</c> execs (teleport/warp/return, the
+    /// mode/hide/silence/mark flags, <c>SDT_STATUS_DISTRIBUTE</c> pet-share, …) — their target subsystems aren't
+    /// ported. Only the two HP↔MP conversions are applied here.</para></summary>
+    private void ApplyPlayerStatus(ClientSession casterSession, Character caster, uint targetId, SkillTemplate tpl,
+                                   byte level, uint attackId, float px, float py, float pz)
+    {
+        ClientSession targetSession;
+        Character target;
+        if (targetId == caster.CharId) { targetSession = casterSession; target = caster; }
+        else if (_state.FindByChar(targetId) is { State: EnterState.InGame, Char: { } tc } ts) { targetSession = ts; target = tc; }
+        else return;
+
+        bool changed = false;
+        for (int i = 0; i < tpl.Data.Count; i++)
+        {
+            var d = tpl.Data[i];
+            if (d.Type != SkillTemplate.SdtStatus) continue;
+            switch (d.Exec)
+            {
+                case SkillTemplate.SdtStatusHpMpChange:   // swap HP↔MP (C++ returns PERFORM_FAIL when MP == 0)
+                {
+                    if (target.Mp == 0) break;
+                    uint maxHp = MaxHpFor(target), maxMp = MaxMpFor(target), oldHp = target.Hp;
+                    target.Hp = maxHp > target.Mp ? target.Mp : maxHp;   // new HP = min(old MP, MaxHP)
+                    target.Mp = maxMp > oldHp ? oldHp : maxMp;           // new MP = min(old HP, MaxMP)
+                    changed = true;
+                    break;
+                }
+                case SkillTemplate.SdtStatusHpToMp:   // sacrifice half current HP into MP (C++ PERFORM_FAIL when HP == 0)
+                {
+                    if (target.Hp == 0) break;
+                    uint dec = target.Hp / 2;
+                    int n = tpl.Calculate(level, i, dec);
+                    target.Mp = (uint)Math.Min(Math.Max((long)target.Mp + n, 0), MaxMpFor(target));
+                    target.Hp -= dec;
+                    changed = true;
+                    break;
+                }
+            }
+        }
+
+        if (changed) BroadcastHpMp(targetSession, target);
         var ack = BuildDefendAckMaintain(attackId, OtPc, target.CharId, OtPc, tpl.Id, level, isMaintain: 0, 0, px, py, pz);
         foreach (var p in _state.NearView(targetSession)) p.Send(ack);
     }

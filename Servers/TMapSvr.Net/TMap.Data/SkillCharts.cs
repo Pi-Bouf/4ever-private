@@ -31,8 +31,23 @@ public sealed record SkillTemplate(
     uint ReuseDelay, int ReuseDelayInc, uint LoopDelay, uint KindDelay,
     byte SpeedApply, byte Positive, ushort MapId,
     uint Duration = 0, uint DurationInc = 0, byte MaintainKind = 0, byte Priority = 0, byte StaticFlag = 0,
-    uint ClassId = 0, float Rate1stX = 1f)
+    uint ClassId = 0, float Rate1stX = 1f, uint Aggro = 0)
 {
+    /// <summary>C++ <c>CTSkillTemp::GetAggro</c> (TSkillTemp.cpp:448) — the hate a hostile cast adds to a
+    /// monster at <paramref name="level"/>: <c>m_dwAggro·pow(m_f1stRateX, exp)/100</c> (<c>exp = 0</c> at
+    /// level 0, else <c>m_bStartLevel + (level-1)·m_bNextLevel</c>), truncated to DWORD <b>before</b> the
+    /// integer /100. Zero when <see cref="Aggro"/> is 0. The caller floors it at 1 (<c>max(1, GetAggro())</c>,
+    /// TMonster.cpp:944), so any hostile hit adds ≥1 aggro.
+    /// <para><b>Deferred:</b> the <c>dwAggro</c> chart column isn't loaded (see PORT_STATUS.md), so live
+    /// magnitude collapses to <c>max(1,0)=1</c> per hit until it is — the retarget <i>mechanics</i> are exact;
+    /// tests set <see cref="Aggro"/> directly to exercise the magnitude formula.</para></summary>
+    public uint GetAggro(byte level)
+    {
+        if (Aggro == 0) return 0;
+        double exp = level == 0 ? 0 : StartLevel + (level - 1) * NextLevel;
+        return (uint)(Aggro * System.Math.Pow(Rate1stX, exp)) / 100u;
+    }
+
     /// <summary>C++ class gate <c>m_dwClassID &amp; BITSHIFTID(m_bClass)</c> (QuestGiveSkill.cpp:43,
     /// OnCS_SKILLBUY_REQ CSHandler.cpp:2359) — the skill's allowed-class bitmask (<c>m_dwClassID</c>) has the
     /// bit for class index <paramref name="class"/> set (<c>BITSHIFTID(a) = 1u &lt;&lt; a</c>, TMapType.h:33).</summary>
@@ -150,6 +165,21 @@ public sealed record SkillTemplate(
     {
         foreach (var d in Data)
             if (d.Type == SdtCure) return true;
+        return false;
+    }
+
+    /// <summary>SKILL_DATA_TYPE SDT_STATUS (NetCode.h:1552) — a status-effect data row.</summary>
+    public const byte SdtStatus = 6;
+    /// <summary>SDT_STATUS_TYPE HP↔MP execs (NetCode.h:1737) — swap HP↔MP, and sacrifice half HP into MP; the
+    /// only vitals-mutating status effects the map server applies inline (the rest are movement / flags).</summary>
+    public const byte SdtStatusHpMpChange = 50, SdtStatusHpToMp = 51;
+
+    /// <summary>The skill carries at least one HP↔MP status row (<c>SDT_STATUS</c> +
+    /// <c>SDT_STATUS_HPMPCHANGE</c>/<c>HPTOMP</c>) — the vitals-mutating status effects handled on the DEFEND path.</summary>
+    public bool HasVitalsStatus()
+    {
+        foreach (var d in Data)
+            if (d.Type == SdtStatus && (d.Exec == SdtStatusHpMpChange || d.Exec == SdtStatusHpToMp)) return true;
         return false;
     }
 

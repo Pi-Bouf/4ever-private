@@ -38,7 +38,8 @@ public class RecoverTests
 
     private static Monster Mob(uint id, uint maxHp = 100, uint hp = 50)
         => new() { Id = id, ChartId = 500, Level = 5, MaxHp = maxHp, Hp = hp, MaxMp = 100, Mp = 50,
-            DefendPower = 100, PosX = 100, PosZ = 100, Region = 7, Channel = 1, MapId = 0, Mode = 0 };
+            DefendPower = 100, PosX = 100, PosZ = 100, Region = 7, Channel = 1, MapId = 0, Mode = 0,
+            Country = 3 /* TCONTRY_N — a neutral field mob, so a faction player's hit aggros it (Phase 44) */ };
 
     // ---------------- players ----------------
 

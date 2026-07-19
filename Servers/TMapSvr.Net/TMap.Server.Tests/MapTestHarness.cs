@@ -77,7 +77,8 @@ internal sealed class MapTestHarness
     /// <summary>A hit report against a target (CS_DEFEND_REQ). Defaults to a player (OT_PC) striking a
     /// monster (OT_MON). The 33-field body is filled with zeros except the fields the handler uses.</summary>
     public static byte[] DefendReq(uint attackerId, uint targetId, byte attackType = 1, byte targetType = 2,
-        ushort skillId = 0, byte skillLevel = 1, byte attackerLevel = 10, uint hostId = 0)
+        ushort skillId = 0, byte skillLevel = 1, byte attackerLevel = 10, uint hostId = 0,
+        ushort transHp = 0, ushort transMp = 0)
     {
         var w = new PacketWriter(Msg.CS_DEFEND_REQ);
         w.WriteUInt32(hostId);       // dwHostID
@@ -92,7 +93,7 @@ internal sealed class MapTestHarness
         w.WriteUInt16(0);            // wMapID
         w.WriteByte(attackerLevel);  // bAttackerLevel
         w.WriteUInt32(0); w.WriteUInt32(0); w.WriteUInt32(0); w.WriteUInt32(0); // pys/mg min/max power
-        w.WriteUInt16(0); w.WriteUInt16(0); // wTransHP, wTransMP
+        w.WriteUInt16(transHp); w.WriteUInt16(transMp); // wTransHP, wTransMP
         w.WriteByte(0);              // bCurseProb
         w.WriteByte(0);              // bEquipSpecial
         w.WriteByte(1);              // bCanSelect

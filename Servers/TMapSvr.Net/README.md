@@ -1,4 +1,4 @@
-# TMapSvr.Net — Phases 1–41 (enter + move/chat + char data + grid + item templates + stats + item move/use/equip + money/repair + monsters + spawns + combat + skill use + skill-data scaling + HP/MP regen + loot/exp + monster roam + aggro/chase + monster attacks + player revival + item loot + NPC shops + quests + persistence + inventory save + incremental item save + combat quality + DB quest load + quest-progress load + buff engine + switch/gate + quest spawn + Regen + cure/dispel + skill-learn + cabinet + party + deal + store + shield block)
+# TMapSvr.Net — Phases 1–45 (enter + move/chat + char data + grid + item templates + stats + item move/use/equip + money/repair + monsters + spawns + combat + skill use + skill-data scaling + HP/MP regen + loot/exp + monster roam + aggro/chase + monster attacks + player revival + item loot + NPC shops + quests + persistence + inventory save + incremental item save + combat quality + DB quest load + quest-progress load + buff engine + switch/gate + quest spawn + Regen + cure/dispel + skill-learn + cabinet + party + deal + store + shield block + CalcDamage completion + HP/MP transfer-swap + aggro table + host acquisition)
 
 A C#/.NET 10 port of the C++/ATL **`TMapSvr`** (the per-map / zone game server), byte-compatible with
 this repo's client and SQL baselines. It follows the same architecture as the sibling `TLoginSvr.Net`
@@ -68,7 +68,8 @@ DB queries), so — like `TWorldSvr.Net` before it — it is being ported in pha
   monster no one sees stays dormant. The client-authoritative position echo (`CS_MONMOVE`) is deferred.
 - **Phase 19** — **monster aggro + chase** (`CTAICmdChgMode`→BATTLE + `CTAICmdFollow`): being hit targets the
   attacker and enters battle; the monster then chases (`CS_MONACTION_ACK` `TA_FOLLOW` toward the target) and
-  drops aggro (→ NORMAL, HP regen resumes) when the target is gone or flees past the leash.
+  drops aggro (→ NORMAL, HP regen resumes) when the target is gone or flees past the leash. (The target choice
+  is upgraded to the real highest-cumulative-aggro table in **Phase 44**.)
 - **Phase 20** — **monster-attacks-player** (`CTAICmdAttack`): a battle monster whose target is in melee range
   hits it on the attack cadence — `CalcDamage` with the monster's AP band (`wAP + wMin/MaxWAP`) vs the player's
   DP → the player loses HP + enters battle → `CS_MONATTACK_ACK` + `CS_DEFEND_ACK` + `CS_HPMP_ACK`; at 0 HP the
@@ -217,6 +218,36 @@ DB queries), so — like `TWorldSvr.Net` before it — it is being ported in pha
   `HT_BLOCK`. Ported as a pure `StatEngine` function and wired live into the monster→player PC-defender path (a
   kill still reports `HT_LASTHIT`). The block-triggered shield-durability decrement + `TBLOCK_SKILL` reaction,
   the disguise-buff item gates, and PvP are deferred.
+- **Phase 42** — the **`CalcDamage` completion**: the exec-aware per-data-row damage dispatch. A skill's
+  `SDT_ABILITY` rows resolve by attr (physical/magic → AP band + `GetDefendPower`/`GetMagicDefPower`) then exec —
+  `MTYPE_DAMAGE` (30, HP), `MTYPE_MDAMAGE` (88, **MP damage**), `MTYPE_HP`/`MTYPE_MP` (direct **heal/drain**) —
+  accumulating the net HP/MP change and a **per-exec damage map** that fills `CS_DEFEND_ACK` (multi-entry; the
+  C++ find-by-attr/insert-by-exec quirk reproduced; the map value is the full roll and `OnDamage` floors/clamps
+  HP/MP, so a kill reports full damage). Adds **lifedrain** — `MTYPE_HI`/`MI` send `MW_GETBLOOD_ACK` to the world
+  (a `Calculate`-scaled fraction of the damage dealt). The basic-attack fallback is byte-preserved. Deferred: the
+  buff-amplification / `CalcCure` layers of `CalcAbilityValue`, `DistributeSkill` (pets), the custom Araz ≥3000
+  skills, and PvP.
+- **Phase 43** — the direct HP/MP **transfer &amp; swap** execs, finishing the combat-core vitals family. On the
+  self/ally `CS_DEFEND` path: `SCT_HPTRANS`/`SCT_MPTRANS` add HP/MP from the attacker's transferred amount
+  (`wTransHP`/`wTransMP`, no over-heal roll); `SDT_STATUS_HPMPCHANGE` swaps HP↔MP (each side self-clamped to its
+  own max, fails when MP is 0); `SDT_STATUS_HPTOMP` sacrifices half the current HP into MP. Both broadcast
+  `CS_HPMP_ACK`. This closes the in-process, DB-free combat surface; the rest (`CalcCure`, buff-amplified damage,
+  pet share, shield-block tail, Araz ≥3000 skills, PvP) needs other subsystems.
+- **Phase 44** — the monster **aggro/hate table** (`CTMonster::m_mapAggro`), replacing the Phase-19 last-hitter
+  targeting. Hate is skill-driven (`max(1, GetAggro)`, warrior ×1.5, accumulate, floor 0), keyed
+  `(objId<<32)|objType`; the monster holds the **highest-cumulative-aggro** target with a **10% sticky
+  hysteresis** (`SetAggro`), and on that target leaving (gone / past the leash) it **re-picks the next in-view
+  hostile survivor** (`LeaveAggro`) before giving up. Every retarget runs the C++ `ChgHost` action —
+  `EnterBattle` + seed the target's minimal hate + broadcast **`CS_MONHOST_ACK`** (TRUE to the new host). The
+  same-country reject + `MT_GOHOME` aggro-immunity are ported; the `dwAggro` magnitude column, the `MT_GOHOME`
+  walk-back, and call-for-help / low-HP flee (gated by unloaded chart flags) are deferred.
+- **Phase 45** — **host acquisition** (aggro-on-sight, C++ `CTAICmdSetHost`): an idle **aggressive** monster
+  picks the nearest recently-moved (`< 3000 ms`) host-eligible player in its 3×3 view and enters battle onto
+  them, folding the C++ wake→`ChgHost`→`ChgMode` chain into the Phase-44 retarget. The "aggressive" gate is
+  `Monster.Aggressive` — sourced from the DB `TAICHART` AI-script table in C++ (not a monster-chart flag, and
+  not loaded here), so it **defaults off**: no monster auto-aggros in production until `TAICHART` is loaded, and
+  the hit-driven aggro of Phase 44 is unaffected. `Character` gains `CanHost`/`LastMoveMs` (C++ `m_bCanHost`/
+  `m_dwMoveTick`), stamped on every MOVE.
 
 Everything degrades DB-free. See [`PORT_STATUS.md`](PORT_STATUS.md) for the exhaustive done-vs-deferred
 breakdown.
@@ -250,13 +281,13 @@ Unlike `TWorldSvr` (accept-only, server↔server plaintext), the map server is a
 | `TMap.Protocol` | Wire codec (header/reader/writer/framer), asymmetric `SessionCipher` + `Crypto/*`, `Msg` IDs + enums. Dependency-free. |
 | `TMap.Data` | `GameDatabase` (char + inventory/item/skill/maintain/hotkey load + item/magic/formula/class/race/item-attr/item-grade/monster/**skill**/**NPC** template charts) + `TemplateStore` (`ItemTemplate`/`MagicTemplate`/`FormulaRow`/`StatSeed`/`ItemAttr`/`SkillTemplate`/`NpcDef`/`QuestTemplate`) + `SqlProc`/`SqlExtensions` helpers. `Microsoft.Data.SqlClient` only. |
 | `TMap.Server` | The worker host: `Net/` (listener, client connection, world link), `Map/` (`MapService.*` incl. `.Items`/`.Stats`/`.Npc`/`.Quest`/`.Persist`, `MapState`, `MapGrid`, `Cell`, `ClientSession`, `Character`, `Item`, `Skill`, `Npc`, `QuestProgress`, `Hotkey`, `StatEngine`), `MapWorker`, `Program`. |
-| `*.Tests` | xUnit, DB-free (395 tests). Codec/cipher round-trips, the full enter handshake, movement/view/chat, disconnect, ping, item `WrapPacketClient` round-trip, populated CHARINFO/ENTER inventory + gear + skills + hotkeys (incl. C++-map key-order serialization), the spatial grid (cell math + 3×3 visibility + enter/leave-on-move diff), the jump/block broadcast sets (near-filter, self-echo) + first-spawn `bNewMember`, the item template charts (template `RefineMax` + computed `GetMagicValue`), the stat engine (derived stats + computed MaxHP/MaxMP + equip enchants + level scaling + HP clamp), the AP/DP sheet (naked + equipped-weapon attr + broken-item skip + the 87-byte `CS_CHARSTATINFO`), the skill-use spine (MP/HP cost + reuse cooldown math, the `<`/`<=` guards, the byte-exact `CS_SKILLUSE_ACK` payload), the skill-data engine (GetValue/Calculate `SVI_*` + attack-type/long classification + the CS_DEFEND damage scaling), HP/MP regen (flat/25% amounts, the battle-mode suppression + anchor reset), loot/exp (attacker-scaled exp + level-up + money corpse drop/take + the anti-farm rules), monster idle roam (CS_MONACTION_ACK on-radius destination, host-gated), monster aggro/chase (target-on-hit → TA_FOLLOW chase → leash drop-aggro), monster-attacks-player (melee AP−DP hit + cadence + player death), player revival (reposition + HP/MP-by-type restore + live-guard), item drop-loot (weighted drop roll → corpse items → CanPush take), NPC shops (talk country-gate + buy-charges-gold/adds-item + sell-earns-¼/removes + quest-free-buy), quests (accept→objective(get-item/kill/talk)→turn-in→reward, level/parent gates, fetch-item hand-over, drop, possible-quest list), skill learning (add-only grant + class-mask gate + `CS_SKILLBUY_ACK` byte layout), the cabinet/warehouse (open cost/already/max, put-in tradable-gate/merge/full, whole-stack take-out + fee, item-list byte layout, cabinet-storage save stamping), party gameplay (value-exact shared-exp split + level-weighting, non-member exclusion, solo-unchanged, party-keeper assignment, any-member loot + non-member denial + loot broadcast, PT_SOLO mask), player deal/trade (ask-notify, accept-opens-both, decline, add-notifies-partner, full item+money swap, first-confirm-no-execute, cancel, untradable-item, receiver-bag-full, not-enough-money), player store (open+broadcast, untradable/over-owned fails, close, browse layout, item+money buy, auto-close-on-last-sold, partial-offer remainder, not-enough-money, buyer-bag-full), the shield-block roll (rate-100-always/rate-0-never/no-shield/enchant-adds-to-rate+power/broken-shield-inert/magic-multivajra-variant, plus live monster→shielded-player reduces-damage+HT_BLOCK, unshielded full-damage, lethal-through-shield reports HT_LASTHIT), persistence gating (IsSaveDue throttle/gate, the TSaveChar snapshot round-trip, dirty-quest collection + flag-clear), and the inventory snapshot (container/item DTOs, new-item dlID stamping, magic-slot packing). |
+| `*.Tests` | xUnit, DB-free (428 tests). Codec/cipher round-trips, the full enter handshake, movement/view/chat, disconnect, ping, item `WrapPacketClient` round-trip, populated CHARINFO/ENTER inventory + gear + skills + hotkeys (incl. C++-map key-order serialization), the spatial grid (cell math + 3×3 visibility + enter/leave-on-move diff), the jump/block broadcast sets (near-filter, self-echo) + first-spawn `bNewMember`, the item template charts (template `RefineMax` + computed `GetMagicValue`), the stat engine (derived stats + computed MaxHP/MaxMP + equip enchants + level scaling + HP clamp), the AP/DP sheet (naked + equipped-weapon attr + broken-item skip + the 87-byte `CS_CHARSTATINFO`), the skill-use spine (MP/HP cost + reuse cooldown math, the `<`/`<=` guards, the byte-exact `CS_SKILLUSE_ACK` payload), the skill-data engine (GetValue/Calculate `SVI_*` + attack-type/long classification + the CS_DEFEND damage scaling), HP/MP regen (flat/25% amounts, the battle-mode suppression + anchor reset), loot/exp (attacker-scaled exp + level-up + money corpse drop/take + the anti-farm rules), monster idle roam (CS_MONACTION_ACK on-radius destination, host-gated), monster aggro/chase (target-on-hit → TA_FOLLOW chase → leash drop-aggro), monster-attacks-player (melee AP−DP hit + cadence + player death), player revival (reposition + HP/MP-by-type restore + live-guard), item drop-loot (weighted drop roll → corpse items → CanPush take), NPC shops (talk country-gate + buy-charges-gold/adds-item + sell-earns-¼/removes + quest-free-buy), quests (accept→objective(get-item/kill/talk)→turn-in→reward, level/parent gates, fetch-item hand-over, drop, possible-quest list), skill learning (add-only grant + class-mask gate + `CS_SKILLBUY_ACK` byte layout), the cabinet/warehouse (open cost/already/max, put-in tradable-gate/merge/full, whole-stack take-out + fee, item-list byte layout, cabinet-storage save stamping), party gameplay (value-exact shared-exp split + level-weighting, non-member exclusion, solo-unchanged, party-keeper assignment, any-member loot + non-member denial + loot broadcast, PT_SOLO mask), player deal/trade (ask-notify, accept-opens-both, decline, add-notifies-partner, full item+money swap, first-confirm-no-execute, cancel, untradable-item, receiver-bag-full, not-enough-money), player store (open+broadcast, untradable/over-owned fails, close, browse layout, item+money buy, auto-close-on-last-sold, partial-offer remainder, not-enough-money, buyer-bag-full), the shield-block roll (rate-100-always/rate-0-never/no-shield/enchant-adds-to-rate+power/broken-shield-inert/magic-multivajra-variant, plus live monster→shielded-player reduces-damage+HT_BLOCK, unshielded full-damage, lethal-through-shield reports HT_LASTHIT), the CalcDamage exec dispatch (byte-exact vs the parsed damage map + world packet: MTYPE_HP/MP direct drain keyed 14/22, HP-heal restores+clamps, MTYPE_MDAMAGE MP-damage keyed 88 with HP untouched, multi-row two-entry map, full-roll-on-kill, SATT_NONE-deals-nothing, MTYPE_HI/MI MW_GETBLOOD_ACK lifedrain + no-blood-when-that-pool-untouched), the HP/MP transfer/swap execs (HPTRANS/MPTRANS add-from-transferred+clamp, HPMPCHANGE swaps-pools+per-side-clamp+MP0-fails, HPTOMP half-HP-into-MP+clamp), the monster aggro table (warrior ×1.5, accumulate+floor, same-country reject, the 10% hysteresis steal, LeaveAggro survivor pick, the GetAggro magnitude formula, the CS_MONHOST_ACK wire bytes, end-to-end leash re-pick of an in-view survivor over going home), host acquisition (aggressive-acquires-recent-player + CS_MONHOST_ACK, passive-never-auto-aggros, nearest-player pick, lazy-activation fallback, end-to-end MOVE→eligibility→acquire), persistence gating (IsSaveDue throttle/gate, the TSaveChar snapshot round-trip, dirty-quest collection + flag-clear), and the inventory snapshot (container/item DTOs, new-item dlID stamping, magic-slot packing). |
 
 ## Build & test
 
 ```bash
 dotnet build TMapSvr.slnx -c Release
-dotnet test  TMapSvr.slnx            # 395 tests, DB-free
+dotnet test  TMapSvr.slnx            # 428 tests, DB-free
 ```
 
 ## Run
@@ -323,10 +354,16 @@ membership management stays world-authoritative), and **player deal/trade** (Pha
 ASK→offer→confirm×2→atomic item+money swap, guard-then-commit), and the **personal store** (Phase 40 —
 open/browse/buy over the seller's own bag items, auto-close when sold out), and the **shield-block roll**
 (Phase 41 — `GetShieldDP`/`GetShieldMDP` inside `CalcDamage`: an equipped shield adds its defence + flags
-`HT_BLOCK`, live for a PC defender vs a monster). The
+`HT_BLOCK`, live for a PC defender vs a monster), and the **`CalcDamage` completion** (Phase 42 —
+`MTYPE_MDAMAGE` MP damage + `MTYPE_HP`/`MP` direct heal/drain + the multi-entry per-exec damage map +
+`MTYPE_HI`/`MI` lifedrain → `MW_GETBLOOD_ACK`), and the direct HP/MP **transfer/swap** execs (Phase 43 —
+`SCT_HPTRANS`/`MPTRANS` + `SDT_STATUS_HPMPCHANGE`/`HPTOMP`, closing the in-process combat-core vitals), and the
+monster **aggro/hate table** (Phase 44 — `m_mapAggro`: highest-cumulative-aggro target with a 10% hysteresis,
+re-pick the next in-view survivor on leave, `ChgHost` retarget + `CS_MONHOST_ACK`), and monster **host
+acquisition** (Phase 45 — aggro-on-sight `SetHost`, gated by the `Aggressive` flag / deferred `TAICHART`). The
 rest of the C++ handler surface — the remaining saves (skill/hotkey/companion — state no ported handler mutates yet), the wider combat loop (ranged damage as a
-distinct branch, the buff effection/remain layers + the stat-layer `CalcCure` (instant cure/dispel is done), `DistributeSkill`, `MTYPE_MDAMAGE`/direct-HP-MP execs, the shield-block durability/reaction tail, PvP), the rest of monster combat
-AI (gohome, pack/assist-aggro, host lifecycle), the priest-resurrection (`CS_REVIVALASK`) + death penalty,
+distinct branch, the buff effection/remain layers + the stat-layer `CalcCure` (instant cure/dispel + transfer/swap are done), `DistributeSkill`, the custom Araz ≥3000 skills, the shield-block durability/reaction tail, PvP), the rest of monster combat
+AI (the data-driven `TAICHART` AI-script table, `MT_GOHOME` walk-back, pack/assist-aggro + call-for-help/flee, monster skills), the priest-resurrection (`CS_REVIVALASK`) + death penalty,
 loot extras (magic/rare rolls, ranged picks, party modes), the rest of the **quest engine** (the
 subsystem-blocked `CQuest` subtypes — Craft/SendPost,
 exotic terms/conditions, magic-item/skill rewards, the client quest-node graph),

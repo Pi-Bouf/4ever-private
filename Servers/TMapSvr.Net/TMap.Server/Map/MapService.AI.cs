@@ -44,8 +44,12 @@ public sealed partial class MapService
         foreach (var mon in _state.AllMonsters())
         {
             if (mon.Hp == 0) continue;                          // dead corpse — no AI
-            if (mon.Mode == MtBattle) ChaseTarget(mon, nowMs);
-            else if (mon.Mode == MtNormal && mon.Area > 0) Roam(mon, nowMs);
+            if (mon.Mode == MtBattle) { ChaseTarget(mon, nowMs); continue; }
+            if (mon.Mode != MtNormal) continue;
+            // An aggressive monster looks for a host on sight (C++ AT_ENTER → CTAICmdSetHost); on a pull it enters
+            // battle here and chases/attacks from the next tick. A passive monster (the default) just roams.
+            if (mon.Aggressive && TryAcquireHost(mon, (uint)nowMs)) continue;
+            if (mon.Area > 0) Roam(mon, nowMs);
         }
     }
 
@@ -79,13 +83,15 @@ public sealed partial class MapService
         if (mon.TargetId == 0
             || _state.FindByChar(mon.TargetId) is not { State: EnterState.InGame, Char: { Hp: > 0 } target })
         {
-            DropAggro(mon, nowMs); // target gone / dead
+            Disengage(mon, mon.TargetId, mon.TargetType != 0 ? mon.TargetType : OtPc, (uint)nowMs); // target gone / dead → re-pick or go home
             return;
         }
 
         float dx = target.PosX - mon.StartX, dz = target.PosZ - mon.StartZ;
         float dist2 = dx * dx + dz * dz;
-        if (dist2 > ChaseRange * ChaseRange) { DropAggro(mon, nowMs); return; } // fled past the leash
+        // fled past the leash (C++ m_wChaseRange < GetDistance(anchor,pos); the port measures the target's distance
+        // from the anchor since the monster is pinned there): drop this target, re-pick the next in-view attacker.
+        if (dist2 > ChaseRange * ChaseRange) { Disengage(mon, mon.TargetId, mon.TargetType != 0 ? mon.TargetType : OtPc, (uint)nowMs); return; }
 
         if (dist2 <= AttackRange * AttackRange) // in melee range ⇒ attack (Phase 20)
         {
@@ -149,8 +155,7 @@ public sealed partial class MapService
             foreach (var p in _state.PlayersAround(mon)) SendCS_DIE_ACK(p, target.CharId, OtPc);
             // C++ OnDie → ReleaseMaintain(FALSE): silently drop all non-static buffs (Phase 31).
             if (_state.FindByChar(target.CharId) is { } ts) ReleaseMaintainPlayer(ts, target, notify: false);
-            mon.TargetId = 0;
-            mon.Mode = MtNormal; // corpse of the player isn't a target — disengage
+            DropAggro(mon, nowMs); // the corpse isn't a target — leave battle + clear the hate table
         }
     }
 
@@ -212,11 +217,16 @@ public sealed partial class MapService
         return w.ToArray();
     }
 
-    /// <summary>Lose the target and leave battle (C++ mode → <c>MT_NORMAL</c>) — HP regen resumes (Phase 16)
-    /// and the monster returns to roaming.</summary>
+    /// <summary>Leave battle for good (C++ <c>ResetHost</c>-lite, TMonster.cpp:2392): clear the target/host and
+    /// the whole hate table, drop to <c>MT_NORMAL</c> (HP regen resumes — Phase 16), and return to roaming. Used
+    /// when no hostile attacker remains in view (the C++ <c>AT_LEAVELB</c> outcome, the port collapsing the
+    /// <c>MT_GOHOME</c> walk-back since the monster is pinned at its anchor).</summary>
     private static void DropAggro(Monster mon, long nowMs)
     {
         mon.TargetId = 0;
+        mon.TargetType = 0;
+        mon.HostId = 0;
+        mon.ClearAggro();
         mon.Mode = MtNormal;
         mon.RoamNextMs = nowMs + RoamDelayMs;
     }

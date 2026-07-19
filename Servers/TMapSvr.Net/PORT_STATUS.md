@@ -3,7 +3,7 @@
 C#/.NET 10 port of the C++/ATL `TMapSvr` (the per-map/zone game server). Byte-exact wire/DB compat with
 this repo's client + SQL baselines, mirroring the sibling `TLoginSvr.Net` / `TWorldSvr.Net` ports (same
 `.slnx` layout, `Microsoft.Data.SqlClient`, Serilog worker host, single serialized batch task, DB-free
-test harness). **395 tests passing** (xUnit, DB-free) · listens on **:5816** for clients, connects out to
+test harness). **428 tests passing** (xUnit, DB-free) · listens on **:5816** for clients, connects out to
 the world on **:3816**. Phases 1–13 were **audited against the C++** — the wire layouts, DB reads, grid math,
 the `OnMove` visibility diff, and the item/stat/combat formulas are byte/value-exact (see the audit notes under
 Phases 2, 3, 4, 5 and the consolidated "Audit (Phases 6–13)" note after Phase 13). **Phase 14** added
@@ -73,6 +73,26 @@ when sold out); the store flag rides `CS_ENTER_ACK` for late-joiner visibility.
 **Phase 41** ported the **shield-block roll** (`GetShieldDP`/`GetShieldMDP`) — the defender-side block roll inside
 `CalcDamage`: an equipped shield rolls `ABILITY_SDR` and, on success, adds its `ABILITY_SDP` to defence
 (additive reduction, 5/7 floor holds) and flags `HT_BLOCK`; wired live into the monster→player PC-defender path.
+**Phase 42** completed **`CalcDamage`** — the exec-aware per-data-row damage dispatch: a skill's `SDT_ABILITY`
+rows resolve by attr (physical/magic → AP band + DP) then exec — `MTYPE_DAMAGE` (30, HP), `MTYPE_MDAMAGE` (88,
+MP), `MTYPE_HP`/`MTYPE_MP` (direct heal/drain) — accumulating the net HP/MP change + the per-exec `CS_DEFEND_ACK`
+damage map (full roll, `OnDamage` floors/clamps); plus `MTYPE_HI`/`MI` **lifedrain** (→ `MW_GETBLOOD_ACK`).
+**Phase 43** finished the combat-core vitals family — the direct HP/MP **transfer &amp; swap** execs on the
+self/ally `CS_DEFEND` path: `SCT_HPTRANS`/`SCT_MPTRANS` (add HP/MP from the attacker's transferred amount) and
+`SDT_STATUS_HPMPCHANGE` (swap HP↔MP) / `SDT_STATUS_HPTOMP` (sacrifice half HP into MP).
+**Phase 44** replaced the Phase-19 last-hitter targeting with the real **aggro table** (`m_mapAggro`): hate is
+skill-driven (`max(1, GetAggro)`, warrior ×1.5, accumulate, floor 0), keyed `(objId&lt;&lt;32)|objType`, and the
+monster holds the **highest-cumulative-aggro** target with a **10% sticky-target hysteresis** (`SetAggro`);
+on the target leaving (gone / past the leash) it **re-picks the next in-view hostile survivor** before giving
+up (`LeaveAggro`), and every retarget broadcasts **`CS_MONHOST_ACK`** (TRUE to the new host) — the C++
+`ChgHost` action. The same-country reject + `MT_GOHOME`-aggro-immunity are ported; the `dwAggro` magnitude
+column, the `MT_GOHOME` walk-back, and call-for-help / low-HP flee (gated by unloaded chart flags) are deferred.
+**Phase 45** added **host acquisition (aggro-on-sight)** — the C++ `CTAICmdSetHost` scan: an idle **aggressive**
+monster picks the nearest recently-moved (`< 3000 ms`) host-eligible (`CanHost`) player in its 3×3 view and
+enters battle onto them, folding the C++ wake→`ChgHost`→`ChgMode` chain into the Phase-44 retarget. The
+"aggressive" gate (`Monster.Aggressive`) is sourced from the DB `TAICHART` AI-script table in C++ (not a
+monster-chart flag, and not loaded here) so it **defaults off** — no monster auto-aggros in production until
+`TAICHART` is loaded, and the hit-driven aggro of Phase 44 is unaffected.
 **Phase 7** added the `CS_MOVEITEM` item-manipulation handler (move/swap/split/merge/
 drop + equip/unequip with live stat recompute + the `CS_EQUIP_ACK` appearance broadcast); **Phase 8** added
 `CS_ITEMUSE` for HP/MP potions (heal + clamp + consume + the `CS_HPMP_ACK` bar broadcast).
@@ -609,9 +629,9 @@ damage half that follows). C++ `OnCS_SKILLUSE_REQ` (CSHandler.cpp:2429).
 
 > **Deferred (documented):** ~~the magic-damage branch~~ and ~~crit (non-`HT_NORMAL`) damage~~ — **both ported
 > in Phase 28** (magic AP vs monster `wMDP`; the `FTYPE_PCD`/`MCD` crit formulas + `GetAtkHitType` miss/crit
-> roll). Still deferred: `MTYPE_MDAMAGE` (MP drain) / direct `MTYPE_HP`/`MP` execs, the maintain/remain-buff +
-> cure + `ApplyEffectionBuff` layers of `CalcAbilityValue`, `DistributeSkill` (pet share), and the `mapDamage`
-> find-by-attr/insert-by-exec quirk (the single-entry `CS_DEFEND_ACK` damage map is unchanged).
+> roll). `MTYPE_MDAMAGE` (MP drain) / direct `MTYPE_HP`/`MP` execs + the multi-entry `mapDamage`
+> find-by-attr/insert-by-exec quirk are **now ported in Phase 42**. Still deferred: the maintain/remain-buff +
+> cure + `ApplyEffectionBuff` amplification layers of `CalcAbilityValue`, and `DistributeSkill` (pet share).
 
 ## ✅ Done (Phase 16 — HP/MP regen: `Recover`)
 
@@ -671,8 +691,8 @@ damage half that follows). C++ `OnCS_SKILLUSE_REQ` (CSHandler.cpp:2429).
 ## ✅ Done (Phase 19 — monster aggro + chase)
 
 - [x] **Aggro on hit** (`MapService.Combat.cs`) — a `CS_DEFEND` hit sets the monster's `TargetId` to the
-  attacker and enters `MT_BATTLE` (via the Phase-16 `EnterBattle`). (C++ `SetAggro` picks the highest
-  cumulative aggro; this slice targets the last attacker — the player actually fighting it.)
+  attacker and enters `MT_BATTLE` (via the Phase-16 `EnterBattle`). (**Superseded by Phase 44:** the target is
+  now the highest-cumulative-aggro attacker via the real `m_mapAggro` table, not the last hitter.)
 - [x] **Chase** (`MapService.AI.cs` `ChaseTarget`, C++ `CTAICmdChgMode`/`CTAICmdFollow`) — a battle monster
   re-broadcasts `CS_MONACTION_ACK` with `TA_FOLLOW` toward the target's live position (`dwTargetID` +
   `bTargetType = OT_PC`) to its viewers, on a chase cadence.
@@ -1476,6 +1496,147 @@ power to normal defence and downgrades the reported hit to **`HT_BLOCK`** (=3).
 
 ---
 
+## ✅ Done (Phase 42 — the CalcDamage completion: MTYPE_MDAMAGE + direct HP/MP execs + lifedrain)
+
+Ports the full C++ `CTObjBase::CalcDamage` exec dispatch (TObjBase.cpp:344) for a player→monster hit, replacing
+the Phase-13 single-roll shortcut. The attacking skill's `SDT_ABILITY` damage rows are iterated; each resolves
+on its **attr** (physical/long → physical AP band + `GetDefendPower`; magic → magic AP band +
+`GetMagicDefPower`; `SATT_NONE` → skipped) then its **exec**:
+
+- [x] **`MTYPE_DAMAGE` (30)** — HP damage. Crit off the **max** band (physical) / **min** band (magic) via
+  `FTYPE_PCD`/`FTYPE_MCD`; instance-skill scaling `CalcValue(SDT_ABILITY, MTYPE_DAMAGE, roll)`. The map value is
+  the **full roll** (C++ `nDamageHP` is uncapped) — `OnDamage` floors HP at 0, so a kill now reports the full
+  damage, not the clamped remainder (a byte-fidelity fix vs. the old `min(scaled, hp)`).
+- [x] **`MTYPE_MDAMAGE` (88)** — MP damage. Crit off the **min** band; reduces the target's MP; keyed **88** in
+  the damage map (was previously always `MTYPE_DAMAGE`).
+- [x] **`MTYPE_HP` (14) / `MTYPE_MP` (22)** — direct heal/drain: `nInc = CalcValue(SDT_ABILITY, MTYPE_HP, MaxHP)`;
+  `nInc < 0` drains (clamped to the working HP, reported keyed 14/22), `nInc ≥ 0` heals (negative `nDamageHP` ⇒
+  `OnDamage` restores, clamped to max, **not** shown in the map).
+- [x] **Multi-row damage map** — a skill with an HP row and an MP row produces **two** `CS_DEFEND_ACK` entries;
+  the C++ find-by-`m_bAttr` / insert-by-`m_bExec` quirk is reproduced (insert-if-absent by exec; value
+  `(WORD)dwValue`).
+- [x] **Lifedrain** — `MTYPE_HI` (38) / `MTYPE_MI` (40): a `Calculate`-scaled fraction of the HP/MP damage dealt
+  is sent to the world as **`MW_GETBLOOD_ACK`** (`MW_BASE+0x008A`: `dwAtkID · bAtkType · dwHostID · bBloodType ·
+  dwBlood`), which credits it to the attacker. Only fires when the matching pool took damage.
+- [x] **Fallback preserved** — a basic attack (no skill / no damage rows) still takes the single physical-or-magic
+  HP-damage roll keyed `MTYPE_DAMAGE` (Phase-13/15 behavior, byte-for-byte). A pure-buff/cure skill on a monster
+  keeps its Phase-31/35 maintain/debuff handling.
+- 11 tests (`CombatCoreTests.cs`, all **byte-exact** against the parsed damage map + world packet): HP-drain,
+  MP-drain, HP-heal (+ clamp-to-max), MDAMAGE keyed 88 (HP untouched), multi-row two-entry map, full-roll-on-kill,
+  SATT_NONE-deals-nothing, `MTYPE_HI`/`MI` `MW_GETBLOOD_ACK`, and no-blood-when-that-pool-took-no-damage.
+
+> **Deferred (documented):** the **buff-layer amplification** of the roll (the `CalcAbilityValue` maintain/remain
+> terms + `ApplyEffectionBuff` — only the instance-skill `CalcValue` term is applied) and the **stat-layer
+> `CalcCure`** counteraction (needs the mid-cast `m_pInstanceSkill` threading the port doesn't model);
+> `DistributeSkill` (pet damage share) + the AUTOAI-recall ×3 (pets); the custom **Araz ≥3000** hard-coded skills
+> (`%`-max-HP nukes + the 3302 lifesteal buff — build-specific); the cure/status **HP↔MP transfer/swap** execs
+> (`SCT_HPTRANS`/`MPTRANS`, `SDT_STATUS_HPMPCHANGE`/`HPTOMP` — **now ported in Phase 43**); and PvP / long-as-a-distinct-branch.
+
+---
+
+## ✅ Done (Phase 43 — the direct HP/MP transfer &amp; swap execs)
+
+Finishes the combat-core vitals family that Phase 35 (`SCT_HP`/`SCT_MP` instant heal) began — the remaining
+direct HP/MP writes, cast on self/an ally via `CS_DEFEND` and applied on the resolved target (C++
+`PerformSkill`, TObjBase.cpp:3584/3688). The transfer amounts come from the request's `wTransHP`/`wTransMP`
+(previously read-and-discarded).
+
+- [x] **`SCT_HPTRANS` (15) / `SCT_MPTRANS` (16)** — added to the `ApplyPlayerCure` `SDT_CURE` switch:
+  `target.HP += Calculate(level, i, wTransHP)` (no over-heal roll, unlike `SCT_HP`); clamped to Max via the
+  `Defend` tail. `wTransHP`/`wTransMP` are now captured in `OnCS_DEFEND_REQ` and threaded through.
+- [x] **`SDT_STATUS_HPMPCHANGE` (50)** — new `ApplyPlayerStatus` handler: swaps HP↔MP, each side self-clamped to
+  its own max (`newHP = min(oldMP, MaxHP)`, `newMP = min(oldHP, MaxMP)`); fails silently (C++ `PERFORM_FAIL`)
+  when `MP == 0`.
+- [x] **`SDT_STATUS_HPTOMP` (51)** — sacrifice half the current HP (`dec = HP/2`) and add `Calculate(level, i,
+  dec)` of it to MP (clamped to MaxMP); fails silently when `HP == 0`.
+- [x] Both handlers broadcast `CS_HPMP_ACK` on a change + the cure/status `CS_DEFEND_ACK` to the target's view.
+  `SkillTemplate.HasVitalsStatus()` gates the status handler; `Msg`-level wiring reuses the Phase-35 path.
+- 8 tests (`HpMpExecTests.cs`, byte-observable via the target HP/MP + the parsed `CS_HPMP_ACK`): HP/MP-transfer
+  (+ clamp-to-max), HP↔MP swap (+ per-side clamp + the MP == 0 fail), and HP-to-MP (+ MP clamp).
+
+> **This closes the in-process, DB-free combat-core surface.** The remaining combat items require other
+> subsystems and stay deferred: the **stat-layer `CalcCure`** + the **buff-amplification** of the damage roll
+> (`CalcAbilityValue` maintain/remain/effection terms — need the mid-cast `m_pInstanceSkill` threading the port
+> doesn't model), **`DistributeSkill`** + AUTOAI-recall ×3 (pets), the **shield-block durability/reaction tail**,
+> the **custom Araz ≥3000** hard-coded skills (build-specific), and **PvP** / long-as-a-distinct-branch.
+
+---
+
+## ✅ Done (Phase 44 — the monster aggro/hate table + retargeting)
+
+Replaces the Phase-19 **last-hitter** targeting with the real C++ hate table (`CTMonster::m_mapAggro`,
+`map<__int64, TAGGRO>`), so a monster fights the **highest-cumulative-aggro** attacker — not merely whoever
+hit last — and re-picks correctly when that attacker leaves. `Monster` owns the table + the pure arithmetic;
+`MapService.Aggro.cs` applies the retarget (the C++ `CTAICmdChgHost` action) + the broadcast.
+
+- [x] **The table** (`Monster.AggroEntry` + `Dictionary<long, AggroEntry>`), keyed `(objId<<32)|objType`
+  (C++ `MAKEINT64`), value = `{objType, objId, hostId, aggro, country}` (C++ `tagAGGRO`).
+- [x] **`SetAggro`** (TMonster.cpp:141) value-exact: rejects `nAggro==0` / `OT_MON` attacker / `attackId==0`,
+  the **`MT_GOHOME && !active`** re-aggro guard, and the **same-country** reject (`attackCountry == WarCountry`);
+  **warrior ×3/2** (int) class scaling; accumulate with a **floor at 0**; entry-create gated by `active`. The
+  **retarget decision**: increase-branch pulls into battle (`dwNew && !BATTLE`) or steals the target only past
+  the **10% sticky threshold** (`dwOld + dwOld*0.1 < dwNew`); decrease-branch rescans the whole table for the
+  top hostile-country entry. Returned to the service (no networking in `Monster`).
+- [x] **`AddAggro`/`DelAggro`/`FindAggro`/`LeaveAggro`/`ClearAggro`** — the rest of the C++ surface;
+  `LeaveAggro` drops the leaver and returns the **highest hostile-country survivor** (ascending-key tie-break =
+  lowest object-id, matching `std::map`).
+- [x] **`ApplyRetarget`** (`CTAICmdChgHost`, TAICmdChgHost.cpp:25) — set host/target, `EnterBattle` on the pull
+  (`MT_NORMAL → MT_BATTLE`), seed the target's minimal hate (`AddAggro(...,1)`), and **`NotifyHost`**.
+- [x] **`CS_MONHOST_ACK`** (`CS_MAP + 0x000F`, `dwMonID · bSet`) — the retarget/host-change broadcast: `TRUE`
+  to the new host (the packet's `dwHostID`; C++ keeps the client value for a PC attacker, CSHandler.cpp:1523),
+  `FALSE` to the rest in view.
+- [x] **`Aggravate`** wired into `OnCS_DEFEND_REQ` (the C++ `Defend` opening `SetAggro`): a hostile hit (a basic
+  attack, or a skill with `IsNegative`) adds `max(1, GetAggro(level))` hate; a positive skill never aggros.
+- [x] **`Disengage`** (`ChaseTarget` leash/target-gone) — `LeaveAggro` + the neighbour recurse-drop: switch to
+  the highest in-view survivor, else `DropAggro` (now a `ResetHost`-lite: clear target/host/table → `MT_NORMAL`).
+- [x] **`SkillTemplate.GetAggro(level)`** — `m_dwAggro·pow(m_f1stRateX, exp)/100` (DWORD-truncated before /100).
+- 9 tests (`MonsterAggroTableTests.cs`): warrior ×1.5, accumulate + floor, same-country reject, the 10%
+  hysteresis steal, `LeaveAggro` survivor pick, the `GetAggro` formula, the `CS_MONHOST_ACK` wire bytes, and
+  the end-to-end leash re-pick of an in-view survivor over going home.
+
+> **Deferred (documented):** the **`dwAggro` chart column** isn't loaded, so live hate collapses to `max(1,0)=1`
+> per hit (warrior ×1.5) — the retarget *mechanics* are exact regardless; tests set `Aggro` directly to exercise
+> the magnitude. The **`MT_GOHOME` walk-back** state (the port pins a monster to its spawn anchor, so disengage
+> collapses straight to `MT_NORMAL` — no `TA_RUN`-home `CS_MONACTION` / `CS_CHGMODE` sequence), the
+> data-driven **`TMONSTERAI`** command table, **call-for-help / low-HP flee** (gated by the unloaded `m_bCall` /
+> `m_wKind` / `m_bArea` flags + the multi-tick run-to-helper choreography), pack/leader **`SetEventToFollower`**,
+> the **out-of-view previous-host** `CS_MONHOST_ACK(FALSE)`, the `SDT_AI`/`SDT_RUNAWAY` fear debuff, and the
+> cross-server `SM_RESETHOST` leash reset all remain.
+
+---
+
+## ✅ Done (Phase 45 — host acquisition / aggro-on-sight)
+
+Ports the C++ `CTAICmdSetHost` scan (TAICmdSetHost.cpp:27) so an idle **aggressive** monster engages a player
+**without being hit** — the "how a monster starts fighting" half that complements Phase 44's "who it fights".
+
+- [x] **`Character.CanHost` + `LastMoveMs`** (C++ `m_bCanHost` / `m_dwMoveTick`) — stamped in `OnCS_MOVE_REQ`
+  (every move sets `LastMoveMs = NowMs` and `CanHost = true`, C++ CSHandler.cpp:517/555).
+- [x] **`Monster.Aggressive`** — the auto-aggro gate. In C++ this is **not a monster-chart field**: a monster
+  is aggressive iff its `bAIType` binds `AC_SETHOST` under `AT_ENTER` in the DB `TAICHART` table. That table
+  isn't loaded, so this **defaults `false`** (no production regression; Phase-44 hit-aggro is unaffected).
+- [x] **`TryAcquireHost`** (`MapService.Aggro.cs`) value-exact vs `SetHost::ExecAI`: gather the 3×3-view players,
+  **seed** the first `CanHost` one (no recency — the C++ quirk, line 40), prefer the **nearest by Manhattan**
+  that moved within **3000 ms**, and **lazily activate** a never-eligible first player (lines 57-64). On a pick
+  it **folds** the C++ wake→`ChgHost`→`ChgMode` chain (SetHost only wakes + assigns host + `SelectSkill`; the
+  target/aggro/BATTLE come from the scripted `AT_AICOMPLETE` successors) into the Phase-44 `ApplyRetarget`.
+- [x] Wired into `RunMonsterAI`'s `MT_NORMAL` branch: an aggressive monster tries to acquire before roaming; on
+  a pull it enters `MT_BATTLE` (+ `CS_MONHOST_ACK`) and chases/attacks from the next tick (Phases 19/20/44).
+- 5 tests (`MonsterHostAcquireTests.cs`): aggressive acquires a recent player (+ `CS_MONHOST_ACK` bytes),
+  passive never auto-aggros, nearest-player pick, the lazy-activation fallback, and the end-to-end MOVE →
+  eligibility → acquire.
+
+> **Deferred (documented):** the **`TAICHART`** AI-script table (the real per-`bAIType` trigger→command
+> bindings that decide which monsters are aggressive and the exact escalation ordering) — the port folds the
+> state machine and gates on the `Aggressive` flag instead; the **event-driven `AT_ENTER` trigger** (the port
+> drives acquisition from the per-tick `RunMonsterAI` sweep, the 3000 ms window preserving the recency
+> semantics); `CanHost`'s **ghost branch** (a dead player within `CELL_SIZE/2` — replaced by the `Hp > 0`
+> filter, the port not modelling ghost); the monster `OS_*` status enum (`OS_WAKEUP`/`OS_DEAD` folded into
+> `Mode`/`Dead`); `SelectSkill` (monster skill choice — monsters basic-attack only) and `ChkHost` (host
+> re-validation, which the Phase-44 `Disengage` already covers functionally).
+
+---
+
 ## 🚧 Not yet ported — the roadmap
 
 Everything below is present in the C++ `TMapSvr` and intentionally deferred past Phase 1. Grouped by the
@@ -1492,11 +1653,13 @@ Everything below is present in the C++ `TMapSvr` and intentionally deferred past
   (Phase 16), **exp/level-up + money loot** on death (Phase 17), and **monster-attacks-player** melee damage +
   player death (Phase 20), and **crit/miss/accuracy (`GetAtkHitType`) + the magic-damage branch** (Phase 28 —
   magic AP vs monster magic-DP), and the **maintained-skill buff layer** (Phase 31 — `MaintainSkill` +
-  `CalcAbilityValue` as the third stat-getter layer, apply/expire/`CS_SKILLEND`, `ForceMaintain`). Still deferred:
-  `MTYPE_MDAMAGE`/direct-HP-MP execs, the buff **effection/remain** layers (`ApplyEffectionBuff`/`m_vRemainSkill`)
-  + the stat-layer `CalcCure` term (the **instant** cure/dispel is done in Phase 35), `DistributeSkill` (pet
-  share) — the **shield-block roll** (`GetShieldDP`/`GetShieldMDP`) is now done in Phase 41 (live for a PC
-  defender vs a monster; the block-triggered durability/reaction tail deferred),
+  `CalcAbilityValue` as the third stat-getter layer, apply/expire/`CS_SKILLEND`, `ForceMaintain`), the
+  **`CalcDamage` exec dispatch** (Phase 42 — `MTYPE_MDAMAGE` MP damage + `MTYPE_HP`/`MP` direct heal/drain +
+  the multi-entry damage map + `MTYPE_HI`/`MI` lifedrain), and the **shield-block roll** (Phase 41 — live for a
+  PC defender vs a monster; the block-triggered durability/reaction tail deferred). Still deferred:
+  the buff **effection/remain** amplification layers (`ApplyEffectionBuff`/`m_vRemainSkill`)
+  + the stat-layer `CalcCure` term (the **instant** cure/dispel is done in Phase 35; the HP/MP transfer/swap
+  execs in Phase 43), `DistributeSkill` (pet share),
   PvP, the loot magic/rare rolls (party exp-split + free-for-all loot are done in Phase 38; money-split/exotic
   modes remain), and the pet/guild-StatLevel bonuses currently stubbed in
   the stat sheet. (Player revival — Phase 21 — and item drop-loot — Phase 22 — are done; the death-penalty
@@ -1517,10 +1680,12 @@ Everything below is present in the C++ `TMapSvr` and intentionally deferred past
   damage/keeper tracking** — **Phase 17**; **idle roam broadcast** (`CTAICmdRoam` → `CS_MONACTION_ACK`) —
   **Phase 18**; **aggro + chase + leash drop-aggro** (`CTAICmdChgMode`→BATTLE + `CTAICmdFollow`) — **Phase 19**;
   **monster-attacks-player** (`CTAICmdAttack` → melee AP−DP + `CS_MONATTACK_ACK`/`CS_DEFEND_ACK` + player
-  death) — **Phase 20**. Still deferred: the **leader-cluster/group** spawn branches and **essential**
-  monsters; the rest of the monster **combat AI** — highest-cumulative aggro
-  (`SetAggro`/`m_mapAggro`), host lifecycle (`SetHost`/`ChkHost`/`ChgHost`/`m_dwHostKEY`), monster skills /
-  magic / ranged attacks, `MT_GOHOME`, getaway/refill/lottery, and the client-authoritative move echo
+  death) — **Phase 20**; the **highest-cumulative aggro table** (`SetAggro`/`m_mapAggro` + `ChgHost` retarget +
+  `CS_MONHOST_ACK`) — **Phase 44**; **host acquisition** (aggro-on-sight, `CTAICmdSetHost` + `m_bCanHost`/
+  `m_dwMoveTick`) — **Phase 45**. Still deferred: the **leader-cluster/group** spawn branches and
+  **essential** monsters; the rest of the monster **combat AI** — the data-driven `TAICHART` AI-script table +
+  `m_dwHostKEY` delayed-command epoch, monster skills /
+  magic / ranged attacks, `MT_GOHOME` walk-back, getaway/refill/lottery, and the client-authoritative move echo
   (`CS_MONMOVE_REQ`/`ACK`); the **priest-resurrection** ask flow (`CS_REVIVALASK`/`REPLY`) + death penalty
   (player revival itself is done — Phase 21); `CTRecallMon` /
   `CTSpolecnikMon` / `CTSelfObj` summons; and the
