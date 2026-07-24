@@ -148,6 +148,8 @@ void CTachyonApp::LoadStdProfileSettings()
 
 	if(!dwValue)
 	{
+		// No resolution in config.ini -> adapt to the primary display on first run.
+		m_pTachyonWnd->m_Device.m_option.m_dwScreenX = GetSystemMetrics(SM_CXSCREEN);
 		WriteProfileInt(
 			_T("Settings"),
 			_T("ScreenX"),
@@ -162,6 +164,8 @@ void CTachyonApp::LoadStdProfileSettings()
 
 	if(!dwValue)
 	{
+		// No resolution in config.ini -> adapt to the primary display on first run.
+		m_pTachyonWnd->m_Device.m_option.m_dwScreenY = GetSystemMetrics(SM_CYSCREEN);
 		WriteProfileInt(
 			_T("Settings"),
 			_T("ScreenY"),
