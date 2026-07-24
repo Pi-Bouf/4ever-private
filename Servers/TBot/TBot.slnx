@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="TBot.csproj" />
+  <Project Path="TBot.Tests/TBot.Tests.csproj" />
+  <Project Path="../TLoginSvr.Net/TLogin.Protocol/TLogin.Protocol.csproj" />
+</Solution>

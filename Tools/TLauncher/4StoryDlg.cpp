@@ -1,4 +1,4 @@
-// 4StoryDlg.cpp : ±¸Çö ÆÄÀÏ
+// 4StoryDlg.cpp : ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 //
 
 #include "stdafx.h"
@@ -17,7 +17,7 @@
 
 #define TMP_TIMER						(100)
 
-// CStoryDlg ´ëÈ­ »óÀÚ
+// CStoryDlg ï¿½ï¿½È­ ï¿½ï¿½ï¿½ï¿½
 ULONGLONG CStoryDlg::m_lVIDEOMEM = 0;
 ULONGLONG CStoryDlg::m_lSYSMEM = 0;
 
@@ -54,7 +54,7 @@ CStoryDlg::~CStoryDlg()
 		//::DeleteObject(hBmp);
 	}
 
-	// ¹öÆ° ±ô¹ÚÀÓ
+	// ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	if(m_bFlash)
 	{
 		m_bFlash = FALSE;
@@ -89,18 +89,18 @@ BEGIN_MESSAGE_MAP(CStoryDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-// CStoryDlg ¸Þ½ÃÁö Ã³¸®±â
+// CStoryDlg ï¿½Þ½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½
 
 BOOL CStoryDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// ÀÌ ´ëÈ­ »óÀÚÀÇ ¾ÆÀÌÄÜÀ» ¼³Á¤ÇÕ´Ï´Ù. ÀÀ¿ë ÇÁ·Î±×·¥ÀÇ ÁÖ Ã¢ÀÌ ´ëÈ­ »óÀÚ°¡ ¾Æ´Ò °æ¿ì¿¡´Â
-	// ÇÁ·¹ÀÓ¿öÅ©°¡ ÀÌ ÀÛ¾÷À» ÀÚµ¿À¸·Î ¼öÇàÇÕ´Ï´Ù.
-	SetIcon(m_hIcon, TRUE);			// Å« ¾ÆÀÌÄÜÀ» ¼³Á¤ÇÕ´Ï´Ù.
-	SetIcon(m_hIcon, FALSE);		// ÀÛÀº ¾ÆÀÌÄÜÀ» ¼³Á¤ÇÕ´Ï´Ù.
+	// ï¿½ï¿½ ï¿½ï¿½È­ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î±×·ï¿½ï¿½ï¿½ ï¿½ï¿½ Ã¢ï¿½ï¿½ ï¿½ï¿½È­ ï¿½ï¿½ï¿½Ú°ï¿½ ï¿½Æ´ï¿½ ï¿½ï¿½ì¿¡ï¿½ï¿½
+	// ï¿½ï¿½ï¿½ï¿½ï¿½Ó¿ï¿½Å©ï¿½ï¿½ ï¿½ï¿½ ï¿½Û¾ï¿½ï¿½ï¿½ ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
+	SetIcon(m_hIcon, TRUE);			// Å« ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
+	SetIcon(m_hIcon, FALSE);		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
 
-	// TODO: ¿©±â¿¡ Ãß°¡ ÃÊ±âÈ­ ÀÛ¾÷À» Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ï¿½ï¿½ï¿½â¿¡ ï¿½ß°ï¿½ ï¿½Ê±ï¿½È­ ï¿½Û¾ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ï¿½Õ´Ï´ï¿½.
 	m_bCancel = FALSE;
 	m_blPatchFileUpdate = FALSE;
 	m_bDownloading = FALSE;
@@ -109,7 +109,7 @@ BOOL CStoryDlg::OnInitDialog()
 	m_hDownload = NULL;
 	//m_bProgressing = FALSE;
 
-	if ( !m_bDisclaimer )
+	if ( !m_bDisclaimer && !m_strDisclaimer.IsEmpty() )
 	{
 		if( AfxMessageBox( m_strDisclaimer, MB_OKCANCEL ) == IDCANCEL )
 		{
@@ -163,14 +163,14 @@ BOOL CStoryDlg::OnInitDialog()
 	//XTrap_L_Patch((char*)xArg, NULL, 60000);
 	InitWeb();
 
-	if(!ReadRegistry())
-	{
-		if( AfxMessageBox(_T("Can not read Registry"),MB_OK ) == IDOK)
-		{
-			OnCancel();
-			return FALSE;
-		}
-	}
+	//if(!ReadRegistry())
+	//{
+	//	if( AfxMessageBox(_T("Can not read Registry"),MB_OK ) == IDOK)
+	//	{
+	//		OnCancel();
+	//		return FALSE;
+	//	}
+	//}
 
 	m_session.SetOwner(this);
 	SessionStart(m_strIP, m_wPort);
@@ -182,12 +182,12 @@ BOOL CStoryDlg::OnInitDialog()
 	if(pOK)
 		pOK->EnableWindow(FALSE);
 
-	// [È¯°æ¼³Á¤] ¹öÆ° ºñÈ°¼ºÈ­ JINUK
+	// [È¯ï¿½æ¼³ï¿½ï¿½] ï¿½ï¿½Æ° ï¿½ï¿½È°ï¿½ï¿½È­ JINUK
 	CButton * pSet = (CButton *)GetDlgItem(IDC_BUTTON_SETTING);
 	if(pSet)
 		pSet->EnableWindow(FALSE);
 
-	m_bFlash = FALSE; // ¹öÆ° ±ô¹ÚÀÓ
+	m_bFlash = FALSE; // ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 	////////////////////////////////////////////////////////////////
 	m_bOK.LoadBitmap(IDB_BITMAP_SN, IDB_BITMAP_SP, IDB_BITMAP_SH, IDB_BITMAP_SD);
@@ -209,7 +209,7 @@ BOOL CStoryDlg::OnInitDialog()
 	m_bSetting.SetToolTipText(&str);
 
 	LoadSkin();
-	SetControlPos(); // ÄÁÆ®·Ñ À§Ä¡ ÁöÁ¤
+	SetControlPos(); // ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½
 
 	// progress bar color change
 	/*
@@ -228,27 +228,27 @@ BOOL CStoryDlg::OnInitDialog()
 	m_chkPrePatch.SetCheck(CheakStartRegistry());
 	//SetHWND(GetSafeHwnd());
 
-	// È¯°æ¼³Á¤ ´ÙÀÌ¾ó·Î±×
+	// È¯ï¿½æ¼³ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¾ï¿½Î±ï¿½
 	//m_pdlgPlaySetting = new CPlaySetting();
 	//m_pdlgPlaySetting->Create(IDD_PLAYSET);
 	//m_pdlgPlaySetting->ShowWindow(SW_HIDE);
 
-	return TRUE;  // ÄÁÆ®·Ñ¿¡ ´ëÇÑ Æ÷Ä¿½º¸¦ ¼³Á¤ÇÏÁö ¾ÊÀ» °æ¿ì TRUE¸¦ ¹ÝÈ¯ÇÕ´Ï´Ù.
+	return TRUE;  // ï¿½ï¿½Æ®ï¿½Ñ¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ TRUEï¿½ï¿½ ï¿½ï¿½È¯ï¿½Õ´Ï´ï¿½.
 }
 
-// ´ëÈ­ »óÀÚ¿¡ ÃÖ¼ÒÈ­ ´ÜÃß¸¦ Ãß°¡ÇÒ °æ¿ì ¾ÆÀÌÄÜÀ» ±×¸®·Á¸é 
-// ¾Æ·¡ ÄÚµå°¡ ÇÊ¿äÇÕ´Ï´Ù. ¹®¼­/ºä ¸ðµ¨À» »ç¿ëÇÏ´Â MFC ÀÀ¿ë ÇÁ·Î±×·¥ÀÇ °æ¿ì¿¡´Â
-// ÇÁ·¹ÀÓ¿öÅ©¿¡¼­ ÀÌ ÀÛ¾÷À» ÀÚµ¿À¸·Î ¼öÇàÇÕ´Ï´Ù.
+// ï¿½ï¿½È­ ï¿½ï¿½ï¿½Ú¿ï¿½ ï¿½Ö¼ï¿½È­ ï¿½ï¿½ï¿½ß¸ï¿½ ï¿½ß°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½×¸ï¿½ï¿½ï¿½ï¿½ï¿½ 
+// ï¿½Æ·ï¿½ ï¿½Úµå°¡ ï¿½Ê¿ï¿½ï¿½Õ´Ï´ï¿½. ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ MFC ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î±×·ï¿½ï¿½ï¿½ ï¿½ï¿½ì¿¡ï¿½ï¿½
+// ï¿½ï¿½ï¿½ï¿½ï¿½Ó¿ï¿½Å©ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Û¾ï¿½ï¿½ï¿½ ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
 
 void CStoryDlg::OnPaint() 
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // ±×¸®±â¸¦ À§ÇÑ µð¹ÙÀÌ½º ÄÁÅØ½ºÆ®
+		CPaintDC dc(this); // ï¿½×¸ï¿½ï¿½â¸¦ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½ï¿½ï¿½Ø½ï¿½Æ®
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// Å¬¶óÀÌ¾ðÆ® »ç°¢Çü¿¡¼­ ¾ÆÀÌÄÜÀ» °¡¿îµ¥¿¡ ¸ÂÃä´Ï´Ù.
+		// Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ® ï¿½ç°¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½îµ¥ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -256,7 +256,7 @@ void CStoryDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// ¾ÆÀÌÄÜÀ» ±×¸³´Ï´Ù.
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½×¸ï¿½ï¿½Ï´ï¿½.
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -265,8 +265,8 @@ void CStoryDlg::OnPaint()
 	}
 }
 
-// »ç¿ëÀÚ°¡ ÃÖ¼ÒÈ­µÈ Ã¢À» ²ô´Â µ¿¾È¿¡ Ä¿¼­°¡ Ç¥½ÃµÇµµ·Ï ½Ã½ºÅÛ¿¡¼­
-//  ÀÌ ÇÔ¼ö¸¦ È£ÃâÇÕ´Ï´Ù. 
+// ï¿½ï¿½ï¿½ï¿½Ú°ï¿½ ï¿½Ö¼ï¿½È­ï¿½ï¿½ Ã¢ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½È¿ï¿½ Ä¿ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ÃµÇµï¿½ï¿½ï¿½ ï¿½Ã½ï¿½ï¿½Û¿ï¿½ï¿½ï¿½
+//  ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½Õ´Ï´ï¿½. 
 HCURSOR CStoryDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
@@ -280,7 +280,7 @@ BOOL CStoryDlg::DestroyWindow()
 
 LRESULT CStoryDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	// TODO: ¿©±â¿¡ Æ¯¼öÈ­µÈ ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº» Å¬·¡½º¸¦ È£ÃâÇÕ´Ï´Ù.
+	// TODO: ï¿½ï¿½ï¿½â¿¡ Æ¯ï¿½ï¿½È­ï¿½ï¿½ ï¿½Úµå¸¦ ï¿½ß°ï¿½ ï¿½ï¿½/ï¿½Ç´ï¿½ ï¿½âº» Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
 	switch(message)
 	{
 	case WM_RESTART_PATCH:
@@ -506,7 +506,7 @@ DWORD CStoryDlg::Download()
 	m_bDownloading = TRUE;
 
 	////////////////////////////////////////////////
-	// Çö½Â·æ À¥ ¶ß±âÀü±îÁö ¾²·¹µå ½ÇÇà ¸·À½
+	// ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ ï¿½ß±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	while( m_webCtrl.GetBusy() )
 	{
 		Sleep(500);
@@ -533,7 +533,7 @@ DWORD CStoryDlg::Download()
 		if(!pPatchFile)
 			break;
 
-		//	Pre ÆÐÄ¡ °Ë»ç
+		//	Pre ï¿½ï¿½Ä¡ ï¿½Ë»ï¿½
 		BYTE bPatchType = PrePatchCheak(pPatchFile);
 		if(bPatchType >= DOWN_ERR)
 		{
@@ -541,21 +541,21 @@ DWORD CStoryDlg::Download()
 			break;
 		}
 
-		//	µð·ºÅä¸® ¼³Á¤
+		//	ï¿½ï¿½ï¿½ä¸® ï¿½ï¿½ï¿½ï¿½
 		if(!SetPath(pPatchFile, bPatchType))
 		{
 			m_bDownloading = FALSE;
 			break;
 		}
 
-        //	ÆÄÀÏ ´Ù¿î·Îµå
+        //	ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¿ï¿½Îµï¿½
 		if(bPatchType != DOWN_PREPATCH)
 		{
 			DWORD		dwRead = 0;
 
 			TRY
 			{
-				//	URL Á¢¼Ó, ÆÄÀÏ¿¬°á
+				//	URL ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½
 				CString strURL = m_strFtpSvr + _T("/");
 				if(!pPatchFile->m_strPath.IsEmpty())
 					strURL += pPatchFile->m_strPath + _T("/");
@@ -568,7 +568,7 @@ DWORD CStoryDlg::Download()
 					m_bDownloading = FALSE;
 					break;
 				}
-				//	write ÆÄÀÏ ¿­±â
+				//	write ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 				if(fileNew.Open(pPatchFile->m_strName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite))
 				{
 					dwRead = (DWORD)fileNew.SeekToEnd();					
@@ -586,7 +586,7 @@ DWORD CStoryDlg::Download()
 					break;
 				}
 
-				//	ÆÄÀÏ ´Ù¿î
+				//	ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¿ï¿½
 				char	lpBuffer[1024+1];
 				DWORD	dwNumberOfBytesRead;
 				while (dwNumberOfBytesRead = remotefile->Read(lpBuffer, 1024))
@@ -600,7 +600,7 @@ DWORD CStoryDlg::Download()
 					Progress(pPatchFile->m_strName, pPatchFile->m_dwSize, dwRead, nTotalRead,PROGRESS_TYPE_DOWNLOAD);
 				}
 
-				//	ÆÄÀÏ´Ý±â
+				//	ï¿½ï¿½ï¿½Ï´Ý±ï¿½
 				fileNew.Close();
 				remotefile->Close();
 				delete remotefile;
@@ -631,7 +631,7 @@ DWORD CStoryDlg::Download()
 			END_CATCH_ALL;
 		}
 
-		//	¾ÐÃàÇØÁ¦
+		//	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		if(m_bDownloading)
 		{
 			if(bPatchType == DOWN_PREPATCH)
@@ -661,7 +661,7 @@ DWORD CStoryDlg::Download()
 				break;
 			}
 
-			////	ÆÐÄ¡ ¿Ï·á
+			////	ï¿½ï¿½Ä¡ ï¿½Ï·ï¿½
 			if(!m_blPatchFileUpdate)
 				SetVersion(pPatchFile->m_dwVersion);
 
@@ -700,7 +700,7 @@ DWORD CStoryDlg::Download()
 BYTE CStoryDlg::PrePatchCheak(LPPATCHFILE& pPatchFile)
 {
 
-	//	PrePatch È®ÀÎ
+	//	PrePatch È®ï¿½ï¿½
 	if(pPatchFile->m_dwBetaVer != 0)
 	{
 		for(VPATCHFILE::iterator it = m_vLocal.begin(); it != m_vLocal.end(); it++)
@@ -711,7 +711,7 @@ BYTE CStoryDlg::PrePatchCheak(LPPATCHFILE& pPatchFile)
 
 				BYTE bRet = DOWN_PREPATCH;
 
-				//	ÀÌ¾î¹Þ¾Æ¾ß ÇÏ´Â°¡?					
+				//	ï¿½Ì¾ï¿½Þ¾Æ¾ï¿½ ï¿½Ï´Â°ï¿½?					
 				if(0 == (*it)->m_dwSize)
 				{
 					bRet = DOWN_INCOMPRE;
@@ -875,16 +875,16 @@ void CStoryDlg::CheckPatch()
 		m_strDownload.ReleaseBuffer();
 		CString strNew=m_szPatchFileName;
         	
-		// °ÔÀÓ ½ÃÀÛ ¹öÆ° È°¼ºÈ­
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ° È°ï¿½ï¿½È­
 		CButton * pOK = (CButton *)GetDlgItem(IDOK);
 		if(pOK)
 		{
-			m_bFlash = TRUE; // ¹öÆ° ±ô¹ÚÀÓ
+			m_bFlash = TRUE; // ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			pOK->EnableWindow(TRUE);
 			SetTimer(1, 500, NULL);
 		}
 
-		// È¯°æ¼³Á¤ ¹öÆ° È°¼ºÈ­
+		// È¯ï¿½æ¼³ï¿½ï¿½ ï¿½ï¿½Æ° È°ï¿½ï¿½È­
 		CButton * pSet = (CButton *)GetDlgItem(IDC_BUTTON_SETTING);
 		if(pSet)
 		{
@@ -901,7 +901,7 @@ void CStoryDlg::CheckPatch()
 
 			CopyFile(m_szPatchFileName, strNew, FALSE);
 		}
-		//	»ç¿ëÇÏÁö ¾Ê´Â ÀÌÀü¹öÀü PrePatch Áö¿ì±â
+		//	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ PrePatch ï¿½ï¿½ï¿½ï¿½ï¿½
 		if(m_dwMinBetaVer)
 			RemoveOldPrePatch();
 
@@ -988,7 +988,7 @@ int CStoryDlg::Unzip(LPCTSTR strZip, LPCTSTR strDirectory)
 				if( !file.Open(szFileName, CFile::modeCreate|CFile::shareExclusive|CFile::modeWrite) )
 				{
 					unzClose( zip );
-					return -1; // ¼öÁ¤
+					return -1; // ï¿½ï¿½ï¿½ï¿½
 				}
 			}
 
@@ -1279,7 +1279,7 @@ void CStoryDlg::OnBnClickedButtonHomepage()
 
 void CStoryDlg::OnBnClickedButtonSetting()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ï¿½ï¿½ï¿½â¿¡ ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ë¸ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½Úµå¸¦ ï¿½ß°ï¿½ï¿½Õ´Ï´ï¿½.
 	
 	//CGameSetting dlg;
 	//dlg.SetGraphicMode(m_dwWindowMode, m_dwShaderMode, m_dwCharMode, m_dwPaperMode, m_dwBackMode);
@@ -1289,7 +1289,7 @@ void CStoryDlg::OnBnClickedButtonSetting()
 	//	WriteRegistry();
 	//}
 
-	// »ç¾ç °Ë»ç
+	// ï¿½ï¿½ï¿½ ï¿½Ë»ï¿½
 	InitCAPS();
 	if( m_lSYSMEM >= 1000000000 && m_lVIDEOMEM >= 256 )
 		theApp.m_bOptionLevel = OPTION_HI; // High
@@ -1300,7 +1300,7 @@ void CStoryDlg::OnBnClickedButtonSetting()
 
 	CollectResolution();
 
-	// °ÔÀÓ¼³Á¤ ´ëÈ­»óÀÚ ¸ð´Þ¸®½º·Î ¶ç¿ì±â
+	// ï¿½ï¿½ï¿½Ó¼ï¿½ï¿½ï¿½ ï¿½ï¿½È­ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Þ¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	if( m_pdlgPlaySetting == NULL)
 	{
 		m_pdlgPlaySetting = new CPlaySetting();
@@ -1323,7 +1323,7 @@ BYTE CStoryDlg::WriteRegistry()
 
 void CStoryDlg::OnBnClickedOk()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ï¿½ï¿½ï¿½â¿¡ ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ë¸ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½Úµå¸¦ ï¿½ß°ï¿½ï¿½Õ´Ï´ï¿½.
     if(m_bFlash)
 	{
 		m_bFlash = FALSE;
@@ -1342,7 +1342,7 @@ void CStoryDlg::OnBnClickedOk()
 
 void CStoryDlg::OnBnClickedCancel()
 {
-	// TODO: ¿©±â¿¡ ÄÁÆ®·Ñ ¾Ë¸² Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ï¿½ï¿½ï¿½â¿¡ ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ë¸ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½Úµå¸¦ ï¿½ß°ï¿½ï¿½Õ´Ï´ï¿½.
 	if(m_bFlash)
 	{
 		m_bFlash = FALSE;
@@ -1384,14 +1384,14 @@ BOOL CStoryDlg::OnEraseBkgnd(CDC* pDC)
 
 void CStoryDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	// TODO: ¿©±â¿¡ ¸Þ½ÃÁö Ã³¸®±â ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº»°ªÀ» È£ÃâÇÕ´Ï´Ù.
+	// TODO: ï¿½ï¿½ï¿½â¿¡ ï¿½Þ½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½Úµå¸¦ ï¿½ß°ï¿½ ï¿½ï¿½/ï¿½Ç´ï¿½ ï¿½âº»ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
 	SendMessage(WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM(point.x, point.y));
 	CDialog::OnLButtonDown(nFlags, point);
 }
 
 void CStoryDlg::OnTimer(UINT nIDEvent)
 {
-	// TODO: ¿©±â¿¡ ¸Þ½ÃÁö Ã³¸®±â ÄÚµå¸¦ Ãß°¡ ¹×/¶Ç´Â ±âº»°ªÀ» È£ÃâÇÕ´Ï´Ù.
+	// TODO: ï¿½ï¿½ï¿½â¿¡ ï¿½Þ½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½Úµå¸¦ ï¿½ß°ï¿½ ï¿½ï¿½/ï¿½Ç´ï¿½ ï¿½âº»ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
 	switch(nIDEvent)
 	{
 	case 1:
@@ -1408,7 +1408,7 @@ void CStoryDlg::OnTimer(UINT nIDEvent)
 
 void CStoryDlg::OnDestroy()
 {
-	// TODO: ¿©±â¿¡ ¸Þ½ÃÁö Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ï¿½ï¿½ï¿½â¿¡ ï¿½Þ½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½Úµå¸¦ ï¿½ß°ï¿½ï¿½Õ´Ï´ï¿½.
 
 	if( m_pdlgPlaySetting )
 	{

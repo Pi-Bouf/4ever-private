@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "o5iWAVGNig4=",
+  "dgSpecHash": "DgolU2HcuQM=",
   "success": true,
-  "projectFilePath": "E:\\Projects\\4Story\\Araz-4ever\\Servers\\TPatchSvr.Net\\TPatch.Protocol\\TPatch.Protocol.csproj",
+  "projectFilePath": "E:\\Projects\\4Story\\Araz-4ever\\Tools\\TLauncher.Core\\TLauncher.Core.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\pierr\\.nuget\\packages\\microsoft.netcore.app.runtime.osx-arm64\\10.0.9\\microsoft.netcore.app.runtime.osx-arm64.10.0.9.nupkg.sha512",
     "C:\\Users\\pierr\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.osx-arm64\\10.0.9\\microsoft.aspnetcore.app.runtime.osx-arm64.10.0.9.nupkg.sha512"

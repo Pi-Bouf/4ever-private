@@ -1,12 +1,148 @@
 {
   "version": 4,
   "targets": {
-    "net10.0": {},
-    "net10.0/osx-arm64": {}
+    "net10.0": {
+      "TLauncher.Core/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "TPatch.Protocol": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/TLauncher.Core.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/TLauncher.Core.dll": {}
+        }
+      },
+      "TPatch.Protocol/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/TPatch.Protocol.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/TPatch.Protocol.dll": {}
+        }
+      }
+    },
+    "net10.0/linux-x64": {
+      "TLauncher.Core/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "TPatch.Protocol": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/TLauncher.Core.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/TLauncher.Core.dll": {}
+        }
+      },
+      "TPatch.Protocol/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/TPatch.Protocol.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/TPatch.Protocol.dll": {}
+        }
+      }
+    },
+    "net10.0/osx-arm64": {
+      "TLauncher.Core/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "TPatch.Protocol": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/TLauncher.Core.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/TLauncher.Core.dll": {}
+        }
+      },
+      "TPatch.Protocol/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/TPatch.Protocol.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/TPatch.Protocol.dll": {}
+        }
+      }
+    },
+    "net10.0/osx-x64": {
+      "TLauncher.Core/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "TPatch.Protocol": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/TLauncher.Core.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/TLauncher.Core.dll": {}
+        }
+      },
+      "TPatch.Protocol/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/TPatch.Protocol.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/TPatch.Protocol.dll": {}
+        }
+      }
+    },
+    "net10.0/win-x64": {
+      "TLauncher.Core/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "TPatch.Protocol": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/TLauncher.Core.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/TLauncher.Core.dll": {}
+        }
+      },
+      "TPatch.Protocol/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/TPatch.Protocol.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/TPatch.Protocol.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "TLauncher.Core/1.0.0": {
+      "type": "project",
+      "path": "../TLauncher.Core/TLauncher.Core.csproj",
+      "msbuildProject": "../TLauncher.Core/TLauncher.Core.csproj"
+    },
+    "TPatch.Protocol/1.0.0": {
+      "type": "project",
+      "path": "../../Servers/TPatchSvr.Net/TPatch.Protocol/TPatch.Protocol.csproj",
+      "msbuildProject": "../../Servers/TPatchSvr.Net/TPatch.Protocol/TPatch.Protocol.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net10.0": []
+    "net10.0": [
+      "TLauncher.Core >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\pierr\\.nuget\\packages\\": {}
@@ -14,11 +150,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\Projects\\4Story\\Araz-4ever\\Servers\\TPatchSvr.Net\\TPatch.Protocol\\TPatch.Protocol.csproj",
-      "projectName": "TPatch.Protocol",
-      "projectPath": "E:\\Projects\\4Story\\Araz-4ever\\Servers\\TPatchSvr.Net\\TPatch.Protocol\\TPatch.Protocol.csproj",
+      "projectUniqueName": "E:\\Projects\\4Story\\Araz-4ever\\Tools\\TLauncher.Net\\TLauncher.Net.csproj",
+      "projectName": "TLauncher.Net",
+      "projectPath": "E:\\Projects\\4Story\\Araz-4ever\\Tools\\TLauncher.Net\\TLauncher.Net.csproj",
       "packagesPath": "C:\\Users\\pierr\\.nuget\\packages\\",
-      "outputPath": "E:\\Projects\\4Story\\Araz-4ever\\Servers\\TPatchSvr.Net\\TPatch.Protocol\\obj\\",
+      "outputPath": "E:\\Projects\\4Story\\Araz-4ever\\Tools\\TLauncher.Net\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\pierr\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -35,7 +171,11 @@
         "net10.0": {
           "framework": "net10.0",
           "targetAlias": "net10.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "E:\\Projects\\4Story\\Araz-4ever\\Tools\\TLauncher.Core\\TLauncher.Core.csproj": {
+              "projectPath": "E:\\Projects\\4Story\\Araz-4ever\\Tools\\TLauncher.Core\\TLauncher.Core.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
@@ -67,11 +207,51 @@
         "warn": true,
         "downloadDependencies": [
           {
+            "name": "Microsoft.AspNetCore.App.Runtime.linux-x64",
+            "version": "[10.0.9, 10.0.9]"
+          },
+          {
             "name": "Microsoft.AspNetCore.App.Runtime.osx-arm64",
             "version": "[10.0.9, 10.0.9]"
           },
           {
+            "name": "Microsoft.AspNetCore.App.Runtime.osx-x64",
+            "version": "[10.0.9, 10.0.9]"
+          },
+          {
+            "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
+            "version": "[10.0.9, 10.0.9]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Host.linux-x64",
+            "version": "[10.0.9, 10.0.9]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Host.osx-arm64",
+            "version": "[10.0.9, 10.0.9]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Host.osx-x64",
+            "version": "[10.0.9, 10.0.9]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Runtime.linux-x64",
+            "version": "[10.0.9, 10.0.9]"
+          },
+          {
             "name": "Microsoft.NETCore.App.Runtime.osx-arm64",
+            "version": "[10.0.9, 10.0.9]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Runtime.osx-x64",
+            "version": "[10.0.9, 10.0.9]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Runtime.win-x64",
+            "version": "[10.0.9, 10.0.9]"
+          },
+          {
+            "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
             "version": "[10.0.9, 10.0.9]"
           }
         ],
@@ -358,7 +538,16 @@
       }
     },
     "runtimes": {
+      "linux-x64": {
+        "#import": []
+      },
       "osx-arm64": {
+        "#import": []
+      },
+      "osx-x64": {
+        "#import": []
+      },
+      "win-x64": {
         "#import": []
       }
     }

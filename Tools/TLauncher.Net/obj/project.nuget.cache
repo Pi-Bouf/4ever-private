@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "dgSpecHash": "Cg8kSCTS2oc=",
+  "success": true,
+  "projectFilePath": "E:\\Projects\\4Story\\Araz-4ever\\Tools\\TLauncher.Net\\TLauncher.Net.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\pierr\\.nuget\\packages\\microsoft.netcore.app.runtime.osx-arm64\\10.0.9\\microsoft.netcore.app.runtime.osx-arm64.10.0.9.nupkg.sha512",
+    "C:\\Users\\pierr\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\10.0.9\\microsoft.netcore.app.runtime.win-x64.10.0.9.nupkg.sha512",
+    "C:\\Users\\pierr\\.nuget\\packages\\microsoft.netcore.app.runtime.linux-x64\\10.0.9\\microsoft.netcore.app.runtime.linux-x64.10.0.9.nupkg.sha512",
+    "C:\\Users\\pierr\\.nuget\\packages\\microsoft.netcore.app.runtime.osx-x64\\10.0.9\\microsoft.netcore.app.runtime.osx-x64.10.0.9.nupkg.sha512",
+    "C:\\Users\\pierr\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\10.0.9\\microsoft.windowsdesktop.app.runtime.win-x64.10.0.9.nupkg.sha512",
+    "C:\\Users\\pierr\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.osx-arm64\\10.0.9\\microsoft.aspnetcore.app.runtime.osx-arm64.10.0.9.nupkg.sha512",
+    "C:\\Users\\pierr\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\10.0.9\\microsoft.aspnetcore.app.runtime.win-x64.10.0.9.nupkg.sha512",
+    "C:\\Users\\pierr\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.linux-x64\\10.0.9\\microsoft.aspnetcore.app.runtime.linux-x64.10.0.9.nupkg.sha512",
+    "C:\\Users\\pierr\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.osx-x64\\10.0.9\\microsoft.aspnetcore.app.runtime.osx-x64.10.0.9.nupkg.sha512",
+    "C:\\Users\\pierr\\.nuget\\packages\\microsoft.netcore.app.host.osx-arm64\\10.0.9\\microsoft.netcore.app.host.osx-arm64.10.0.9.nupkg.sha512",
+    "C:\\Users\\pierr\\.nuget\\packages\\microsoft.netcore.app.host.linux-x64\\10.0.9\\microsoft.netcore.app.host.linux-x64.10.0.9.nupkg.sha512",
+    "C:\\Users\\pierr\\.nuget\\packages\\microsoft.netcore.app.host.osx-x64\\10.0.9\\microsoft.netcore.app.host.osx-x64.10.0.9.nupkg.sha512"
+  ],
+  "logs": []
+}
