@@ -320,13 +320,13 @@
     <ClInclude Include="XListCtrl.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Lib\3rdParty\zlib\include\zlib.h">
+    <ClInclude Include="..\..\Lib\3rdParty\zlib\include\zlib.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Lib\3rdParty\zlib\include\zconf.h">
+    <ClInclude Include="..\..\Lib\3rdParty\zlib\include\zconf.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Lib\3rdParty\zlib\include\minizip\zip.h">
+    <ClInclude Include="..\..\Lib\3rdParty\zlib\include\minizip\zip.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
