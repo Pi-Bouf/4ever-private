@@ -20,7 +20,8 @@ built with **MSVC** — the projects are `PlatformToolset v141` (Visual Studio 2
 ```
 Client/    C++ game client source (TClient.sln) + TClientCmd.tif (the compiled-UI artifact shipped with source)
 Lib/       Own/ (engine + UI + net libraries, each its own .sln) and 3rdParty/
-Servers/   The ATL Windows-service cluster (TServer.sln) + TLogSvr (own sln) + Tools/Happy
+Servers/   The ATL Windows-service cluster (TServer.sln) + TLogSvr (own sln)
+Tools/     Server-side build tools — Happy (moved here from Servers/Tools/Happy), plus TLauncher, TCMLParser
 Game/      The COMPILED runtime client + all assets (this is what actually runs; = 4retro's Game/)
 Install Services/   .lnk shortcuts that install each server as a Windows service
 Reg Services/       .reg files that seed each service's registry config (see "Deployment" below)
@@ -50,7 +51,7 @@ msbuild Client\TClient.sln /p:Configuration=Release /p:Platform=x86
 msbuild "Lib\Own\Engine Lib\Engine Lib.sln" /p:Configuration=Release /p:Platform=x86
 
 # Server-side tool
-msbuild Servers\Tools\Happy\Happy.sln /p:Configuration=Release /p:Platform=x86
+msbuild Tools\Happy\Happy.sln /p:Configuration=Release /p:Platform=x86
 ```
 
 ## Deployment & configuration (the important difference from 4retro)
@@ -147,5 +148,5 @@ runtime anti-cheat packages. The stray `TClient(...).dmp` is a leftover crash du
 
 ## Tools
 
-`Servers/Tools/Happy/` (`Happy.sln`) is the only build tool in this release — see its `ReadMe.txt` and
-`UserPosList.txt`. (There is no `TCMLParser` here; the fork added one.)
+`Tools/Happy/` (`Happy.sln`, moved here from `Servers/Tools/Happy/`) is a server-side build tool — see its
+`ReadMe.txt` and `UserPosList.txt`.
