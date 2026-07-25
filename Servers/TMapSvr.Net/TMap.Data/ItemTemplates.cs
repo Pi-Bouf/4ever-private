@@ -128,6 +128,17 @@ public sealed class TemplateStore
     /// <summary>C++ <c>m_mapTMONSPAWN</c> — spawn points (each bundled with its monster-type table).</summary>
     public List<MonsterSpawnDef> MonsterSpawns { get; } = new();
 
+    // Phase 46: the auto-aggro (aggro-on-sight) gate, derived from the AI-script charts.
+    /// <summary>The set of monster <c>bAIType</c> values whose AI script binds <c>AC_SETHOST</c> under the
+    /// <c>AT_ENTER</c> trigger in <c>TAICHART</c> — i.e. the AI types that acquire a host on sight. In C++ this
+    /// is the presence of an <c>AC_SETHOST</c> command in <c>CTMonsterAI::m_mapVCOMMAND[AT_ENTER]</c>; the port
+    /// folds the AI state machine and gates <c>Monster.Aggressive</c> on this set. Empty when the AI charts are
+    /// absent (DB-free) ⇒ no monster auto-aggros, matching the pre-Phase-46 default.</summary>
+    public HashSet<byte> AggressiveAiTypes { get; } = new();
+
+    /// <summary>Whether a monster with this <c>bAIType</c> is aggressive (auto-aggro-on-sight).</summary>
+    public bool IsAggressiveAi(byte aiType) => AggressiveAiTypes.Contains(aiType);
+
     /// <summary>C++ <c>MAKELONG(wAttrId, bLevel)</c> — the monster-attr chart key.</summary>
     public static uint MonAttrKey(ushort attrId, byte level) => attrId | ((uint)level << 16);
     public MonAttrRow? MonAttr(ushort attrId, byte level) => MonAttrs.GetValueOrDefault(MonAttrKey(attrId, level));

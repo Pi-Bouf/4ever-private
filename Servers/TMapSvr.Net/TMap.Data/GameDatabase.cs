@@ -141,7 +141,15 @@ public sealed class GameDatabase
     // Phase 12: monster spawn charts. The C++ CTBLMonSpawn SELECT filters by a TSVRCHART server/unit-id join
     // (multi-machine topology); this single-server port loads all rows and buckets them by (channel, map).
     private const string MonsterChartSql =
-        @"SELECT wID, bLevel, wMonAttr, wExp, bMoneyProb, dwMinMoney, dwMaxMoney, bItemProb, bDropCount FROM TMONSTERCHART";
+        @"SELECT wID, bLevel, wMonAttr, wExp, bMoneyProb, dwMinMoney, dwMaxMoney, bItemProb, bDropCount, bAIType FROM TMONSTERCHART";
+    // Phase 46: the monster-AI script charts (C++ CTBLAICommand → m_mapTCMDTEMP, CTBLAIChart → m_mapTMONAI). We
+    // derive only the aggro-on-sight gate: an AI type is "aggressive" iff, under the AT_ENTER trigger, it binds a
+    // command whose type is AC_SETHOST. TAICONCHART (per-command conditions) and the full trigger→command state
+    // machine are deferred — the port folds the AI loop and gates Monster.Aggressive on this set.
+    private const string AiCommandSql = @"SELECT dwCmdID, bCmdType FROM TAICMDCHART";
+    private const string AiChartSql = @"SELECT bAIType, bTriggerType, dwCmdID FROM TAICHART";
+    private const byte AtEnter = 7;    // AI_TRIGGER AT_ENTER (TMapType.h)
+    private const byte AcSetHost = 2;  // AI_COMMAND AC_SETHOST
     // Phase 22: the per-monster item drop table (CTBLMonItemAll → m_vMONITEM). Bulk-loaded, bucketed by wMonID
     // (like the skill-data rows). We read the fixed-item subset; the ranged / magic-option columns are deferred.
     private const string MonItemChartSql =
@@ -309,7 +317,8 @@ public sealed class GameDatabase
                 store.MonsterTemplates[id] = new MonsterTemplate(id, r.GetByteSafe(1), r.GetUShortSafe(2),
                     Exp: r.GetUIntSafe(3), MoneyProb: r.GetByteSafe(4),
                     MinMoney: r.GetUIntSafe(5), MaxMoney: r.GetUIntSafe(6),
-                    ItemProb: r.GetByteSafe(7), DropCount: r.GetByteSafe(8));
+                    ItemProb: r.GetByteSafe(7), DropCount: r.GetByteSafe(8),
+                    AiType: r.GetByteSafe(9));
             }
 
         await using (var cmd = new SqlCommand(MonAttrChartSql, c))
@@ -365,6 +374,23 @@ public sealed class GameDatabase
         foreach (var (id, spawn) in spawnRows)
             store.MonsterSpawns.Add(new MonsterSpawnDef(spawn,
                 typesBySpawn.TryGetValue(id, out var types) ? types : new List<MapMonRow>()));
+
+        // Phase 46: derive the aggressive AI-type set. First the command table (cmdId → AC_* type), then scan
+        // TAICHART for AT_ENTER rows whose command is AC_SETHOST — those bAITypes auto-aggro on sight.
+        var aiCmdType = new Dictionary<uint, byte>();   // C++ m_mapTCMDTEMP: dwCmdID → bCmdType
+        await using (var cmd = new SqlCommand(AiCommandSql, c))
+        await using (var r = await cmd.ExecuteReaderAsync(ct))
+            while (await r.ReadAsync(ct))
+                aiCmdType[r.GetUIntSafe(0)] = r.GetByteSafe(1);
+
+        await using (var cmd = new SqlCommand(AiChartSql, c))
+        await using (var r = await cmd.ExecuteReaderAsync(ct))
+            while (await r.ReadAsync(ct))
+            {
+                byte aiType = r.GetByteSafe(0), trigger = r.GetByteSafe(1);
+                if (trigger == AtEnter && aiCmdType.TryGetValue(r.GetUIntSafe(2), out var cmdType) && cmdType == AcSetHost)
+                    store.AggressiveAiTypes.Add(aiType);
+            }
 
         // Phase 23: the NPC registry (TNPCCHART) + the per-NPC shop stock (TNPCITEMCHART, bulk-loaded like the
         // C++ CTBLNpcItemAll and bucketed by wNpcID). dwItemID is a DWORD but item ids are WORD (C++ (WORD)cast).

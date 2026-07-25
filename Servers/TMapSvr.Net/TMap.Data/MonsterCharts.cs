@@ -12,7 +12,11 @@ public sealed record MonsterTemplate(ushort Id, byte Level, ushort MonAttr,
     // m_dwMaxMoney). Phase 22 (item loot): the per-attempt item chance (m_bItemProb) and attempt count
     // (m_bDropCount); the drop table itself is the linked <see cref="DropRows"/> (from TMONITEMCHART).
     uint Exp = 0, byte MoneyProb = 0, uint MinMoney = 0, uint MaxMoney = 0,
-    byte ItemProb = 0, byte DropCount = 0)
+    byte ItemProb = 0, byte DropCount = 0,
+    // Phase 46 (auto-aggro): the AI-script type (C++ m_bAIType). A monster is "aggressive" (acquires a host on
+    // sight) iff this AiType binds AC_SETHOST under the AT_ENTER trigger in TAICHART — resolved once at load into
+    // TemplateStore.AggressiveAiTypes. In C++ the flag isn't on the monster chart; the AiType is the join key.
+    byte AiType = 0)
 {
     /// <summary>The monster's item-drop rows (C++ <c>m_vMONITEM</c>, TMONITEMCHART) — loaded per monster.</summary>
     public List<MonItemRow> DropRows { get; } = new();

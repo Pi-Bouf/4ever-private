@@ -244,10 +244,12 @@ DB queries), so — like `TWorldSvr.Net` before it — it is being ported in pha
 - **Phase 45** — **host acquisition** (aggro-on-sight, C++ `CTAICmdSetHost`): an idle **aggressive** monster
   picks the nearest recently-moved (`< 3000 ms`) host-eligible player in its 3×3 view and enters battle onto
   them, folding the C++ wake→`ChgHost`→`ChgMode` chain into the Phase-44 retarget. The "aggressive" gate is
-  `Monster.Aggressive` — sourced from the DB `TAICHART` AI-script table in C++ (not a monster-chart flag, and
-  not loaded here), so it **defaults off**: no monster auto-aggros in production until `TAICHART` is loaded, and
-  the hit-driven aggro of Phase 44 is unaffected. `Character` gains `CanHost`/`LastMoveMs` (C++ `m_bCanHost`/
-  `m_dwMoveTick`), stamped on every MOVE.
+  `Monster.Aggressive` — sourced from the DB `TAICHART` AI-script table in C++ (not a monster-chart flag).
+  `Character` gains `CanHost`/`LastMoveMs` (C++ `m_bCanHost`/`m_dwMoveTick`), stamped on every MOVE.
+- **Phase 46** — **`TAICHART` load**: derives the aggressive AI-type set (a `bAIType` binding `AC_SETHOST`
+  under the `AT_ENTER` trigger, from `TAICMDCHART` + `TAICHART`) into `TemplateStore.AggressiveAiTypes`, reads
+  `bAIType` off `TMONSTERCHART`, and stamps `Monster.Aggressive` at spawn — so aggressive monsters auto-aggro
+  on sight in production. Still **defaults off** DB-free / when the AI charts are absent.
 
 Everything degrades DB-free. See [`PORT_STATUS.md`](PORT_STATUS.md) for the exhaustive done-vs-deferred
 breakdown.
@@ -360,10 +362,11 @@ open/browse/buy over the seller's own bag items, auto-close when sold out), and 
 `SCT_HPTRANS`/`MPTRANS` + `SDT_STATUS_HPMPCHANGE`/`HPTOMP`, closing the in-process combat-core vitals), and the
 monster **aggro/hate table** (Phase 44 — `m_mapAggro`: highest-cumulative-aggro target with a 10% hysteresis,
 re-pick the next in-view survivor on leave, `ChgHost` retarget + `CS_MONHOST_ACK`), and monster **host
-acquisition** (Phase 45 — aggro-on-sight `SetHost`, gated by the `Aggressive` flag / deferred `TAICHART`). The
+acquisition** (Phase 45 — aggro-on-sight `SetHost`, gated by the `Aggressive` flag, which Phase 46 now drives
+from the `TAICHART` `AT_ENTER`→`AC_SETHOST` load). The
 rest of the C++ handler surface — the remaining saves (skill/hotkey/companion — state no ported handler mutates yet), the wider combat loop (ranged damage as a
 distinct branch, the buff effection/remain layers + the stat-layer `CalcCure` (instant cure/dispel + transfer/swap are done), `DistributeSkill`, the custom Araz ≥3000 skills, the shield-block durability/reaction tail, PvP), the rest of monster combat
-AI (the data-driven `TAICHART` AI-script table, `MT_GOHOME` walk-back, pack/assist-aggro + call-for-help/flee, monster skills), the priest-resurrection (`CS_REVIVALASK`) + death penalty,
+AI (the rest of the `TAICHART` AI-script table — conditions + the full trigger→command state machine beyond the Phase-46 aggressive gate, `MT_GOHOME` walk-back, pack/assist-aggro + call-for-help/flee, monster skills), the priest-resurrection (`CS_REVIVALASK`) + death penalty,
 loot extras (magic/rare rolls, ranged picks, party modes), the rest of the **quest engine** (the
 subsystem-blocked `CQuest` subtypes — Craft/SendPost,
 exotic terms/conditions, magic-item/skill rewards, the client quest-node graph),

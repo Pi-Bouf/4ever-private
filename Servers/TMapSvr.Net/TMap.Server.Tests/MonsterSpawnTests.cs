@@ -111,6 +111,37 @@ public class MonsterSpawnTests
     }
 
     [Fact]
+    public void AggressiveAiType_MakesSpawnedMonsterAggressive()
+    {
+        // Phase 46: the monster's template AiType is in the TAICHART-derived aggressive set (AT_ENTER→AC_SETHOST)
+        // ⇒ it spawns flagged Aggressive, so the Phase-45 host-acquisition sweep will auto-aggro on sight.
+        var t = SpawnStore(count: 1);
+        t.MonsterTemplates[500] = t.MonsterTemplates[500] with { AiType = 9 };
+        t.AggressiveAiTypes.Add(9);
+
+        var h = new MapTestHarness(t);
+        h.Service.InitMonsterSpawns();
+        h.Service.RunMonsterRegen(0);
+
+        Assert.True(h.State.AllMonsters().Single().Aggressive);
+    }
+
+    [Fact]
+    public void NonAggressiveAiType_SpawnsPassiveMonster()
+    {
+        // AiType present but NOT in the aggressive set (TAICHART has no AT_ENTER→AC_SETHOST binding for it, or the
+        // AI charts are absent) ⇒ passive: it fights back only once hit (the Phase-44 hit-driven aggro).
+        var t = SpawnStore(count: 1);
+        t.MonsterTemplates[500] = t.MonsterTemplates[500] with { AiType = 9 };
+
+        var h = new MapTestHarness(t);
+        h.Service.InitMonsterSpawns();
+        h.Service.RunMonsterRegen(0);
+
+        Assert.False(h.State.AllMonsters().Single().Aggressive);
+    }
+
+    [Fact]
     public async Task SpawnedMonster_IsAnnouncedToNearbyPlayer()
     {
         var h = new MapTestHarness(SpawnStore(count: 1, x: 100, z: 100));

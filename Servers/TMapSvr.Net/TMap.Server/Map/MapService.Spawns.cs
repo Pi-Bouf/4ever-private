@@ -174,6 +174,7 @@ public sealed partial class MapService
             Dir = s.Dir, Mode = 0,               // MT_NORMAL
             Country = s.Country, Region = s.Region,
             Channel = sp.Channel, MapId = s.MapId,
+            Aggressive = _templates.IsAggressiveAi(tpl.AiType),   // Phase 46: TAICHART AT_ENTER→AC_SETHOST gate
         };
         slot.Live = m;
         SpawnMonster(m);

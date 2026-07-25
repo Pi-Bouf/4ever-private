@@ -65,11 +65,12 @@ public sealed class Monster
     public byte Channel { get; set; }
     public ushort MapId { get; set; }
 
-    /// <summary>Phase 45 — whether this monster acquires a host/target on sight (auto-aggro), vs staying passive
-    /// until hit. In C++ this is not a monster-chart flag: a monster is aggressive iff its <c>bAIType</c> script
-    /// binds <c>AC_SETHOST</c> under the <c>AT_ENTER</c> trigger in the DB <c>TAICHART</c> table. That table
-    /// isn't loaded yet, so this <b>defaults false</b> (no monster auto-aggros in production until it is — the
-    /// hit-driven aggro of Phase 44 is unaffected); tests set it directly. See PORT_STATUS.md.</summary>
+    /// <summary>Phase 45/46 — whether this monster acquires a host/target on sight (auto-aggro), vs staying
+    /// passive until hit. In C++ this is not a monster-chart flag: a monster is aggressive iff its <c>bAIType</c>
+    /// script binds <c>AC_SETHOST</c> under the <c>AT_ENTER</c> trigger in the DB <c>TAICHART</c> table.
+    /// <b>Phase 46</b> loads that table (<see cref="TemplateStore.AggressiveAiTypes"/>) and stamps this at spawn;
+    /// it still defaults <c>false</c> DB-free / when the AI charts are absent (the hit-driven aggro of Phase 44 is
+    /// unaffected either way). Tests set it directly. See PORT_STATUS.md.</summary>
     public bool Aggressive { get; set; }
 
     /// <summary>The grid cell this monster is currently bucketed in (C++ cell membership), set by the grid.</summary>
