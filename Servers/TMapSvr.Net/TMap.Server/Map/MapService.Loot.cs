@@ -228,6 +228,7 @@ public sealed partial class MapService
     {
         r.ReadByte();                 // bWant
         uint monId = r.ReadUInt32();  // dwMonID
+        if (s.Char is { Riding: not 0 }) return;   // no looting from a mount (CSHandler.cpp:6785)
         if (_state.FindMonster(monId) is { } mon) SendCS_MONITEMLIST_ACK(s, mon, update: 0);
     }
 

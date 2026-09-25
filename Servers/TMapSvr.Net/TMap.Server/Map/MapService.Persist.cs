@@ -190,12 +190,40 @@ public sealed partial class MapService
         _pendingItemDeletes.Remove(it.DlId);
     }
 
+    // ---- the DB write lane (C++: one DB thread) ----
+
+    private readonly System.Threading.Channels.Channel<Func<Task>> _dbLane =
+        System.Threading.Channels.Channel.CreateUnbounded<Func<Task>>(new() { SingleReader = true });
+    private Task? _dbLaneTask;
+
+    /// <summary>
+    /// Queues a background write. The C++ posts every save to its single DB thread, so writes never overlap; firing
+    /// them in parallel let two logout saves (each a <c>TSaveInven</c>/<c>TSaveItem</c> batch into the shared staging
+    /// tables) deadlock, and SQL Server dropped one of them whole. Writes now run one at a time, in the order queued —
+    /// which also keeps an incremental item write from landing after the full save that superseded it.
+    /// </summary>
+    private Task EnqueueDbWrite(Func<Task> write)
+    {
+        var done = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        _dbLane.Writer.TryWrite(async () =>
+        {
+            try { await write(); }
+            catch (Exception ex) { _log.LogWarning(ex, "Database write failed."); }
+            finally { done.TrySetResult(); }
+        });
+        _dbLaneTask ??= Task.Run(async () =>
+        {
+            await foreach (var w in _dbLane.Reader.ReadAllAsync()) await w();
+        });
+        return done.Task;
+    }
+
     /// <summary>Persists a cabinet's open-state (<c>bUse</c>) via <c>TSaveCabinet</c>, fired off-thread on open.
     /// Gated like the other saves (main, DB-loaded); no-ops DB-free.</summary>
     private void PersistCabinetHeader(ClientSession s, Cabinet cab)
     {
         if (_gameDb is null || !s.IsMain || s.Char is not { DbLoaded: true } ch) return;
-        _ = SaveCabinetHeaderAsync(ch.CharId, cab.CabinetId, cab.Use);
+        _ = EnqueueDbWrite(() => SaveCabinetHeaderAsync(ch.CharId, cab.CabinetId, cab.Use));
     }
 
     private async Task SaveCabinetHeaderAsync(uint charId, byte cabinetId, bool use)
@@ -215,7 +243,7 @@ public sealed partial class MapService
         _pendingItemUpserts.Clear();
         _pendingItemDeletes.Clear();
         if (_gameDb is null) return;
-        _ = FlushItemDirectAsync(upserts, deletes);
+        _ = EnqueueDbWrite(() => FlushItemDirectAsync(upserts, deletes));
     }
 
     private async Task FlushItemDirectAsync(List<(uint charId, ItemSaveData data)> upserts, List<long> deletes)
@@ -267,14 +295,16 @@ public sealed partial class MapService
         var quests = BuildQuestSaves(ch, NowMs);
         var inventory = _itemIdReady ? BuildInvenSaves(ch) : ((List<InvenSaveData>, List<ItemSaveData>)?)null;
         var hotkeys = BuildHotkeySaves(ch);
-        _ = FlushSaveAsync(ch.CharId, charData, quests, inventory, hotkeys);   // fire-and-forget; snapshot is immutable
+        var pets = PetSnapshot(ch);
+        _ = EnqueueDbWrite(() => FlushSaveAsync(ch.CharId, charData, quests, inventory, hotkeys, pets));   // snapshot is immutable
     }
 
     /// <summary>The off-thread write (never throws unobserved — errors are logged and swallowed). The inventory
     /// rewrite runs only when a snapshot is supplied (i.e. the id seed is ready) — else the DB keeps its last
     /// item state, never a destructive empty rewrite.</summary>
     private async Task FlushSaveAsync(uint charId, CharSaveData charData, IReadOnlyList<QuestSaveRow> quests,
-        (List<InvenSaveData> invens, List<ItemSaveData> items)? inventory, IReadOnlyList<HotkeySaveRow> hotkeys)
+        (List<InvenSaveData> invens, List<ItemSaveData> items)? inventory, IReadOnlyList<HotkeySaveRow> hotkeys,
+        IReadOnlyList<PetRow>? pets = null)
     {
         try
         {
@@ -282,6 +312,7 @@ public sealed partial class MapService
             await _gameDb.SaveQuestsAsync(charId, quests);
             if (inventory is { } inv) await _gameDb.SaveInventoryAsync(charId, inv.invens, inv.items);
             await _gameDb.SaveHotkeysAsync(charId, hotkeys);
+            if (pets is { Count: > 0 }) await SavePetsAsync(charId, pets);
         }
         catch (Exception ex)
         {
@@ -300,7 +331,9 @@ public sealed partial class MapService
             var charData = BuildCharSave(ch);
             var quests = BuildQuestSaves(ch, NowMs);
             var inventory = _itemIdReady ? BuildInvenSaves(ch) : ((List<InvenSaveData>, List<ItemSaveData>)?)null;
-            await FlushSaveAsync(ch.CharId, charData, quests, inventory, BuildHotkeySaves(ch));
+            var hotkeys = BuildHotkeySaves(ch);
+            var pets = PetSnapshot(ch);
+            await EnqueueDbWrite(() => FlushSaveAsync(ch.CharId, charData, quests, inventory, hotkeys, pets));
         }
     }
 }

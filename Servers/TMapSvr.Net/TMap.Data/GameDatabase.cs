@@ -126,7 +126,7 @@ public sealed partial class GameDatabase
         @"SELECT wItemID, bRefineMax, fRevision, fMRevision, fAtRate, fMAtRate, bType, wAttrID, dwSpeedInc,
                  bLevel, dwClassID, dwSlotID, bPrmSlotID, bSubSlotID, bStack, bKind, wUseValue, dwDelay,
                  fPrice, bCanRepair, wDelayGroupID, bConsumable, bIsSell,
-                 bGrade, bCanGrade, bCanMagic, bCanRare, bCanWrap, bCanColor, dwDuraMax FROM TITEMCHART";
+                 bGrade, bCanGrade, bCanMagic, bCanRare, bCanWrap, bCanColor, dwDuraMax, wUseTime, bUseType FROM TITEMCHART";
     // The per-level chart (CTBLLevelChart): the repair-cost coefficient (m_dwRepairCost), dwEXP (the
     // level-up threshold) + bSkillPoint (granted per level), and dwMoney (the base price the item
     // buy/sell math scales by m_fPrice).
@@ -151,7 +151,9 @@ public sealed partial class GameDatabase
     // Monster spawn charts. The C++ CTBLMonSpawn SELECT filters by a TSVRCHART server/unit-id join
     // (multi-machine topology); this single-server port loads all rows and buckets them by (channel, map).
     private const string MonsterChartSql =
-        @"SELECT wID, bLevel, wMonAttr, wExp, bMoneyProb, dwMinMoney, dwMaxMoney, bItemProb, bDropCount, bAIType, wSkill1, wSkill2, wSkill3, wSkill4, wChaseRange FROM TMONSTERCHART";
+        @"SELECT wID, bLevel, wMonAttr, wExp, bMoneyProb, dwMinMoney, dwMaxMoney, bItemProb, bDropCount, bAIType, wSkill1, wSkill2, wSkill3, wSkill4, wChaseRange,
+                 bRecallType, wSummonAttr, bClass, bRace, bIsSelf, bCanSelect, bCanAttack FROM TMONSTERCHART";
+    private const string MountChartSql = @"SELECT wMountID, wDefMonID, wUpgMonID FROM TMOUNTCHART";
     // The AI-script tables (C++ CTBLAICommand / CTBLAICondition / CTBLAIChart, DBAccess.h:365-414).
     // Loaded in that order — commands first (they are the targets the chart rows reference), then each
     // command's guards, then the trigger→command bindings per bAIType.
@@ -193,7 +195,8 @@ public sealed partial class GameDatabase
     private const string SkillChartSql =
         @"SELECT wID, bKind, dwUseMP, bUseMPType, dwUseHP, bUseHPType, bLevel, bMaxLevel, bNextLevel,
                  dwReuseDelay, nReuseDelayInc, dwLoopDelay, dwKindDelay, bSpeedApply, bPositive, wMapID,
-                 dwDuration, dwDurationInc, bMaintainType, bPriority, bStatic, dwClassID, bGlobal FROM TSKILLCHART";
+                 dwDuration, dwDurationInc, bMaintainType, bPriority, bStatic, dwClassID, bGlobal,
+                 bIsRide, bIsHideSkill, bIsDismount, bEraseAct FROM TSKILLCHART";
     // The skill-effect rows (CTBLSkillData → CTSkillTemp::m_vData). C++ runs one query per skill;
     // this bulk load buckets by wSkillID (natural table order per skill matches the per-skill fetch order).
     private const string SkillDataChartSql =
@@ -239,7 +242,7 @@ public sealed partial class GameDatabase
                     DelayGroup: r.GetUShortSafe(20), Consumable: r.GetByteSafe(21), IsSell: r.GetByteSafe(22),
                     Grade: r.GetByteSafe(23), CanGrade: r.GetByteSafe(24), CanMagic: r.GetByteSafe(25),
                     CanRare: r.GetByteSafe(26), CanWrap: r.GetByteSafe(27), CanColor: r.GetByteSafe(28),
-                    DuraMax: r.GetUIntSafe(29));
+                    DuraMax: r.GetUIntSafe(29), UseTime: r.GetUShortSafe(30), UseType: r.GetByteSafe(31));
             }
 
         await using (var cmd = new SqlCommand(MagicChartSql, c))
@@ -362,7 +365,9 @@ public sealed partial class GameDatabase
                     SpeedApply: r.GetByteSafe(13), Positive: r.GetByteSafe(14), MapId: r.GetUShortSafe(15),
                     Duration: r.GetUIntSafe(16), DurationInc: r.GetUIntSafe(17), MaintainKind: r.GetByteSafe(18),
                     Priority: r.GetByteSafe(19), StaticFlag: r.GetByteSafe(20), ClassId: r.GetUIntSafe(21),
-                    Rate1stX: store.Rate1st, Global: r.GetByteSafe(22) != 0);
+                    Rate1stX: store.Rate1st, Global: r.GetByteSafe(22) != 0,
+                    IsRide: r.GetByteSafe(23) != 0, IsHideSkill: r.GetByteSafe(24) != 0,
+                    IsDismount: r.GetByteSafe(25) != 0, EraseAct: r.GetByteSafe(26));
             }
 
         await using (var cmd = new SqlCommand(SkillDataChartSql, c))
@@ -388,7 +393,18 @@ public sealed partial class GameDatabase
                     AiType: r.GetByteSafe(9),
                     Skill1: r.GetUShortSafe(10), Skill2: r.GetUShortSafe(11),
                     Skill3: r.GetUShortSafe(12), Skill4: r.GetUShortSafe(13),
-                    ChaseRange: r.GetUShortSafe(14));
+                    ChaseRange: r.GetUShortSafe(14),
+                    RecallType: r.GetByteSafe(15), SummonAttr: r.GetUShortSafe(16), Class: r.GetByteSafe(17),
+                    Race: r.GetByteSafe(18), IsSelf: r.GetByteSafe(19), CanSelect: r.GetByteSafe(20),
+                    CanAttack: r.GetByteSafe(21));
+            }
+
+        await using (var cmd = new SqlCommand(MountChartSql, c))
+        await using (var r = await cmd.ExecuteReaderAsync(ct))
+            while (await r.ReadAsync(ct))
+            {
+                ushort id = r.GetUShortSafe(0);
+                store.Mounts[id] = new MountTemplate(id, r.GetUShortSafe(1), r.GetUShortSafe(2));
             }
 
         // The AI scripts. Command templates → their conditions → the per-bAIType trigger bindings.

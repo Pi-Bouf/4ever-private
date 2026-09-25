@@ -262,6 +262,36 @@ public static class Msg
     public const ushort CS_HOTKEYADD_REQ = CS_MAP + 0x009F;    // bType · wID · bTargetInven · bTargetPos
     public const ushort CS_HOTKEYDEL_REQ = CS_MAP + 0x00A1;    // bInvenID · bPos
     public const ushort CS_HOTKEYCHANGE_ACK = CS_MAP + 0x00A2; // bInvenID · bCount · {bPos bType wID}
+    // Summons / recall monsters (CSProtocol.h:1742-1824, MWProtocol.h:306-420).
+    public const ushort CS_ADDRECALLMON_ACK = CS_MAP + 0x00D9;
+    public const ushort CS_DELRECALLMON_ACK = CS_MAP + 0x00DA;
+    public const ushort CS_DELRECALLMON_REQ = CS_MAP + 0x00E1;      // dwMonID · bType
+    public const ushort CS_CHGMODERECALLMON_REQ = CS_MAP + 0x00E2;  // dwMonID · bMode
+    public const ushort MW_CREATERECALLMON_REQ = MW_BASE + 0x00B8;
+    public const ushort MW_CREATERECALLMON_ACK = MW_BASE + 0x00B9;
+    public const ushort MW_RECALLMONDEL_REQ = MW_BASE + 0x00BA;     // charId · key · monId · bForever
+    public const ushort MW_RECALLMONDEL_ACK = MW_BASE + 0x00BB;
+    public const ushort MW_RECALLMONDATA_REQ = MW_BASE + 0x0117;
+    // Pets / mounts (CSProtocol.h:2263-2299, 3323, 4089-4096; MWProtocol.h:330).
+    public const ushort CS_PETMAKE_REQ = CS_MAP + 0x012E;           // bInven · bSlot · strName
+    public const ushort CS_PETMAKE_ACK = CS_MAP + 0x012F;           // bResult · wPetID · strName · ldwTime
+    public const ushort CS_PETDEL_REQ = CS_MAP + 0x0130;            // wPetID
+    public const ushort CS_PETDEL_ACK = CS_MAP + 0x0131;            // bResult · wPetID
+    public const ushort CS_PETLIST_ACK = CS_MAP + 0x0132;           // bCount · {wPetID strName ldwTime bEffect}
+    public const ushort CS_PETRECALL_REQ = CS_MAP + 0x0133;         // wPetID
+    public const ushort CS_PETRECALL_ACK = CS_MAP + 0x0134;         // bResult
+    public const ushort CS_PETRIDING_REQ = CS_MAP + 0x0135;         // dwMonID · bAction
+    public const ushort CS_PETRIDING_ACK = CS_MAP + 0x0136;         // bResult · dwCharID · dwMonID · bAction
+    public const ushort CS_PETCANCEL_REQ = CS_MAP + 0x01FB;
+    public const ushort CS_PETEFFECTCHANGE_REQ = CS_MAP + 0x03A1;
+    public const ushort CS_PETEFFECTCHANGE_ACK = CS_MAP + 0x03A2;
+    public const ushort CS_REQUESTSADDLE_REQ = CS_MAP + 0x0319;
+    public const ushort CS_SENDSADDLE_REQ = CS_MAP + 0x0320;        // S→C despite the name: dwItemID · bType · endTime · BOOL bOpenUI
+    public const ushort CS_CREATESADDLE_REQ = CS_MAP + 0x0321;
+    public const ushort CS_DELETESADDLE_REQ = CS_MAP + 0x0323;
+    public const ushort CS_UPDATEMEDALS_REQ = CS_MAP + 0x0350;      // S→C: dwMedals
+    public const ushort MW_PETRIDING_REQ = MW_BASE + 0x00CE;        // charId · key · dwRiding
+    public const ushort MW_PETRIDING_ACK = MW_BASE + 0x00CF;
     public const ushort CS_TERMINATE_MAP_REQ = CS_MAP + 0x01D2; // alias for readability
     public const ushort CS_VERIFYSESSION_ACK = CS_CUSTOM + 0x1001;
 

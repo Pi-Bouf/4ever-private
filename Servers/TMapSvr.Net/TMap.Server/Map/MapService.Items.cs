@@ -435,6 +435,7 @@ public sealed partial class MapService
 
         byte kind = item.Template?.Kind ?? 0;
         uint delay = item.Template?.Delay ?? 0;
+        if (ch.Riding != 0 && kind != IkWhip) { SendCS_ITEMUSE_ACK(s, ItemUseResult.Riding, delayGroup, kind, 0); return; }
 
         // C++ anti-tamper (CSHandler.cpp:9202): the item's own delay-group must match the request — chart-gated
         // (a DB-free item has no template, so the guard is skipped rather than rejecting on the default 0).

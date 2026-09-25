@@ -21,8 +21,9 @@ namespace TMap.Server.Map;
 /// skips only itself; and the relay goes to the nearby players <b>excluding the sender</b>, the mirror of
 /// <c>CS_ACTION</c> — the host already knows where it put them.</para>
 ///
-/// <para><b>Deferred:</b> the <c>OT_RECALL</c>/<c>OT_SELF</c>/<c>OT_COMPANION</c> owner kinds (summons
-/// unported) resolve to no monster and are skipped, as the C++ does for an unknown id.</para>
+/// <para>Summons (<c>OT_RECALL</c>) take the same packet from their owner (<c>m_dwHostID</c> must be the sender,
+/// CSHandler.cpp:972); the monster-only home and leash checks don't apply to them. <b>Deferred:</b>
+/// <c>OT_SELF</c>/<c>OT_COMPANION</c> resolve to nothing and are skipped, as the C++ does for an unknown id.</para>
 /// </summary>
 public sealed partial class MapService
 {
@@ -39,6 +40,7 @@ public sealed partial class MapService
 
         ushort count = r.ReadUInt16();              // wMonCount
         var moved = new List<Monster>(count);
+        var movedRecalls = new List<RecallMon>();
 
         for (int i = 0; i < count; i++)
         {
@@ -55,7 +57,19 @@ public sealed partial class MapService
             byte keyDir = r.ReadByte();             // bKeyDIR
             byte action = r.ReadByte();             // bAction
 
-            // Only OT_MON resolves here; summons are unported (C++ FindRecallMon/FindSelfObj/FindCompanion).
+            if (objType == RecallMon.OtRecall)
+            {
+                // C++ pPlayer->FindRecallMon: the sender's own summon only.
+                if (!s.Char.Recalls.TryGetValue(monId, out var rec) || rec.OwnerId != s.CharId || !rec.InMap) continue;
+                if (rec.Hp == 0) { mouseDir = Monster.TkdirN; keyDir = Monster.TkdirN; }
+                if (rec.Action == TaDead || posX <= 0 || posZ <= 0) continue;
+                rec.MouseDir = mouseDir; rec.KeyDir = keyDir; rec.Action = action;
+                rec.Pitch = pitch; rec.Dir = dir; rec.PosY = posY;
+                ApplyRecallMove(rec, posX, posZ);
+                if (rec.Hp != 0) movedRecalls.Add(rec);
+                continue;
+            }
+            // Only OT_MON and OT_RECALL resolve here (C++ FindSelfObj/FindCompanion are unported).
             if (objType != Monster.OtMon) continue;
 
             // The authority check: only the monster's own host may move it.
@@ -101,10 +115,10 @@ public sealed partial class MapService
             if (mon.Status != OsDead) moved.Add(mon);
         }
 
-        if (moved.Count == 0) return;
+        if (moved.Count == 0 && movedRecalls.Count == 0) return;
 
         // Relay to the neighbours EXCLUDING the sender (C++ if(pChar->m_dwID != pPlayer->m_dwID)).
-        var ack = BuildCS_MONMOVE_ACK(moved);
+        var ack = BuildCS_MONMOVE_ACK(moved, movedRecalls);
         foreach (var other in _state.Neighbors(s)) other.Send(ack);
     }
 
@@ -126,14 +140,22 @@ public sealed partial class MapService
 
     /// <summary>C++ <c>CTPlayer::SendCS_MONMOVE_ACK</c> (CSSender.cpp:1142) — <c>WORD(count)</c> then one
     /// 25-byte block per monster.</summary>
-    private static byte[] BuildCS_MONMOVE_ACK(IReadOnlyList<Monster> mons)
+    private static byte[] BuildCS_MONMOVE_ACK(IReadOnlyList<Monster> mons, IReadOnlyList<RecallMon>? recalls = null)
     {
         var w = new PacketWriter(Msg.CS_MONMOVE_ACK);
-        w.WriteUInt16((ushort)mons.Count);
+        w.WriteUInt16((ushort)(mons.Count + (recalls?.Count ?? 0)));
         foreach (var m in mons)
         {
             w.WriteUInt32(m.Id);
             w.WriteByte(Monster.OtMon);
+            w.WriteFloat(m.PosX); w.WriteFloat(m.PosY); w.WriteFloat(m.PosZ);
+            w.WriteUInt16(m.Pitch); w.WriteUInt16(m.Dir);
+            w.WriteByte(m.MouseDir); w.WriteByte(m.KeyDir); w.WriteByte(m.Action);
+        }
+        foreach (var m in recalls ?? Array.Empty<RecallMon>())
+        {
+            w.WriteUInt32(m.Id);
+            w.WriteByte(RecallMon.OtRecall);
             w.WriteFloat(m.PosX); w.WriteFloat(m.PosY); w.WriteFloat(m.PosZ);
             w.WriteUInt16(m.Pitch); w.WriteUInt16(m.Dir);
             w.WriteByte(m.MouseDir); w.WriteByte(m.KeyDir); w.WriteByte(m.Action);

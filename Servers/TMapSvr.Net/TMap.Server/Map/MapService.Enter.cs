@@ -201,6 +201,10 @@ public sealed partial class MapService
         ch.PartyChiefId = r.ReadUInt32();
         // trailing wTitleID / dwRankPoint / BOWRelease ignored (Phase-1)
 
+        // The saddle goes first (C++ OnDM_LOADCHAR_ACK sends it before the world's CHARINFO step).
+        var saddle = ch.Saddle ?? default;
+        SendCS_SENDSADDLE_REQ(s, saddle.ItemId, saddle.EndTime, saddle.Type, openUi: false);
+
         // This is where the client actually receives its character (see agent analysis, item 5).
         SendCS_CHARINFO_ACK(s);
         // C++ sends the running-quest list here (OnMW_CHARINFO_REQ, right after CHARINFO_ACK) so the client
@@ -208,6 +212,7 @@ public sealed partial class MapService
         // the C++, so it's not ported.
         SendCS_QUESTLIST_ACK(s, ch);
         SendQuestTimers(s, ch);   // C++ SendQuestTimer(m_dwTick) — restores active-timer countdowns on relog
+        SendCS_PETLIST_ACK(s, ch);   // C++ sends it after CS_CHARSTATINFO_ACK (SSHandler.cpp:2171)
     }
 
     private void OnMW_ROUTE_REQ(PacketReader r)
@@ -260,7 +265,8 @@ public sealed partial class MapService
         ch.Country = r.ReadByte();
         ch.AidCountry = r.ReadByte();
         ch.Mode = r.ReadByte();
-        // remaining fields (riding, chat-ban, soulmate, class, recall-mons, comment) are Phase-1 deferred
+        ch.Riding = r.ReadUInt32();       // m_dwRiding (SSHandler.cpp:1490)
+        // remaining fields (chat-ban, soulmate, class, recall-mons, comment) are not read
 
         var w = new PacketWriter(Msg.MW_ENTERCHAR_ACK);
         w.WriteUInt32(charId);
@@ -351,6 +357,7 @@ public sealed partial class MapService
             // bidirectional exchange across the neighbour block). The player must be in the grid first so
             // subsequently-entering players can see it.
             _state.EnterWorld(s);
+            SendRecallsInView(s);  // summons first, so a rider's mount exists when its rider appears (TCell.cpp:70-95)
             foreach (var other in _state.Neighbors(s))
             {
                 other.Send(BuildCS_ENTER_ACK(s, newMember: true)); // existing players see the newcomer (flagged new)
@@ -358,6 +365,7 @@ public sealed partial class MapService
             }
             SendMonstersInView(s); // and the newcomer learns of the monsters already in its view (CTCell::EnterPlayer)
             SendSwitchesAndGatesInView(s); // + the switches/gates already in view (CTCell::EnterPlayer switch/gate loops)
+            RecallsEnterMap(s, s.Char);    // summons that followed through a teleport come back (InitMap)
             _log.LogInformation("Char {Char} live on map {Map} ch {Ch}.", s.CharId, s.Char.MapId, s.Channel);
         }
     }
@@ -533,6 +541,7 @@ public sealed partial class MapService
                 }
 
                 await TryLoadInventoryAsync(ch);
+                await LoadPetsAsync(s, ch);
 
                 // C++ clamps the persisted current HP/MP DOWN to the computed max at load (no refill), so the
                 // in-memory value is never over-max (matters once regen/damage/save read it). Charts-gated.

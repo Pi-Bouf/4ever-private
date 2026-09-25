@@ -39,6 +39,7 @@ public sealed partial class MapService
         _world = world;
         _gameDb = gameDb;
         PostStore = gameDb;
+        PetStore = gameDb;
         _templates = templates;
         _log = log;
     }
@@ -78,6 +79,7 @@ public sealed partial class MapService
             SendMW_CLOSECHAR_ACK(session.CharId, session.Key);
 
         SaveCharData(session);   // flush the char record + dirty quests on logout (C++ SetEventCloseSession)
+        if (session.Char is { } leaving) ClearRecalls(session, leaving);   // summons leave with their owner
         if (session.CharId != 0) EraseBill(session.CharId, 0);   // C++ SM_POSTBILLERASE_REQ(id, 0)
         _state.Remove(session);
 
@@ -112,6 +114,17 @@ public sealed partial class MapService
                 case Msg.CS_ITEMCHANGE_REQ: OnCS_ITEMCHANGE_REQ(session, r); break;
                 case Msg.CS_REVIVALASK_REQ: OnCS_REVIVALASK_REQ(session, r); break;
                 case Msg.CS_TELEPORT_REQ: OnCS_TELEPORT_REQ(session, r); break;
+                case Msg.CS_PETMAKE_REQ: OnCS_PETMAKE_REQ(session, r); break;
+                case Msg.CS_PETDEL_REQ: await OnCS_PETDEL_REQ(session, r); break;
+                case Msg.CS_PETRECALL_REQ: OnCS_PETRECALL_REQ(session, r); break;
+                case Msg.CS_PETCANCEL_REQ: OnCS_PETCANCEL_REQ(session, r); break;
+                case Msg.CS_PETRIDING_REQ: OnCS_PETRIDING_REQ(session, r); break;
+                case Msg.CS_PETEFFECTCHANGE_REQ: OnCS_PETEFFECTCHANGE_REQ(session, r); break;
+                case Msg.CS_REQUESTSADDLE_REQ: OnCS_REQUESTSADDLE_REQ(session, r); break;
+                case Msg.CS_CREATESADDLE_REQ: await OnCS_CREATESADDLE_REQ(session, r); break;
+                case Msg.CS_DELETESADDLE_REQ: await OnCS_DELETESADDLE_REQ(session, r); break;
+                case Msg.CS_DELRECALLMON_REQ: OnCS_DELRECALLMON_REQ(session, r); break;
+                case Msg.CS_CHGMODERECALLMON_REQ: OnCS_CHGMODERECALLMON_REQ(session, r); break;
                 case Msg.CS_INVENDEL_REQ: OnCS_INVENDEL_REQ(session, r); break;
                 case Msg.CS_INVENMOVE_REQ: OnCS_INVENMOVE_REQ(session, r); break;
                 case Msg.CS_SETRETURNPOS_REQ: OnCS_SETRETURNPOS_REQ(session, r); break;
@@ -207,6 +220,10 @@ public sealed partial class MapService
                 case Msg.MW_PARTYJOIN_REQ: OnMW_PARTYJOIN_REQ(r); break;
                 case Msg.MW_PARTYDEL_REQ: OnMW_PARTYDEL_REQ(r); break;
                 case Msg.MW_PARTYATTR_REQ: OnMW_PARTYATTR_REQ(r); break;
+                case Msg.MW_CREATERECALLMON_REQ: OnMW_CREATERECALLMON_REQ(r); break;
+                case Msg.MW_RECALLMONDEL_REQ: OnMW_RECALLMONDEL_REQ(r); break;
+                case Msg.MW_PETRIDING_REQ: OnMW_PETRIDING_REQ(r); break;
+                case Msg.MW_RECALLMONDATA_REQ: break;   // cross-server summon handoff — never sent to a single map server
                 case Msg.MW_CHGPARTYCHIEF_REQ: OnMW_CHGPARTYCHIEF_REQ(r); break;
                 case Msg.MW_CHGPARTYTYPE_REQ: OnMW_CHGPARTYTYPE_REQ(r); break;
                 case Msg.MW_PARTYMANSTAT_REQ: OnMW_PARTYMANSTAT_REQ(r); break;
@@ -253,6 +270,7 @@ public sealed partial class MapService
         RunSwitchReverts(NowMs);               // auto-revert duration-limited switches (C++ m_vTSWITCHOBJ sweep)
         RunRecover(NowMs);                     // HP/MP regeneration (players + monsters)
         RunAftermath(NowMs);                   // one step of death-penalty recovery when due (CTPlayer::OnTimer)
+        RunRecallTimers();                     // summons whose life ran out are sent away (CheckTimeRecallMon)
         RunCorpseExpiry(_tickSeconds * 1000L); // despawn + re-arm lootable corpses past their lifetime
         RunScheduledAi(_tickSeconds * 1000L);  // Due TAICHART commands (the local SM_AICMD stand-in)
         RunPendingResetHome();                 // abandoned monsters back to their spawn (SM_RESETHOST_ACK)

@@ -129,6 +129,7 @@ public sealed partial class MapService
     /// <summary>C++ <c>Teleport(pPlayer, bChannel, wMapID, x, y, z)</c> (TMapSvr.cpp:7189).</summary>
     private bool Teleport(ClientSession s, Character ch, byte channel, ushort mapId, float x, float y, float z)
     {
+        PetRiding(s, ch, 0);
         for (int i = ch.MaintainSkills.Count - 1; i >= 0; i--)
             if (Array.IndexOf(TeleportClearedSkills, ch.MaintainSkills[i].SkillId) >= 0) EraseMaintainPlayer(s, ch, i);
 
@@ -231,6 +232,7 @@ public sealed partial class MapService
 
         if (s.State != EnterState.InGame) return;
 
+        RecallsExitMap(s, ch);
         var watching = _state.MonstersInView(s).ToList();
         foreach (var other in _state.Neighbors(s).ToList())
         {

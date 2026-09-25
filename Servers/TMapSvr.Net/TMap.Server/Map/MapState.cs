@@ -141,6 +141,39 @@ public sealed class MapState
         _grids.TryGetValue((m.Channel, m.MapId), out var g)
             ? g.PlayersAround(m.CellKey) : Enumerable.Empty<ClientSession>();
 
+    // ---- summons (C++ CTCell::m_mapRECALLMON; ids come from the world, apart from field-monster ids) ----
+
+    private readonly Dictionary<uint, RecallMon> _recalls = new();
+
+    /// <summary>Places a summon on its (channel, map) grid and in the registry (C++ <c>CTMap::EnterMAP(recall)</c>).</summary>
+    public void AddRecall(RecallMon m)
+    {
+        GridFor(m.Channel, m.MapId).AddRecall(m);
+        _recalls[m.Id] = m;
+        m.InMap = true;
+    }
+
+    /// <summary>Takes a summon off the grid and out of the registry (C++ <c>CTMap::LeaveMAP</c>).</summary>
+    public void RemoveRecall(RecallMon m)
+    {
+        if (_grids.TryGetValue((m.Channel, m.MapId), out var g)) g.RemoveRecall(m);
+        if (_recalls.TryGetValue(m.Id, out var cur) && ReferenceEquals(cur, m)) _recalls.Remove(m.Id);
+        m.InMap = false;
+    }
+
+    public CellDiff MoveRecall(RecallMon m, float x, float z) =>
+        _grids.TryGetValue((m.Channel, m.MapId), out var g) ? g.MoveRecall(m, x, z) : CellDiff.None;
+
+    public RecallMon? FindRecall(uint id) => _recalls.GetValueOrDefault(id);
+
+    public IEnumerable<RecallMon> RecallsInView(ClientSession s) =>
+        s.Grid?.RecallsInView(s.CellKey) ?? Enumerable.Empty<RecallMon>();
+
+    /// <summary>Players in a summon's 3×3 view block.</summary>
+    public IEnumerable<ClientSession> PlayersAround(RecallMon m) =>
+        _grids.TryGetValue((m.Channel, m.MapId), out var g)
+            ? g.PlayersAround(m.CellKey) : Enumerable.Empty<ClientSession>();
+
     // ---- NPCs (C++ module m_mapTNpc — a static registry, not a grid occupant) ----
 
     /// <summary>Registers an NPC by id (C++ <c>m_mapTNpc.insert</c>). Called at bring-up / by tests.</summary>

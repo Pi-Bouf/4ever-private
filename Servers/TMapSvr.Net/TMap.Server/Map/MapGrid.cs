@@ -22,6 +22,11 @@ public sealed class CellDiff
     public List<Monster> EnteredMonsters { get; } = new();
     public List<Monster> LeftMonsters { get; } = new();
 
+    /// <summary>Summons that became visible / invisible to the moving player (C++ <c>CTCell::EnterPlayer</c> /
+    /// <c>LeavePlayer</c> <c>m_mapRECALLMON</c> loops).</summary>
+    public List<RecallMon> EnteredRecalls { get; } = new();
+    public List<RecallMon> LeftRecalls { get; } = new();
+
     /// <summary>Map switches / gates that became visible / invisible to the moving player (static objects, so
     /// the diff is purely which cells entered/left the 3×3 block). One-directional. Empty on a same-cell move.</summary>
     public List<MapSwitch> EnteredSwitches { get; } = new();
@@ -138,6 +143,13 @@ public sealed class MapGrid
         var newMonSet = new HashSet<Monster>(newMon);
         foreach (var m in newMon) if (!oldMonSet.Contains(m)) diff.EnteredMonsters.Add(m);
         foreach (var m in oldMon) if (!newMonSet.Contains(m)) diff.LeftMonsters.Add(m);
+
+        var oldRc = RecallsAt(ocx, ocz).ToList();
+        var newRc = RecallsAt(ncx, ncz).ToList();
+        var oldRcSet = new HashSet<RecallMon>(oldRc);
+        var newRcSet = new HashSet<RecallMon>(newRc);
+        foreach (var m in newRc) if (!oldRcSet.Contains(m)) diff.EnteredRecalls.Add(m);
+        foreach (var m in oldRc) if (!newRcSet.Contains(m)) diff.LeftRecalls.Add(m);
 
         // Switches / gates are static, so their diff is likewise just old-block vs new-block cells.
         var oldSw = SwitchesAt(ocx, ocz).ToList();
@@ -292,6 +304,66 @@ public sealed class MapGrid
                 if (nx < 0) continue;
                 if (!_cells.TryGetValue(Key(nx, nz), out var cell)) continue;
                 foreach (var m in cell.Monsters.Values) yield return m;
+            }
+        }
+    }
+
+    // ---- summons (C++ CTCell::m_mapRECALLMON) — bucketed like monsters, kept apart from the field monsters ----
+
+    public void AddRecall(RecallMon m)
+    {
+        uint key = KeyOf(m.PosX, m.PosZ);
+        GetOrCreate(key).Recalls[m.Id] = m;
+        m.CellKey = key;
+    }
+
+    public void RemoveRecall(RecallMon m)
+    {
+        if (_cells.TryGetValue(m.CellKey, out var cell)) cell.Recalls.Remove(m.Id);
+    }
+
+    /// <summary>Re-buckets a moving summon and reports the players that start / stop seeing it.</summary>
+    public CellDiff MoveRecall(RecallMon m, float newX, float newZ)
+    {
+        uint oldKey = m.CellKey;
+        uint newKey = KeyOf(newX, newZ);
+        m.PosX = newX; m.PosZ = newZ;
+        if (oldKey == newKey) return CellDiff.None;
+
+        var (ocx, ocz) = Split(oldKey);
+        var (ncx, ncz) = Split(newKey);
+        var old3 = NeighborsAt(ocx, ocz, self: null).ToList();
+        if (_cells.TryGetValue(oldKey, out var oldCell)) oldCell.Recalls.Remove(m.Id);
+        GetOrCreate(newKey).Recalls[m.Id] = m;
+        m.CellKey = newKey;
+        var new3 = NeighborsAt(ncx, ncz, self: null).ToList();
+
+        var diff = new CellDiff { CellChanged = true };
+        var oldSet = new HashSet<ClientSession>(old3);
+        var newSet = new HashSet<ClientSession>(new3);
+        foreach (var pl in new3) if (!oldSet.Contains(pl)) diff.Entered.Add(pl);
+        foreach (var pl in old3) if (!newSet.Contains(pl)) diff.Left.Add(pl);
+        return diff;
+    }
+
+    public IEnumerable<RecallMon> RecallsInView(uint cellKey)
+    {
+        var (cx, cz) = Split(cellKey);
+        return RecallsAt(cx, cz);
+    }
+
+    private IEnumerable<RecallMon> RecallsAt(int centreX, int centreZ)
+    {
+        for (int i = -1; i <= 1; i++)        // Z
+        {
+            int nz = centreZ + i;
+            if (nz < 0) continue;
+            for (int j = -1; j <= 1; j++)    // X
+            {
+                int nx = centreX + j;
+                if (nx < 0) continue;
+                if (!_cells.TryGetValue(Key(nx, nz), out var cell)) continue;
+                foreach (var m in cell.Recalls.Values) yield return m;
             }
         }
     }

@@ -34,7 +34,11 @@ public sealed record SkillTemplate(
     uint ClassId = 0, float Rate1stX = 1f, uint Aggro = 0,
     // C++ m_bGlobal: a skill every character may use without learning it. Placing it on the hotkey bar grants it
     // (CTPlayer::AddHotKey, TPlayer.cpp:860) and clearing that slot takes it away again. 5 of 765 live skills.
-    bool Global = false)
+    bool Global = false,
+    // Riding (C++ m_bIsRide / m_bIsHideSkill / m_bIsDismount / m_bEraseAct): a buff that blocks calling or mounting a
+    // pet (unless it is a hide skill), a hit that throws the target off its mount, and the actions that end a buff
+    // (BUFFERASEACTION_TYPE — EraseBuffByRide tests m_bEraseAct & BEA_RIDE, BEA_RIDE = 3).
+    bool IsRide = false, bool IsHideSkill = false, bool IsDismount = false, byte EraseAct = 0)
 {
     /// <summary>C++ <c>CTSkillTemp::GetAggro</c> (TSkillTemp.cpp:448) — the hate a hostile cast adds to a
     /// monster at <paramref name="level"/>: <c>m_dwAggro·pow(m_f1stRateX, exp)/100</c> (<c>exp = 0</c> at

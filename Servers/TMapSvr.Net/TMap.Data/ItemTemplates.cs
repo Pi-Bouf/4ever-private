@@ -28,7 +28,10 @@ public sealed record ItemTemplate(ushort ItemId, byte RefineMax, float[] Revisio
     // Crafting: a scroll's own grade (m_bGrade — the downgrade step / magic-scroll probability), which crafts the
     // item accepts (bCanGrade/bCanMagic/bCanRare/bCanWrap/bCanColor), and the template durability (dwDuraMax).
     byte Grade = 0, byte CanGrade = 0, byte CanMagic = 0, byte CanRare = 0, byte CanWrap = 0, byte CanColor = 0,
-    uint DuraMax = 0);
+    uint DuraMax = 0,
+    // How long what the item grants lasts (m_wUseTime, in hours or days per m_bUseType's DURINGTYPE_TIME 0x01 /
+    // DURINGTYPE_DAY 0x02 bit; neither ⇒ permanent) — a mount item's pet duration.
+    ushort UseTime = 0, byte UseType = 0);
 
 /// <summary>
 /// An item-attribute row from <c>TITEMATTRCHART</c> (C++ <c>CTBLItemAttrChart</c> → <c>tagITEMATTR</c>,
@@ -173,6 +176,9 @@ public sealed class TemplateStore
     public Dictionary<ushort, ItemAttr> ItemAttrs { get; } = new(); // C++ m_mapTItemAttr, keyed by wID
     /// <summary>Item-level → grade byte (C++ <c>m_itemgrade[level].m_bGrade</c>, ITEMLEVEL_COUNT = 50).</summary>
     public byte[] ItemGrades { get; } = new byte[50];
+
+    /// <summary>C++ <c>m_mapTPET</c> — the mount templates (TMOUNTCHART) by mount id.</summary>
+    public Dictionary<ushort, MountTemplate> Mounts { get; } = new();
 
     /// <summary>C++ <c>m_itemgrade[level].m_bProb</c> / <c>m_dwMoney</c> — the upgrade success chance and cost.</summary>
     public byte[] ItemGradeProb { get; } = new byte[50];

@@ -173,6 +173,26 @@ public sealed class Character
     /// <summary>Hotkey pages (CS_CHARINFO_ACK hotkey sub-loop).</summary>
     public List<HotkeyPage> HotkeyPages { get; } = new();
 
+    // ---- summons, pets, mounts (C++ m_mapRecallMon / m_mapTPET / m_mapSADDLE / m_dwRiding) ----
+
+    /// <summary>The player's summons by recall id (C++ <c>m_mapRecallMon</c>).</summary>
+    public Dictionary<uint, RecallMon> Recalls { get; } = new();
+
+    /// <summary>C++ <c>m_dwRiding</c> — the recall id of the mount being ridden, 0 when on foot.</summary>
+    public uint Riding { get; set; }
+
+    /// <summary>The account's pets by pet id (C++ <c>m_mapTPET</c>, account-wide).</summary>
+    public Dictionary<ushort, Pet> Pets { get; } = new();
+
+    /// <summary>The account's saddle (C++ <c>m_mapSADDLE[userId]</c>), null when none.</summary>
+    public TMap.Data.SaddleRow? Saddle { get; set; }
+
+    /// <summary>C++ <c>m_dwMedals</c> — the medal currency (pays for mount effects). Not loaded yet, so 0.</summary>
+    public uint Medals { get; set; }
+
+    /// <summary>C++ <c>FindRecallPet</c> (TPlayer.cpp:4170) — the called mount, if any.</summary>
+    public RecallMon? FindRecallPet() => Recalls.Values.FirstOrDefault(m => m.RecallType == RecallMon.TypePet);
+
     // ---- Phase 24: quests (C++ CTPlayer m_mapQUEST / m_mapLevelQuest) ----
 
     /// <summary>Active/accepted quests keyed by quest id (C++ <c>m_mapQUEST</c>). In-memory only — quest

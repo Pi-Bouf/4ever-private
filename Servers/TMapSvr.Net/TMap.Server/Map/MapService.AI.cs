@@ -187,6 +187,7 @@ public sealed partial class MapService
         if (hitType != HtMiss && target.Hp == 0) // player death — CS_DIE_ACK
         {
             foreach (var p in _state.PlayersAround(mon)) SendCS_DIE_ACK(p, target.CharId, OtPc);
+            if (_state.FindByChar(target.CharId) is { } dead) RecallsOwnerDied(dead, target);   // CTPlayer::OnDie
             // C++ OnDie → ReleaseMaintain(FALSE): silently drop all non-static buffs.
             if (_state.FindByChar(target.CharId) is { } ts) ReleaseMaintainPlayer(ts, target, notify: false);
             DropAggro(mon, nowMs); // the corpse isn't a target — leave battle + clear the hate table

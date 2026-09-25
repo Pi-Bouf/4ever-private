@@ -22,7 +22,12 @@ public sealed record MonsterTemplate(ushort Id, byte Level, ushort MonAttr,
     ushort Skill1 = 0, ushort Skill2 = 0, ushort Skill3 = 0, ushort Skill4 = 0,
     // The chase leash (C++ m_wChaseRange): how far from its anchor a fighting monster may be pulled before it
     // gives up. Live values are mostly 50 or 90; 0 means it abandons the chase as soon as it is moved.
-    ushort ChaseRange = 0)
+    ushort ChaseRange = 0,
+    // Summons (C++ CTBLMonster, DBAccess.h:476-508): the recall kind a summon of this template becomes
+    // (m_bRecallType — TRECALLTYPE_PET = 7 for mounts), the attr-chart id its stats come from at the owner's level
+    // (m_wSummonAttr), the class/race/self/select flags CreateRecallMon copies.
+    byte RecallType = 0, ushort SummonAttr = 0, byte Class = 0, byte Race = 0, byte IsSelf = 0, byte CanSelect = 0,
+    byte CanAttack = 0)
 {
     /// <summary>The non-empty skill slots in chart order (wSkill1 first).</summary>
     public IEnumerable<ushort> Skills

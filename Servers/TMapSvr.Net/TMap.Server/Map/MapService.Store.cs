@@ -34,7 +34,7 @@ public sealed partial class MapService
         for (int i = 0; i < count; i++)
             e[i] = (r.ReadUInt32(), r.ReadUInt32(), r.ReadUInt32(), r.ReadUInt32(), r.ReadByte(), r.ReadByte(), r.ReadByte());
 
-        if (s.Store.IsOpen || s.Deal.InProgress) return;                          // C++ silent (riding/store/deal)
+        if (s.Store.IsOpen || s.Deal.InProgress || ch.Riding != 0) return;        // C++ silent (riding/store/deal)
         if (string.IsNullOrEmpty(name) || count == 0) { SendCS_STOREOPEN_ACK(s, StoreResult.Fail, 0, ""); return; }
 
         s.Store.Clear();

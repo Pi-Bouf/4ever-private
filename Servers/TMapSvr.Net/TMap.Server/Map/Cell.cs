@@ -24,6 +24,9 @@ internal sealed class Cell
     /// <summary>Field monsters in this cell, keyed by monster instance id (C++ <c>m_mapMONSTER</c>).</summary>
     public Dictionary<uint, Monster> Monsters { get; } = new();
 
+    /// <summary>Summons in this cell, keyed by recall id (C++ <c>CTCell::m_mapRECALLMON</c>).</summary>
+    public Dictionary<uint, RecallMon> Recalls { get; } = new();
+
     /// <summary>Map switches in this cell, keyed by switch id (C++ <c>CTCell::m_mapSWITCH</c>).</summary>
     public Dictionary<uint, MapSwitch> Switches { get; } = new();
 
