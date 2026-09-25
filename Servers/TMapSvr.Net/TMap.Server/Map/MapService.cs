@@ -92,10 +92,18 @@ public sealed partial class MapService
                 case Msg.CS_JUMP_REQ: OnCS_JUMP_REQ(session, r); break;
                 case Msg.CS_BLOCK_REQ: OnCS_BLOCK_REQ(session, r); break;
                 case Msg.CS_CHGMODE_REQ: OnCS_CHGMODE_REQ(session, r); break;
+                // The client-reported aggro bounds — one handler, four triggers.
+                case Msg.CS_ENTERLB_REQ: OnAggroBoundReq(session, r, AiTrigger.EnterLb); break;
+                case Msg.CS_LEAVELB_REQ: OnAggroBoundReq(session, r, AiTrigger.LeaveLb); break;
+                case Msg.CS_ENTERAB_REQ: OnAggroBoundReq(session, r, AiTrigger.EnterAb); break;
+                case Msg.CS_LEAVEAB_REQ: OnAggroBoundReq(session, r, AiTrigger.LeaveAb); break;
                 case Msg.CS_CHARSTATINFO_REQ: OnCS_CHARSTATINFO_REQ(session, r); break;
                 case Msg.CS_MOVEITEM_REQ: OnCS_MOVEITEM_REQ(session, r); break;
                 case Msg.CS_ITEMUSE_REQ: OnCS_ITEMUSE_REQ(session, r); break;
                 case Msg.CS_DURATIONREP_REQ: OnCS_DURATIONREP_REQ(session, r); break;
+                case Msg.CS_MONMOVE_REQ: OnCS_MONMOVE_REQ(session, r); break;
+                case Msg.CS_ACTION_REQ: OnCS_ACTION_REQ(session, r); break;
+                case Msg.CS_FINISHSKILL_ACK: OnCS_FINISHSKILL_ACK(session, r); break;
                 case Msg.CS_DEFEND_REQ: OnCS_DEFEND_REQ(session, r); break;
                 case Msg.CS_SKILLUSE_REQ: OnCS_SKILLUSE_REQ(session, r); break;
                 case Msg.CS_SKILLEND_REQ: OnCS_SKILLEND_REQ(session, r); break;
@@ -199,7 +207,8 @@ public sealed partial class MapService
         RunSwitchReverts(NowMs);               // auto-revert duration-limited switches (C++ m_vTSWITCHOBJ sweep)
         RunRecover(NowMs);                     // HP/MP regeneration (players + monsters)
         RunCorpseExpiry(_tickSeconds * 1000L); // despawn + re-arm lootable corpses past their lifetime
-        RunMonsterAI(_tickSeconds * 1000L);    // monster idle roam (broadcast CS_MONACTION_ACK)
+        RunScheduledAi(_tickSeconds * 1000L);  // Due TAICHART commands (the local SM_AICMD stand-in)
+        RunMonsterAI(_tickSeconds * 1000L);    // legacy sweep — script-less monsters only (roam / chase)
         RunPeriodicSaves(NowMs);               // 30-min per-char DB save (no-op DB-free); off-thread write
         FlushItemDirect();                     // incremental item persistence (TSaveItemDirect); off-thread write
         // Still deferred here: war timers — see PORT_STATUS.md.

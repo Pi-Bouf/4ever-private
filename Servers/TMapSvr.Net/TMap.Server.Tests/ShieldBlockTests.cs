@@ -95,7 +95,7 @@ public class ShieldBlockTests
     // Monster hits for a flat 50 (AtkMin == AtkMax, no crit); melee range (player 20 units from the anchor).
     private static async Task<(MapTestHarness h, ClientSession s, FakeClientChannel c)> Attack(Character player)
     {
-        var h = new MapTestHarness();
+        var h = new MapTestHarness(MapTestHarness.WithMonsterMelee());
         var (s, c) = await h.EnterAsync(1, 1, 1, x: 120, z: 100, preSeeded: player);
         h.Service.SpawnMonster(new Monster
         {

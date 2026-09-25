@@ -85,6 +85,22 @@ public sealed partial class MapService
         if (s.State != EnterState.InGame || s.Char is not { } ch) return;
         if (attackType != OtPc) return;
 
+        PlayerHitsTarget(s, ch, hostId, attackId, attackType, targetId, targetType, actId, aniId, attackerLevel,
+            transHp, transMp, canSelect, skillId, skillLevel, atkX, atkY, atkZ, defX, defY, defZ);
+    }
+
+    /// <summary>
+    /// One player hit on one target — the body of C++ <c>CTObjBase::Defend</c> as the port drives it. Shared by
+    /// the two front doors that reach it: the classic <c>CS_DEFEND_REQ</c> (which this build's client uses only
+    /// for monster attackers and a short skill-exceptions list) and <c>CS_FINISHSKILL_ACK</c> (the packet that
+    /// carries every ordinary player attack in this build). Attack power, crit rate and attack level are always
+    /// re-derived from the attacker server-side; the caller supplies only what the wire actually determines.
+    /// </summary>
+    private void PlayerHitsTarget(ClientSession s, Character ch, uint hostId, uint attackId, byte attackType,
+        uint targetId, byte targetType, uint actId, uint aniId, byte attackerLevel, ushort transHp, ushort transMp,
+        byte canSelect, ushort skillId, byte skillLevel,
+        float atkX, float atkY, float atkZ, float defX, float defY, float defZ)
+    {
         // Resolve the attacking skill (C++ FindTSkill(m_wTriggerID); for a basic attack triggerID == wSkillID).
         var atkSkill = ch.Skills.FirstOrDefault(k => k.SkillId == skillId);
 

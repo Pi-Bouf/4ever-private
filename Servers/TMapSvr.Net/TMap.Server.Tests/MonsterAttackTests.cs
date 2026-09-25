@@ -25,7 +25,7 @@ public class MonsterAttackTests
     private static async Task<(MapTestHarness h, ClientSession s, FakeClientChannel c, Monster mob)> Setup(
         Character ch, Monster mob, float px = 120, float pz = 100)
     {
-        var h = new MapTestHarness();
+        var h = new MapTestHarness(MapTestHarness.WithMonsterMelee());
         var (s, c) = await h.EnterAsync(1, 1, 1, x: px, z: pz, preSeeded: ch);
         h.Service.SpawnMonster(mob);
         h.Service.CombatRng = new Random(1);

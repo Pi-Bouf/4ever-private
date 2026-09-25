@@ -31,7 +31,6 @@ public sealed partial class MapService
     /// ROAM_DELAY_BOUND = 4).</summary>
     private const int RoamDelayMs = 5000;
     private const int ChaseIntervalMs = 1000;  // how often a chasing monster re-broadcasts its follow target
-    private const float ChaseRange = 800f;     // leash: max distance of the target from the spawn anchor (C++ m_wChaseRange, not loaded)
     private const float AttackRange = 50f;     // melee reach: within this of the anchor the monster attacks instead of chasing
     private const int DefaultAtkSpeedMs = 2000; // attack cadence when the attr has no m_dwAtkSpeed
     private const byte TaWalk = 3, TaFollow = 9; // TACTION_TYPE TA_WALK / TA_FOLLOW
@@ -44,6 +43,10 @@ public sealed partial class MapService
         foreach (var mon in _state.AllMonsters())
         {
             if (mon.Hp == 0) continue;                          // dead corpse — no AI
+            // A monster with a TAICHART script is driven entirely by the event machine and its
+            // scheduled commands (RunScheduledAi), never by this sweep. Only script-less monsters — the
+            // DB-free path and every pre-46 test — fall back to the hard-coded behaviour below.
+            if (mon.Ai is not null) continue;
             if (mon.Mode == MtBattle) { ChaseTarget(mon, nowMs); continue; }
             if (mon.Mode != MtNormal) continue;
             // An aggressive monster looks for a host on sight (C++ AT_ENTER → CTAICmdSetHost); on a pull it enters
@@ -91,9 +94,9 @@ public sealed partial class MapService
         float dist2 = dx * dx + dz * dz;
         // fled past the leash (C++ m_wChaseRange < GetDistance(anchor,pos); the port measures the target's distance
         // from the anchor since the monster is pinned there): drop this target, re-pick the next in-view attacker.
-        if (dist2 > ChaseRange * ChaseRange) { Disengage(mon, mon.TargetId, mon.TargetType != 0 ? mon.TargetType : OtPc, (uint)nowMs); return; }
+        if (dist2 > mon.ChaseRange * mon.ChaseRange) { Disengage(mon, mon.TargetId, mon.TargetType != 0 ? mon.TargetType : OtPc, (uint)nowMs); return; }
 
-        if (dist2 <= AttackRange * AttackRange) // in melee range ⇒ attack (Phase 20)
+        if (dist2 <= AttackRange * AttackRange) // in melee range ⇒ attack
         {
             if (nowMs >= mon.AtkNextMs)
             {
@@ -115,6 +118,18 @@ public sealed partial class MapService
     /// player's <c>GetDefendPower</c>; the player enters battle (suppressing HP regen) and, at 0 HP, dies.</summary>
     private void AttackPlayer(Monster mon, Character target, long nowMs)
     {
+        // C++ BeginAtk/Attack only swing when the monster has an m_pNextSkill, and announce that skill's id. A
+        // monster's basic attack is one of its chart skills (there is no skill 0) — and this client dereferences
+        // the skill-chart lookup unguarded in BOTH OnCS_MONATTACK_ACK and OnCS_DEFEND_ACK, so an unknown id
+        // does not degrade gracefully, it crashes the client. A monster with no usable skill therefore does
+        // not attack, exactly as in the C++.
+        ushort skillId = SelectMonsterSkill(mon);
+        if (skillId == 0) return;
+        _log.LogDebug("[mon] ATTACK mon {Mon} -> char {Char} skill {Skill} at distance {Dist:F1} (mon {MX:F1},{MZ:F1} / char {CX:F1},{CZ:F1}).",
+            mon.Id, target.CharId, skillId,
+            MathF.Sqrt((mon.PosX - target.PosX) * (mon.PosX - target.PosX) + (mon.PosZ - target.PosZ) * (mon.PosZ - target.PosZ)),
+            mon.PosX, mon.PosZ, target.PosX, target.PosZ);
+
         // C++ order: GetAtkHitType (attacker side) decides miss/normal/crit FIRST; then Defend→CalcDamage runs
         // the DEFENDER's shield-block roll (GetShieldDP), and only on a landed hit (a miss short-circuits before
         // CalcDamage, so it can never become a block). A successful roll returns the shield's defence power,
@@ -133,7 +148,7 @@ public sealed partial class MapService
         };
         uint dmg = (uint)Math.Min((int)baseDmg, (int)target.Hp); // clamp to remaining HP
         if (hitType != HtMiss) target.Hp -= dmg;
-        target.EnterBattle((uint)nowMs, RecoverInit);         // player enters battle ⇒ HP regen suppressed (Phase 16)
+        target.EnterBattle((uint)nowMs, RecoverInit);         // player enters battle ⇒ HP regen suppressed
 
         // The reported hit result: a kill downgrades to HT_LASTHIT (C++ Defend `m_dwHP ? bAtkHit : HT_LASTHIT`);
         // otherwise a successful shield roll flags HT_BLOCK (set last in CalcDamage, so it wins over a crit report).
@@ -141,11 +156,15 @@ public sealed partial class MapService
             : target.Hp == 0 ? HtLastHit
             : shieldDp != 0 ? HtBlock
             : hitType;
-        var attackAck = BuildMonsterAttackAck(mon, target.CharId);
-        var hitAck = BuildMonsterHitAck(mon, target, dmg, atkHit, landed: hitType != HtMiss);
+        var attackAck = BuildMonsterAttackAck(mon, target.CharId, skillId);
+        var hitAck = BuildMonsterHitAck(mon, target, dmg, atkHit, landed: hitType != HtMiss, skillId);
+        // CS_MONATTACK_ACK goes to the HOST alone (C++ pHOST->SendCS_MONATTACK_ACK): it is an instruction, not
+        // a broadcast — the host answers with CS_SKILLUSE_REQ for the monster, whose ACK animates everyone.
+        // Broadcasting it made every nearby client send that request, playing the swing once per viewer. A
+        // monster with no assigned host (the script-less path) is hosted by the player it is attacking.
+        _state.FindByChar(mon.HostId != 0 ? mon.HostId : target.CharId)?.Send(attackAck);
         foreach (var p in _state.PlayersAround(mon))
         {
-            p.Send(attackAck);
             p.Send(hitAck);
             SendSelfHpMp(p, target.CharId, MaxHpFor(target), target.Hp, MaxMpFor(target), target.Mp);
         }
@@ -153,27 +172,45 @@ public sealed partial class MapService
         if (hitType != HtMiss && target.Hp == 0) // player death — CS_DIE_ACK; revival (CS_REVIVAL) is deferred
         {
             foreach (var p in _state.PlayersAround(mon)) SendCS_DIE_ACK(p, target.CharId, OtPc);
-            // C++ OnDie → ReleaseMaintain(FALSE): silently drop all non-static buffs (Phase 31).
+            // C++ OnDie → ReleaseMaintain(FALSE): silently drop all non-static buffs.
             if (_state.FindByChar(target.CharId) is { } ts) ReleaseMaintainPlayer(ts, target, notify: false);
             DropAggro(mon, nowMs); // the corpse isn't a target — leave battle + clear the hate table
         }
     }
 
+    /// <summary>
+    /// C++ <c>CTMonster::SelectSkill</c> (TMonster.cpp:1461), reduced to the guarantee the wire needs: the first
+    /// of the monster's chart skills (<c>wSkill1..wSkill4</c>) that exists in the skill chart, or 0 when it has
+    /// none. Live data: 3518 of 3536 monsters carry a real <c>wSkill1</c> (2447 of them skill 700, the generic
+    /// melee), 8 have no skill at all, and 1 names a skill missing from <c>TSKILLCHART</c> — which the existence
+    /// check skips rather than sending an id that would crash the client.
+    /// <para><b>Deferred:</b> the C++ chooses among several skills by target distance against each skill's
+    /// <c>m_wMinRange</c>/<c>m_wMaxRange</c> and by reuse readiness; those columns are not loaded, so a
+    /// multi-skill monster always opens with its first valid one.</para>
+    /// </summary>
+    private ushort SelectMonsterSkill(Monster mon)
+    {
+        if (!_templates.MonsterTemplates.TryGetValue(mon.ChartId, out var tpl)) return 0;
+        foreach (var id in tpl.Skills)
+            if (_templates.Skills.ContainsKey(id)) return id;
+        return 0;
+    }
+
     /// <summary>C++ <c>SendCS_MONATTACK_ACK</c> (CSSender.cpp:1208) — the monster's swing announce.</summary>
-    private static byte[] BuildMonsterAttackAck(Monster mon, uint targetId)
+    private static byte[] BuildMonsterAttackAck(Monster mon, uint targetId, ushort skillId)
     {
         var w = new PacketWriter(Msg.CS_MONATTACK_ACK, capacity: 16);
         w.WriteUInt32(mon.Id);       // dwAttackID
         w.WriteUInt32(targetId);     // dwTargetID
         w.WriteByte(Monster.OtMon);  // bAttackType
         w.WriteByte(OtPc);           // bTargetType
-        w.WriteUInt16(0);            // wSkillID (basic attack)
+        w.WriteUInt16(skillId);      // wSkillID — must exist in the client's skill chart
         return w.ToArray();
     }
 
     /// <summary>The hit result for a monster→player attack — the same <c>CS_DEFEND_ACK</c> layout as the
-    /// player→monster path (Phase 13), with the monster as attacker and the player as target.</summary>
-    private static byte[] BuildMonsterHitAck(Monster mon, Character target, uint dmg, byte atkHit, bool landed)
+    /// player→monster path, with the monster as attacker and the player as target.</summary>
+    private static byte[] BuildMonsterHitAck(Monster mon, Character target, uint dmg, byte atkHit, bool landed, ushort skillId)
     {
         var w = new PacketWriter(Msg.CS_DEFEND_ACK, capacity: 96);
         w.WriteUInt32(mon.Id);        // dwAttackID
@@ -198,7 +235,7 @@ public sealed partial class MapService
         w.WriteByte(0);               // bCancelCharge
         w.WriteByte(mon.Country);     // bAttackCountry
         w.WriteByte(0);               // bAttackAidCountry
-        w.WriteUInt16(0);             // wSkillID
+        w.WriteUInt16(skillId);       // wSkillID — must exist in the client's skill chart
         w.WriteByte(0);               // bSkillLevel
         w.WriteUInt16(0);             // wBackSkillID
         w.WriteByte((byte)(landed ? 1 : 0)); // bPerform — 0 on a miss (PERFORM_MISS)
@@ -218,7 +255,7 @@ public sealed partial class MapService
     }
 
     /// <summary>Leave battle for good (C++ <c>ResetHost</c>-lite, TMonster.cpp:2392): clear the target/host and
-    /// the whole hate table, drop to <c>MT_NORMAL</c> (HP regen resumes — Phase 16), and return to roaming. Used
+    /// the whole hate table, drop to <c>MT_NORMAL</c> (HP regen resumes), and return to roaming. Used
     /// when no hostile attacker remains in view (the C++ <c>AT_LEAVELB</c> outcome, the port collapsing the
     /// <c>MT_GOHOME</c> walk-back since the monster is pinned at its anchor).</summary>
     private static void DropAggro(Monster mon, long nowMs)
@@ -231,10 +268,15 @@ public sealed partial class MapService
         mon.RoamNextMs = nowMs + RoamDelayMs;
     }
 
-    /// <summary>A random point on the circle of radius <see cref="Monster.Area"/> around the anchor (C++
-    /// <c>MoveNext</c> in-bounds branch, TMonster.cpp:1897): <c>rad = (rand()%360)·π/180</c>.</summary>
+    /// <summary>C++ <c>CTMonster::MoveNext</c> for a path-less spawn (TMonster.cpp:1869-1901): a monster that
+    /// has drifted outside its roam area walks straight back to its anchor; otherwise it picks a random point
+    /// on the circle of radius <see cref="Monster.Area"/> around the anchor (<c>rad = (rand()%360)·π/180</c>).
+    /// Path-point spawns and roam types are not loaded.</summary>
     private (float x, float z) RoamDestination(Monster mon)
     {
+        float dx = mon.PosX - mon.StartX, dz = mon.PosZ - mon.StartZ;
+        if (dx * dx + dz * dz > mon.Area * mon.Area) return (mon.StartX, mon.StartZ);   // bGo: back to the anchor
+
         float rad = SpawnRng.Next(360) * (float)Math.PI / 180f;
         return (mon.StartX + mon.Area * MathF.Cos(rad), mon.StartZ + mon.Area * MathF.Sin(rad));
     }

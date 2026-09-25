@@ -17,6 +17,27 @@ internal sealed class MapTestHarness
     public FakeWorldSink World { get; } = new();
     public MapServerOptions Options { get; }
 
+    /// <summary>The generic monster melee — 2447 of the 3536 live monsters carry it as wSkill1.</summary>
+    public const ushort MonsterMelee = 700;
+
+    /// <summary>
+    /// Gives a monster chart entry a real attack skill, the shape every live attacking monster has. A monster with
+    /// no usable chart skill never swings (C++ BeginAtk/Attack need m_pNextSkill), so a fixture that wants a
+    /// monster to attack must register one — the client crashes on an unknown skill id, so there is no
+    /// skill-less fallback attack to rely on.
+    /// </summary>
+    public static TemplateStore WithMonsterMelee(TemplateStore? t = null, ushort chartId = 500)
+    {
+        t ??= new TemplateStore();
+        t.MonsterTemplates[chartId] = t.MonsterTemplates.TryGetValue(chartId, out var existing)
+            ? existing with { Skill1 = MonsterMelee }
+            : new MonsterTemplate(chartId, 5, 0, Skill1: MonsterMelee);
+        t.Skills.TryAdd(MonsterMelee, new SkillTemplate(MonsterMelee, Kind: 0, UseMp: 0, UseMpType: 0, UseHp: 0,
+            UseHpType: 0, StartLevel: 1, MaxLevel: 1, NextLevel: 0, ReuseDelay: 0, ReuseDelayInc: 0, LoopDelay: 0,
+            KindDelay: 0, SpeedApply: 0, Positive: 0, MapId: 0xFFFF));
+        return t;
+    }
+
     public MapTestHarness(TemplateStore? templates = null)
     {
         Options = new MapServerOptions { ServerId = 1, Channels = new byte[] { 1 } };
@@ -145,6 +166,21 @@ internal sealed class MapTestHarness
         w.WriteUInt32(monId); w.WriteByte(itemId); w.WriteByte(invenId); w.WriteByte(slotId);
         return w.ToArray();
     }
+
+    /// <summary>A client-reported aggro-bound crossing (CS_ENTERLB/LEAVELB/ENTERAB/LEAVEAB_REQ — the four
+    /// share one layout): dwCharID, dwTargetID, bTargetType, dwMonID, bChannel, wMapID.</summary>
+    public static byte[] AggroBoundReq(ushort msgId, uint charId, uint targetId, byte targetType, uint monId,
+        byte channel = 1, ushort mapId = 0)
+    {
+        var w = new PacketWriter(msgId);
+        w.WriteUInt32(charId); w.WriteUInt32(targetId); w.WriteByte(targetType);
+        w.WriteUInt32(monId); w.WriteByte(channel); w.WriteUInt16(mapId);
+        return w.ToArray();
+    }
+
+    public static byte[] EnterLbReq(uint charId, uint targetId, byte targetType, uint monId,
+        byte channel = 1, ushort mapId = 0)
+        => AggroBoundReq(Msg.CS_ENTERLB_REQ, charId, targetId, targetType, monId, channel, mapId);
 
     /// <summary>Open (unlock) a cabinet (CS_CABINETOPEN_REQ): bCabinetID.</summary>
     public static byte[] CabinetOpenReq(byte cabinetId)

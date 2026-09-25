@@ -36,7 +36,7 @@ public sealed class Monster
     /// chart <c>m_wDP</c>; shield DP and buff deltas are deferred/0 for a monster).</summary>
     public uint DefendPower { get; set; }
 
-    // ---- Phase 28 (combat quality). As the DEFENDER: magic defence (wMDP) + the defend levels (wDL/wMDL)
+    // ---- Combat quality. As the DEFENDER: magic defence (wMDP) + the defend levels (wDL/wMDL)
     // that feed the attacker's GetAtkHitType hit-rate roll. As the ATTACKER: its attack level (wAL) + crit
     // prob (bCriticalPP), used for the miss/crit roll on the player it hits. ----
     public uint MagicDefPower { get; set; }
@@ -65,28 +65,58 @@ public sealed class Monster
     public byte Channel { get; set; }
     public ushort MapId { get; set; }
 
-    /// <summary>Phase 45/46 — whether this monster acquires a host/target on sight (auto-aggro), vs staying
-    /// passive until hit. In C++ this is not a monster-chart flag: a monster is aggressive iff its <c>bAIType</c>
-    /// script binds <c>AC_SETHOST</c> under the <c>AT_ENTER</c> trigger in the DB <c>TAICHART</c> table.
-    /// <b>Phase 46</b> loads that table (<see cref="TemplateStore.AggressiveAiTypes"/>) and stamps this at spawn;
-    /// it still defaults <c>false</c> DB-free / when the AI charts are absent (the hit-driven aggro of Phase 44 is
-    /// unaffected either way). Tests set it directly. See PORT_STATUS.md.</summary>
+    /// <summary>Whether this monster acquires a host/target on sight (auto-aggro), vs staying passive
+    /// until hit. In C++ this is not a monster-chart flag: a monster is aggressive iff its <c>bAIType</c> script
+    /// binds <c>AC_SETHOST</c> under the <c>AT_ENTER</c> trigger in the DB <c>TAICHART</c> table. loads
+    /// that table, so this is now <b>derived at spawn</b> from <see cref="Ai"/>
+    /// (<c>script.Binds(AiTrigger.Enter, AiCommandKind.SetHost)</c>) and only defaults false when no script is
+    /// loaded at all (DB-free); tests still set it directly. See PORT_STATUS.md.</summary>
     public bool Aggressive { get; set; }
+
+    // ---- The data-driven AI engine (TAICHART). ----
+
+    /// <summary>C++ <c>m_pMON-&gt;m_pAI</c> — the AI script this monster's <c>bAIType</c> resolves to, or null
+    /// when none is loaded (DB-free, or a chart with no rows for the type and no DEFAULT_AI). A null script
+    /// makes every <c>OnAiEvent</c> a no-op and leaves the monster on the legacy per-tick roam/chase sweep —
+    /// see <c>MapService.AiEngine.cs</c>.</summary>
+    public AiScript? Ai { get; set; }
+
+    /// <summary>C++ <c>m_bStatus</c> (<c>OBJ_STATUS</c>): OS_DISAPPEAR 0 / OS_WAKEUP 1 / OS_SLEEP 2 / OS_DEAD 3.
+    /// The second state axis next to <see cref="Mode"/>; nearly every AI command gates on it. Kept in step with
+    /// <see cref="Dead"/>, which the pre-46 port used as its only liveness flag.</summary>
+    public byte Status { get; set; } = 1;   // OS_WAKEUP — a spawned monster is awake
+
+    /// <summary>C++ <c>m_dwHostKEY</c> — the command epoch. Every host/mode/action change bumps it, and a
+    /// delayed command captures it at schedule time, so anything queued against a superseded state is dropped
+    /// when it comes due rather than acting on stale facts.</summary>
+    public uint HostKey { get; set; }
+
+    /// <summary>C++ <c>m_bRemove</c> — this monster is being force-removed (a quest cleanup, a retired dynamic
+    /// spawn), so <c>Leave</c> runs even for a suspended spawn and never re-arms.</summary>
+    public bool Remove { get; set; }
+
+    /// <summary>C++ <c>m_pMON-&gt;m_bIsSelf</c> — a "self object" (a placed prop, not a wandering mob) never
+    /// roams. The chart column is unloaded, so this stays false.</summary>
+    public bool IsSelf { get; set; }
 
     /// <summary>The grid cell this monster is currently bucketed in (C++ cell membership), set by the grid.</summary>
     public uint CellKey { get; set; }
 
-    // ---- Phase 18: roam AI. The wander anchor (C++ m_fStartX/Y/Z, set at spawn), the roam radius (the
+    // ---- Roam AI. The wander anchor (C++ m_fStartX/Y/Z, set at spawn), the roam radius (the
     // spawn's area), the last picked destination (m_fNextX/Z), and the per-monster roam-step timer. ----
     public float StartX { get; set; }
     public float StartY { get; set; }
     public float StartZ { get; set; }
-    public float Area { get; set; }        // roam radius (spawn Range); 0 ⇒ the monster stays put
+    public float Area { get; set; }        // roam radius (spawn bArea — NOT bRange); 0 ⇒ the monster stays put
+    /// <summary>The chase leash (chart <c>wChaseRange</c>): a fighting monster pulled farther than this from
+    /// its anchor gives up. Chart spawns take the chart value; a monster built directly (tests, DB-free) keeps
+    /// the old fixed 800.</summary>
+    public float ChaseRange { get; set; } = 800f;
     public float NextX { get; set; }
     public float NextZ { get; set; }
     public long RoamNextMs { get; set; }   // earliest map-clock tick (ms) for the next AI step (roam or chase)
 
-    /// <summary>Phase 44: the resolved aggro target's object id (C++ <c>m_dwTargetID</c>) — the entity this
+    /// <summary>The resolved aggro target's object id (C++ <c>m_dwTargetID</c>) — the entity this
     /// monster is chasing while <c>MT_BATTLE</c>, picked from <see cref="AggroTable"/> by the retarget rule.
     /// 0 = no target. Written by the map-service <c>ApplyRetarget</c> (the C++ <c>ChgHost</c> action).</summary>
     public uint TargetId { get; set; }
@@ -99,25 +129,25 @@ public sealed class Monster
     /// 0 = no host.</summary>
     public uint HostId { get; set; }
 
-    // ---- Phase 20: monster attack. AtkMin/Max = the physical AP band (C++ GetMinAP/GetMaxAP), AtkSpeed the
+    // ---- Monster attack. AtkMin/Max = the physical AP band (C++ GetMinAP/GetMaxAP), AtkSpeed the
     // attack cadence (m_dwAtkSpeed), AtkNextMs the next-attack deadline vs the map clock. ----
     public uint AtkMin { get; set; }
     public uint AtkMax { get; set; }
     public uint AtkSpeed { get; set; }
     public long AtkNextMs { get; set; }
 
-    // ---- Phase 16: HP/MP regen (Recover) state (C++ m_dwRecoverHPTick / m_dwRecoverMPTick / m_dwLastAtkTick). ----
+    // ---- HP/MP regen (Recover) state (C++ m_dwRecoverHPTick / m_dwRecoverMPTick / m_dwLastAtkTick). ----
     public uint RecoverHpTick { get; set; }
     public uint RecoverMpTick { get; set; }
     public uint LastAtkTick { get; set; }
 
-    // ---- Phase 17: exp/loot. Exp + money knobs come from the monster chart (TMONSTERCHART). ----
+    // ---- Exp/loot. Exp + money knobs come from the monster chart (TMONSTERCHART). ----
     public uint Exp { get; set; }          // m_pMON->m_wExp — the kill exp reward
     public byte MoneyProb { get; set; }    // m_bMoneyProb
     public uint MinMoney { get; set; }     // m_dwMinMoney
     public uint MaxMoney { get; set; }     // m_dwMaxMoney
 
-    // ---- Phase 22: item loot. The drop table (from the monster chart) + the corpse's item inventory. ----
+    // ---- Item loot. The drop table (from the monster chart) + the corpse's item inventory. ----
     public byte ItemProb { get; set; }           // m_bItemProb — per-attempt drop chance
     public byte DropCount { get; set; }          // m_bDropCount — number of drop attempts
     public uint MaxWeight { get; set; }          // m_dwMaxWeight — Σ drop-row weights (0 ⇒ no loot at all)
@@ -146,7 +176,7 @@ public sealed class Monster
     /// Party it's a party id. 0 = none yet.</summary>
     public uint KeeperId { get; private set; }
     /// <summary>C++ <c>m_bKeeperType</c> (OWNER_PRIVATE / OWNER_PARTY) — whether <see cref="KeeperId"/> is a char
-    /// or a party. 0 (OWNER_NONE) until a bucket crosses the threshold. Phase 38.</summary>
+    /// or a party. 0 (OWNER_NONE) until a bucket crosses the threshold.</summary>
     public byte KeeperType { get; private set; }
 
     // OWNER_TYPE (NetCode.h:1972)
@@ -182,14 +212,14 @@ public sealed class Monster
 
     /// <summary>Active maintained (debuff) skills on this monster (C++ <c>CTObjBase::m_vMaintainSkill</c>) —
     /// landed by a player's buff-type <c>CS_DEFEND</c>. Serialized into <c>CS_ADDMON_ACK</c> and expired by the
-    /// per-tick <c>CheckMaintainSkill</c> sweep (Phase 31).</summary>
+    /// per-tick <c>CheckMaintainSkill</c> sweep.</summary>
     public List<MaintainSkill> MaintainSkills { get; } = new();
 
     /// <summary>C++ <c>m_dwID = MAKELONG(MAKEWORD(slot, channel), spawnId)</c> (TMap.cpp:565).</summary>
     public static uint MakeId(ushort spawnId, byte channel, byte slot) =>
         ((uint)spawnId << 16) | ((uint)channel << 8) | slot;
 
-    // ============================ Phase 44 — the aggro / hate table (m_mapAggro) ============================
+    // ============================ The aggro / hate table (m_mapAggro) ============================
     // C++ CTMonster::m_mapAggro (map<__int64,TAGGRO>, TMonster.h:44). The monster's victim is chosen from this
     // table, NOT by last-hitter: highest cumulative aggro with a 10% "sticky-target" hysteresis. Aggro is
     // SKILL-driven (max(1, skill.GetAggro), warrior ×1.5), never raw damage. This type owns the table + the pure

@@ -41,19 +41,32 @@ public sealed partial class MapService
         uint aniId = r.ReadUInt32();        // dwAniID
         float posX = r.ReadFloat(), posY = r.ReadFloat(), posZ = r.ReadFloat();
         byte count = r.ReadByte();          // bCount
-        var targets = new (uint id, byte type)[count];
+        // The client lists EVERY object in the skill's area and flags only the real target(s) with bIsTarget;
+        // the rest are bystanders (C++ vMONSTER, used only for heal/buff aggro). Only flagged entries become
+        // targets, capped at MAX_TARGET (TMapType.h:76). This matters because the client attacks exactly the
+        // list echoed back in CS_SKILLUSE_ACK — echoing bystanders turned a single-target swing into a hit on
+        // every monster standing near the target.
+        var picked = new List<(uint id, byte type)>(count);
         for (int i = 0; i < count; i++)
         {
             uint tid = r.ReadUInt32();      // dwTarget
             byte ttype = r.ReadByte();      // bTargetType
-            r.ReadByte();                   // bIsTarget
-            targets[i] = (tid, ttype);
+            byte isTarget = r.ReadByte();   // bIsTarget
+            if (isTarget != 0 && picked.Count < MaxTarget) picked.Add((tid, ttype));
         }
+        var targets = picked.ToArray();
 
         if (s.State != EnterState.InGame || s.Char is null) return;
 
         // This phase: only a player casting. Resolve the attacker player by id (C++ m_mapPLAYER lookup;
         // must be an in-game main char). A missing attacker ⇒ silent return, exactly as the C++.
+        // A monster caster: its HOST client sends this on the monster's behalf after CS_MONATTACK_ACK, and the
+        // CS_SKILLUSE_ACK reply is what plays the monster's swing animation on every client.
+        if (attackType == Monster.OtMon)
+        {
+            MonsterSkillUse(s, attackId, skillId, actionId, actId, aniId, posX, posY, posZ, targets);
+            return;
+        }
         if (attackType != OtPc) return;
         if (_state.FindByChar(attackId) is not { State: EnterState.InGame, Char: { } ch } casterSession) return;
 
@@ -100,6 +113,43 @@ public sealed partial class MapService
             p.Send(ack);
             if (needHp != 0 || needMp != 0) SendSkillCostHpMp(p, attackId, attackType, ch);
         }
+    }
+
+    /// <summary>C++ <c>MAX_TARGET</c> (TMapType.h:76) — the most targets one skill use may carry.</summary>
+    private const int MaxTarget = 16;
+
+    /// <summary>
+    /// The monster branch of <c>OnCS_SKILLUSE_REQ</c>: the host client announces the monster's skill, and the map
+    /// broadcasts <c>CS_SKILLUSE_ACK</c> so every nearby client animates the swing. Without it a monster attack
+    /// dealt its damage with no animation at all.
+    /// <para>For a monster the C++ skips the whole cooldown / MP-HP cost / item block (<c>if(bAttackType !=
+    /// OT_MON)</c>) — its cooldown is armed server-side when the attack is decided — so this is announce-only.
+    /// The attack payload is the monster's own (physical band, attack level, crit); monster magic attacks are
+    /// not ported, so the magic band is 0.</para>
+    /// <para><b>Hardening:</b> only the monster's host may drive it, the same rule as <c>CS_MONMOVE</c>. The C++
+    /// does not check here, but it sends <c>CS_MONATTACK_ACK</c> to the host alone, so the host is the only
+    /// legitimate sender.</para>
+    /// </summary>
+    private void MonsterSkillUse(ClientSession s, uint monId, ushort skillId, byte actionId, uint actId, uint aniId,
+        float posX, float posY, float posZ, (uint id, byte type)[] targets)
+    {
+        if (_state.FindMonster(monId) is not { } mon || mon.HostId != s.CharId)
+        { _log.LogDebug("[mon] SKILLUSE for mon {Mon} from char {Char}: not its host; dropped.", monId, s.CharId); return; }
+        _log.LogDebug("[mon] SKILLUSE for mon {Mon} skill {Skill} from host {Char}, {Count} target(s).", monId, skillId, s.CharId, targets.Length);
+
+        // The skill must be one of the monster's own chart skills (C++ pATTACK->FindTSkill on the monster).
+        if (!_templates.MonsterTemplates.TryGetValue(mon.ChartId, out var mt) || !mt.Skills.Contains(skillId)
+            || !_templates.Skills.ContainsKey(skillId))
+        {
+            SendSkillUseFail(s, SkillUseResult.NotFound, monId, Monster.OtMon, skillId, actionId, actId, aniId);
+            return;
+        }
+
+        var ack = BuildCS_SKILLUSE_ACK(SkillUseResult.Success, monId, Monster.OtMon, skillId, actionId, actId, aniId,
+            skillLevel: 1, backSkill: 0, attackLevel: mon.AttackLevel, attackerLevel: mon.Level,
+            pysMin: mon.AtkMin, pysMax: mon.AtkMax, mgMin: 0, mgMax: 0, transHp: 0, transMp: 0, curseProb: 0,
+            equipSpecial: 0, canSelect: 1, mon.Country, mon.AidCountry, mon.CritProb, posX, posY, posZ, targets);
+        foreach (var p in _state.PlayersAround(mon)) p.Send(ack);   // C++ GetNeerPlayer around the monster
     }
 
     /// <summary>C++ <c>CTObjBase::SkillUse</c> (TObjBase.cpp:4568): arm the standard cooldown with the

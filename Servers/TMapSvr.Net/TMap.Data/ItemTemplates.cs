@@ -10,19 +10,19 @@ namespace TMap.Data;
 /// </summary>
 public sealed record ItemTemplate(ushort ItemId, byte RefineMax, float[] Revision,
     byte Type = 0, ushort AttrId = 0, uint SpeedInc = 0,
-    // Phase 7 (equip): required level, class mask, equip-slot mask, primary/sub equip slot, max stack.
+    // Equip: required level, class mask, equip-slot mask, primary/sub equip slot, max stack.
     byte DefaultLevel = 0, uint ClassId = 0, uint SlotId = 0,
     byte PrmSlot = 0xFF, byte SubSlot = 0xFF, byte Stack = 1,
-    // Phase 8 (use): item kind (IK_* — selects the use-effect), the use-effect value (potion heal amount),
+    // Use: item kind (IK_* — selects the use-effect), the use-effect value (potion heal amount),
     // and the reuse delay (echoed in CS_ITEMUSE_ACK; server-side cooldown enforcement deferred).
     byte Kind = 0, ushort UseValue = 0, uint Delay = 0,
-    // Phase 10 (repair): the price ratio (m_fPrice) driving the repair-cost formula, and whether the item is
+    // Repair: the price ratio (m_fPrice) driving the repair-cost formula, and whether the item is
     // repairable at all (m_bCanRepair — 0 ⇒ ITEMREPAIR_DISALLOW).
     float Price = 0f, byte CanRepair = 0,
-    // Phase 8 audit fold-in: the use delay-group (m_wDelayGroupID — the CS_ITEMUSE anti-tamper guard) and
+    // audit fold-in: the use delay-group (m_wDelayGroupID — the CS_ITEMUSE anti-tamper guard) and
     // whether using it consumes it (m_bConsumable — default 1 so DB-free/synth items still consume).
     ushort DelayGroup = 0, byte Consumable = 1,
-    // Phase 23 (NPC shop): the trade-permission mask (m_bIsSell — ITEMTRADE_SELL=2 lets it be sold to an NPC,
+    // NPC shop: the trade-permission mask (m_bIsSell — ITEMTRADE_SELL=2 lets it be sold to an NPC,
     // ITEMTRADE_DEAL=1 / ITEMTRADE_CABINET=4 are the other bits). Default 0 ⇒ not sellable.
     byte IsSell = 0);
 
@@ -68,21 +68,21 @@ public sealed class TemplateStore
     public Dictionary<ushort, ItemTemplate> Items { get; } = new();
     public Dictionary<byte, MagicTemplate> Magics { get; } = new();
 
-    // Phase 5: stat / HP-MP charts.
+    // Stat / HP-MP charts.
     public Dictionary<byte, FormulaRow> Formulas { get; } = new(); // C++ m_mapTFORMULA, keyed by FTYPE_*
     public Dictionary<byte, StatSeed> Classes { get; } = new();    // C++ m_mapTCLASS, keyed by class id
     public Dictionary<byte, StatSeed> Races { get; } = new();      // C++ m_mapTRACE, keyed by race id
 
-    // Phase 10: the per-level repair-cost coefficient (C++ CTBLLevelChart.m_dwRepairCost, keyed by bLevel;
+    // The per-level repair-cost coefficient (C++ CTBLLevelChart.m_dwRepairCost, keyed by bLevel;
     // looked up via FindTLevel(GetPowerLevel())). A missing level ⇒ GetRepairCost returns 0 (free repair).
     public Dictionary<int, uint> RepairCostByLevel { get; } = new();
 
-    // Phase 17: the exp curve + per-level skill-point grant (C++ CTBLLevelChart m_dwEXP / m_bSkillPoint,
+    // The exp curve + per-level skill-point grant (C++ CTBLLevelChart m_dwEXP / m_bSkillPoint,
     // keyed by bLevel). LevelExp[L] = the total exp needed to advance FROM level L to L+1 (m_pTLEVEL->m_dwEXP).
     public Dictionary<int, uint> LevelExp { get; } = new();
     public Dictionary<int, byte> LevelSkillPoint { get; } = new();
 
-    // Phase 23: the per-level base price (C++ CTBLLevelChart.m_dwMoney, keyed by bLevel). The item buy/sell
+    // The per-level base price (C++ CTBLLevelChart.m_dwMoney, keyed by bLevel). The item buy/sell
     // price is m_dwMoney[grade]·m_fPrice (grade = the item's attr grade or default level). A missing level ⇒
     // price 0 (DB-free / unknown grade).
     public Dictionary<int, uint> LevelMoney { get; } = new();
@@ -116,11 +116,26 @@ public sealed class TemplateStore
     /// a gate mirrors its switch(es)' open state.</summary>
     public List<GateDef> Gates { get; } = new();
 
-    // Phase 14: the skill chart (C++ m_mapTSKILL of CTSkillTemp), keyed by m_wID. Drives the CS_SKILLUSE
+    // The skill chart (C++ m_mapTSKILL of CTSkillTemp), keyed by m_wID. Drives the CS_SKILLUSE
     // caster cost + cooldown; a learned skill links to its template here (like items → ItemTemplate).
     public Dictionary<ushort, SkillTemplate> Skills { get; } = new();
 
-    // Phase 12: monster spawn charts.
+    // The monster AI scripts (C++ m_mapTMONAI of CTMonsterAI), keyed by bAIType. A monster
+    // template's AiType selects one; a missing type falls back to DefaultAiType, and a missing fallback means
+    // the monster has no scripted behaviour at all (every OnEvent is a silent no-op) — which is what the
+    // DB-free path gets, and why the engine must degrade cleanly on a null script.
+    public Dictionary<byte, AiScript> AiScripts { get; } = new();
+
+    /// <summary>C++ <c>DEFAULT_AI</c> — the script <c>CTMonster::OnEvent</c> falls back to when the monster's
+    /// own template has none (<c>m_pMON-&gt;m_pAI ? : FindTMonsterAI(DEFAULT_AI)</c>, TMonster.cpp:456).</summary>
+    public const byte DefaultAiType = 0;
+
+    /// <summary>The script driving a monster with this <c>bAIType</c>, falling back to
+    /// <see cref="DefaultAiType"/>, or null when neither is loaded.</summary>
+    public AiScript? AiScriptFor(byte aiType) =>
+        AiScripts.TryGetValue(aiType, out var s) ? s : AiScripts.GetValueOrDefault(DefaultAiType);
+
+    // Monster spawn charts.
     /// <summary>C++ <c>m_mapTMONSTER</c> chart — monster templates keyed by <c>m_wID</c>.</summary>
     public Dictionary<ushort, MonsterTemplate> MonsterTemplates { get; } = new();
     /// <summary>C++ <c>m_mapTMONATTR</c> — level-scaled vitals keyed by <c>MAKELONG(m_wID, m_bLevel)</c>.</summary>
@@ -128,22 +143,11 @@ public sealed class TemplateStore
     /// <summary>C++ <c>m_mapTMONSPAWN</c> — spawn points (each bundled with its monster-type table).</summary>
     public List<MonsterSpawnDef> MonsterSpawns { get; } = new();
 
-    // Phase 46: the auto-aggro (aggro-on-sight) gate, derived from the AI-script charts.
-    /// <summary>The set of monster <c>bAIType</c> values whose AI script binds <c>AC_SETHOST</c> under the
-    /// <c>AT_ENTER</c> trigger in <c>TAICHART</c> — i.e. the AI types that acquire a host on sight. In C++ this
-    /// is the presence of an <c>AC_SETHOST</c> command in <c>CTMonsterAI::m_mapVCOMMAND[AT_ENTER]</c>; the port
-    /// folds the AI state machine and gates <c>Monster.Aggressive</c> on this set. Empty when the AI charts are
-    /// absent (DB-free) ⇒ no monster auto-aggros, matching the pre-Phase-46 default.</summary>
-    public HashSet<byte> AggressiveAiTypes { get; } = new();
-
-    /// <summary>Whether a monster with this <c>bAIType</c> is aggressive (auto-aggro-on-sight).</summary>
-    public bool IsAggressiveAi(byte aiType) => AggressiveAiTypes.Contains(aiType);
-
     /// <summary>C++ <c>MAKELONG(wAttrId, bLevel)</c> — the monster-attr chart key.</summary>
     public static uint MonAttrKey(ushort attrId, byte level) => attrId | ((uint)level << 16);
     public MonAttrRow? MonAttr(ushort attrId, byte level) => MonAttrs.GetValueOrDefault(MonAttrKey(attrId, level));
 
-    // Phase 6: item-attribute (AP/DP) charts.
+    // Item-attribute (AP/DP) charts.
     public Dictionary<ushort, ItemAttr> ItemAttrs { get; } = new(); // C++ m_mapTItemAttr, keyed by wID
     /// <summary>Item-level → grade byte (C++ <c>m_itemgrade[level].m_bGrade</c>, ITEMLEVEL_COUNT = 50).</summary>
     public byte[] ItemGrades { get; } = new byte[50];

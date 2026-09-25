@@ -34,6 +34,10 @@ public sealed class MapWorker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        // Must run before anything reads Channels: the config binder appends array elements to the
+        // property's default, so the bound list can carry duplicates. See MapServerOptions.Normalize.
+        _opt.Normalize();
+
         _log.LogInformation("TMapSvr.Net starting (group {Group}, server {Server}, port {Port}).",
             _opt.GroupId, _opt.ServerId, _opt.Port);
 
@@ -69,6 +73,19 @@ public sealed class MapWorker : BackgroundService
                     "Loaded {Items} item templates, {Magics} magic templates, {Formulas} formulas, {Classes} classes, {Races} races.",
                     templates.Items.Count, templates.Magics.Count, templates.Formulas.Count,
                     templates.Classes.Count, templates.Races.Count);
+
+                // The AI-script summary gets its own line — whether TAICHART actually has rows is
+                // the difference between monsters running their real scripted behaviour and silently falling
+                // back to the built-in roam/chase sweep, and that is otherwise invisible at runtime.
+                if (templates.AiScripts.Count > 0)
+                    _log.LogInformation(
+                        "Loaded {Scripts} AI scripts ({Bindings} trigger bindings); {Aggressive} engage on sight (AT_ENTERLB → ChgHost/ChgMode).",
+                        templates.AiScripts.Count,
+                        templates.AiScripts.Values.Sum(s => s.BindingCount),
+                        templates.AiScripts.Values.Count(s => s.IsAggressive));
+                else
+                    _log.LogWarning(
+                        "No TAICHART rows loaded — monsters fall back to the built-in roam/chase sweep and none auto-aggro.");
             }
             catch (Exception ex)
             {

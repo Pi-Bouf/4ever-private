@@ -4,7 +4,7 @@ using TMap.Protocol;
 namespace TMap.Server.Map;
 
 /// <summary>
-/// Monster aggro / retargeting (Phase 44) — the map-service half of the C++ <c>m_mapAggro</c> hate table.
+/// Monster aggro / retargeting — the map-service half of the C++ <c>m_mapAggro</c> hate table.
 /// <see cref="Monster"/> owns the table and the pure arithmetic (<c>SetAggro</c>/<c>LeaveAggro</c> decide who to
 /// hate + whether to switch); this file applies the resulting retarget (the C++ <c>CTAICmdChgHost</c> action):
 /// set the monster's target/host, flip it into battle, seed the new target's minimal hate, and broadcast the
@@ -49,6 +49,16 @@ public sealed partial class MapService
     /// via <c>CS_MONHOST_ACK</c>.</summary>
     private void ApplyRetarget(Monster mon, Monster.AggroTarget dec)
     {
+        // A scripted monster does not get the folded retarget. The hate table only *decides*; what
+        // that decision means is the chart's business. Fire the C++ event
+        // (OnEvent(AT_DEFEND, 0, host, obj, type) — TMonster.cpp:224/236) and let the script's ChgHost /
+        // ChgMode commands carry it out.
+        if (mon.Ai is not null)
+        {
+            OnAiEvent(mon, AiTrigger.Defend, 0, dec.HostId, dec.ObjId, dec.ObjType);
+            return;
+        }
+
         if (mon.Mode != MtBattle) mon.EnterBattle(NowMs, RecoverInit);        // ChgMode MT_NORMAL → MT_BATTLE
         mon.HostId = dec.HostId;
         mon.TargetId = dec.ObjId;
@@ -63,6 +73,7 @@ public sealed partial class MapService
     /// view, is thereby cleared).</summary>
     private void NotifyHost(Monster mon)
     {
+        _log.LogDebug("[mon] HOST mon {Mon} -> char {Host} (notifying {Count} viewer(s)).", mon.Id, mon.HostId, _state.PlayersAround(mon).Count());
         foreach (var p in _state.PlayersAround(mon))
             SendCS_MONHOST_ACK(p, mon.Id, p.Char is { CharId: var cid } && cid == mon.HostId ? (byte)1 : (byte)0);
     }
@@ -94,7 +105,18 @@ public sealed partial class MapService
             }
             survivor = mon.LeaveAggro(s.ObjId, s.ObjType);   // non-viewable top-aggro → drop, try the next
         }
-        DropAggro(mon, nowMs);
+
+        // Nothing left to fight. The C++ LeaveAggro fires AT_LEAVELB here (TMonster.cpp:134) and lets the script
+        // decide: script 1 runs ChgMode (BATTLE -> GOHOME, target cleared) then Gohome, so the monster runs back
+        // to its anchor, still driven by its host client, until AT_ATHOME returns it to roaming. Hard-resetting
+        // it instead left it standing mid-field with no host, rejecting the moves its client kept sending.
+        if (mon.Ai is not null)
+        {
+            _log.LogDebug("[mon] LEAVE mon {Mon}: nothing left to fight, AT_LEAVELB (going home).", mon.Id);
+            OnAiEvent(mon, AiTrigger.LeaveLb, 0, mon.HostId, leaveId, leaveType);
+            return;
+        }
+        DropAggro(mon, nowMs);   // script-less monsters keep the built-in reset
     }
 
     /// <summary>C++ <c>CTAICmdSetHost::ExecAI</c> (TAICmdSetHost.cpp:27) — an idle <b>aggressive</b> monster
@@ -103,7 +125,7 @@ public sealed partial class MapService
     /// moved within the last <b>3000 ms</b>; a first player who was never host-eligible is lazily activated
     /// (C++ lines 57-64). On a pick the port <b>folds</b> the C++ wake→<c>ChgHost</c>→<c>ChgMode</c> chain
     /// (SetHost only wakes + assigns host + <c>SelectSkill</c>; the target/aggro/BATTLE transition come from the
-    /// scripted <c>AT_AICOMPLETE</c> successors) into the Phase-44 <see cref="ApplyRetarget"/>. Returns whether a
+    /// scripted <c>AT_AICOMPLETE</c> successors) into the <see cref="ApplyRetarget"/>. Returns whether a
     /// host was acquired (the monster is now in <c>MT_BATTLE</c>).
     ///
     /// <para><b>Deferred (documented):</b> the C++ trigger is event-driven (<c>AT_ENTER</c> on a player moving

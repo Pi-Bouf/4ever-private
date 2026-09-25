@@ -6,7 +6,7 @@ namespace TMap.Data;
 
 /// <summary>A character's persistent row from <c>TCHARTABLE</c> (the columns the map's <c>CTBLChar</c> load
 /// reads). <c>Hp</c>/<c>Mp</c> are the persisted <b>current</b> HP/MP (<c>dwHP</c>/<c>dwMP</c>) — max HP/MP
-/// are computed, not stored. The trailing block (<c>Exp</c>…<c>StatExp</c>) was added for Phase 25 so the
+/// are computed, not stored. The trailing block (<c>Exp</c>…<c>StatExp</c>) was added so the
 /// char save (<c>TSaveChar</c>, which rewrites all 28 value columns) round-trips them instead of zeroing the
 /// ones the map doesn't otherwise use.</summary>
 public readonly record struct CharLoadRow(
@@ -55,7 +55,7 @@ public readonly record struct InvenSaveData(byte InvenId, ushort TemplateId, lon
 /// <summary>One item to persist (C++ <c>TSaveItem</c> — the full 35-value set). <c>DlId</c> is the item's
 /// unique row id (preserved from load, or freshly generated for an in-session item); <c>StorageType</c> +
 /// <c>StorageId</c> + <c>ItemSlot</c> locate it — a bag item is <c>STORAGE_INVEN</c>/invenId/slot; a cabinet
-/// item (Phase 37) is <c>STORAGE_CABINET</c>/<c>dwStItemID</c>/cabinetId.</summary>
+/// item is <c>STORAGE_CABINET</c>/<c>dwStItemID</c>/cabinetId.</summary>
 public readonly record struct ItemSaveData(
     long DlId, byte StorageType, uint StorageId, byte ItemSlot, ushort TemplateId, byte Level, byte Count,
     byte GLevel, uint DuraMax, uint DuraCur, byte RefineCur, long EndTime, byte GradeEffect,
@@ -78,7 +78,7 @@ public readonly record struct HotkeyLoadRow(byte InvenKey, (byte Type, ushort Id
 public readonly record struct CabinetHeaderRow(byte CabinetId, bool Use);
 
 /// <summary>A saved quest's header from <c>TQUESTTABLE</c> (CTBLQuestTable): the quest id, the remaining timer
-/// tick, and the complete/trigger counts. The counterpart of the Phase-25 <c>TSaveQuest</c> write.</summary>
+/// tick, and the complete/trigger counts. The counterpart of the <c>TSaveQuest</c> write.</summary>
 public readonly record struct QuestLoadRow(uint QuestId, uint Tick, byte CompleteCount, byte TriggerCount);
 
 /// <summary>A saved quest term's running counter from <c>TQUESTTERMTABLE</c> (CTBLQuestTermTable).</summary>
@@ -89,7 +89,7 @@ public readonly record struct QuestTermLoadRow(uint QuestId, uint TermId, byte T
 /// DB-manager role and loads a character on its own <c>m_db</c> connection during the enter handshake
 /// (<c>OnDM_LOADCHAR_REQ</c>, from <c>CTBLChar</c>/<c>CTBLItem</c>/…). Here we do the same directly.
 ///
-/// This is a Phase-1 subset: it loads the character's persistent appearance and equipped gear. The full
+/// This is a partial load: it covers the character's persistent appearance and equipped gear. The full
 /// char blob (inventory containers, skills, quests, hotkeys, pets/recall-mons, cabinet, post, auction,
 /// PvP/duel, medals, companions, etc.) and every save proc are deferred — see PORT_STATUS.md.
 /// Every method degrades gracefully (throws a <see cref="SqlException"/> the caller catches) so the map
@@ -115,7 +115,7 @@ public sealed class GameDatabase
         await cmd.ExecuteScalarAsync(ct);
     }
 
-    // ---- Phase 4: item + magic template charts (loaded once at startup) ----
+    // ---- Item + magic template charts (loaded once at startup) ----
 
     // Subset of the 50-column TITEMCHART (CTBLItemChart) the client wire needs: the refine-max cap and the
     // 4 revision columns → m_fRevision[0..3] (RV_PHYSIC/RV_MAGIC/RV_PHYSICPROB/RV_MAGICPROB).
@@ -123,34 +123,36 @@ public sealed class GameDatabase
         @"SELECT wItemID, bRefineMax, fRevision, fMRevision, fAtRate, fMAtRate, bType, wAttrID, dwSpeedInc,
                  bLevel, dwClassID, dwSlotID, bPrmSlotID, bSubSlotID, bStack, bKind, wUseValue, dwDelay,
                  fPrice, bCanRepair, wDelayGroupID, bConsumable, bIsSell FROM TITEMCHART";
-    // Phase 10: the per-level repair-cost coefficient (CTBLLevelChart.m_dwRepairCost).
-    // Phase 17 adds dwEXP (the level-up threshold) + bSkillPoint (granted per level).
-    // Phase 23 adds dwMoney (the base price the item buy/sell math scales by m_fPrice).
+    // The per-level chart (CTBLLevelChart): the repair-cost coefficient (m_dwRepairCost), dwEXP (the
+    // level-up threshold) + bSkillPoint (granted per level), and dwMoney (the base price the item
+    // buy/sell math scales by m_fPrice).
     private const string LevelChartSql = @"SELECT bLevel, dwRepairCost, dwEXP, bSkillPoint, dwMoney FROM TLEVELCHART";
-    // Phase 23: the NPC registry + per-NPC shop stock (CTBLNpc → m_mapTNpc, CTBLNpcItemAll → m_mapItem).
+    // The NPC registry + per-NPC shop stock (CTBLNpc → m_mapTNpc, CTBLNpcItemAll → m_mapItem).
     private const string NpcChartSql =
         @"SELECT wID, bType, bCountryID, wLocalID, bCondition, bDiscountRate, bAddProb, wItemID, wMapID,
                  fPosX, fPosY, fPosZ FROM TNPCCHART";
     private const string NpcItemChartSql = @"SELECT wNpcID, dwItemID FROM TNPCITEMCHART ORDER BY wNpcID";
-    // Phase 32: the map switch/gate charts (C++ CTBLSwitchChart DBAccess.h:3104 / CTBLGateChart :3092). Column
+    // The map switch/gate charts (C++ CTBLSwitchChart DBAccess.h:3104 / CTBLGateChart :3092). Column
     // order is the value-exact contract. Gate columns are gateId, switchId, bType, mapId, pos (SELECT order).
     private const string SwitchChartSql =
         @"SELECT dwSwitchID, wMapID, wPosX, wPosY, wPosZ, bStart, bLockOnOpen, bLockOnClose, dwDuration FROM TSWITCHCHART";
     private const string GateChartSql =
         @"SELECT dwGateID, dwSwitchID, bType, wMapID, wPosX, wPosY, wPosZ FROM TGATECHART";
-    // Phase 12: monster spawn charts. The C++ CTBLMonSpawn SELECT filters by a TSVRCHART server/unit-id join
+    // Monster spawn charts. The C++ CTBLMonSpawn SELECT filters by a TSVRCHART server/unit-id join
     // (multi-machine topology); this single-server port loads all rows and buckets them by (channel, map).
     private const string MonsterChartSql =
-        @"SELECT wID, bLevel, wMonAttr, wExp, bMoneyProb, dwMinMoney, dwMaxMoney, bItemProb, bDropCount, bAIType FROM TMONSTERCHART";
-    // Phase 46: the monster-AI script charts (C++ CTBLAICommand → m_mapTCMDTEMP, CTBLAIChart → m_mapTMONAI). We
-    // derive only the aggro-on-sight gate: an AI type is "aggressive" iff, under the AT_ENTER trigger, it binds a
-    // command whose type is AC_SETHOST. TAICONCHART (per-command conditions) and the full trigger→command state
-    // machine are deferred — the port folds the AI loop and gates Monster.Aggressive on this set.
-    private const string AiCommandSql = @"SELECT dwCmdID, bCmdType FROM TAICMDCHART";
-    private const string AiChartSql = @"SELECT bAIType, bTriggerType, dwCmdID FROM TAICHART";
-    private const byte AtEnter = 7;    // AI_TRIGGER AT_ENTER (TMapType.h)
-    private const byte AcSetHost = 2;  // AI_COMMAND AC_SETHOST
-    // Phase 22: the per-monster item drop table (CTBLMonItemAll → m_vMONITEM). Bulk-loaded, bucketed by wMonID
+        @"SELECT wID, bLevel, wMonAttr, wExp, bMoneyProb, dwMinMoney, dwMaxMoney, bItemProb, bDropCount, bAIType, wSkill1, wSkill2, wSkill3, wSkill4, wChaseRange FROM TMONSTERCHART";
+    // The AI-script tables (C++ CTBLAICommand / CTBLAICondition / CTBLAIChart, DBAccess.h:365-414).
+    // Loaded in that order — commands first (they are the targets the chart rows reference), then each
+    // command's guards, then the trigger→command bindings per bAIType.
+    //
+    // The C++ runs one CTBLAICondition query PER command id (a WHERE dwCmdID = ? in a loop, TMapSvr.cpp:2320);
+    // we bulk-load the whole table once and bucket it by dwCmdID — same result, one round trip.
+    private const string AiCommandChartSql = @"SELECT dwCmdID, bCmdType FROM TAICMDCHART";
+    private const string AiConditionChartSql = @"SELECT dwCmdID, dwConditionID, bConditionType FROM TAICONCHART";
+    private const string AiChartSql =
+        @"SELECT dwTriggerID, dwCmdID, dwDelay, bTriggerType, bAIType, bLoop FROM TAICHART";
+    // The per-monster item drop table (CTBLMonItemAll → m_vMONITEM). Bulk-loaded, bucketed by wMonID
     // (like the skill-data rows). We read the fixed-item subset; the ranged / magic-option columns are deferred.
     private const string MonItemChartSql =
         @"SELECT wMonID, bChartType, wItemID, wWeight, bItemProb_N1, bItemProb_N2, bItemProb_N3, bItemProb_N4
@@ -158,7 +160,7 @@ public sealed class GameDatabase
     private const string MonAttrChartSql =
         @"SELECT wID, bLevel, dwMaxHP, dwMaxMP, wDP, wAP, wMinWAP, wMaxWAP, dwAtkSpeed, wMDP, wDL, wMDL, bCriticalPP, wAL, wWDP FROM TMONATTRCHART";
     private const string MonSpawnChartSql =
-        @"SELECT wID, wMapID, fPosX, fPosY, fPosZ, wDir, bCountry, bCount, bRange, bProb, dwRegion, dwDelay, bEvent FROM TMONSPAWNCHART";
+        @"SELECT wID, wMapID, fPosX, fPosY, fPosZ, wDir, bCountry, bCount, bRange, bProb, dwRegion, dwDelay, bEvent, bArea FROM TMONSPAWNCHART";
     private const string MapMonChartSql = @"SELECT wSpawnID, wMonID, bLeader, bEssential, bProb FROM TMAPMONCHART ORDER BY wSpawnID";
     private const string MagicChartSql =
         @"SELECT bMagic, bRvType, wMaxValue FROM TITEMMAGICCHART";
@@ -170,19 +172,19 @@ public sealed class GameDatabase
     private const string ItemAttrChartSql =
         @"SELECT wID, bKind, bGrade, wMinAP, wMaxAP, wDP, wMinMAP, wMaxMAP, wMDP, bBlockProb FROM TITEMATTRCHART";
     private const string ItemGradeChartSql = @"SELECT bLevel, bGrade FROM TITEMGRADECHART";
-    // Phase 14: the skill chart (CTBLSkillChart → CTSkillTemp). Of the 56-column C++ SELECT we read the
+    // The skill chart (CTBLSkillChart → CTSkillTemp). Of the 56-column C++ SELECT we read the
     // subset the CS_SKILLUSE caster spine uses. Note bLevel → m_bStartLevel (the C++ remaps it, TMapSvr.cpp:2630).
     private const string SkillChartSql =
         @"SELECT wID, bKind, dwUseMP, bUseMPType, dwUseHP, bUseHPType, bLevel, bMaxLevel, bNextLevel,
                  dwReuseDelay, nReuseDelayInc, dwLoopDelay, dwKindDelay, bSpeedApply, bPositive, wMapID,
                  dwDuration, dwDurationInc, bMaintainType, bPriority, bStatic, dwClassID FROM TSKILLCHART";
-    // Phase 15: the skill-effect rows (CTBLSkillData → CTSkillTemp::m_vData). C++ runs one query per skill;
+    // The skill-effect rows (CTBLSkillData → CTSkillTemp::m_vData). C++ runs one query per skill;
     // this bulk load buckets by wSkillID (natural table order per skill matches the per-skill fetch order).
     private const string SkillDataChartSql =
         @"SELECT wSkillID, bAction, bType, bAttr, bExec, bInc, wValue, wValueInc, bCalc FROM TSKILLDATA";
     private const byte FType1st = 34;
 
-    // Phase 29: the quest template graph (C++ CTMapSvrModule::LoadQuestTemp, the 4-table bulk load
+    // The quest template graph (C++ CTMapSvrModule::LoadQuestTemp, the 4-table bulk load
     // DBAccess.h:2288-2408). The ORDER BYs are load-bearing: TQUESTCHART's `bMain DESC` fixes the order children
     // of a parent register in the trigger index (so ExecChildren attempts the main branch first); conditions are
     // `bConditionType DESC`; terms are `dwID`. The rows are assembled by dwQuestID into QuestTemplate.
@@ -279,7 +281,7 @@ public sealed class GameDatabase
                 store.LevelMoney[level] = r.GetUIntSafe(4);
             }
 
-        // Phase 14: skill templates. Each is stamped with the global f1stRateX (= store.Rate1st, the
+        // Skill templates. Each is stamped with the global f1stRateX (= store.Rate1st, the
         // FTYPE_1ST growth base) exactly as the C++ loader does (pSkill->m_f1stRateX = f1stRateX).
         await using (var cmd = new SqlCommand(SkillChartSql, c))
         await using (var r = await cmd.ExecuteReaderAsync(ct))
@@ -308,7 +310,7 @@ public sealed class GameDatabase
                         r.GetByteSafe(4), r.GetByteSafe(5), r.GetUShortSafe(6), r.GetUShortSafe(7), r.GetByteSafe(8)));
             }
 
-        // Phase 12: monster templates, attrs, and spawn points (+ their monster-type tables).
+        // Monster templates, attrs, and spawn points (+ their monster-type tables).
         await using (var cmd = new SqlCommand(MonsterChartSql, c))
         await using (var r = await cmd.ExecuteReaderAsync(ct))
             while (await r.ReadAsync(ct))
@@ -318,7 +320,44 @@ public sealed class GameDatabase
                     Exp: r.GetUIntSafe(3), MoneyProb: r.GetByteSafe(4),
                     MinMoney: r.GetUIntSafe(5), MaxMoney: r.GetUIntSafe(6),
                     ItemProb: r.GetByteSafe(7), DropCount: r.GetByteSafe(8),
-                    AiType: r.GetByteSafe(9));
+                    AiType: r.GetByteSafe(9),
+                    Skill1: r.GetUShortSafe(10), Skill2: r.GetUShortSafe(11),
+                    Skill3: r.GetUShortSafe(12), Skill4: r.GetUShortSafe(13),
+                    ChaseRange: r.GetUShortSafe(14));
+            }
+
+        // The AI scripts. Command templates → their conditions → the per-bAIType trigger bindings.
+        var aiCommands = new Dictionary<uint, AiCommandTemplate>();
+        await using (var cmd = new SqlCommand(AiCommandChartSql, c))
+        await using (var r = await cmd.ExecuteReaderAsync(ct))
+            while (await r.ReadAsync(ct))
+            {
+                uint id = r.GetUIntSafe(0);
+                byte kind = r.GetByteSafe(1);
+                // An unknown opcode maps to the C++ `default: new CTAICommand()` — a no-op body that still
+                // fires AT_AICOMPLETE, so the chain continues. Kept as an out-of-range enum value on purpose.
+                aiCommands[id] = new AiCommandTemplate(id, (AiCommandKind)kind);
+            }
+
+        await using (var cmd = new SqlCommand(AiConditionChartSql, c))
+        await using (var r = await cmd.ExecuteReaderAsync(ct))
+            while (await r.ReadAsync(ct))
+                if (aiCommands.TryGetValue(r.GetUIntSafe(0), out var owner))
+                    owner.Conditions.Add(new AiCondition((AiConditionKind)r.GetByteSafe(2), r.GetUIntSafe(1)));
+
+        await using (var cmd = new SqlCommand(AiChartSql, c))
+        await using (var r = await cmd.ExecuteReaderAsync(ct))
+            while (await r.ReadAsync(ct))
+            {
+                uint triggerId = r.GetUIntSafe(0), cmdId = r.GetUIntSafe(1), delay = r.GetUIntSafe(2);
+                byte triggerType = r.GetByteSafe(3), aiType = r.GetByteSafe(4);
+                // A chart row pointing at a missing command id is dropped: the C++ CreateCMD(NULL) would
+                // build a command with a null m_pCOMMAND and crash in CanRun.
+                if (!aiCommands.TryGetValue(cmdId, out var template)) continue;
+
+                if (!store.AiScripts.TryGetValue(aiType, out var script))
+                    store.AiScripts[aiType] = script = new AiScript(aiType);
+                script.Bind(triggerType, triggerId, new AiBinding(template, delay, r.GetByteSafe(5) != 0));
             }
 
         await using (var cmd = new SqlCommand(MonAttrChartSql, c))
@@ -338,7 +377,7 @@ public sealed class GameDatabase
                         MagicDefLevel: r.GetUShortSafe(11), CritProb: r.GetByteSafe(12), AttackLevel: r.GetUShortSafe(13));
             }
 
-        // Phase 22: the per-monster item drop rows, bucketed onto their monster template by wMonID.
+        // The per-monster item drop rows, bucketed onto their monster template by wMonID.
         await using (var cmd = new SqlCommand(MonItemChartSql, c))
         await using (var r = await cmd.ExecuteReaderAsync(ct))
             while (await r.ReadAsync(ct))
@@ -358,7 +397,7 @@ public sealed class GameDatabase
                 spawnRows[id] = new MonSpawnRow(id, r.GetUShortSafe(1),
                     r.GetFloatSafe(2), r.GetFloatSafe(3), r.GetFloatSafe(4), r.GetUShortSafe(5), r.GetByteSafe(6),
                     r.GetByteSafe(7), r.GetByteSafe(8), r.GetByteSafe(9), r.GetUIntSafe(10), r.GetUIntSafe(11),
-                    r.GetByteSafe(12));
+                    r.GetByteSafe(12), Area: r.GetByteSafe(13));
             }
 
         var typesBySpawn = new Dictionary<ushort, List<MapMonRow>>();
@@ -375,24 +414,7 @@ public sealed class GameDatabase
             store.MonsterSpawns.Add(new MonsterSpawnDef(spawn,
                 typesBySpawn.TryGetValue(id, out var types) ? types : new List<MapMonRow>()));
 
-        // Phase 46: derive the aggressive AI-type set. First the command table (cmdId → AC_* type), then scan
-        // TAICHART for AT_ENTER rows whose command is AC_SETHOST — those bAITypes auto-aggro on sight.
-        var aiCmdType = new Dictionary<uint, byte>();   // C++ m_mapTCMDTEMP: dwCmdID → bCmdType
-        await using (var cmd = new SqlCommand(AiCommandSql, c))
-        await using (var r = await cmd.ExecuteReaderAsync(ct))
-            while (await r.ReadAsync(ct))
-                aiCmdType[r.GetUIntSafe(0)] = r.GetByteSafe(1);
-
-        await using (var cmd = new SqlCommand(AiChartSql, c))
-        await using (var r = await cmd.ExecuteReaderAsync(ct))
-            while (await r.ReadAsync(ct))
-            {
-                byte aiType = r.GetByteSafe(0), trigger = r.GetByteSafe(1);
-                if (trigger == AtEnter && aiCmdType.TryGetValue(r.GetUIntSafe(2), out var cmdType) && cmdType == AcSetHost)
-                    store.AggressiveAiTypes.Add(aiType);
-            }
-
-        // Phase 23: the NPC registry (TNPCCHART) + the per-NPC shop stock (TNPCITEMCHART, bulk-loaded like the
+        // The NPC registry (TNPCCHART) + the per-NPC shop stock (TNPCITEMCHART, bulk-loaded like the
         // C++ CTBLNpcItemAll and bucketed by wNpcID). dwItemID is a DWORD but item ids are WORD (C++ (WORD)cast).
         await using (var cmd = new SqlCommand(NpcChartSql, c))
         await using (var r = await cmd.ExecuteReaderAsync(ct))
@@ -412,7 +434,7 @@ public sealed class GameDatabase
                 if (store.Npcs.TryGetValue(npcId, out var npc)) npc.ItemIds.Add((ushort)r.GetUIntSafe(1));
             }
 
-        // Phase 32: map switches + their gates (read-only definitions; runtime state is per-map-instance, rebuilt
+        // Map switches + their gates (read-only definitions; runtime state is per-map-instance, rebuilt
         // from these at bring-up and never persisted, matching the C++ CTMap load).
         await using (var cmd = new SqlCommand(SwitchChartSql, c))
         await using (var r = await cmd.ExecuteReaderAsync(ct))
@@ -427,7 +449,7 @@ public sealed class GameDatabase
                 store.Gates.Add(new GateDef(r.GetUIntSafe(0), r.GetUIntSafe(1), r.GetByteSafe(2),
                     r.GetUShortSafe(3), r.GetUShortSafe(4), r.GetUShortSafe(5), r.GetUShortSafe(6)));
 
-        // Phase 29: the quest template graph. Build every QuestTemplate from TQUESTCHART (inserted in the
+        // The quest template graph. Build every QuestTemplate from TQUESTCHART (inserted in the
         // bMain-DESC query order — the dict's insertion order is what InitQuests indexes, matching the C++
         // trigger-vector order), then attach conditions / rewards / terms by dwQuestID.
         await using (var cmd = new SqlCommand(QuestChartSql, c))
@@ -465,7 +487,7 @@ public sealed class GameDatabase
         return store;
     }
 
-    // The TCHARTABLE columns the map's CTBLChar (DBAccess.h) reads. The first 20 are the Phase-1 subset; the
+    // The TCHARTABLE columns the map's CTBLChar (DBAccess.h) reads. The first 20 are the load subset; the
     // trailing block is the rest of the TSaveChar value set (loaded so the save round-trips, not zeroes, them).
     private const string CharSql = @"
 SELECT szNAME, bStartAct, bClass, bRace, bCountry, bSex, bHair, bFace, bBody, bPants, bHand, bFoot,
@@ -492,7 +514,7 @@ FROM TCHARTABLE WHERE dwCharID = @dwCharID AND bDelete = 0";
             r.GetByteSafe(30), r.GetUIntSafe(31));
     }
 
-    // ================= Phase 25: character + quest SAVE (proc calls; bodies live in the .bak baseline) =================
+    // ================= Character + quest SAVE (proc calls; bodies live in the .bak baseline) =================
 
     /// <summary>C++ <c>TSaveChar</c> (CSPSaveChar) — the single-row char UPDATE by <c>dwCharID</c>. Params are
     /// bound positionally in the exact <c>DBAccess.h</c> order (28 value columns; the two pc-bang columns are 0
@@ -732,7 +754,7 @@ WHERE dwOwnerID = @dwOwnerID AND bOwnerType = @bOwnerType AND bStorageType = @bS
         return list;
     }
 
-    // ================= Phase-2: full inventory / gear / skills / hotkeys load =================
+    // ================= Full inventory / gear / skills / hotkeys load =================
 
     private static long ToTime64(SqlDataReader r, int i)
     {
@@ -842,7 +864,7 @@ FROM TSKILLMAINTAINTABLE WHERE dwCharID = @dwCharID";
 
     /// <summary>C++ <c>CTBLQuestTable</c> + <c>CTBLQuestTermTable</c> (DBAccess.h:2410-2468) — the character's
     /// saved quest progress (headers + running term counters), keyed by <c>dwCharID</c>. The read-back
-    /// counterpart of the Phase-25 <c>TSaveQuest</c>/<c>TSaveQuestTerm</c> write.</summary>
+    /// counterpart of the <c>TSaveQuest</c>/<c>TSaveQuestTerm</c> write.</summary>
     public async Task<(List<QuestLoadRow> quests, List<QuestTermLoadRow> terms)> LoadQuestsAsync(
         uint charId, CancellationToken ct = default)
     {
@@ -900,7 +922,7 @@ FROM TSKILLMAINTAINTABLE WHERE dwCharID = @dwCharID";
 
     /// <summary>C++ <c>CTBLCabinetTable</c> (DBAccess.h:2845) — the character's cabinet open-state headers
     /// (which cabinets exist + their <c>bUse</c> flag). The cabinet <b>items</b> ride in the normal item load
-    /// (<see cref="LoadItemsAsync"/>, <c>bStorageType=STORAGE_CABINET</c>). Phase 37.</summary>
+    /// (<see cref="LoadItemsAsync"/>, <c>bStorageType=STORAGE_CABINET</c>).</summary>
     public async Task<List<CabinetHeaderRow>> LoadCabinetsAsync(uint charId, CancellationToken ct = default)
     {
         await using var c = await OpenAsync(ct);

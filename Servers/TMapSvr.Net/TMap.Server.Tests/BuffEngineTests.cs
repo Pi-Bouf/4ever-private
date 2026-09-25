@@ -277,9 +277,9 @@ public class BuffEngineTests
     [Fact]
     public async Task PlayerDeath_DropsNonStaticBuffs_KeepsStatic()
     {
-        var h = new MapTestHarness(StoreWith(
+        var h = new MapTestHarness(MapTestHarness.WithMonsterMelee(StoreWith(
             Buff(900, MtypeStr, 5, staticFlag: 0),   // transient
-            Buff(901, MtypeStr, 5, staticFlag: 1))); // permanent/static
+            Buff(901, MtypeStr, 5, staticFlag: 1)))); // permanent/static
         var ch = new Character { CharId = 1, Name = "Victim", MaxHp = 100, Hp = 20, MaxMp = 50, Mp = 50 };
         ch.Invens.Add(new Inven { InvenId = 0xFF });
         var (s, _) = await h.EnterAsync(1, 1, 1, preSeeded: ch, x: 100, z: 100);

@@ -12,7 +12,7 @@ namespace TMap.Server.Map;
 /// (<c>CS_MONMONEYTAKE_REQ</c>) or it expires.
 ///
 /// <para><b>Slice (documented — PORT_STATUS.md):</b> solo owner (<c>OWNER_PRIVATE</c>) for public loot; the
-/// per-item owner-lock (<c>m_dwOwnerID</c>) is honored for quest <c>DropItem</c> drops (Phase 33). Deferred:
+/// per-item owner-lock (<c>m_dwOwnerID</c>) is honored for quest <c>DropItem</c> drops. Deferred:
 /// the loot magic/rare option generation, party exp+money split &amp; loot modes (lottery/chief/order routing),
 /// cross-map (<c>MW_*</c>) relay for remote party members, and the vital/soul/premium/exp-buff/pet-collection
 /// bonuses (all → 0, reducing the formulas to their base cases). EU build ⇒ the non-Korea monster exp-rate
@@ -27,14 +27,30 @@ public sealed partial class MapService
 
     /// <summary>C++ <c>CTMonster::OnDie</c> spine: award exp to the keeper, roll the money drop, broadcast
     /// <c>CS_DIE_ACK</c>, then either keep the corpse (if it holds loot) or despawn + re-arm the spawn slot
-    /// immediately (Phase-13 behavior for a loot-less kill).</summary>
+    /// immediately (the behavior for a loot-less kill).</summary>
     private void OnMonsterDeath(Monster mon)
     {
         long nowMs = _tickSeconds * 1000L;
         AwardKill(mon);   // exp (solo or party split) + the per-recipient hunt-quest advance
         RollLoot(mon);
         foreach (var p in _state.PlayersAround(mon)) SendCS_DIE_ACK(p, mon.Id, Monster.OtMon);
-        ReleaseMaintainMonster(mon, notify: false);   // C++ OnDie → ReleaseMaintain: drop the monster's debuffs (Phase 31)
+        ReleaseMaintainMonster(mon, notify: false);   // C++ OnDie → ReleaseMaintain: drop the monster's debuffs
+
+        // OS_DEAD is the state the corpse-side AI commands gate on (Leave / Lottery), and the epoch
+        // bump discards anything still queued against the living monster (chase, attack, roam).
+        mon.Status = OsDead;
+        mon.HostKey++;
+
+        if (mon.Ai is not null)
+        {
+            // C++ CTMonster::OnDie (TMonster.cpp:899) ends on OnEvent(AT_DEAD, 0, dwAttackID, 0, 0); the
+            // script owns the corpse from here (typically AT_DEAD → AC_LEAVE after a delay → AT_DELETE →
+            // AC_REGEN). CorpseExpireMs stays set as a backstop in case the chart never removes it.
+            mon.Dead = true;
+            mon.CorpseExpireMs = nowMs + CorpseLifeMs;
+            OnAiEvent(mon, AiTrigger.Dead, 0, mon.KeeperId);
+            return;
+        }
 
         if (mon.HasLoot)                           // money and/or items rolled onto the corpse
         {
@@ -186,7 +202,7 @@ public sealed partial class MapService
     /// <summary>C++ <c>CTMonster::AddItem(CTItem*)</c> (TMonster.cpp:1057) — append a fully-built item to the
     /// corpse's <c>INVEN_DEFAULT</c>. Unlike the weighted <see cref="RollLoot"/>, this is <b>not</b> gated on
     /// <c>MaxWeight</c>, so a quest <c>DropItem</c> lands even on a monster with no normal drop table. The item
-    /// carries <paramref name="ownerId"/> (owner-locked to the quest holder). Phase 33.</summary>
+    /// carries <paramref name="ownerId"/> (owner-locked to the quest holder).</summary>
     private void AddCorpseItem(Monster mon, ushort itemId, byte count, uint ownerId, ItemTemplate? tpl)
     {
         byte blank = mon.CorpseInven.GetBlankPos();

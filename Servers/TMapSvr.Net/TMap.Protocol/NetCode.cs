@@ -64,11 +64,33 @@ public static class Msg
     public const ushort CS_REVIVAL_ACK = CS_MAP + 0x0027;  // dwCharID + revival position (broadcast)
     public const ushort CS_SKILLBUY_REQ = CS_MAP + 0x0032; // learn/level-up a skill from an NPC — REQ handler deferred (SP/price/teach-list unported)
     public const ushort CS_SKILLBUY_ACK = CS_MAP + 0x0033; // a skill was learned/leveled: bRet,wSkillID,bLevel,Tick,gold,silver,copper,skillPoint,kind[4]
+    // Every ordinary player attack in this build. Despite the _ACK suffix it is CLIENT -> SERVER: a late
+    // addition (near the end of the table) that moves hit resolution server-side. The client routes a finished
+    // player skill here instead of CS_DEFEND_REQ (TClientGame.cpp:14381); the server derives the attack power
+    // and the hit roll itself and applies Defend to each listed target.
+    public const ushort CS_FINISHSKILL_ACK = CS_MAP + 0x0377; // dwAttackID,dwID,bType,fPos,wSkillID,IsLinked(4),IsFake(4),wPartyID,bCount x{dwID,bType}
+
+    // Client-authoritative monster movement. In this engine the server does NOT walk a hosted monster: the
+    // AI script's Follow/Roam only announces INTENT to the host client (CS_MONACTION_ACK), and that client
+    // then drives the monster and reports each step back here. The server validates (the sender must be the
+    // monster's host), applies the position, runs the leash / go-home / roam-range checks, and relays the
+    // batch to the OTHER nearby players - the host is excluded, it already knows where it put them.
+    // Without this the monster is frozen server-side and can never reach the player, so combat never starts.
+    public const ushort CS_MONMOVE_REQ = CS_MAP + 0x0014;  // wMonCount x {dwMonID,bObjType,bChannel,wMapID,fPos,wPitch,wDIR,bMouseDIR,bKeyDIR,bAction}
+    public const ushort CS_MONMOVE_ACK = CS_MAP + 0x0015;  // wMonCount x {dwMonID,bType,fPos,wPitch,wDIR,bMouseDIR,bKeyDIR,bAction}
+
+    // The action/animation gate in front of the whole attack+cast sequence (CSHandler.cpp:1233). The client
+    // sends this when a swing or cast STARTS and waits for the ACK before it plays the animation and goes on
+    // to CS_SKILLUSE/CS_DEFEND. The ACK is broadcast to the 3x3 block INCLUDING the actor (unlike CS_MOVE,
+    // which excludes self) — without its own copy the caster never animates and the attack never proceeds.
+    public const ushort CS_ACTION_REQ = CS_MAP + 0x002E;   // dwObjID,bObjType,bActionID,dwActID,dwAniID,bChannel,wMapID,wSkillID
+    public const ushort CS_ACTION_ACK = CS_MAP + 0x002F;   // bResult,dwObjID,bObjType,bActionID,dwActID,dwAniID,wSkillID
+
     public const ushort CS_SKILLUSE_REQ = CS_MAP + 0x0034; // announce a skill/attack swing (caster cost + broadcast)
     public const ushort CS_SKILLUSE_ACK = CS_MAP + 0x0035; // the caster's attack-power payload (broadcast to near players)
     public const ushort CS_SKILLEND_REQ = CS_MAP + 0x0036; // client ends/cancels a maintained buff
     public const ushort CS_SKILLEND_ACK = CS_MAP + 0x0037; // a maintained buff ended (dwObjID + bObjType + wSkillID)
-    // Phase 32: map switch/gate (CSProtocol.h:1854-1871). Gate is server-authored (no client REQ). Note the
+    // Map switch/gate (CSProtocol.h:1854-1871). Gate is server-authored (no client REQ). Note the
     // CS_SWITCHCHANGE_ACK body is bResult,switchId,opened — the header comment (switchId,opened) is stale.
     public const ushort CS_GATEADD_ACK = CS_MAP + 0x00EA;      // a gate entered view (dwGateID + bOpened)
     public const ushort CS_GATEDEL_ACK = CS_MAP + 0x00EB;      // a gate left view (dwGateID)
@@ -87,6 +109,14 @@ public static class Msg
     public const ushort CS_GETITEM_ACK = CS_MAP + 0x0144;      // an item the player received (WrapPacketClient)
     public const ushort CS_MONACTION_ACK = CS_MAP + 0x0013;    // monster AI move/action (dest + action verb + target)
     public const ushort CS_MONATTACK_ACK = CS_MAP + 0x0031;    // monster announces an attack swing (attacker/target/skill)
+    // The client-reported aggro bounds. The CLIENT decides when a player crosses a monster's
+    // "look bound" / "attack bound" and tells the server, which fires the matching AI trigger (C++
+    // OnCS_ENTERLB_REQ etc., CSHandler.cpp:1100-1218). All four share one layout:
+    // dwCharID, dwTargetID, bTargetType, dwMonID, bChannel, wMapID.
+    public const ushort CS_ENTERLB_REQ = CS_MAP + 0x0018;      // entered a monster's look bound   → AT_ENTERLB
+    public const ushort CS_LEAVELB_REQ = CS_MAP + 0x0019;      // left it                          → AT_LEAVELB
+    public const ushort CS_ENTERAB_REQ = CS_MAP + 0x001A;      // entered its attack bound         → AT_ENTERAB
+    public const ushort CS_LEAVEAB_REQ = CS_MAP + 0x001B;      // left it                          → AT_LEAVEAB
     public const ushort CS_ITEMBUY_REQ = CS_MAP + 0x0084;      // buy an item from an NPC shop (wNpcID/dwQuestID/wItemID/bCount/bNpcInven/bNpcItem)
     public const ushort CS_ITEMBUY_ACK = CS_MAP + 0x0085;      // BYTE result (ITEMBUY_*), wItemID, then the three money tiers
     public const ushort CS_ITEMSELL_REQ = CS_MAP + 0x0086;     // sell an inventory item to an NPC (bInven/bPos/bCount/bNpcInven/bNpcItem)
@@ -107,7 +137,7 @@ public static class Msg
     public const ushort CS_QUESTLIST_POSSIBLE_ACK = CS_MAP + 0x005A; // per-NPC runnable-quest list
     public const ushort CS_CHAT_REQ = CS_MAP + 0x0074;
     public const ushort CS_CHAT_ACK = CS_MAP + 0x0075;
-    // Phase 37: the player cabinet (item warehouse). Put-in/take-out have NO dedicated ack — they refresh via
+    // The player cabinet (item warehouse). Put-in/take-out have NO dedicated ack — they refresh via
     // CS_CABINETITEMLIST_ACK + the usual bag acks (ADD/DEL/UPDATEITEM) + CS_MONEY_ACK.
     public const ushort CS_CABINETPUTIN_REQ = CS_MAP + 0x0076;   // bCabinetID,bInven,bItemID,bCount,bNpcInvenID,bNpcItemID
     public const ushort CS_CABINETTAKEOUT_REQ = CS_MAP + 0x0078;  // bCabinetID,dwStItemID,bCount,bInvenID,bItemID,bNpcInvenID,bNpcItemID
@@ -117,10 +147,10 @@ public static class Msg
     public const ushort CS_CABINETITEMLIST_ACK = CS_MAP + 0x007D; // bResult [, bCabinetID, DWORD count, { dwStItemID, item-wrap(addItemId=0) }]
     public const ushort CS_CABINETOPEN_REQ = CS_MAP + 0x007E;    // bCabinetID
     public const ushort CS_CABINETOPEN_ACK = CS_MAP + 0x007F;    // bResult, bCabinetID
-    // Phase 38: party. Membership management is world-authoritative (relays, deferred); this id is the
+    // Party. Membership management is world-authoritative (relays, deferred); this id is the
     // map-local party-loot notification broadcast.
     public const ushort CS_PARTYITEMTAKE_ACK = CS_MAP + 0x0142;  // dwCharID + item block (a party member looted)
-    // Phase 39: player-to-player deal (trade). Same-map, in-memory two-party state machine.
+    // Player-to-player deal (trade). Same-map, in-memory two-party state machine.
     public const ushort CS_DEALITEMASK_REQ = CS_MAP + 0x010C;    // strTarget (invite)
     public const ushort CS_DEALITEMASK_ACK = CS_MAP + 0x010D;    // strInviter (shown to the target)
     public const ushort CS_DEALITEMRLY_REQ = CS_MAP + 0x010E;    // bReply, strInviter (accept/decline)
@@ -129,7 +159,7 @@ public static class Msg
     public const ushort CS_DEALITEMADD_ACK = CS_MAP + 0x0111;    // gold,silver,cooper, count, {item block} (to partner)
     public const ushort CS_DEALITEM_REQ = CS_MAP + 0x0112;       // bOkey (confirm=1 / cancel=0)
     public const ushort CS_DEALITEMEND_ACK = CS_MAP + 0x0113;    // bResult (DEALITEM_RESULT), strTarget
-    // Phase 40: personal store (player vendor). Same-map, in-memory; offered items stay in the seller's bag.
+    // Personal store (player vendor). Same-map, in-memory; offered items stay in the seller's bag.
     public const ushort CS_STOREOPEN_REQ = CS_MAP + 0x0119;      // strName, count, {gold,silver,cooper,credits,inven,itemId,count}
     public const ushort CS_STOREOPEN_ACK = CS_MAP + 0x011A;      // bResult, dwCharID, strName (broadcast to neighbors)
     public const ushort CS_STORECLOSE_REQ = CS_MAP + 0x011B;
@@ -351,7 +381,7 @@ public enum ItemSellResult : byte
 }
 
 /// <summary>enum QUEST_TYPE (NetCode.h:1831) — <c>QUESTTEMP.m_bType</c>, the subtype dispatched by
-/// <c>CreateQuest</c>. Phase 24 implements the foundational four (NpcTalk offer, Mission begin, Complete
+/// <c>CreateQuest</c>. The port implements the foundational four (NpcTalk offer, Mission begin, Complete
 /// turn-in, GiveItem) + DefTalk (no-op); the other 15 are deferred (see PORT_STATUS.md).</summary>
 public enum QuestType : byte
 {

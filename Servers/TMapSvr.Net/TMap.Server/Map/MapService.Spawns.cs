@@ -10,7 +10,7 @@ namespace TMap.Server.Map;
 /// <c>Count</c> monster slots (one per channel); on each 1-second tick an empty, due slot rolls the spawn
 /// probability and — on success — picks a monster type (weighted by prob), resolves its template + level-attr,
 /// scatters a position within the spawn radius, sets HP/MP to max, and makes it visible via
-/// <see cref="SpawnMonster"/> (Phase 11).
+/// <see cref="SpawnMonster"/>.
 ///
 /// <para>Deferred (documented — PORT_STATUS.md): the <c>TSVRCHART</c> multi-machine server/unit topology
 /// filter on the spawn load (this single-server port loads all rows); the leader-cluster and group-order
@@ -162,22 +162,32 @@ public sealed partial class MapService
             MaxHp = attr.MaxHp, Hp = attr.MaxHp,
             MaxMp = attr.MaxMp, Mp = attr.MaxMp,
             DefendPower = attr.DefendPower,
-            AtkMin = attr.AtkMin, AtkMax = attr.AtkMax, AtkSpeed = attr.AtkSpeed, // Phase 20
-            MagicDefPower = attr.MagicDefPower, DefendLevel = attr.DefendLevel,    // Phase 28 combat quality
+            AtkMin = attr.AtkMin, AtkMax = attr.AtkMax, AtkSpeed = attr.AtkSpeed,
+            MagicDefPower = attr.MagicDefPower, DefendLevel = attr.DefendLevel,    // combat quality
             MagicDefLevel = attr.MagicDefLevel, CritProb = attr.CritProb, AttackLevel = attr.AttackLevel,
             Exp = tpl.Exp, MoneyProb = tpl.MoneyProb, MinMoney = tpl.MinMoney, MaxMoney = tpl.MaxMoney,
-            ItemProb = tpl.ItemProb, DropCount = tpl.DropCount,        // Phase 22 item loot
+            ItemProb = tpl.ItemProb, DropCount = tpl.DropCount,        // item loot
             MaxWeight = tpl.MaxWeight, DropRows = tpl.DropRows,
             PosX = x, PosY = s.PosY, PosZ = z,
-            StartX = x, StartY = s.PosY, StartZ = z,   // roam anchor (Phase 18)
-            Area = s.Range, RoamNextMs = nowMs + RoamDelayMs,
+            StartX = x, StartY = s.PosY, StartZ = z,   // roam anchor
+            Area = s.Area, ChaseRange = tpl.ChaseRange, RoamNextMs = nowMs + RoamDelayMs,
             Dir = s.Dir, Mode = 0,               // MT_NORMAL
             Country = s.Country, Region = s.Region,
             Channel = sp.Channel, MapId = s.MapId,
-            Aggressive = _templates.IsAggressiveAi(tpl.AiType),   // Phase 46: TAICHART AT_ENTER→AC_SETHOST gate
         };
+
+        // Resolve the AI script (C++ pMON->m_pAI = FindTMonsterAI(bAIType), with the DEFAULT_AI
+        // fallback) and derive auto-aggro from it — a monster is "aggressive" iff its script binds AC_SETHOST
+        // under AT_ENTER. With no chart loaded both stay null/false and the monster runs the legacy sweep.
+        m.Ai = _templates.AiScriptFor(tpl.AiType);
+        m.Aggressive = m.Ai?.IsAggressive ?? false;
+
         slot.Live = m;
         SpawnMonster(m);
+
+        // C++ CTMonster::Initialize (TMonster.cpp:468) — a freshly placed monster runs its AT_DELETE/0 entry,
+        // which is where a script arms its standing behaviour (the roam loop, the host scan).
+        OnAiEvent(m, AiTrigger.Delete);
 
         // C++ CTAICmdRegen link (TAICmdRegen.cpp:172): when the monster that a quest Regen tagged respawns,
         // force-remove the temporary dynamic spawn it created.

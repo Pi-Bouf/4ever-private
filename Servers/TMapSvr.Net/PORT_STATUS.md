@@ -3,8 +3,9 @@
 C#/.NET 10 port of the C++/ATL `TMapSvr` (the per-map/zone game server). Byte-exact wire/DB compat with
 this repo's client + SQL baselines, mirroring the sibling `TLoginSvr.Net` / `TWorldSvr.Net` ports (same
 `.slnx` layout, `Microsoft.Data.SqlClient`, Serilog worker host, single serialized batch task, DB-free
-test harness). **430 tests passing** (xUnit, DB-free) · listens on **:5816** for clients, connects out to
-the world on **:3816**. Phases 1–13 were **audited against the C++** — the wire layouts, DB reads, grid math,
+test harness). **456 tests passing** (xUnit, DB-free — 4 of them are `TMAP_TEST_GAME`-gated and assert
+nothing unless a live game DB is configured; they log the skip) · listens on **:5816** for clients,
+connects out to the world on **:3816**. Phases 1–13 were **audited against the C++** — the wire layouts, DB reads, grid math,
 the `OnMove` visibility diff, and the item/stat/combat formulas are byte/value-exact (see the audit notes under
 Phases 2, 3, 4, 5 and the consolidated "Audit (Phases 6–13)" note after Phase 13). **Phase 14** added
 `CS_SKILLUSE` — the attack-announce half (skill chart + caster MP/HP cost + reuse cooldown + power broadcast),
@@ -91,10 +92,12 @@ column, the `MT_GOHOME` walk-back, and call-for-help / low-HP flee (gated by unl
 monster picks the nearest recently-moved (`< 3000 ms`) host-eligible (`CanHost`) player in its 3×3 view and
 enters battle onto them, folding the C++ wake→`ChgHost`→`ChgMode` chain into the Phase-44 retarget. The
 "aggressive" gate (`Monster.Aggressive`) is sourced from the DB `TAICHART` AI-script table in C++ (not a
-monster-chart flag). **Phase 46** loads that table — deriving the aggressive AI-type set (a `bAIType` binding
-`AC_SETHOST` under the `AT_ENTER` trigger) and stamping `Aggressive` at spawn — so aggressive monsters now
-auto-aggro on sight in production; it still defaults off DB-free, and the hit-driven aggro of Phase 44 is
-unaffected either way.
+monster-chart flag); Phase 45 shipped it defaulting off because that table was unloaded. **Phase 46** loads
+`TAICHART`/`TAICMDCHART`/`TAICONCHART` and ports the whole event machine on top of them — the 14 triggers, the
+15 command opcodes with their state gates and `AN_*` guards, `AT_AICOMPLETE` chaining, the delayed-command
+scheduler with the `m_dwHostKEY` epoch (local, replacing the C++ world round trip), and the `bLoop` re-arm — so
+`Aggressive` is now **derived** per monster from the script's `AT_ENTERLB` engagement chain, and scripted monsters run their
+real chart behaviour instead of the built-in roam/chase sweep (which stays as the no-script fallback).
 **Phase 7** added the `CS_MOVEITEM` item-manipulation handler (move/swap/split/merge/
 drop + equip/unequip with live stat recompute + the `CS_EQUIP_ACK` appearance broadcast); **Phase 8** added
 `CS_ITEMUSE` for HP/MP potions (heal + clamp + consume + the `CS_HPMP_ACK` bar broadcast).
@@ -1615,8 +1618,8 @@ Ports the C++ `CTAICmdSetHost` scan (TAICmdSetHost.cpp:27) so an idle **aggressi
 - [x] **`Character.CanHost` + `LastMoveMs`** (C++ `m_bCanHost` / `m_dwMoveTick`) — stamped in `OnCS_MOVE_REQ`
   (every move sets `LastMoveMs = NowMs` and `CanHost = true`, C++ CSHandler.cpp:517/555).
 - [x] **`Monster.Aggressive`** — the auto-aggro gate. In C++ this is **not a monster-chart field**: a monster
-  is aggressive iff its `bAIType` binds `AC_SETHOST` under `AT_ENTER` in the DB `TAICHART` table. **Loaded in
-  Phase 46** — the flag is stamped at spawn from the chart; DB-free it still defaults `false`.
+  is aggressive iff its `bAIType` binds `AC_SETHOST` under `AT_ENTER` in the DB `TAICHART` table. That table
+  isn't loaded, so this **defaults `false`** (no production regression; Phase-44 hit-aggro is unaffected).
 - [x] **`TryAcquireHost`** (`MapService.Aggro.cs`) value-exact vs `SetHost::ExecAI`: gather the 3×3-view players,
   **seed** the first `CanHost` one (no recency — the C++ quirk, line 40), prefer the **nearest by Manhattan**
   that moved within **3000 ms**, and **lazily activate** a never-eligible first player (lines 57-64). On a pick
@@ -1628,39 +1631,120 @@ Ports the C++ `CTAICmdSetHost` scan (TAICmdSetHost.cpp:27) so an idle **aggressi
   passive never auto-aggros, nearest-player pick, the lazy-activation fallback, and the end-to-end MOVE →
   eligibility → acquire.
 
-> **Deferred (documented):** ~~the **`TAICHART`** AI-script table~~ — **the aggressive-gate half is done in
-> Phase 46** (the `AT_ENTER`→`AC_SETHOST` binding per `bAIType`); the rest of the per-`bAIType` trigger→command
-> bindings + the exact escalation ordering stay deferred — the port folds the
-> state machine and gates on the `Aggressive` flag instead; the **event-driven `AT_ENTER` trigger** (the port
-> drives acquisition from the per-tick `RunMonsterAI` sweep, the 3000 ms window preserving the recency
-> semantics); `CanHost`'s **ghost branch** (a dead player within `CELL_SIZE/2` — replaced by the `Hp > 0`
-> filter, the port not modelling ghost); the monster `OS_*` status enum (`OS_WAKEUP`/`OS_DEAD` folded into
-> `Mode`/`Dead`); `SelectSkill` (monster skill choice — monsters basic-attack only) and `ChkHost` (host
-> re-validation, which the Phase-44 `Disengage` already covers functionally).
+> **Deferred at the time — all but two closed by Phase 46:** the **`TAICHART`** AI-script table, the
+> event-driven **`AT_ENTER`** trigger, the monster **`OS_*`** status enum and **`ChkHost`** are now ported.
+> Still open: `CanHost`'s **ghost branch** (a dead player within `CELL_SIZE/2` — replaced by the `Hp > 0`
+> filter, the port not modelling ghost) and `SelectSkill` (monster skill choice — monsters basic-attack only).
 
-## ✅ Done (Phase 46 — TAICHART: activating the aggro-on-sight gate)
+---
 
-Loads the monster-AI script charts so the **`Monster.Aggressive`** flag built (but left dark) in Phase 45 is
-now driven by real data — **aggressive monsters auto-aggro in production**, no longer only when hit.
+## ✅ Done (Phase 46 — the data-driven AI engine: `TAICHART`)
 
-- [x] **AI-script chart load** (`GameDatabase.LoadTemplatesAsync`, C++ `CTBLAICommand`→`m_mapTCMDTEMP` +
-  `CTBLAIChart`→`m_mapTMONAI`) — reads `TAICMDCHART` (`dwCmdID`→`bCmdType`) then `TAICHART`
-  (`bAIType, bTriggerType, dwCmdID`) and derives the **aggressive AI-type set**: a `bAIType` is aggressive iff,
-  under the **`AT_ENTER`** (7) trigger, it binds a command whose type is **`AC_SETHOST`** (2). Stored as
-  `TemplateStore.AggressiveAiTypes`.
-- [x] **`bAIType` on the monster chart** — `TMONSTERCHART` now also reads `bAIType` (C++ `m_bAIType`) onto
-  `MonsterTemplate.AiType`; it's the join key into the aggressive set (in C++ the flag lives on the AI script,
-  not the monster row).
-- [x] **Stamped at spawn** — `TryFillSlot` sets `Aggressive = _templates.IsAggressiveAi(tpl.AiType)`, so every
-  spawn path (SE_DEFAULT regen, quest SpawnMon, dynamic Regen) inherits the correct gate. DB-free / AI charts
-  absent ⇒ the set is empty ⇒ passive, matching the pre-Phase-46 default (no regression).
-- 2 tests (`MonsterSpawnTests.cs`): an in-set AiType spawns `Aggressive`, an out-of-set AiType spawns passive.
+Replaces hard-coded monster behaviour with the real C++ interpreter. The C++ AI is **not** a per-tick sweep —
+it is an **event machine** over three DB tables. Until now the port had the *behaviours* but none of the
+*bindings* that decide which monster does what, when, and after how long.
 
-> **Fidelity notes (Phase 46):** only the **aggressive determination** is derived from the AI charts. The
-> per-command **conditions** (`TAICONCHART`/`CTBLAICondition` — `AN_PROB`/`AN_MODE`/`AN_CHGHOST`) and the full
-> per-`bAIType` trigger→command **state machine** (the exact escalation ordering across `AT_*`) remain deferred —
-> the port keeps its folded Phase-19/44/45 AI loop and only consults this one flag. The `dwDelay`/`bLoop`
-> columns and the non-`AT_ENTER` triggers are read past (not modelled).
+**The chart** (`TMap.Data/AiCharts.cs`, loaded by `GameDatabase.LoadTemplatesAsync`) — three tables, exactly
+the C++ `CTBLAICommand`/`CTBLAICondition`/`CTBLAIChart` queries (DBAccess.h:365-414):
+
+| Table | Columns | Becomes |
+|---|---|---|
+| `TAICMDCHART` | `dwCmdID, bCmdType` | `AiCommandTemplate` — the opcode (`AI_COMMAND`, 15 kinds) |
+| `TAICONCHART` | `dwCmdID, dwConditionID, bConditionType` | its `AiCondition` guards (`AI_CONDITION`, 3 kinds) |
+| `TAICHART` | `dwTriggerID, dwCmdID, dwDelay, bTriggerType, bAIType, bLoop` | `AiScript` — per `bAIType`, a 14-slot trigger table of trigger-id → ordered `AiBinding`s |
+
+`TMONSTERCHART.bAIType` (added to `MonsterTemplate`) selects the script, with the C++ `DEFAULT_AI` fallback
+(`TemplateStore.AiScriptFor`). The C++ runs one `TAICONCHART` query **per command id** in a loop; we bulk-load
+and bucket by `dwCmdID` — same result, one round trip.
+
+**The engine** (`MapService.AiEngine.cs`) — `OnAiEvent` (C++ `CTMonster::OnEvent`) → `DoAiCmd` (`DoAICMD`) →
+per-command `GetDelay`/`CanRun`/`ExecAI`, with `AiComplete` firing `AT_AICOMPLETE` keyed on the command's own
+id. That last part is the whole point: **chains are data**, so wake → `ChgHost` → `ChgMode` → `BeginAtk` →
+`Attack` comes out of the table rather than out of C#.
+
+- [x] All **14 triggers** and **15 command opcodes**, each with its exact hard state gate (`OS_*` × `MT_*`)
+  ahead of the chart conditions, then the AND-folded `AN_*` guards.
+- [x] `Monster.Status` (`OBJ_STATUS` — the second state axis the C++ gates on) and `Monster.HostKey`
+  (`m_dwHostKEY`, the command epoch).
+- [x] **`Monster.Aggressive` is derived, not defaulted** — from `AiScript.IsAggressive` at spawn. **The live
+  chart forced a correction here; see "What the live data changed" below.** This is what unblocks
+  aggro-on-sight in production, which Phase 45 shipped inert.
+- [x] **`CS_ENTERLB`/`LEAVELB`/`ENTERAB`/`LEAVEAB_REQ`** (`CS_MAP + 0x18..0x1B`, one shared layout, one
+  handler `OnAggroBoundReq`) — the client-reported aggro bounds. Without these the engagement chain has no
+  entry point, because engagement is client-driven, not server-polled.
+- [x] **`AT_ENTER` is event-driven** — fired from `SendMonstersInView` (C++ `CTCell::EnterPlayer`,
+  TCell.cpp:103) instead of polled by the tick sweep.
+- [x] **`ChkHost`** (host re-validation, no recency window) — the Phase-45 gap.
+- [x] `AT_DEFEND` routes through the chart: the hate table only *decides*; `ApplyRetarget` fires the event and
+  the script's `ChgHost`/`ChgMode` carry it out. `AT_DEAD` fires from `OnMonsterDeath`.
+- 17 tests (`AiEngineTests.cs`): `Binds`/`DEFAULT_AI` resolution, `SetHost` waking **without** entering battle
+  (the unfolded chain), a three-command `AT_AICOMPLETE` chain, the `ChgMode` mode ring, all three conditions,
+  hard-zero `GetDelay` overrides ignoring the row delay, delay scheduling, epoch invalidation, `bLoop` re-arm
+  vs not, scripted-vs-scriptless sweep routing, and an unknown opcode still chaining.
+
+### Two deliberate divergences
+
+1. **The delay hop is local.** C++ `DoAICMD` ships a delayed command to the **world** server
+   (`SendSM_AICMD_REQ`, passing the raw `CTAICommand*` as an opaque handle) which times it and echoes
+   `SM_AICMD_ACK` back. That plane exists only because AI scheduling was centralised across map servers;
+   single-map it is pure overhead and a pointer-lifetime hazard. Here it is a local `PriorityQueue` on the map
+   clock, drained by `RunScheduledAi`. **The epoch check is preserved exactly** — a queued entry captures
+   `HostKey` and is dropped if the monster's has moved on, which is what stops a stale command acting on a
+   retargeted or dead monster. Revalidation order matches `OnSM_AICMD_ACK`: epoch → `CanRun` → `ExecAI` →
+   re-arm on a truthy result.
+2. **Scripted monsters bypass the legacy sweep.** A monster that resolves a script is driven entirely by the
+   engine; one with no script (no `TAICHART` rows — DB-free, and every pre-46 test) keeps the Phase 18-45
+   hard-coded `Roam`/`ChaseTarget`/`TryAcquireHost`. This mirrors the C++ `FindTMonsterAI(DEFAULT_AI)` fallback
+   and keeps the server behaving with an empty chart instead of going inert. `MapWorker` logs which case you
+   are in at bring-up (script / binding / aggressive counts, or a warning when the chart is empty).
+
+### A preserved bug
+
+C++ `CTAICommand::CheckCondition`'s `AN_CHGHOST` arm (TAICommand.cpp:60) computes
+`targetId == rhId && targetType == rhType ? FALSE : TRUE` as a **bare expression statement with no `return`**,
+so control falls out of the switch to the trailing `return TRUE` and the condition **always passes**. Shipped
+monster behaviour is tuned around that, so the port reproduces it rather than "fixing" it — pinned by
+`ChgHostCondition_AlwaysPasses_ReproducingTheOriginalMissingReturn`.
+
+### Deferred (documented)
+
+Monster **skills** (`m_pNextSkill`/`SelectSkill`/`SkillUse`), so `BeginAtk`/`Attack` fall back to the Phase-20
+basic melee (same announce, `wSkillID = 0`); **`CheckAttack`** (silence/root — reads as always-true, but is
+threaded through every call site so it goes live for free later); the `m_bRoamType == 4` fixed-monster gate and
+`m_bIsSelf`, whose chart columns are unloaded; `Getaway`'s **`m_bCall` helper search** (only the plain flee is
+ported); `Lottery`'s corpse-item roll; `Regen`'s **group-spawn redirect** (`m_lpvGroup` — the deferred
+leader/cluster branch); and `Leave`'s item-routing / inven-lock stall, simplified to "wait until the corpse is
+empty". A synchronous-depth cap (16) guards a cyclic chart, which the C++ avoids only by virtue of its world
+round trip.
+
+### What the live data changed
+
+Reading the real `TGame_gsp` (47 `TAICHART` / 18 `TAICMDCHART` / 6 `TAICONCHART` rows → **2 scripts**;
+**all 3536** monster rows carry a non-zero `bAIType`) **falsified the Phase-45 definition of "aggressive"**,
+which this phase had initially carried forward:
+
+- The old test was `Binds(AT_ENTER, AC_SETHOST)`. **Both** live scripts bind exactly that, so it marks
+  *every* monster aggressive — clearly wrong.
+- Decoding the chains shows why: `AT_ENTER` → `SetHost` → `Roam`(3 s, loop) → `SetHost` → … never reaches
+  `ChgMode`, so it cannot enter battle. `AT_ENTER`/`SetHost` **wakes** a monster and gives it a host to drive
+  its roam broadcasts; it is not aggro.
+- Engagement is **client-reported**: `AT_ENTERLB` → `ChgHost` → `ChgMode`(→ `MT_BATTLE`) → `Follow`. Script 1
+  (**3192** monsters) binds it; script 2 (**344** monsters) has no `AT_ENTERLB` row at all. That is the real
+  aggressive/passive split, and it is the sane ~90/10 an MMO should have.
+
+So `IsAggressive` is now `Binds(AT_ENTERLB, ChgHost) || Binds(AT_ENTERLB, ChgMode)`, and the four
+`CS_*LB`/`*AB_REQ` handlers were added to give that chain its entry point. The rest of the decoded chart:
+`AT_DEFEND` → `ChgHost`(BATTLE) → `Follow` / `ChgHost`(NORMAL) → `ChgMode` → `Follow`; `AT_DEAD` →
+`Leave`(45 s, loop) → `AT_DELETE` → `Regen`(loop) or `AT_TIMEOUT` → `Remove`; `AT_HELP` → `Getaway`(1 s, loop);
+`AT_LOTTERY` → `Lottery`(15 s); `AT_LEAVE` → `ChkHost` → `Roam`; `AT_ATHOME` → `ChgMode`(GOHOME) → `Roam`;
+`AT_LEAVELB` → `ChgMode`(BATTLE) → `Gohome`.
+
+> ✅ **Verified against live data.** `araz-mssql` up, `TMAP_TEST_GAME` pointed at `TGame_gsp`:
+> `LoadTemplates_PopulatesAiScripts_WhenConfigured` passes (2 scripts / 47 bindings / 6 conditions, script 1
+> aggressive + script 2 not, every monster template resolving a script), and a real server boot logs
+> `Loaded 2 AI scripts (47 trigger bindings); 1 engage on sight (AT_ENTERLB → ChgHost/ChgMode)` alongside
+> 36692 spawn points. Because **every** monster is scripted, the engine — not the legacy sweep — now drives
+> all monster behaviour on a live server; the sweep remains only for the DB-free path.
 
 ---
 
@@ -1709,11 +1793,9 @@ Everything below is present in the C++ `TMapSvr` and intentionally deferred past
   **monster-attacks-player** (`CTAICmdAttack` → melee AP−DP + `CS_MONATTACK_ACK`/`CS_DEFEND_ACK` + player
   death) — **Phase 20**; the **highest-cumulative aggro table** (`SetAggro`/`m_mapAggro` + `ChgHost` retarget +
   `CS_MONHOST_ACK`) — **Phase 44**; **host acquisition** (aggro-on-sight, `CTAICmdSetHost` + `m_bCanHost`/
-  `m_dwMoveTick`) — **Phase 45**; the **`TAICHART` aggressive-gate load** (`AT_ENTER`→`AC_SETHOST` per `bAIType`
-  → `Monster.Aggressive`) — **Phase 46**. Still deferred: the **leader-cluster/group** spawn branches and
-  **essential** monsters; the rest of the monster **combat AI** — the rest of the `TAICHART` AI-script table
-  (per-command conditions + the full trigger→command state machine) +
-  `m_dwHostKEY` delayed-command epoch, monster skills /
+  `m_dwMoveTick`) — **Phase 45**. Still deferred: the **leader-cluster/group** spawn branches and
+  **essential** monsters; the data-driven `TAICHART` AI-script table + the `m_dwHostKEY` delayed-command epoch
+  are **done in Phase 46**. Still deferred in the monster **combat AI**: monster skills /
   magic / ranged attacks, `MT_GOHOME` walk-back, getaway/refill/lottery, and the client-authoritative move echo
   (`CS_MONMOVE_REQ`/`ACK`); the **priest-resurrection** ask flow (`CS_REVIVALASK`/`REPLY`) + death penalty
   (player revival itself is done — Phase 21); `CTRecallMon` /
@@ -1784,6 +1866,38 @@ Everything below is present in the C++ `TMapSvr` and intentionally deferred past
 ### Infrastructure
 - `CUdpSocket` / `CDebugSocket` UDP log-sink integration (LogIp/LogPort), `CTTextLinker` clickable
   in-chat links, `CTMiniDump` crash handling.
+- ~~Local-stack wiring~~ — **done**: `mapsvr` is now a service in the repo-root `docker-compose.yml`
+  (5816, dialing `worldsvr:3816`, gated on the migration job), so `docker compose up` brings the map up
+  with the rest of the cluster instead of leaving the world with no peer. The DB-gated `TMap.Data.Tests`
+  now log their skip rather than passing silently — see "Build & test" in the README for the
+  `TMAP_TEST_GAME` invocation. Verified end-to-end: the map registers with the world
+  (`Map server registered: id=1 type=4 channels=[1]`) and all 4 DB-gated tests pass against the live
+  `TGame_gsp`.
+
+### A bug the stack bring-up caught: duplicated channels (fixed)
+
+Running the map in the stack for the first time surfaced `Announced to world: server 1, channels [1,1]` —
+and it was **not** a compose artifact. The .NET configuration binder **appends** bound array elements to
+whatever the target property already holds instead of replacing them, so `MapServerOptions.Channels`'
+`= { 1 }` C# default plus the `"Channels": [ 1 ]` in `appsettings.json` bound to `{ 1, 1 }`.
+
+That was live everywhere, not just under Docker, and it was not cosmetic:
+
+| Consumer | Effect of the duplicate |
+|---|---|
+| `SendMW_CONNECT_ACK` | announced a channel **count of 2** with values `1, 1` |
+| `InitMonsterSpawns` | `_spawns` is a **`List`**, so every `SE_DEFAULT` spawn point was added **twice** — **36692 spawn points where 18346 is correct, i.e. twice the intended monsters on the map** |
+| `InitSwitches` | harmless — switches/gates are dictionary-keyed by id, so the second pass overwrote |
+
+It also meant a single non-default channel could never be configured: `Map__Channels__0=2` bound to
+`{ 1, 2 }`, the default leaking in beside the real value.
+
+**Fix**: `Channels` now defaults to `Array.Empty<byte>()` (so the binder has nothing to append to) and
+`MapServerOptions.Normalize()` — called once at the top of `MapWorker.ExecuteAsync`, before anything reads
+the list — supplies the C++ default `{ 1 }` when unbound and collapses duplicates. Pinned by 7 tests in
+`MapServerOptionsTests.cs` that bind through a real `ConfigurationBuilder` exactly as `Program.cs` does,
+including the layered appsettings+env case. Confirmed live: the rebuilt server logs
+`channels [1]` and `Initialized 18346 monster spawn points (18823 slots)`.
 
 ---
 

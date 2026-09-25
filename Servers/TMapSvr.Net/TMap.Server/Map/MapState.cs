@@ -120,6 +120,11 @@ public sealed class MapState
         _monsters.Remove(m.Id);
     }
 
+    /// <summary>Moves a monster to a new position, re-bucketing its grid cell and reporting the player
+    /// visibility diff (C++ <c>CTMap::OnMove(CTMonster*)</c>). No-op diff when it stays in the same cell.</summary>
+    public CellDiff MoveMonster(Monster m, float x, float z) =>
+        _grids.TryGetValue((m.Channel, m.MapId), out var g) ? g.MoveMonster(m, x, z) : CellDiff.None;
+
     public Monster? FindMonster(uint id) => _monsters.GetValueOrDefault(id);
 
     /// <summary>Every live monster (registry order) — used by tests / the deferred tick.</summary>

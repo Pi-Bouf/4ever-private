@@ -20,8 +20,20 @@ public sealed class MapServerOptions
     public byte GroupId { get; set; } = 1;
     public byte ServerId { get; set; } = 1;
 
-    /// <summary>The channels this map server serves (announced to the world in MW_CONNECT_ACK). C++ default 1.</summary>
-    public byte[] Channels { get; set; } = { 1 };
+    /// <summary>
+    /// The channels this map server serves (announced to the world in MW_CONNECT_ACK). C++ default 1.
+    /// <para>
+    /// Defaults to <b>empty</b>, not <c>{ 1 }</c>, deliberately: the .NET configuration binder
+    /// <i>appends</i> bound array elements to whatever the property already holds rather than replacing
+    /// them. With a <c>{ 1 }</c> default, the <c>"Channels": [ 1 ]</c> in appsettings.json (or a
+    /// <c>Map__Channels__0</c> env override) bound to <c>{ 1, 1 }</c> — which announced a channel count of
+    /// 2 in <c>MW_CONNECT_ACK</c> and, worse, made <see cref="Map.MapService.InitMonsterSpawns"/> build
+    /// every SE_DEFAULT spawn point once per duplicate, doubling the monsters on the map. It also meant
+    /// configuring a single non-default channel (<c>Map__Channels__0=2</c>) yielded <c>{ 1, 2 }</c>.
+    /// <see cref="Normalize"/> supplies the C++ default instead, after binding.
+    /// </para>
+    /// </summary>
+    public byte[] Channels { get; set; } = Array.Empty<byte>();
 
     /// <summary>UDP log-sink endpoint. C++ <c>LogIP</c>/<c>LogPort</c> (default 127.0.0.1:7000).</summary>
     public string LogIp { get; set; } = "127.0.0.1";
@@ -34,4 +46,14 @@ public sealed class MapServerOptions
     public bool NoCrypt { get; set; }
 
     public MapDbOptions Db { get; set; } = new();
+
+    /// <summary>
+    /// Applies the defaults the configuration binder cannot express. Call once at startup, before anything
+    /// reads <see cref="Channels"/>: an unbound channel list becomes the C++ default <c>{ 1 }</c>, and
+    /// duplicates are collapsed (a repeated channel double-builds the per-channel spawn points).
+    /// </summary>
+    public void Normalize()
+    {
+        Channels = Channels is { Length: > 0 } ? Channels.Distinct().ToArray() : new byte[] { 1 };
+    }
 }

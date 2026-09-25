@@ -4,20 +4,38 @@ namespace TMap.Data;
 /// A monster template row from <c>TMONSTERCHART</c> (C++ <c>CTBLMonster</c> → <c>tagTMONSTER</c>, keyed by
 /// <c>m_wID</c>). This is the subset the spawn + client-visibility path needs: the chart id (the client's
 /// model/name key), the level, and the attr-chart key (<c>m_wMonAttr</c>) used to look up the level-scaled
-/// vitals. The combat/AI/loot columns (class/race/roam/aggro/money/drop/skills…) are deferred — see
-/// PORT_STATUS.md.
+/// vitals, plus the exp/money/drop knobs and the AI-script selector (<c>m_bAIType</c>). The remaining
+/// combat columns (class/race/roam-type/chase-range/skills…) are deferred — see PORT_STATUS.md.
 /// </summary>
 public sealed record MonsterTemplate(ushort Id, byte Level, ushort MonAttr,
-    // Phase 17 (exp/money): the kill reward (m_wExp) and the money-drop knobs (m_bMoneyProb / m_dwMinMoney /
-    // m_dwMaxMoney). Phase 22 (item loot): the per-attempt item chance (m_bItemProb) and attempt count
+    // Exp/money: the kill reward (m_wExp) and the money-drop knobs (m_bMoneyProb / m_dwMinMoney /
+    // m_dwMaxMoney). (item loot): the per-attempt item chance (m_bItemProb) and attempt count
     // (m_bDropCount); the drop table itself is the linked <see cref="DropRows"/> (from TMONITEMCHART).
     uint Exp = 0, byte MoneyProb = 0, uint MinMoney = 0, uint MaxMoney = 0,
     byte ItemProb = 0, byte DropCount = 0,
-    // Phase 46 (auto-aggro): the AI-script type (C++ m_bAIType). A monster is "aggressive" (acquires a host on
-    // sight) iff this AiType binds AC_SETHOST under the AT_ENTER trigger in TAICHART — resolved once at load into
-    // TemplateStore.AggressiveAiTypes. In C++ the flag isn't on the monster chart; the AiType is the join key.
-    byte AiType = 0)
+    // The AI engine: m_bAIType — which TAICHART script drives this monster. The C++ resolves it
+    // once at chart load (pMON->m_pAI = FindTMonsterAI(bAIType), TMapSvr.cpp:2734) and falls back to
+    // DEFAULT_AI when the type has no script.
+    byte AiType = 0,
+    // The monster's attack skills: TMONSTERCHART wSkill1..wSkill4 (C++ CTBLMonster m_wSkill[4], DBAccess.h:473).
+    // A monster's basic attack is itself one of these chart skills — there is no "skill 0" basic attack.
+    ushort Skill1 = 0, ushort Skill2 = 0, ushort Skill3 = 0, ushort Skill4 = 0,
+    // The chase leash (C++ m_wChaseRange): how far from its anchor a fighting monster may be pulled before it
+    // gives up. Live values are mostly 50 or 90; 0 means it abandons the chase as soon as it is moved.
+    ushort ChaseRange = 0)
 {
+    /// <summary>The non-empty skill slots in chart order (wSkill1 first).</summary>
+    public IEnumerable<ushort> Skills
+    {
+        get
+        {
+            if (Skill1 != 0) yield return Skill1;
+            if (Skill2 != 0) yield return Skill2;
+            if (Skill3 != 0) yield return Skill3;
+            if (Skill4 != 0) yield return Skill4;
+        }
+    }
+
     /// <summary>The monster's item-drop rows (C++ <c>m_vMONITEM</c>, TMONITEMCHART) — loaded per monster.</summary>
     public List<MonItemRow> DropRows { get; } = new();
 
@@ -41,10 +59,10 @@ public sealed record MonItemRow(ushort ItemId, ushort Weight, byte ChartType,
 /// client appearance packet (the AP/DP/speed/crit combat columns are deferred).
 /// </summary>
 public sealed record MonAttrRow(ushort Id, byte Level, uint MaxHp, uint MaxMp, uint DefendPower,
-    // Phase 20 (monster attack): the physical attack-power band (C++ CTMonster::GetMinAP/GetMaxAP =
+    // Monster attack: the physical attack-power band (C++ CTMonster::GetMinAP/GetMaxAP =
     // m_wAP + m_wMin/MaxWAP) and the attack-speed cadence (m_dwAtkSpeed).
     uint AtkMin = 0, uint AtkMax = 0, uint AtkSpeed = 0,
-    // Phase 28 (combat quality): as the DEFENDER — magic defence (wMDP) + the defend levels (wDL/wMDL) that
+    // Combat quality: as the DEFENDER — magic defence (wMDP) + the defend levels (wDL/wMDL) that
     // feed the attacker's hit-rate roll; as the ATTACKER — its own attack level (wAL) + crit prob (bCriticalPP).
     uint MagicDefPower = 0, ushort DefendLevel = 0, ushort MagicDefLevel = 0, byte CritProb = 0, ushort AttackLevel = 0);
 
@@ -57,7 +75,10 @@ public sealed record MonAttrRow(ushort Id, byte Level, uint MaxHp, uint MaxMp, u
 /// </summary>
 public sealed record MonSpawnRow(
     ushort Id, ushort MapId, float PosX, float PosY, float PosZ, ushort Dir, byte Country,
-    byte Count, byte Range, byte Prob, uint Region, uint Delay, byte Event);
+    byte Count, byte Range, byte Prob, uint Region, uint Delay, byte Event,
+    // The ROAM radius (C++ m_bArea). Not Range: Range is the spawn scatter, and is 0 for most spawns while Area
+    // is 3-5 — using Range made most monsters roam to their own anchor point and turn on the spot.
+    byte Area = 0);
 
 /// <summary>
 /// One entry of a spawn's monster-type table from <c>TMAPMONCHART</c> (C++ <c>CTBLMapMonAll</c> →

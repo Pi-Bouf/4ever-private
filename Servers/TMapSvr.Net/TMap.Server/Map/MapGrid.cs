@@ -219,6 +219,44 @@ public sealed class MapGrid
         m.CellKey = key;
     }
 
+    /// <summary>
+    /// Re-buckets a moving monster and reports the player-visibility diff (C++ <c>CTMap::OnMove(CTMonster*)</c>,
+    /// TMap.cpp:1346). Within one cell it is a bare position write; across a cell boundary the monster leaves
+    /// the cells that drop out of its 3x3 block and enters the ones that come in, so the players there get
+    /// CS_DELMON_ACK / CS_ADDMON_ACK. The multi-channel main-cell/border arms of the C++ are the cross-server
+    /// topology this port does not carry (single-server).
+    /// </summary>
+    public CellDiff MoveMonster(Monster m, float newX, float newZ)
+    {
+        uint oldKey = m.CellKey;
+        uint newKey = KeyOf(newX, newZ);
+        if (oldKey == newKey)
+        {
+            m.PosX = newX; m.PosZ = newZ;
+            return CellDiff.None;
+        }
+
+        var (ocx, ocz) = Split(oldKey);
+        var (ncx, ncz) = Split(newKey);
+
+        // Snapshot who can see it from the old block before re-bucketing.
+        var old3 = NeighborsAt(ocx, ocz, self: null).ToList();
+
+        if (_cells.TryGetValue(oldKey, out var oldCell)) oldCell.Monsters.Remove(m.Id);
+        m.PosX = newX; m.PosZ = newZ;
+        GetOrCreate(newKey).Monsters[m.Id] = m;
+        m.CellKey = newKey;
+
+        var new3 = NeighborsAt(ncx, ncz, self: null).ToList();
+
+        var diff = new CellDiff { CellChanged = true };
+        var oldSet = new HashSet<ClientSession>(old3);
+        var newSet = new HashSet<ClientSession>(new3);
+        foreach (var pl in new3) if (!oldSet.Contains(pl)) diff.Entered.Add(pl);
+        foreach (var pl in old3) if (!newSet.Contains(pl)) diff.Left.Add(pl);
+        return diff;
+    }
+
     /// <summary>Removes a monster from the cell it was last bucketed in (C++ <c>CTCell::DelMonster</c>).</summary>
     public void RemoveMonster(Monster m)
     {

@@ -1,3 +1,4 @@
+using TMap.Data;
 using TMap.Protocol;
 
 namespace TMap.Server.Map;
@@ -38,7 +39,15 @@ public sealed partial class MapService
     /// <c>CTCell::EnterPlayer</c> <c>m_mapMONSTER</c> loop, <c>bNewMember = FALSE</c>).</summary>
     private void SendMonstersInView(ClientSession s)
     {
-        foreach (var m in _state.MonstersInView(s)) SendCS_ADDMON_ACK(s, m, newMember: false);
+        foreach (var m in _state.MonstersInView(s))
+        {
+            SendCS_ADDMON_ACK(s, m, newMember: false);
+            // C++ CTCell::EnterPlayer (TCell.cpp:103) fires AT_ENTER on every monster the arriving
+            // player can see — the event-driven aggro-on-sight hook a scripted monster uses in place of the
+            // per-tick TryAcquireHost scan. Script-less monsters keep that scan; this is a no-op for them.
+            if (m.Ai is not null && s.Char is { CharId: var cid })
+                OnAiEvent(m, AiTrigger.Enter, 0, cid, cid, OtPc);
+        }
     }
 
     /// <summary>C++ <c>CTPlayer::SendCS_ADDMON_ACK</c> — the monster appearance block, ending with the
@@ -66,7 +75,7 @@ public sealed partial class MapService
         w.WriteByte(m.Country);
         w.WriteByte(0);              // GetColor(...) — faction/name color vs viewer (deferred, as the player bColor)
         w.WriteUInt32(m.Region);
-        w.WriteByte((byte)m.MaintainSkills.Count);   // the monster's active debuffs (Phase 31)
+        w.WriteByte((byte)m.MaintainSkills.Count);   // the monster's active debuffs
         foreach (var buff in m.MaintainSkills) WriteMaintainSkill(w, buff, NowMs);
         s.Send(w);
     }
