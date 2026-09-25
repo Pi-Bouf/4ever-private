@@ -25,6 +25,11 @@ public sealed partial class MapService
     {
         _state.AddMonster(m);
         foreach (var p in _state.PlayersAround(m)) SendCS_ADDMON_ACK(p, m, newMember: true);
+
+        // C++ CTMap::EnterMAP(monster) (TMap.cpp:1014) fires AT_ENTER on every OT_MON it places — respawns
+        // included. That is how a respawned monster finds a host among the players already standing there;
+        // without it the monster stayed unhosted and no client ever drove it.
+        if (m.Ai is not null) OnAiEvent(m, AiTrigger.Enter);
     }
 
     /// <summary>Despawns a monster: tells the players in its view it is gone, then removes it (C++

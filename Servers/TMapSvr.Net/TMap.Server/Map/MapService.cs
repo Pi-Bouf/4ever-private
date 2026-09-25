@@ -65,8 +65,12 @@ public sealed partial class MapService
     public void OnClientDisconnect(ClientSession session)
     {
         // Broadcast the leave to neighbours before de-registering.
+        var watching = new List<Monster>();
         if (session.State == EnterState.InGame && session.Char is not null)
+        {
             BroadcastLeave(session, exitMap: true);
+            watching.AddRange(_state.MonstersInView(session));
+        }
 
         // Tell the world the char left this map (best-effort). The C++ closes via MW_CLOSECHAR / MW_TERMINATE.
         if (session.CharId != 0 && _worldReady)
@@ -74,6 +78,11 @@ public sealed partial class MapService
 
         SaveCharData(session);   // flush the char record + dirty quests on logout (C++ SetEventCloseSession)
         _state.Remove(session);
+
+        // C++ CTMap::LeaveMAP(player) takes the player off its cell first, then runs LeavePlayer over the 3×3:
+        // every monster that could see it drops its hate and re-checks its host, so one this player was
+        // driving is handed to someone else (or reset) instead of staying hosted by a ghost.
+        foreach (var m in watching) MonsterLostSight(m, session.CharId);
         _log.LogDebug("Client char {Char} disconnected.", session.CharId);
     }
 
@@ -208,6 +217,7 @@ public sealed partial class MapService
         RunRecover(NowMs);                     // HP/MP regeneration (players + monsters)
         RunCorpseExpiry(_tickSeconds * 1000L); // despawn + re-arm lootable corpses past their lifetime
         RunScheduledAi(_tickSeconds * 1000L);  // Due TAICHART commands (the local SM_AICMD stand-in)
+        RunPendingResetHome();                 // abandoned monsters back to their spawn (SM_RESETHOST_ACK)
         RunMonsterAI(_tickSeconds * 1000L);    // legacy sweep — script-less monsters only (roam / chase)
         RunPeriodicSaves(NowMs);               // 30-min per-char DB save (no-op DB-free); off-thread write
         FlushItemDirect();                     // incremental item persistence (TSaveItemDirect); off-thread write

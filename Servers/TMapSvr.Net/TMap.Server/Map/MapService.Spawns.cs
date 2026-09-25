@@ -297,12 +297,20 @@ public sealed partial class MapService
     /// <summary>Frees a dead monster's spawn slot and schedules its respawn one <c>Delay</c> later (C++
     /// <c>CTAICmdLeave</c> setting <c>OS_DISAPPEAR</c> + <c>CTAICmdRegen</c>'s delay). The monster's instance
     /// id decodes to <c>(spawnId, channel, slot)</c>. No-op for monsters not owned by a spawn (API-spawned).</summary>
+    /// <summary>The spawn point a monster id belongs to (<see cref="Monster.MakeId"/>: spawn · channel · slot).</summary>
+    private SpawnPoint? SpawnOf(uint monsterId)
+    {
+        ushort spawnId = (ushort)(monsterId >> 16);
+        byte channel = (byte)((monsterId >> 8) & 0xFF);
+        return _spawns.FirstOrDefault(p => p.Def.Spawn.Id == spawnId && p.Channel == channel);
+    }
+
     private void RearmSpawnSlot(uint monsterId, long nowMs)
     {
         ushort spawnId = (ushort)(monsterId >> 16);
         byte channel = (byte)((monsterId >> 8) & 0xFF);
         byte slotIdx = (byte)(monsterId & 0xFF);
-        var sp = _spawns.FirstOrDefault(p => p.Def.Spawn.Id == spawnId && p.Channel == channel);
+        var sp = SpawnOf(monsterId);
         if (sp is null || slotIdx >= sp.Slots.Length) return;
 
         // A dynamic (quest Regen) spawn is one-shot: on its monster's removal, free the whole spawn + recycle its

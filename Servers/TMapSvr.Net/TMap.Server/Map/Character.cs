@@ -75,8 +75,8 @@ public sealed class Character
     public byte Action { get; set; }
     public byte Block { get; set; }
     public byte Mode { get; set; }
-    public byte MouseDir { get; set; }
-    public byte KeyDir { get; set; }
+    public byte MouseDir { get; set; } = Monster.TkdirN;   // C++ CTObjBase: TKDIR_N, not 0 (TKDIR_LF)
+    public byte KeyDir { get; set; } = Monster.TkdirN;
 
     // ---- Phase 45: monster host-acquisition inputs (C++ CTPlayer, read by CTAICmdSetHost). ----
     /// <summary>C++ <c>m_bCanHost</c> (TPlayer.h:109) — whether this player is eligible to become a monster's

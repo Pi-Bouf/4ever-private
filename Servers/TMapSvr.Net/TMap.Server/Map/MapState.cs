@@ -117,7 +117,8 @@ public sealed class MapState
     public void RemoveMonster(Monster m)
     {
         if (_grids.TryGetValue((m.Channel, m.MapId), out var g)) g.RemoveMonster(m);
-        _monsters.Remove(m.Id);
+        // Only if the id still maps to this object — a stale remove must not take its respawn with it.
+        if (_monsters.TryGetValue(m.Id, out var cur) && ReferenceEquals(cur, m)) _monsters.Remove(m.Id);
     }
 
     /// <summary>Moves a monster to a new position, re-bucketing its grid cell and reporting the player

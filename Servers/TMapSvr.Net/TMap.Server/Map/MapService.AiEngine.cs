@@ -131,7 +131,10 @@ public sealed partial class MapService
 
             // C++ OnSM_AICMD_ACK: the monster must still exist in the map, and its epoch must not have moved.
             if (p.Mon.HostKey != p.HostKey) continue;
-            if (_state.FindMonster(p.Mon.Id) is null) continue;
+            // The same object, not just the same id: a respawn reuses its slot's id, and a command left over from
+            // the dead body (its Leave, retrying while the corpse had loot) would otherwise run on — and despawn —
+            // the new monster.
+            if (!ReferenceEquals(_state.FindMonster(p.Mon.Id), p.Mon)) continue;
 
             if (AiCanRun(p.Binding, p.Mon, p.EventHost, p.RhId, p.RhType)
                 && AiExec(p.Binding, p.Mon, p.EventHost, p.RhId, p.RhType))
@@ -310,7 +313,7 @@ public sealed partial class MapService
     private bool ExecSetHost(AiBinding b, Monster mon, uint eventHost, uint rhId, byte rhType)
     {
         var pick = PickHost(mon, requireRecentMove: true);
-        var old = mon.HostId;
+        var old = FindHost(mon, mon.HostId);
 
         if (pick is null)
         {
@@ -318,12 +321,12 @@ public sealed partial class MapService
             ResetHost(mon);
             return false;
         }
-        if (pick.Char!.CharId == old) return false;   // unchanged host ⇒ the C++ returns FALSE (no chain)
+        if (pick == old) return false;   // unchanged host ⇒ the C++ returns FALSE (no chain)
 
         mon.HostKey++;
         mon.HostId = pick.Char!.CharId;
         mon.Status = OsWakeup;
-        NotifyHost(mon);
+        NotifyHost(mon, old);
         return AiComplete(b, mon, eventHost, rhId, rhType);
     }
 
@@ -332,8 +335,9 @@ public sealed partial class MapService
     /// <b>no recency window</b>: any <c>CanHost</c> player will do.</summary>
     private bool ExecChkHost(AiBinding b, Monster mon, uint eventHost, uint rhId, byte rhType)
     {
-        var old = mon.HostId != 0 ? _state.FindByChar(mon.HostId) : null;
-        if (old is { State: EnterState.InGame, Char: { Hp: > 0, CanHost: true } }) return false; // still fine
+        // FindHost only looks in the monster's own 3×3: a host that walked out of view no longer counts.
+        var old = FindHost(mon, mon.HostId);
+        if (old is { Char: { Hp: > 0, CanHost: true } }) return false; // still fine
 
         var pick = PickHost(mon, requireRecentMove: false);
         if (pick is null)
@@ -342,11 +346,11 @@ public sealed partial class MapService
             ResetHost(mon);
             return false;
         }
-        if (pick.Char!.CharId == mon.HostId) return false;
+        if (pick == old) return false;
 
         mon.HostKey++;
         mon.HostId = pick.Char!.CharId;
-        NotifyHost(mon);
+        NotifyHost(mon, old);
         return AiComplete(b, mon, eventHost, rhId, rhType);
     }
 
@@ -386,15 +390,15 @@ public sealed partial class MapService
         switch (mon.Mode)
         {
             case MtNormal:
-                mon.EnterBattle(NowMs, RecoverInit);   // sets Mode = MT_BATTLE + the regen-suppression anchors
+                ChgMode(mon, MtBattle);                // + the regen-suppression anchors
                 break;
             case MtBattle:
-                mon.Mode = MtGohome;
+                ChgMode(mon, MtGohome);
                 mon.TargetId = 0;
                 mon.TargetType = 0;
                 break;
             case MtGohome:
-                mon.Mode = MtNormal;
+                ChgMode(mon, MtNormal);
                 mon.TargetId = 0;
                 mon.TargetType = 0;
                 break;
@@ -602,13 +606,81 @@ public sealed partial class MapService
         return host;
     }
 
-    /// <summary>C++ <c>CTMonster::ResetHost</c> (TMonster.cpp:2392) — forget host, target and hate.</summary>
-    private static void ResetHost(Monster mon)
+    /// <summary>C++ <c>CTMonster::FindHost</c> (TMonster.cpp:485) — the host, but only if it is in the monster's
+    /// own 3×3 view.</summary>
+    private ClientSession? FindHost(Monster mon, uint hostId) => hostId == 0 ? null
+        : _state.PlayersAround(mon).FirstOrDefault(p =>
+            p.State == EnterState.InGame && p.Char is { CharId: var cid } && cid == hostId);
+
+    /// <summary>C++ <c>CTObjBase::ChgMode</c> (TObjBase.cpp:295) — set the mode and tell every viewer. The client
+    /// needs the ACK: it is what clears the monster's follow target and sets or clears its go-home flag
+    /// (TClient CSHandler.cpp:1952). The <c>CS_CHANGECOLOR_ACK</c> that follows it is deferred with the rest of
+    /// <c>GetColor</c>.</summary>
+    private void ChgMode(Monster mon, byte mode)
     {
+        if (mode == MtBattle && mon.Mode != MtBattle) mon.EnterBattle(NowMs, RecoverInit);
+        mon.Mode = mode;
+        mon.LastAtkTick = NowMs;
+
+        var w = new PacketWriter(Msg.CS_CHGMODE_ACK, capacity: 8);
+        w.WriteUInt32(mon.Id);
+        w.WriteByte(Monster.OtMon);
+        w.WriteByte(mode);
+        var ack = w.ToArray();
+        foreach (var p in _state.PlayersAround(mon)) p.Send(ack);
+    }
+
+    /// <summary>C++ <c>CTMonster::ResetHost</c> (TMonster.cpp:2392) — stand the monster down to <c>MT_NORMAL</c>,
+    /// forget host, target and hate, tell the old host it no longer drives it, and — if it was left more than
+    /// half a cell from home — send it back to its spawn point (the <c>SM_RESETHOST</c> round trip).</summary>
+    private void ResetHost(Monster mon)
+    {
+        bool hadHost = mon.HostId != 0;
+        var oldHost = hadHost ? _state.FindByChar(mon.HostId) : null;   // map-wide, not FindHost
+
+        mon.Action = TaStand;
+        ChgMode(mon, MtNormal);
         mon.HostId = 0;
         mon.TargetId = 0;
         mon.TargetType = 0;
         mon.ClearAggro();
+
+        // The C++ tests _AtlModule.FindChar(host), which still finds a player that is logging out (its CTPlayer
+        // outlives LeaveMAP). The port has already dropped that session, so "had a host" stands in for it.
+        if (!hadHost) return;
+        if (oldHost is not null) NotifyHost(mon, oldHost);
+        if (Distance(mon.StartX, mon.StartZ, mon.PosX, mon.PosZ) > MapGrid.CellSize / 2f)
+            _pendingResetHome.Add(mon);
+    }
+
+    /// <summary>Monsters waiting for their <c>SM_RESETHOST_ACK</c>. The C++ posts the request to its own batch
+    /// queue, so it lands after the current event chain; this is drained once per tick.</summary>
+    private readonly List<Monster> _pendingResetHome = new();
+
+    /// <summary>C++ <c>OnSM_RESETHOST_ACK</c> (SSHandler.cpp:464) — a monster that is still on the map and still
+    /// unhosted snaps back to its spawn point, facing the spawn direction, and every viewer is told it now stands
+    /// there. Without this an abandoned monster stays wherever its last host left it.</summary>
+    private void RunPendingResetHome()
+    {
+        if (_pendingResetHome.Count == 0) return;
+        var due = _pendingResetHome.ToList();
+        _pendingResetHome.Clear();
+
+        foreach (var mon in due)
+        {
+            if (_state.FindMonster(mon.Id) != mon || mon.HostId != 0) continue;
+            if (SpawnOf(mon.Id) is not { } sp) continue;
+
+            var s = sp.Def.Spawn;
+            mon.StartX = s.PosX; mon.StartY = s.PosY; mon.StartZ = s.PosZ;
+            mon.PosY = s.PosY;
+            mon.Dir = s.Dir;
+            ApplyMonsterMove(mon, s.PosX, s.PosZ);
+
+            mon.MouseDir = Monster.TkdirN; mon.KeyDir = Monster.TkdirN; mon.Action = TaStand;
+            var ack = BuildCS_MONMOVE_ACK(new[] { mon });
+            foreach (var p in _state.PlayersAround(mon)) p.Send(ack);
+        }
     }
 
     /// <summary>C++ <c>CTObjBase::CheckAttack</c> — whether the monster is able to act offensively (not

@@ -1,4 +1,4 @@
-using TMap.Protocol;
+﻿using TMap.Protocol;
 using TMap.Server.Map;
 using Xunit;
 
@@ -92,7 +92,8 @@ public class MonsterHostAcquireTests
         h.Service.SpawnMonster(mob);
         h.Service.NowMs = 2000;
 
-        await h.Service.DispatchClientAsync(s, MapTestHarness.MoveReq(0, 105, 0, 105, dir: 0, speed: 1.0f));
+        // A real move (TA_RUN = 4): a stand does not make the player host-eligible (C++ CSHandler.cpp:555).
+        await h.Service.DispatchClientAsync(s, MapTestHarness.MoveReq(0, 105, 0, 105, dir: 0, speed: 1.0f, action: 4));
         Assert.True(s.Char!.CanHost);            // the MOVE stamped host-eligibility + the recency clock
         c.Clear();
 

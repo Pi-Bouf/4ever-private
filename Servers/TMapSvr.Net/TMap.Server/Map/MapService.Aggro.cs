@@ -71,11 +71,15 @@ public sealed partial class MapService
     /// <summary>C++ <c>CTMonster::NotifyHost</c> (TMonster.cpp:2369) — tell nearby players who the monster now
     /// hosts: <c>TRUE</c> to the new host, <c>FALSE</c> to everyone else in view (the previous host, if still in
     /// view, is thereby cleared).</summary>
-    private void NotifyHost(Monster mon)
+    private void NotifyHost(Monster mon, ClientSession? prevHost = null)
     {
         _log.LogDebug("[mon] HOST mon {Mon} -> char {Host} (notifying {Count} viewer(s)).", mon.Id, mon.HostId, _state.PlayersAround(mon).Count());
+        // The previous host hears FALSE even when it has walked out of view — otherwise its client keeps driving
+        // a monster the server no longer lets it move.
+        if (prevHost is not null) SendCS_MONHOST_ACK(prevHost, mon.Id, 0);
         foreach (var p in _state.PlayersAround(mon))
-            SendCS_MONHOST_ACK(p, mon.Id, p.Char is { CharId: var cid } && cid == mon.HostId ? (byte)1 : (byte)0);
+            if (p != prevHost)
+                SendCS_MONHOST_ACK(p, mon.Id, p.Char is { CharId: var cid } && cid == mon.HostId ? (byte)1 : (byte)0);
     }
 
     /// <summary>C++ <c>SendCS_MONHOST_ACK</c> (CSSender.cpp:688) — <c>dwMonID · bSet</c>.</summary>
@@ -93,30 +97,52 @@ public sealed partial class MapService
     /// recurse-drop of a non-neighbour). If nothing hostile remains in view, leave battle and head home
     /// (<see cref="DropAggro"/> → <c>MT_NORMAL</c>).</summary>
     private void Disengage(Monster mon, uint leaveId, byte leaveType, uint nowMs)
-    {
-        var survivor = mon.LeaveAggro(leaveId, leaveType);
-        while (survivor is { } s)
-        {
-            if (_state.FindByChar(s.ObjId) is { State: EnterState.InGame, Char: { Hp: > 0 } }
-                && _state.PlayersAround(mon).Any(p => p.Char is { CharId: var cid } && cid == s.ObjId))
-            {
-                ApplyRetarget(mon, s);
-                return;
-            }
-            survivor = mon.LeaveAggro(s.ObjId, s.ObjType);   // non-viewable top-aggro → drop, try the next
-        }
+        => LeaveAggro(mon, mon.HostId, leaveId, leaveType, nowMs);
 
-        // Nothing left to fight. The C++ LeaveAggro fires AT_LEAVELB here (TMonster.cpp:134) and lets the script
-        // decide: script 1 runs ChgMode (BATTLE -> GOHOME, target cleared) then Gohome, so the monster runs back
-        // to its anchor, still driven by its host client, until AT_ATHOME returns it to roaming. Hard-resetting
-        // it instead left it standing mid-field with no host, rejecting the moves its client kept sending.
-        if (mon.Ai is not null)
+    /// <summary>C++ <c>CTMonster::LeaveAggro</c> (TMonster.cpp:87), branch for branch. It is also called for
+    /// every monster a player walks away from, fighting or not, so the idle cases matter as much as the
+    /// battle ones:
+    /// <list type="bullet">
+    /// <item>the leaver has no hate but is the current target ⇒ <c>AT_LEAVELB</c> at once;</item>
+    /// <item>a monster on its way home ignores the rest (only the erase happens);</item>
+    /// <item>the top survivor in view and not already the target ⇒ retarget (<c>AT_DEFEND</c>); already the
+    /// target ⇒ nothing; out of view ⇒ drop it too and recurse;</item>
+    /// <item>no survivor ⇒ <c>AT_LEAVELB</c>. An idle monster gets it as well: script 1 binds it to a
+    /// BATTLE-only <c>ChgMode</c>, so it is a no-op there, and a fighter turns for home.</item>
+    /// </list></summary>
+    private void LeaveAggro(Monster mon, uint hostId, uint rhId, byte rhType, uint nowMs)
+    {
+        if (!mon.DelAggro(rhId, rhType) && rhId == mon.TargetId && rhType == mon.TargetType)
         {
-            _log.LogDebug("[mon] LEAVE mon {Mon}: nothing left to fight, AT_LEAVELB (going home).", mon.Id);
-            OnAiEvent(mon, AiTrigger.LeaveLb, 0, mon.HostId, leaveId, leaveType);
+            LeaveLb(mon, hostId, rhId, rhType, nowMs);
             return;
         }
-        DropAggro(mon, nowMs);   // script-less monsters keep the built-in reset
+        if (mon.Mode == MtGohome) return;
+
+        if (mon.HighestSurvivor() is { } top)
+        {
+            bool inView = top.ObjType == OtPc && _state.PlayersAround(mon).Any(p =>
+                p.State == EnterState.InGame && p.Char is { CharId: var cid } && cid == top.ObjId);
+            if (!inView) LeaveAggro(mon, top.HostId, top.ObjId, top.ObjType, nowMs);
+            else if (top.ObjId != mon.TargetId || top.ObjType != mon.TargetType) ApplyRetarget(mon, top);
+            return;
+        }
+        LeaveLb(mon, hostId, rhId, rhType, nowMs);
+    }
+
+    /// <summary>Nothing left to fight. The C++ fires <c>AT_LEAVELB</c> and lets the script decide: script 1 runs
+    /// ChgMode (BATTLE → GOHOME) then Gohome, so the monster runs back to its anchor, still driven by its host
+    /// client, until AT_ATHOME returns it to roaming.</summary>
+    private void LeaveLb(Monster mon, uint hostId, uint rhId, byte rhType, uint nowMs)
+    {
+        if (mon.Ai is not null)
+        {
+            if (mon.Mode == MtBattle)
+                _log.LogDebug("[mon] LEAVE mon {Mon}: nothing left to fight, AT_LEAVELB (going home).", mon.Id);
+            OnAiEvent(mon, AiTrigger.LeaveLb, 0, hostId, rhId, rhType);
+            return;
+        }
+        if (mon.Mode != MtNormal) DropAggro(mon, nowMs);   // script-less monsters keep the built-in reset
     }
 
     /// <summary>C++ <c>CTAICmdSetHost::ExecAI</c> (TAICmdSetHost.cpp:27) — an idle <b>aggressive</b> monster

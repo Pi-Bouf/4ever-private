@@ -1,4 +1,4 @@
-using TMap.Data;
+﻿using TMap.Data;
 using TMap.Protocol;
 using TMap.Server.Map;
 using Xunit;
@@ -136,8 +136,9 @@ public class AiEngineTests
         var (s, c) = await h.EnterAsync(1, 1, 1, x: 100, z: 100);
         s.Char!.CanHost = true; s.Char!.LastMoveMs = 0;
 
-        var mob = Mob(0x60001, 100, 100, Script(1, (AiTrigger.Enter, 0, Cmd(10, AiCommandKind.SetHost), 0, false)));
+        var mob = Mob(0x60001, 100, 100);
         h.Service.SpawnMonster(mob);
+        mob.Ai = Script(1, (AiTrigger.Enter, 0, Cmd(10, AiCommandKind.SetHost), 0, false));   // after the spawn's own AT_ENTER
         c.Clear();
 
         h.Service.OnAiEvent(mob, AiTrigger.Enter, 0, 1, 1, 1);
@@ -168,8 +169,9 @@ public class AiEngineTests
             (AiTrigger.AiComplete, 10, chgHost, 0, false),
             (AiTrigger.AiComplete, 11, chgMode, 0, false));
 
-        var mob = Mob(0x60002, 100, 100, ai);
+        var mob = Mob(0x60002, 100, 100);
         h.Service.SpawnMonster(mob);
+        mob.Ai = ai;   // after the spawn's own AT_ENTER
 
         h.Service.OnAiEvent(mob, AiTrigger.Enter, 0, 1, 1, 1);
 
@@ -203,10 +205,11 @@ public class AiEngineTests
     public void UnboundTriggerOrScriptlessMonster_IsASilentNoOp()
     {
         var h = new MapTestHarness();
-        var scripted = Mob(0x60004, 0, 0, Script(1, (AiTrigger.Enter, 0, Cmd(1, AiCommandKind.ChgMode), 0, false)));
+        var scripted = Mob(0x60004, 0, 0);
         var bare = Mob(0x60005, 0, 0);
         h.Service.SpawnMonster(scripted);
         h.Service.SpawnMonster(bare);
+        scripted.Ai = Script(1, (AiTrigger.Enter, 0, Cmd(1, AiCommandKind.ChgMode), 0, false));   // after the spawn's AT_ENTER
 
         h.Service.OnAiEvent(scripted, AiTrigger.Dead);      // bound trigger, but not this one
         h.Service.OnAiEvent(bare, AiTrigger.Enter);         // no script at all

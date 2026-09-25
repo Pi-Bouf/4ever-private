@@ -59,6 +59,7 @@ public sealed partial class MapService
         }
         else
         {
+            CancelAi(mon);   // its scripted Leave must not outlive the body
             DespawnMonster(mon);
             RearmSpawnSlot(mon.Id, nowMs);
         }
@@ -69,6 +70,7 @@ public sealed partial class MapService
     {
         foreach (var mon in _state.AllMonsters().Where(m => m.Dead && m.CorpseExpireMs <= nowMs).ToList())
         {
+            CancelAi(mon);   // its scripted Leave must not outlive the body
             DespawnMonster(mon);
             RearmSpawnSlot(mon.Id, nowMs);
         }

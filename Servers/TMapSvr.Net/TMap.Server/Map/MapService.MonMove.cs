@@ -65,7 +65,7 @@ public sealed partial class MapService
             { _log.LogDebug("[mon] MONMOVE from char {Char}: mon {Mon} is hosted by {Host}; rejected.", s.CharId, monId, mon.HostId); continue; }
 
             // A corpse stops steering; a monster already in the dead animation is skipped outright.
-            if (mon.Hp == 0) { mouseDir = 0; keyDir = 0; }   // TKDIR_N
+            if (mon.Hp == 0) { mouseDir = Monster.TkdirN; keyDir = Monster.TkdirN; }
             if (mon.Action == TaDead) continue;
             if (posX <= 0 || posZ <= 0) continue;            // C++ rejects non-positive coordinates
 

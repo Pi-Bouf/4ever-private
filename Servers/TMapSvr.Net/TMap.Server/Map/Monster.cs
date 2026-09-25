@@ -17,6 +17,9 @@ public sealed class Monster
     /// <summary>OBJ_TYPE OT_MON (NetCode.h) — a field monster.</summary>
     public const byte OtMon = 2;
 
+    /// <summary>C++ <c>TKDIR_N</c> (NetCode.h:954) — no direction key held. The enum starts at <c>TKDIR_LF</c> = 0.</summary>
+    public const byte TkdirN = 4;
+
     /// <summary>The instance id (C++ <c>m_dwID</c>), composed deterministically from the spawn, not a
     /// counter: <c>(spawnId &lt;&lt; 16) | (channel &lt;&lt; 8) | slot</c> (C++ <c>MAKELONG(MAKEWORD(slot, channel),
     /// spawnId)</c>, TMap.cpp:565).</summary>
@@ -51,8 +54,10 @@ public sealed class Monster
     public float PosZ { get; set; }
     public ushort Pitch { get; set; }
     public ushort Dir { get; set; }
-    public byte MouseDir { get; set; }
-    public byte KeyDir { get; set; }
+    // C++ CTObjBase starts both at TKDIR_N (TObjBase.cpp:39). 0 is TKDIR_LF — "moving left-forward" — so a 0
+    // default announced every fresh monster as walking, and a client with no host for it kept it walking.
+    public byte MouseDir { get; set; } = TkdirN;
+    public byte KeyDir { get; set; } = TkdirN;
     public byte Action { get; set; }
     public byte Mode { get; set; }               // TMODE_TYPE — MT_NORMAL = 0 at spawn
     public byte Country { get; set; }

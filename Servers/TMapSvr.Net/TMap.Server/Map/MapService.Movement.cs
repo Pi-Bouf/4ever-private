@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using TMap.Data;
 using TMap.Protocol;
 
 namespace TMap.Server.Map;
@@ -43,10 +44,16 @@ public sealed partial class MapService
         ch.Pitch = pitch; ch.Dir = dir;
         ch.MouseDir = mouseDir; ch.KeyDir = keyDir; ch.Action = action;
 
-        // Monster host-acquisition inputs (C++ CSHandler.cpp:517/555): every move stamps the recency clock and
-        // makes the player host-eligible, so a nearby aggressive monster can aggro it on sight (Phase 45).
+        // Monster host-acquisition inputs (C++ CSHandler.cpp:517/555): every move stamps the recency clock; the
+        // first real move (not a stand) makes the player host-eligible and fires AT_ENTER on the monsters around
+        // it, so the ones that found no host while it stood still get one now.
         ch.LastMoveMs = NowMs;
-        ch.CanHost = true;
+        if (!ch.CanHost && action != TaStand)
+        {
+            ch.CanHost = true;
+            foreach (var m in _state.MonstersInView(s).ToList())
+                if (m.Ai is not null) OnAiEvent(m, AiTrigger.Enter);
+        }
 
         RelocateAndExchangeView(s, posX, posY, posZ);
 
@@ -163,9 +170,29 @@ public sealed partial class MapService
 
         // Monsters that entered / left the mover's view (one-directional — monsters have no client). C++
         // CTMap::OnMove runs the same cell diff over m_mapMONSTER via CTCell::EnterPlayer/LeavePlayer.
-        foreach (var m in diff.LeftMonsters) SendCS_DELMON_ACK(s, m.Id, exitMap: false);
-        foreach (var m in diff.EnteredMonsters) SendCS_ADDMON_ACK(s, m, newMember: false);
+        foreach (var m in diff.LeftMonsters)
+        {
+            SendCS_DELMON_ACK(s, m.Id, exitMap: false);
+            MonsterLostSight(m, s.CharId);
+        }
+        foreach (var m in diff.EnteredMonsters)
+        {
+            SendCS_ADDMON_ACK(s, m, newMember: false);
+            // C++ CTCell::EnterPlayer (TCell.cpp:103): the monster sees the newcomer.
+            if (m.Ai is not null) OnAiEvent(m, AiTrigger.Enter, 0, s.CharId, s.CharId, OtPc);
+        }
         ApplySwitchGateDiff(s, diff); // switches/gates entering/leaving the 3×3 (static objects, Phase 32)
+    }
+
+    /// <summary>C++ <c>CTCell::LeavePlayer</c> (TCell.cpp:376-387), per monster: a player it could see is gone,
+    /// by walking out of its 3×3 or by leaving the map. Its hate goes (<c>LeaveAggro</c>, which may send a
+    /// fighter home) and <c>AT_LEAVE</c> fires — script 1's <c>ChkHost</c>, which hands the monster to another
+    /// player in view or resets it. The player must already be out of the monster's view when this runs.</summary>
+    private void MonsterLostSight(Monster m, uint charId)
+    {
+        LeaveAggro(m, charId, charId, OtPc, NowMs);
+        if (m.Ai is not null && _state.FindMonster(m.Id) == m)
+            OnAiEvent(m, AiTrigger.Leave, 0, charId, charId, OtPc);
     }
 
     private void BroadcastLeave(ClientSession s, bool exitMap)
