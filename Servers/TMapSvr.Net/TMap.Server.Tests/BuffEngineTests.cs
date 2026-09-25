@@ -295,7 +295,7 @@ public class BuffEngineTests
         };
         h.Service.SpawnMonster(mob);
         h.Service.CombatRng = new Random(1);
-        h.Service.RunMonsterAI(1_000);
+        await h.MonsterTurnAsync(1_000);
 
         Assert.Equal(0u, ch.Hp);                                           // dead
         Assert.DoesNotContain(ch.MaintainSkills, m => m.SkillId == 900);   // non-static dropped

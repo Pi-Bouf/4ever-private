@@ -45,8 +45,11 @@ public sealed class ClientConnection : IClientChannel, IAsyncDisposable
         set => _cipher.UseCrypt = value;
     }
 
-    public void Send(byte[] packet) => _sendQueue.Writer.TryWrite(packet);
-    public void Send(PacketWriter writer) => Send(writer.ToArray());
+    /// <summary>Queues a copy: the send loop encrypts in place with this connection's own sequence number, and a
+    /// broadcast hands the same array to every viewer — encrypting it once per viewer corrupted every copy but one
+    /// (the C++ builds a <c>CPacket</c> per session).</summary>
+    public void Send(byte[] packet) => _sendQueue.Writer.TryWrite((byte[])packet.Clone());
+    public void Send(PacketWriter writer) => _sendQueue.Writer.TryWrite(writer.ToArray());
 
     /// <summary>Requests an orderly close of this connection (drains the send queue first).</summary>
     public void Close() => _ = DisposeAsync();

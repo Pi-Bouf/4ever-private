@@ -99,7 +99,7 @@ internal sealed class MapTestHarness
     /// monster (OT_MON). The 33-field body is filled with zeros except the fields the handler uses.</summary>
     public static byte[] DefendReq(uint attackerId, uint targetId, byte attackType = 1, byte targetType = 2,
         ushort skillId = 0, byte skillLevel = 1, byte attackerLevel = 10, uint hostId = 0,
-        ushort transHp = 0, ushort transMp = 0)
+        ushort transHp = 0, ushort transMp = 0, uint actId = 0, uint aniId = 0)
     {
         var w = new PacketWriter(Msg.CS_DEFEND_REQ);
         w.WriteUInt32(hostId);       // dwHostID
@@ -108,8 +108,8 @@ internal sealed class MapTestHarness
         w.WriteByte(attackType);     // bAttackType
         w.WriteByte(targetType);     // bTargetType
         w.WriteUInt16(0);            // wAttackPartyID
-        w.WriteUInt32(0);            // dwActID
-        w.WriteUInt32(0);            // dwAniID
+        w.WriteUInt32(actId);        // dwActID
+        w.WriteUInt32(aniId);        // dwAniID
         w.WriteByte(1);              // bChannel
         w.WriteUInt16(0);            // wMapID
         w.WriteByte(attackerLevel);  // bAttackerLevel
@@ -481,6 +481,34 @@ internal sealed class MapTestHarness
         await Service.DispatchWorldAsync(CheckMainReq(charId, key, channel, mapId, x, y, z));
         await Service.DispatchWorldAsync(ConResultReq(charId, key, ConnectResult.Success));
         await Service.DispatchClientAsync(session, ConReady());
+        _clients.Add((session, client));
         return (session, client);
     }
+
+    private readonly List<(ClientSession session, FakeClientChannel client)> _clients = new();
+
+    /// <summary>One monster-AI tick, then every client plays the host's part: each <c>CS_MONATTACK_ACK</c> it
+    /// received during the tick is answered with the <c>CS_DEFEND_REQ</c> the real client sends when that
+    /// swing lands. Monster damage is dealt only on that report, so this is how a test sees it.</summary>
+    public async Task MonsterTurnAsync(long nowMs)
+    {
+        var before = _clients.Select(x => x.client.WithId(Msg.CS_MONATTACK_ACK).Count()).ToList();
+        Service.RunMonsterAI(nowMs);
+        for (int i = 0; i < _clients.Count; i++)
+        {
+            var (session, client) = _clients[i];
+            foreach (var ack in client.WithId(Msg.CS_MONATTACK_ACK).Skip(before[i]).ToList())
+            {
+                var r = new PacketReader(ack);
+                uint monId = r.ReadUInt32(), targetId = r.ReadUInt32();
+                r.ReadByte(); r.ReadByte();
+                ushort skillId = r.ReadUInt16();
+                await Service.DispatchClientAsync(session, MonsterHitReq(monId, targetId, skillId));
+            }
+        }
+    }
+
+    /// <summary>The host client's report that a monster swing landed on a player.</summary>
+    public static byte[] MonsterHitReq(uint monId, uint charId, ushort skillId = MonsterMelee)
+        => DefendReq(monId, charId, attackType: 2, targetType: 1, skillId: skillId);
 }

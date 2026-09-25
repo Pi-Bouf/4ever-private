@@ -142,6 +142,9 @@ public sealed class Item
     /// FLOAT product BEFORE the integer <c>/100</c> — compute the product in float, cast, then divide.
     /// Falls back to the raw stored value when either template is missing (DB-free / unknown id).
     /// </summary>
+    /// <summary>The value the client shows for one option (see <see cref="MagicValue"/>).</summary>
+    public ushort DisplayValue(in MagicOption m) => MagicValue(m);
+
     private ushort MagicValue(in MagicOption m)
     {
         var itemT = Template;
@@ -240,6 +243,65 @@ public sealed class Item
         : (uint)GetMagicValue(MPdp) + (Template.Type != ItShield ? Attr.Dp : 0u);
     public uint GetMagicDefPower() => Attr is null || Template is null ? 0u
         : (uint)GetMagicValue(MMdp) + (Template.Type != ItShield ? Attr.MagicDp : 0u);
+
+    /// <summary>C++ <c>CTItem::CanUse</c> (TItem.cpp:550) — a wrapped item cannot be used or crafted.</summary>
+    public bool CanUse => Ext[IevWrap] == 0;
+
+    private const byte ItDefensive = 2, FtypeItemPower = 21, FtypeWeaponPower = 22;
+
+    // C++ GetWeaponPowerLevel / GetShieldPowerLevel rate tables, by item kind (IK_NONE .. IK_SARROW) and equip slot.
+    private static readonly float[] WeaponKindRate =
+        { 0f, 0.75f, 0.2f, 1f, 1f, 1.1f, 0.8f, 1f, 0.8f, 1f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f };
+    private static readonly float[] ShieldKindRate =
+        { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0.8f, 1f, 1.3f, 1.3f, 1.3f, 1.3f, 1.3f, 1.3f, 0f, 0f, 0f, 0f, 0f, 0f, 0f };
+    private static readonly float[] ShieldPartRate =
+        { 0f, 0.3f, 0f, 0.2f, 0f, 0.3f, 0.25f, 0.15f, 0.1f, 0f, 0f, 0f, 0f, 0f, 0f };
+
+    /// <summary>C++ <c>CTItem::GetPowerLevel</c> (TItem.cpp:296): an item carrying attack or defence options is
+    /// rated by what it actually does (the weapon/shield log formulas); any other item by its attr grade.</summary>
+    public byte GetPowerLevel(TemplateStore t)
+    {
+        if (Template is null || Attr is null) return 1;
+        if (GetMagicValue(MPap) == 0 && GetMagicValue(MLap) == 0 && GetMagicValue(MPdp) == 0
+            && GetMagicValue(MMap) == 0 && GetMagicValue(MMdp) == 0)
+            return Attr.Grade;
+        return Template.Type switch
+        {
+            ItWeapon or ItLong => WeaponPowerLevel(t),
+            ItDefensive or ItShield => ShieldPowerLevel(t),
+            _ => 1,
+        };
+    }
+
+    // C++ casts these floats straight to BYTE; a non-finite value (a zero power) is taken as 0.
+    private static byte ToByte(float v) => float.IsFinite(v) ? unchecked((byte)(int)v) : (byte)0;
+
+    private byte WeaponPowerLevel(TemplateStore t)
+    {
+        byte kind = Template!.Kind;
+        if (kind >= WeaponKindRate.Length || WeaponKindRate[kind] == 0f) return 1;
+        float levelConst = 1f / MathF.Log(t.Rate1st);
+        float minRate = t.Formula(FtypeWeaponPower)?.RateX ?? 1f, maxRate = t.Formula(FtypeWeaponPower)?.RateY ?? 1f;
+        uint minAp = (Template.Type == ItLong ? GetMinLAP() : GetMinAP()) + GetMinMagicAP();
+        uint maxAp = (Template.Type == ItLong ? GetMaxLAP() : GetMaxAP()) + GetMaxMagicAP();
+        byte lo = (byte)(ToByte(MathF.Log(minAp / (WeaponKindRate[kind] * minRate)) * levelConst) + 1);
+        byte hi = (byte)(ToByte(MathF.Log(maxAp / (WeaponKindRate[kind] * maxRate)) * levelConst) + 1);
+        return (byte)Math.Max((lo + hi) / 2, 1);
+    }
+
+    private byte ShieldPowerLevel(TemplateStore t)
+    {
+        byte kind = Template!.Kind, slot = Template.PrmSlot;
+        if (slot >= ShieldPartRate.Length || ShieldPartRate[slot] == 0f || kind >= ShieldKindRate.Length || ShieldKindRate[kind] == 0f)
+            return 1;
+        float levelConst = 1f / MathF.Log(t.Rate1st);
+        float itemRate = t.Formula(FtypeItemPower)?.RateX ?? 1f;
+        uint dp = GetDefendPower() + GetMagicDefPower();
+        if (Template.Type == ItShield) dp += (uint)(Attr!.Dp + Attr.MagicDp);
+        float r = dp / (ShieldKindRate[kind] * ShieldPartRate[slot] * itemRate);
+        r = MathF.Log(r) * levelConst + 1;
+        return Math.Max(ToByte(r), (byte)1);
+    }
 }
 
 /// <summary>

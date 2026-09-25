@@ -127,7 +127,7 @@ public class ShieldBlockTests
         var player = Shielded(Shield(blockProb: 100, dp: 30));   // block power 30 subtracts from the 50 swing
         var (h, s, c) = await Attack(player);
 
-        h.Service.RunMonsterAI(1_000);
+        await h.MonsterTurnAsync(1_000);
 
         Assert.Equal(80u, player.Hp);                            // 100 − max(50 − 30, 5) = 100 − 20
         Assert.Equal(HtBlock, AtkHitOf(c.Last(Msg.CS_DEFEND_ACK)!));
@@ -139,7 +139,7 @@ public class ShieldBlockTests
         var player = Shielded();                                 // no shield equipped
         var (h, s, c) = await Attack(player);
 
-        h.Service.RunMonsterAI(1_000);
+        await h.MonsterTurnAsync(1_000);
 
         Assert.Equal(50u, player.Hp);                            // 100 − 50 (no reduction)
         Assert.Equal(HtNormal, AtkHitOf(c.Last(Msg.CS_DEFEND_ACK)!));
@@ -152,7 +152,7 @@ public class ShieldBlockTests
         player.Hp = 10;                                          // the 20 blocked damage is still lethal
         var (h, s, c) = await Attack(player);
 
-        h.Service.RunMonsterAI(1_000);
+        await h.MonsterTurnAsync(1_000);
 
         Assert.Equal(0u, player.Hp);
         Assert.Equal(HtLastHit, AtkHitOf(c.Last(Msg.CS_DEFEND_ACK)!)); // a kill wins over the block flag in the report

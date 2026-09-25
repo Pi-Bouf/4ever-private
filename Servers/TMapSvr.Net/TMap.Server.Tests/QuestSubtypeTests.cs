@@ -118,8 +118,10 @@ public class QuestSubtypeTests
     }
 
     [Fact]
-    public async Task Teleport_SameMap_Repositions()
+    public async Task Teleport_SameMap_FarAway_GoesThroughTheWorld()
     {
+        // More than a cell away, so not a local hop: the C++ starts the world round trip (TMapSvr.cpp:7258) and the
+        // position only changes when the world answers MW_STARTTELEPORT_REQ.
         var store = Store();
         store.Quests[6400] = Q(6400, QuestType.Teleport, Giver, terms: new[]
         {
@@ -132,7 +134,16 @@ public class QuestSubtypeTests
 
         await h.Service.DispatchClientAsync(s, MapTestHarness.QuestExecReq(6400));
 
-        Assert.Equal(250f, s.Char!.PosX);
+        Assert.True(h.World.Has(Msg.MW_BEGINTELEPORT_ACK));
+        Assert.True(c.Has(Msg.CS_BEGINTELEPORT_ACK));
+        Assert.Equal(100f, s.Char!.PosX);     // not yet
+
+        var w = new PacketWriter(Msg.MW_STARTTELEPORT_REQ);
+        w.WriteUInt32(s.CharId); w.WriteUInt32(s.Key); w.WriteByte(s.Channel); w.WriteUInt16(0);
+        w.WriteFloat(250); w.WriteFloat(0); w.WriteFloat(400);
+        await h.Service.DispatchWorldAsync(w.ToArray());
+
+        Assert.Equal(250f, s.Char.PosX);
         Assert.Equal(400f, s.Char.PosZ);
     }
 
@@ -142,7 +153,7 @@ public class QuestSubtypeTests
         var store = Store();
         store.Quests[6500] = Q(6500, QuestType.Teleport, Giver, terms: new[]
         {
-            (9u, QttMapId, (byte)0),      // a DIFFERENT map ⇒ cross-map (deferred): no reposition
+            (9u, QttMapId, (byte)0),      // a DIFFERENT map ⇒ the world round trip: no reposition yet
             (250u, QttLeft, (byte)0),
             (400u, QttTop, (byte)0),
         });

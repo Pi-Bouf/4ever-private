@@ -135,6 +135,30 @@ public sealed class Character
     /// full-row save doesn't zero them (loaded from <c>TCHARTABLE</c>, written back unchanged).</summary>
     public CharPersistExtras Persist { get; } = new();
 
+    // ---- the death penalty (C++ m_aftermath, TMapType.h:1296) ----
+    // The step (0..100) is Persist.Aftermath — it is what the DB stores. The rest derives from it.
+
+    /// <summary>C++ <c>m_aftermath.m_dwTick</c> — when the next one-step recovery is due (map ms clock).</summary>
+    public uint AftermathTick { get; set; }
+
+    // ---- mail (C++ m_pPost / m_dwPostID / m_wPostTotal / m_wPostRead) ----
+
+    /// <summary>The mail being read — the one take-item, delete and return act on.</summary>
+    public Post? OpenPost { get; set; }
+
+    /// <summary>A mail read still in flight (C++ <c>m_dwPostID</c>); 0 when none.</summary>
+    public uint PostPending { get; set; }
+
+    public ushort PostTotal { get; set; }
+    public ushort PostNotRead { get; set; }
+
+    /// <summary>C++ <c>CalcMoney(gold, silver, cooper)</c> for an arbitrary amount.</summary>
+    public long MoneyOf(uint gold, uint silver, uint cooper)
+        => cooper + (long)silver * MoneyMultiply + (long)gold * MoneyMultiply * MoneyMultiply;
+
+    /// <summary>C++ <c>m_aftermath.m_fStatDec</c> — the percentage every primary stat loses (<c>step · 0.3</c>).</summary>
+    public float AftermathStatDec => (float)(Persist.Aftermath * 0.3);
+
     // ---- Phase-2: loaded inventory / gear / skills / hotkeys ----
 
     /// <summary>Inventory containers keyed by container id (0xFF backpack, 0xFE equipped, timed bags…).</summary>

@@ -67,13 +67,13 @@ public sealed partial class MapService
         r.ReadUInt16();                       // wMapID
         byte attackerLevel = r.ReadByte();    // bAttackerLevel
         r.ReadUInt32(); r.ReadUInt32();       // dwPysMinPower, dwPysMaxPower (server re-derives below)
-        r.ReadUInt32(); r.ReadUInt32();       // dwMgMinPower, dwMgMaxPower
+        uint mgMin = r.ReadUInt32(), mgMax = r.ReadUInt32();   // dwMgMinPower, dwMgMaxPower (echoed for a monster hit)
         ushort transHp = r.ReadUInt16(), transMp = r.ReadUInt16();  // wTransHP/wTransMP — the SCT_HPTRANS/MPTRANS source
         r.ReadByte();                         // bCurseProb
         r.ReadByte();                         // bEquipSpecial
         byte canSelect = r.ReadByte();        // bCanSelect
         r.ReadByte();                         // bAttackCountry  (client value ignored — C++ re-derives from the attacker)
-        r.ReadByte();                         // bAttackAidCountry (re-derived)
+        byte aidCountry = r.ReadByte();       // bAttackAidCountry (re-derived for a player; echoed for a monster hit)
         r.ReadUInt16();                       // wAttackLevel     (re-derived server-side, CSHandler.cpp:1587)
         r.ReadByte();                         // bCP (crit prob — deferred)
         ushort skillId = r.ReadUInt16();      // wSkillID
@@ -83,10 +83,43 @@ public sealed partial class MapService
         r.ReadUInt32();                       // dwRemainTick
 
         if (s.State != EnterState.InGame || s.Char is not { } ch) return;
+        if (attackType == Monster.OtMon)
+        {
+            OnMonsterHitReport(s, ch, attackId, targetId, targetType, skillId, actId, aniId,
+                atkX, atkY, atkZ, defX, defY, defZ, new MonsterHitEcho(canSelect, mgMin, mgMax, aidCountry));
+            return;
+        }
         if (attackType != OtPc) return;
 
         PlayerHitsTarget(s, ch, hostId, attackId, attackType, targetId, targetType, actId, aniId, attackerLevel,
             transHp, transMp, canSelect, skillId, skillLevel, atkX, atkY, atkZ, defX, defY, defZ);
+    }
+
+    /// <summary>C++ <c>OnCS_DEFEND_REQ</c>, monster attacker (CSHandler.cpp:1522-1587). A host client reports the
+    /// moment one of its monsters' swings lands; this is where monster damage is dealt. The reporter becomes
+    /// the host; the attacking monster must own the skill (<c>pATTACK-&gt;FindTSkill</c>), whose level is the
+    /// monster's own — always 1 (TAICmdRegen.cpp:94); power, crit and attack level are re-derived from the
+    /// monster, so nothing the client sends about strength is trusted.
+    /// <para>Not in the C++, kept as a guard: a monster already dead does not land a hit. Monster → monster /
+    /// summon targets are not ported.</para></summary>
+    private void OnMonsterHitReport(ClientSession s, Character reporter, uint monId, uint targetId, byte targetType,
+        ushort skillId, uint actId, uint aniId, float atkX, float atkY, float atkZ, float defX, float defY, float defZ,
+        MonsterHitEcho echo)
+    {
+        if (!_templates.Skills.TryGetValue(skillId, out var tpl)) return;                     // FindTSkill
+        if (tpl.MapId != 0xFFFF && tpl.MapId != reporter.MapId) return;                      // INVALID_MAPID = any map
+        if (_state.FindMonster(monId) is not { Hp: > 0 } mon) return;
+        if (!_templates.MonsterTemplates.TryGetValue(mon.ChartId, out var chart) || !chart.Skills.Contains(skillId))
+            return;                                                                          // the monster's own skill
+        if (targetType != OtPc) return;
+
+        // FindTarget(pPlayer, OT_PC, id): a player on the reporter's map; a dead one cannot be hit.
+        if (_state.FindByChar(targetId) is not { State: EnterState.InGame, Char: { Hp: > 0 } target } ts
+            || ts.Channel != s.Channel || target.MapId != reporter.MapId)
+            return;
+
+        MonsterHitsPlayer(mon, target, s.CharId, skillId, skillLevel: 1, actId, aniId,
+            atkX, atkY, atkZ, defX, defY, defZ, _tickSeconds * 1000L, echo);
     }
 
     /// <summary>

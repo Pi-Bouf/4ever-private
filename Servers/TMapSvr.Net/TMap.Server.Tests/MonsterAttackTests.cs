@@ -39,7 +39,7 @@ public class MonsterAttackTests
         var ch = Victim(hp: 100);
         var (h, s, c, mob) = await Setup(ch, Attacker()); // player 20 units from the anchor (< AttackRange 50)
 
-        h.Service.RunMonsterAI(1_000);
+        await h.MonsterTurnAsync(1_000);
 
         Assert.Equal(80u, ch.Hp);                    // 100 − 20
         Assert.True(c.Has(Msg.CS_MONATTACK_ACK));    // the swing announce
@@ -53,13 +53,13 @@ public class MonsterAttackTests
         var ch = Victim(hp: 100);
         var (h, s, c, mob) = await Setup(ch, Attacker());
 
-        h.Service.RunMonsterAI(1_000);               // hit (arms cadence to 3000)
+        await h.MonsterTurnAsync(1_000);               // hit (arms cadence to 3000)
         Assert.Equal(80u, ch.Hp);
 
-        h.Service.RunMonsterAI(1_500);               // within AtkSpeed ⇒ no hit
+        await h.MonsterTurnAsync(1_500);               // within AtkSpeed ⇒ no hit
         Assert.Equal(80u, ch.Hp);
 
-        h.Service.RunMonsterAI(3_000);               // due again
+        await h.MonsterTurnAsync(3_000);               // due again
         Assert.Equal(60u, ch.Hp);
     }
 
@@ -69,7 +69,7 @@ public class MonsterAttackTests
         var ch = Victim(hp: 20);                     // one 20-damage hit is lethal
         var (h, s, c, mob) = await Setup(ch, Attacker());
 
-        h.Service.RunMonsterAI(1_000);
+        await h.MonsterTurnAsync(1_000);
 
         Assert.Equal(0u, ch.Hp);
         Assert.True(c.Has(Msg.CS_DIE_ACK));
@@ -83,7 +83,7 @@ public class MonsterAttackTests
         var ch = Victim(hp: 100);
         var (h, s, c, mob) = await Setup(ch, Attacker());
 
-        h.Service.RunMonsterAI(1_000);
+        await h.MonsterTurnAsync(1_000);
 
         var r = new PacketReader(c.Last(Msg.CS_DEFEND_ACK)!);
         Assert.Equal(mob.Id, r.ReadUInt32());        // dwAttackID = the monster
@@ -118,7 +118,7 @@ public class MonsterAttackTests
         var mob = Attacker(); mob.CritProb = 77;
         var (h, s, c, _) = await Setup(Victim(hp: 100), mob);
 
-        h.Service.RunMonsterAI(1_000);
+        await h.MonsterTurnAsync(1_000);
 
         var (bHit, bPerform, mapCount) = ParseDefend(c.Last(Msg.CS_DEFEND_ACK)!);
         Assert.Equal((byte)77, bHit);        // bHit carries the monster's crit prob, not 0
@@ -133,7 +133,7 @@ public class MonsterAttackTests
         var ch = Victim(hp: 100);
         var (h, s, c, _) = await Setup(ch, mob);
 
-        h.Service.RunMonsterAI(1_000);
+        await h.MonsterTurnAsync(1_000);
 
         Assert.Equal(100u, ch.Hp);                   // no damage on a miss
         var (_, bPerform, mapCount) = ParseDefend(c.Last(Msg.CS_DEFEND_ACK)!);
@@ -148,7 +148,7 @@ public class MonsterAttackTests
         // 60 units from the anchor: past AttackRange (50), within leash (800), still in the monster's 3×3.
         var (h, s, c, mob) = await Setup(ch, Attacker(), px: 100, pz: 160);
 
-        h.Service.RunMonsterAI(1_000);
+        await h.MonsterTurnAsync(1_000);
 
         Assert.Equal(100u, ch.Hp);                   // not hit
         Assert.False(c.Has(Msg.CS_MONATTACK_ACK));

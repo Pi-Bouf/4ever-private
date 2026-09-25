@@ -72,6 +72,9 @@ public readonly record struct MaintainLoadRow(
 /// <summary>A hotkey page from <c>THOTKEYTABLE</c> (CTBLHotKey): the page key + 12 (type,id) slots.</summary>
 public readonly record struct HotkeyLoadRow(byte InvenKey, (byte Type, ushort Id)[] Slots);
 
+/// <summary>One <c>TSaveHotkey</c> call: <see cref="Verb"/> 1 delete / 2 insert / 3 update (the proc's own codes).</summary>
+public readonly record struct HotkeySaveRow(byte Verb, byte InvenKey, (byte Type, ushort Id)[] Slots);
+
 /// <summary>A cabinet open-state header from <c>TCABINETTABLE</c> (C++ <c>CTBLCabinetTable</c>, DBAccess.h:2845):
 /// which of the character's cabinets exist and whether each is opened (<c>bUse</c>). Its items are ordinary
 /// <c>TITEMTABLE</c> rows with <c>bStorageType=STORAGE_CABINET</c> (loaded by <see cref="GameDatabase.LoadItemsAsync"/>).</summary>
@@ -95,7 +98,7 @@ public readonly record struct QuestTermLoadRow(uint QuestId, uint TermId, byte T
 /// Every method degrades gracefully (throws a <see cref="SqlException"/> the caller catches) so the map
 /// runs DB-free.
 /// </summary>
-public sealed class GameDatabase
+public sealed partial class GameDatabase
 {
     private readonly string _cs;
     public GameDatabase(string connectionString) => _cs = connectionString;
@@ -122,16 +125,23 @@ public sealed class GameDatabase
     private const string ItemChartSql =
         @"SELECT wItemID, bRefineMax, fRevision, fMRevision, fAtRate, fMAtRate, bType, wAttrID, dwSpeedInc,
                  bLevel, dwClassID, dwSlotID, bPrmSlotID, bSubSlotID, bStack, bKind, wUseValue, dwDelay,
-                 fPrice, bCanRepair, wDelayGroupID, bConsumable, bIsSell FROM TITEMCHART";
+                 fPrice, bCanRepair, wDelayGroupID, bConsumable, bIsSell,
+                 bGrade, bCanGrade, bCanMagic, bCanRare, bCanWrap, bCanColor, dwDuraMax FROM TITEMCHART";
     // The per-level chart (CTBLLevelChart): the repair-cost coefficient (m_dwRepairCost), dwEXP (the
     // level-up threshold) + bSkillPoint (granted per level), and dwMoney (the base price the item
     // buy/sell math scales by m_fPrice).
-    private const string LevelChartSql = @"SELECT bLevel, dwRepairCost, dwEXP, bSkillPoint, dwMoney FROM TLEVELCHART";
+    private const string LevelChartSql = @"SELECT bLevel, dwRepairCost, dwEXP, bSkillPoint, dwMoney, dwRefineCost FROM TLEVELCHART";
     // The NPC registry + per-NPC shop stock (CTBLNpc → m_mapTNpc, CTBLNpcItemAll → m_mapItem).
     private const string NpcChartSql =
         @"SELECT wID, bType, bCountryID, wLocalID, bCondition, bDiscountRate, bAddProb, wItemID, wMapID,
                  fPosX, fPosY, fPosZ FROM TNPCCHART";
     private const string NpcItemChartSql = @"SELECT wNpcID, dwItemID FROM TNPCITEMCHART ORDER BY wNpcID";
+    // Teleport data (CTBLSpawnPos / CTBLPortalChart / CTBLDestinationChartAll, DBAccess.h:2480/2987/3053).
+    private const string SpawnPosChartSql = @"SELECT wID, wMapID, fPosX, fPosY, fPosZ, bType FROM TSPAWNPOSCHART";
+    private const string PortalChartSql = @"SELECT wPortalID, bCountry, wLocalID, wSpawnID, bCondition FROM TPORTALCHART";
+    private const string DestinationChartSql =
+        @"SELECT wPortalID, wDestID, dwPrice, bEnable, bCondition1, dwConditionID1, bCondition2, dwConditionID2,
+                 bCondition3, dwConditionID3 FROM TDESTINATIONCHART WITH (NOLOCK) ORDER BY wPortalID";
     // The map switch/gate charts (C++ CTBLSwitchChart DBAccess.h:3104 / CTBLGateChart :3092). Column
     // order is the value-exact contract. Gate columns are gateId, switchId, bType, mapId, pos (SELECT order).
     private const string SwitchChartSql =
@@ -163,7 +173,7 @@ public sealed class GameDatabase
         @"SELECT wID, wMapID, fPosX, fPosY, fPosZ, wDir, bCountry, bCount, bRange, bProb, dwRegion, dwDelay, bEvent, bArea FROM TMONSPAWNCHART";
     private const string MapMonChartSql = @"SELECT wSpawnID, wMonID, bLeader, bEssential, bProb FROM TMAPMONCHART ORDER BY wSpawnID";
     private const string MagicChartSql =
-        @"SELECT bMagic, bRvType, wMaxValue FROM TITEMMAGICCHART";
+        @"SELECT bMagic, bRvType, wMaxValue, dwKind, bIsMagic, bIsRare, bExclIndex, bOptionKind, wRareBound FROM TITEMMAGICCHART";
     // Stat / HP-MP charts (FORMULA_TYPE FTYPE_1ST = 34 is the per-level stat-growth factor).
     private const string FormulaChartSql = @"SELECT bID, dwInit, fRateX, fRateY FROM TFORMULACHART";
     private const string ClassChartSql = @"SELECT bClassID, wSTR, wDEX, wCON, wINT, wWIS, wMEN FROM TCLASSCHART";
@@ -171,13 +181,19 @@ public sealed class GameDatabase
     // Item-attribute (AP/DP) charts.
     private const string ItemAttrChartSql =
         @"SELECT wID, bKind, bGrade, wMinAP, wMaxAP, wDP, wMinMAP, wMaxMAP, wMDP, bBlockProb FROM TITEMATTRCHART";
-    private const string ItemGradeChartSql = @"SELECT bLevel, bGrade FROM TITEMGRADECHART";
+    private const string ItemGradeChartSql = @"SELECT bLevel, bGrade, bProb, dwMoney FROM TITEMGRADECHART";
+    private const string GemGradeChartSql = @"SELECT bGem, bProb FROM TGEMGRADECHART";
+    private const string AccessoryMagicSql = @"SELECT ID, MagicID, MinValue, MaxValue FROM ACCESSORYMAGICTABLE";
+    private const string CashGambleChartSql = @"SELECT dwID, dwProb, wGroup, wUseTime, wItemID, bLevel, bCount, bGLevel,
+                 dwDuraMax, dwDuraCur, bRefineCur, bGradeEffect,
+                 bMagic1, bMagic2, bMagic3, bMagic4, bMagic5, bMagic6, wValue1, wValue2, wValue3, wValue4, wValue5, wValue6,
+                 dwTime1, dwTime2, dwTime3, dwTime4, dwTime5, dwTime6, bGem, wMoggItemID FROM TVIEW_CASHGAMBLECHART";
     // The skill chart (CTBLSkillChart → CTSkillTemp). Of the 56-column C++ SELECT we read the
     // subset the CS_SKILLUSE caster spine uses. Note bLevel → m_bStartLevel (the C++ remaps it, TMapSvr.cpp:2630).
     private const string SkillChartSql =
         @"SELECT wID, bKind, dwUseMP, bUseMPType, dwUseHP, bUseHPType, bLevel, bMaxLevel, bNextLevel,
                  dwReuseDelay, nReuseDelayInc, dwLoopDelay, dwKindDelay, bSpeedApply, bPositive, wMapID,
-                 dwDuration, dwDurationInc, bMaintainType, bPriority, bStatic, dwClassID FROM TSKILLCHART";
+                 dwDuration, dwDurationInc, bMaintainType, bPriority, bStatic, dwClassID, bGlobal FROM TSKILLCHART";
     // The skill-effect rows (CTBLSkillData → CTSkillTemp::m_vData). C++ runs one query per skill;
     // this bulk load buckets by wSkillID (natural table order per skill matches the per-skill fetch order).
     private const string SkillDataChartSql =
@@ -220,7 +236,10 @@ public sealed class GameDatabase
                     PrmSlot: r.GetByteSafe(12), SubSlot: r.GetByteSafe(13), Stack: r.GetByteSafe(14),
                     Kind: r.GetByteSafe(15), UseValue: r.GetUShortSafe(16), Delay: r.GetUIntSafe(17),
                     Price: r.GetFloatSafe(18), CanRepair: r.GetByteSafe(19),
-                    DelayGroup: r.GetUShortSafe(20), Consumable: r.GetByteSafe(21), IsSell: r.GetByteSafe(22));
+                    DelayGroup: r.GetUShortSafe(20), Consumable: r.GetByteSafe(21), IsSell: r.GetByteSafe(22),
+                    Grade: r.GetByteSafe(23), CanGrade: r.GetByteSafe(24), CanMagic: r.GetByteSafe(25),
+                    CanRare: r.GetByteSafe(26), CanWrap: r.GetByteSafe(27), CanColor: r.GetByteSafe(28),
+                    DuraMax: r.GetUIntSafe(29));
             }
 
         await using (var cmd = new SqlCommand(MagicChartSql, c))
@@ -228,7 +247,17 @@ public sealed class GameDatabase
             while (await r.ReadAsync(ct))
             {
                 byte id = r.GetByteSafe(0);
-                store.Magics[id] = new MagicTemplate(id, r.GetByteSafe(1), r.GetUShortSafe(2));
+                var m = new MagicTemplate(id, r.GetByteSafe(1), r.GetUShortSafe(2), Kind: r.GetUIntSafe(3),
+                    IsMagic: r.GetByteSafe(4), IsRare: r.GetByteSafe(5), ExclIndex: r.GetByteSafe(6),
+                    OptionKind: r.GetByteSafe(7), RareBound: r.GetUShortSafe(8));
+                store.Magics[id] = m;
+                // C++ m_vItemMagic[i] for i in 1..IK_HP-1 (IK_HP = 26): one list per item kind the option fits.
+                for (byte k = 1; k < 26; k++)
+                    if ((m.Kind & (1u << (k - 1))) != 0)
+                    {
+                        if (!store.MagicsByKind.TryGetValue(k, out var list)) store.MagicsByKind[k] = list = new();
+                        list.Add(m);
+                    }
             }
 
         await using (var cmd = new SqlCommand(FormulaChartSql, c))
@@ -267,7 +296,42 @@ public sealed class GameDatabase
             while (await r.ReadAsync(ct))
             {
                 byte level = r.GetByteSafe(0);
-                if (level < store.ItemGrades.Length) store.ItemGrades[level] = r.GetByteSafe(1);
+                if (level < store.ItemGrades.Length)
+                {
+                    store.ItemGrades[level] = r.GetByteSafe(1);
+                    store.ItemGradeProb[level] = r.GetByteSafe(2);
+                    store.ItemGradeMoney[level] = r.GetUIntSafe(3);
+                }
+            }
+
+        await using (var cmd = new SqlCommand(GemGradeChartSql, c))
+        await using (var r = await cmd.ExecuteReaderAsync(ct))
+            while (await r.ReadAsync(ct))
+            {
+                byte gem = r.GetByteSafe(0);
+                if (gem < store.GemProbs.Length) store.GemProbs[gem] = r.GetByteSafe(1);
+            }
+
+        await using (var cmd = new SqlCommand(AccessoryMagicSql, c))
+        await using (var r = await cmd.ExecuteReaderAsync(ct))
+            while (await r.ReadAsync(ct))
+                store.AccessoryMagic.Add(new AccessoryMagicRow(r.GetUIntSafe(0), r.GetByteSafe(1), r.GetUShortSafe(2), r.GetUShortSafe(3)));
+
+        await using (var cmd = new SqlCommand(CashGambleChartSql, c))
+        await using (var r = await cmd.ExecuteReaderAsync(ct))
+            while (await r.ReadAsync(ct))
+            {
+                var magic = new byte[6]; var value = new ushort[6]; var ext = new uint[6];
+                for (int i = 0; i < 6; i++) magic[i] = r.GetByteSafe(12 + i);
+                for (int i = 0; i < 6; i++) value[i] = r.GetUShortSafe(18 + i);
+                for (int i = 0; i < 6; i++) ext[i] = r.GetUIntSafe(24 + i);
+                var item = new FullItemRow(0, 0, 0, r.GetUShortSafe(4), r.GetByteSafe(5), r.GetByteSafe(6), r.GetByteSafe(7),
+                    r.GetUIntSafe(8), r.GetUIntSafe(9), r.GetByteSafe(10), 0, r.GetByteSafe(11), magic, value, ext,
+                    r.GetByteSafe(30), r.GetUShortSafe(31), 0);
+                var row = new CashGambleRow(r.GetUIntSafe(0), r.GetUIntSafe(1), r.GetUShortSafe(2), r.GetUShortSafe(3), item);
+                if (!store.CashGamble.TryGetValue(row.Group, out var list)) store.CashGamble[row.Group] = list = new();
+                list.Add(row);
+                store.CashGambleTotal[row.Group] = store.CashGambleTotal.GetValueOrDefault(row.Group) + row.Prob;
             }
 
         await using (var cmd = new SqlCommand(LevelChartSql, c))
@@ -279,6 +343,7 @@ public sealed class GameDatabase
                 store.LevelExp[level] = r.GetUIntSafe(2);
                 store.LevelSkillPoint[level] = r.GetByteSafe(3);
                 store.LevelMoney[level] = r.GetUIntSafe(4);
+                store.RefineCostByLevel[level] = r.GetUIntSafe(5);
             }
 
         // Skill templates. Each is stamped with the global f1stRateX (= store.Rate1st, the
@@ -297,7 +362,7 @@ public sealed class GameDatabase
                     SpeedApply: r.GetByteSafe(13), Positive: r.GetByteSafe(14), MapId: r.GetUShortSafe(15),
                     Duration: r.GetUIntSafe(16), DurationInc: r.GetUIntSafe(17), MaintainKind: r.GetByteSafe(18),
                     Priority: r.GetByteSafe(19), StaticFlag: r.GetByteSafe(20), ClassId: r.GetUIntSafe(21),
-                    Rate1stX: store.Rate1st);
+                    Rate1stX: store.Rate1st, Global: r.GetByteSafe(22) != 0);
             }
 
         await using (var cmd = new SqlCommand(SkillDataChartSql, c))
@@ -424,6 +489,39 @@ public sealed class GameDatabase
                 store.Npcs[id] = new NpcDef(id, r.GetByteSafe(1), r.GetByteSafe(2), r.GetUShortSafe(3),
                     r.GetByteSafe(4), r.GetByteSafe(5), r.GetByteSafe(6), r.GetUShortSafe(7), r.GetUShortSafe(8),
                     r.GetFloatSafe(9), r.GetFloatSafe(10), r.GetFloatSafe(11));
+            }
+
+        await using (var cmd = new SqlCommand(SpawnPosChartSql, c))
+        await using (var r = await cmd.ExecuteReaderAsync(ct))
+            while (await r.ReadAsync(ct))
+            {
+                ushort id = r.GetUShortSafe(0);
+                store.SpawnPositions[id] = new SpawnPosRow(id, r.GetUShortSafe(1), r.GetFloatSafe(2), r.GetFloatSafe(3),
+                    r.GetFloatSafe(4), r.GetByteSafe(5));
+            }
+
+        await using (var cmd = new SqlCommand(PortalChartSql, c))
+        await using (var r = await cmd.ExecuteReaderAsync(ct))
+            while (await r.ReadAsync(ct))
+            {
+                ushort id = r.GetUShortSafe(0);
+                store.Portals[id] = new PortalRow(id, r.GetByteSafe(1), r.GetUShortSafe(2), r.GetUShortSafe(3), r.GetByteSafe(4));
+            }
+
+        // A destination whose target portal does not exist is dropped, as in the C++ join (TMapSvr.cpp:3806).
+        await using (var cmd = new SqlCommand(DestinationChartSql, c))
+        await using (var r = await cmd.ExecuteReaderAsync(ct))
+            while (await r.ReadAsync(ct))
+            {
+                ushort portalId = r.GetUShortSafe(0), destId = r.GetUShortSafe(1);
+                if (!store.Portals.TryGetValue(portalId, out var portal) || !store.Portals.ContainsKey(destId)) continue;
+                var conds = new[]
+                {
+                    new PortalCondition(r.GetByteSafe(4), r.GetUIntSafe(5)),
+                    new PortalCondition(r.GetByteSafe(6), r.GetUIntSafe(7)),
+                    new PortalCondition(r.GetByteSafe(8), r.GetUIntSafe(9)),
+                };
+                portal.Destinations[destId] = new PortalDestination(destId, r.GetUIntSafe(2), r.GetByteSafe(3), conds);
             }
 
         await using (var cmd = new SqlCommand(NpcItemChartSql, c))
@@ -564,6 +662,34 @@ FROM TCHARTABLE WHERE dwCharID = @dwCharID AND bDelete = 0";
     /// <summary>C++ <c>TSaveQuest</c> + <c>TSaveQuestTerm</c> (CSPSaveQuest/CSPSaveQuestTerm) — the per-quest
     /// upsert keyed on <c>(dwCharID, dwQuestID)</c> (+ <c>dwTermID</c> for terms). Only the caller's dirty
     /// (<c>Save</c>-flagged) quests are passed. All rows share one connection. Missing procs are tolerated.</summary>
+    /// <summary>C++ <c>CSPSaveHotkey</c> (DBAccess.h:5813) — <c>TSaveHotkey(dwCharID, bSave, bInven, 12 × (bType, wID))</c>,
+    /// one call per page, from <c>OnDM_SAVECHAR_REQ</c> (SSHandler.cpp:7218).</summary>
+    public async Task SaveHotkeysAsync(uint charId, IReadOnlyList<HotkeySaveRow> pages, CancellationToken ct = default)
+    {
+        if (pages.Count == 0) return;
+        try
+        {
+            await using var c = await OpenAsync(ct);
+            foreach (var pg in pages)
+            {
+                var ps = new List<SqlParameter>
+                {
+                    SqlProc.In("@p0", SqlDbType.Int, unchecked((int)charId)),
+                    SqlProc.In("@p1", SqlDbType.TinyInt, pg.Verb),
+                    SqlProc.In("@p2", SqlDbType.TinyInt, pg.InvenKey),
+                };
+                for (int i = 0; i < HotkeyPosCount; i++)
+                {
+                    var (type, id) = i < pg.Slots.Length ? pg.Slots[i] : ((byte)0, (ushort)0);
+                    ps.Add(SqlProc.In($"@p{3 + i * 2}", SqlDbType.TinyInt, type));
+                    ps.Add(SqlProc.In($"@p{4 + i * 2}", SqlDbType.SmallInt, unchecked((short)id)));
+                }
+                await SqlProc.ExecAsync(c, "TSaveHotkey", SqlProc.Ret(), ps.ToArray(), ct);
+            }
+        }
+        catch (SqlException ex) when (ex.Number == 2812) { /* proc absent — tolerate */ }
+    }
+
     public async Task SaveQuestsAsync(uint charId, IReadOnlyList<QuestSaveRow> quests, CancellationToken ct = default)
     {
         if (quests.Count == 0) return;
@@ -803,6 +929,23 @@ FROM TITEMTABLE WHERE dwOwnerID = @dwOwnerID AND bOwnerType = @bOwnerType AND bS
         await using var cmd = new SqlCommand(FullItemSql, c);
         cmd.Parameters.Add(SqlProc.In("@dwOwnerID", SqlDbType.Int, unchecked((int)charId)));
         cmd.Parameters.Add(SqlProc.In("@bOwnerType", SqlDbType.TinyInt, Proto.OwnerChar));
+        return await ReadFullItems(cmd, ct);
+    }
+
+    /// <summary>C++ <c>CTBLPostItem</c> (DBAccess.h:1714) — the items attached to one mail: owner = the recipient,
+    /// <c>bStorageType = STORAGE_POST</c>, <c>dwStorageID</c> = the post id.</summary>
+    public async Task<List<FullItemRow>> LoadPostItemsAsync(uint charId, uint postId, CancellationToken ct = default)
+    {
+        await using var c = await OpenAsync(ct);
+        await using var cmd = new SqlCommand(FullItemSql.Replace("AND bStorageType <> 2", "AND bStorageType = 2 AND dwStorageID = @dwStorageID"), c);
+        cmd.Parameters.Add(SqlProc.In("@dwOwnerID", SqlDbType.Int, unchecked((int)charId)));
+        cmd.Parameters.Add(SqlProc.In("@bOwnerType", SqlDbType.TinyInt, Proto.OwnerChar));
+        cmd.Parameters.Add(SqlProc.In("@dwStorageID", SqlDbType.Int, unchecked((int)postId)));
+        return await ReadFullItems(cmd, ct);
+    }
+
+    private static async Task<List<FullItemRow>> ReadFullItems(SqlCommand cmd, CancellationToken ct)
+    {
         await using var r = await cmd.ExecuteReaderAsync(ct);
         var list = new List<FullItemRow>();
         while (await r.ReadAsync(ct))

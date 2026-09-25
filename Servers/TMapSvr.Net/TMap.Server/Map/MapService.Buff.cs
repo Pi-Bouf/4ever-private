@@ -227,6 +227,8 @@ public sealed partial class MapService
         else if (_state.FindByChar(targetId) is { State: EnterState.InGame, Char: { } tc } ts) { targetSession = ts; target = tc; }
         else return;
 
+        ApplyDeathCures(targetSession, target, attackId, tpl, level);
+
         bool changed = false;
         for (int i = 0; i < tpl.Data.Count; i++)
         {

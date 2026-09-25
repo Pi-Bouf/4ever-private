@@ -676,22 +676,50 @@ public sealed partial class WorldService
         SendToCharId(charId, key, BuildGuildMemberListReq(charId, key, guild));
     }
 
-    // ===== Phase 2: party handlers (in-memory) =====
+    // ===== party handlers =====
+    // C++ SSHandler.cpp:2334-2860 (OnMW_PARTYADD/JOIN/DEL/CHGPARTYCHIEF/CHGPARTYTYPE_ACK) and TWorldSvr.cpp:2817-2985
+    // (PartyAttr/JoinParty/LeaveParty). Every MW_PARTY*_REQ is addressed to the character that receives it — the
+    // map server finds its player by the header's charId/key. Not ported: the relay-server notices and the corps
+    // unit / squad-chief / enemy-list notices on join and leave.
+
+    private const byte PartyBusy = 2, PartyNoUser = 3, PartyNoReqUser = 4, PartyWaiters = 5, PartyAlready = 6,
+        PartyFull = 7, PartyNotChief = 8, PartyNoParty = 9, PartyChgChief = 10, PartyCountry = 11;   // TPARTY_RESULT
+
+    private Character? CharByName(string name) => _state.CharactersByName.TryGetValue(name, out var c) ? c : null;
+
+    /// <summary>C++ SetCharStatus: the HP/MP a map reported with a party request, shown to the other members.</summary>
+    private static void SetCharStatus(Character ch, uint maxHp, uint hp, uint maxMp, uint mp)
+    { ch.MaxHP = maxHp; ch.HP = hp; ch.MaxMP = maxMp; ch.MP = mp; }
 
     private void OnPartyAdd(PacketReader r)
     {
         string request = r.ReadString();
         string target = r.ReadString();
         byte obtainType = r.ReadByte();
-        _ = r.ReadUInt32(); _ = r.ReadUInt32(); _ = r.ReadUInt32(); _ = r.ReadUInt32(); // requester hp/mp
+        uint maxHp = r.ReadUInt32(), hp = r.ReadUInt32(), maxMp = r.ReadUInt32(), mp = r.ReadUInt32();
 
-        if (!_state.CharactersByName.TryGetValue(request, out var req) ||
-            !_state.CharactersByName.TryGetValue(target, out var tgt)) return;
-        if (tgt.PartyWaiter || tgt.Party is not null || req.Country != tgt.Country) return;
-        if (req.Party is not null && (!req.Party.IsChief(req.CharId) || req.Party.IsFull)) return;
+        var req = CharByName(request);
+        var tgt = CharByName(target);
+        if (req is null || req == tgt) return;
 
-        tgt.PartyWaiter = true;
-        SendToChar(tgt, BuildPartyAddReq(tgt.CharId, tgt.Key, request, target, obtainType, Ask.Yes, req.CharId));
+        void Refuse(byte result) => SendToChar(req, BuildPartyAddReq(req.CharId, req.Key, request, target, obtainType, result, 0));
+        if (tgt is null) { Refuse(PartyNoUser); return; }
+        if (tgt.PartyWaiter) { Refuse(PartyWaiters); return; }
+        if (tgt.Party is not null) { Refuse(PartyAlready); return; }
+        if (GetWarCountry(tgt) != GetWarCountry(req)) { Refuse(PartyCountry); return; }
+        if (req.Party is { } rp)
+        {
+            if (!rp.IsChief(req.CharId)) { Refuse(PartyNotChief); return; }
+            if (rp.IsFull) { Refuse(PartyFull); return; }
+            if (rp.Arena != 0) return;
+        }
+
+        SetCharStatus(req, maxHp, hp, maxMp, mp);
+        if (MapOf(tgt) is { } con)
+        {
+            con.Send(BuildPartyAddReq(tgt.CharId, tgt.Key, request, target, obtainType, Ask.Yes, req.CharId));
+            tgt.PartyWaiter = true;
+        }
     }
 
     private void OnPartyJoin(PacketReader r)
@@ -700,30 +728,73 @@ public sealed partial class WorldService
         string target = r.ReadString();
         byte obtainType = r.ReadByte();
         byte response = r.ReadByte();
-        _ = r.ReadUInt32(); _ = r.ReadUInt32(); _ = r.ReadUInt32(); _ = r.ReadUInt32(); // target hp/mp
+        uint maxHp = r.ReadUInt32(), hp = r.ReadUInt32(), maxMp = r.ReadUInt32(), mp = r.ReadUInt32();
 
-        if (!_state.CharactersByName.TryGetValue(origin, out var org) ||
-            !_state.CharactersByName.TryGetValue(target, out var tgt)) return;
-        tgt.PartyWaiter = false;
-        if (response != Ask.Yes || tgt.Party is not null || org.Country != tgt.Country) return;
+        var org = CharByName(origin);
+        var tgt = CharByName(target);
+        if (tgt is not null) tgt.PartyWaiter = false;
+        if (org is null && tgt is null) return;
 
-        Party party;
-        if (org.Party is not null)
+        void Tell(Character c, byte result) => SendToChar(c, BuildPartyAddReq(c.CharId, c.Key, origin, target, obtainType, result, 0));
+        if (org is null) { Tell(tgt!, PartyNoReqUser); return; }
+        if (tgt is null) { Tell(org, PartyNoUser); return; }
+        if (response != Ask.Yes) { Tell(org, response); return; }
+        if (tgt.Party is not null) { Tell(org, PartyNoUser); return; }
+        if (GetWarCountry(tgt) != GetWarCountry(org)) { Tell(tgt, PartyCountry); Tell(org, PartyCountry); return; }
+
+        SetCharStatus(tgt, maxHp, hp, maxMp, mp);
+        if (MapOf(tgt) is null || MapOf(org) is null) return;
+
+        if (org.Party is { } party)
         {
-            if (!org.Party.IsChief(org.CharId) || org.Party.IsFull) return;
-            party = org.Party;
+            if (!party.IsChief(org.CharId)) { Tell(org, PartyNotChief); Tell(tgt, PartyNotChief); return; }
+            if (party.IsFull) { Tell(org, PartyFull); Tell(tgt, PartyFull); return; }
+            if (party.Arena != 0) { Tell(tgt, PartyBusy); return; }
+            JoinParty(party, org.CharId, tgt);
         }
         else
         {
-            party = new Party { Id = _state.PartyIds.Alloc(), ChiefId = org.CharId, ObtainType = obtainType };
+            party = new Party { Id = _state.PartyIds.Alloc(), ObtainType = obtainType };
             _state.Parties[party.Id] = party;
-            party.AddMember(org);
-            SendPartyJoinReq(party, org);   // seed origin into its own new party
+            JoinParty(party, org.CharId, org);
+            JoinParty(party, org.CharId, tgt);
         }
-        party.AddMember(tgt);
-        SendPartyJoinReq(party, tgt);
         _log.LogInformation("Char {T} joined party {P} (chief {C}).", tgt.CharId, party.Id, party.ChiefId);
     }
+
+    /// <summary>C++ JoinParty: the joiner and every current member are shown each other, then the joiner is added
+    /// and its party fields are pushed to its map.</summary>
+    private void JoinParty(Party party, uint chiefId, Character target)
+    {
+        if (party.ChiefId == 0) party.ChiefId = chiefId;
+        if (!_state.Characters.TryGetValue(party.ChiefId, out var chief)) return;
+
+        var tgCon = MapOf(target);
+        var ogCon = MapOf(chief);
+        if ((target.MainId == Proto.BowServerId || chief.MainId == Proto.BowServerId) && target.MainId != chief.MainId) return;
+        if ((target.MainId == Proto.BrServerId || chief.MainId == Proto.BrServerId) && target.MainId != chief.MainId) return;
+        if (tgCon is null || ogCon is null) return;
+
+        ushort commander = CommanderOf(party);
+        foreach (var member in party.Members)
+        {
+            if (MapOf(member) is not { } memCon) continue;
+            tgCon.Send(BuildPartyJoinReq(target, party, commander, member));
+            memCon.Send(BuildPartyJoinReq(member, party, commander, target));
+        }
+
+        party.AddMember(target);
+        if (party.CorpsId != 0 && _state.FindCorps(party.CorpsId) is { } corps)
+        {
+            var w = new PacketWriter(Msg.MW_CORPSJOIN_REQ);
+            w.WriteUInt32(target.CharId); w.WriteUInt32(target.Key); w.WriteUInt16(corps.Id); w.WriteUInt16(corps.Commander);
+            SendToChar(target, w.ToArray());
+        }
+        PartyAttr(target);
+    }
+
+    private ushort CommanderOf(Party party)
+        => party.CorpsId != 0 && _state.FindCorps(party.CorpsId) is { } c ? c.Commander : (ushort)0;
 
     private void OnPartyDel(PacketReader r)
     {
@@ -731,27 +802,54 @@ public sealed partial class WorldService
         uint charId = r.ReadUInt32();
         byte kick = r.ReadByte();
 
-        var party = _state.FindParty(partyId);
-        if (party is null) return;
-        LeaveParty(party, charId, kick);
+        if (_state.FindParty(partyId)?.FindMember(charId) is { } player) LeaveParty(player, kick);
     }
 
-    /// <summary>Remove a member from a party: pick a new chief if needed, broadcast PARTYDEL to the remaining
-    /// members and the leaver, and dissolve the party if it drops to one. Shared by OnPartyDel and arena split.</summary>
+    /// <summary>Removes <paramref name="charId"/> from <paramref name="party"/> (arena split, country change).</summary>
     private void LeaveParty(Party party, uint charId, byte kick)
     {
-        var leaving = party.FindMember(charId);
-        if (leaving is null) return;
+        if (party.FindMember(charId) is { } ch) LeaveParty(ch, kick);
+    }
 
-        party.NextChiefAfter(charId);
-        party.DelMember(charId);
-        byte[] del = BuildPartyDelReq(charId, leaving.Key, charId, party.ChiefId, party.CorpsId, party.Id, kick);
-        foreach (var m in party.Members) SendToChar(m, del);
-        SendToChar(leaving, del);
+    /// <summary>C++ LeaveParty. A party of two dissolves (<paramref name="delete"/>): the other member is taken out
+    /// too. Otherwise a leaving chief hands over to the next member. Every member — the leaver included — gets
+    /// <c>MW_PARTYDEL_REQ</c> with its own view (the leaver's with no chief and no party), and the leaver's party
+    /// fields are cleared with <c>MW_PARTYATTR_REQ</c>.</summary>
+    private void LeaveParty(Character ch, byte kick, bool delete = true)
+    {
+        if (ch.Party is not { } party) return;
+        var corps = party.CorpsId != 0 ? _state.FindCorps(party.CorpsId) : null;
+        bool dissolve = false;
 
-        if (party.Size <= 1)
+        if (party.Size > 2 || !delete)
         {
-            foreach (var m in party.Members.ToList()) { party.DelMember(m.CharId); }
+            if (party.IsChief(ch.CharId) && party.Members.FirstOrDefault(m => m.CharId != ch.CharId) is { } next)
+            {
+                party.ChiefId = next.CharId;   // CTParty::GetNextChief
+                foreach (var m in party.Members) PartyAttr(m);
+            }
+        }
+        else
+        {
+            if (corps is not null) NotifyCorpsLeave(corps, party);
+            corps = null;
+            party.ChiefId = 0;
+            dissolve = true;
+        }
+
+        ushort commander = corps?.Commander ?? 0;
+        foreach (var m in party.Members)
+        {
+            uint chiefId = m != ch ? party.ChiefId : 0;
+            SendToChar(m, BuildPartyDelReq(m.CharId, m.Key, ch.CharId, chiefId, commander, chiefId != 0 ? party.Id : (ushort)0, kick));
+        }
+
+        party.DelMember(ch.CharId);
+        PartyAttr(ch);
+
+        if (dissolve)
+        {
+            if (party.Size > 0) LeaveParty(party.Members[0], 0, false);
             _state.Parties.Remove(party.Id);
             _state.PartyIds.Free(party.Id);
         }
@@ -763,15 +861,22 @@ public sealed partial class WorldService
         uint key = r.ReadUInt32();
         uint targetId = r.ReadUInt32();
 
-        var ch = _state.Characters.TryGetValue(chiefId, out var c) ? c : null;
-        var party = ch?.Party;
-        if (party is null || !party.IsChief(chiefId) || !party.IsMember(targetId))
-        {
-            if (ch is not null) SendToChar(ch, BuildChgPartyChiefReq(chiefId, key, (byte)GuildResult.Fail));
-            return;
-        }
-        party.ChiefId = targetId;
-        foreach (var m in party.Members) SendToChar(m, BuildChgPartyChiefReq(chiefId, key, (byte)GuildResult.Success));
+        if (_state.FindChar(chiefId, key) is not { } chief) return;
+        void Tell(byte result) => SendToChar(chief, BuildChgPartyChiefReq(chief.CharId, chief.Key, result));
+
+        if (!_state.Characters.TryGetValue(targetId, out var target)) { Tell(PartyNoUser); return; }
+        if (chief.Party is null || target.Party is null) { Tell(PartyNoParty); return; }
+        if (!chief.Party.IsChief(chief.CharId)) { Tell(PartyNotChief); return; }
+        if (chief.Party.Id != target.Party.Id) { Tell(PartyNoUser); return; }
+        if (chief.CharId == target.CharId) { Tell(PartyAlready); return; }
+
+        var party = target.Party;
+        party.ChiefId = target.CharId;
+        Tell(PartyChgChief);
+
+        if (party.CorpsId != 0 && _state.FindCorps(party.CorpsId) is { } corps && corps.Commander == party.Id)
+            corps.GeneralId = party.ChiefId;
+        foreach (var m in party.Members) PartyAttr(m);
     }
 
     private void OnChgPartyType(PacketReader r)
@@ -779,11 +884,15 @@ public sealed partial class WorldService
         uint charId = r.ReadUInt32();
         uint key = r.ReadUInt32();
         byte type = r.ReadByte();
-        var ch = _state.Characters.TryGetValue(charId, out var c) ? c : null;
-        var party = ch?.Party;
-        if (party is null || !party.IsChief(charId)) return;
+
+        if (_state.FindChar(charId, key) is not { Party: { } party } ch) return;
+        if (!party.IsChief(ch.CharId))
+        {
+            SendToChar(ch, BuildChgPartyTypeReq(ch.CharId, ch.Key, PartyNotChief, type));
+            return;
+        }
         party.ObtainType = type;
-        foreach (var m in party.Members) SendToChar(m, BuildChgPartyTypeReq(charId, key, (byte)GuildResult.Success, type));
+        foreach (var m in party.Members) SendToChar(m, BuildChgPartyTypeReq(m.CharId, m.Key, 0, type));
     }
 
     private void OnPartyManStat(PacketReader r)
@@ -823,18 +932,7 @@ public sealed partial class WorldService
             if (mem is not null) mem.OnlineChar = null; // keep roster, drop online link
             ch.Guild = null;
         }
-        if (ch.Party is not null)
-        {
-            var party = ch.Party;
-            party.NextChiefAfter(ch.CharId);
-            party.DelMember(ch.CharId);
-            if (party.Size <= 1)
-            {
-                foreach (var m in party.Members.ToList()) party.DelMember(m.CharId);
-                _state.Parties.Remove(party.Id);
-                _state.PartyIds.Free(party.Id);
-            }
-        }
+        if (ch.Party is not null) LeaveParty(ch, 0);   // C++ CloseChar → LeaveParty(pTCHAR, 0)
         WarCountryLeave(ch);
         if (ch.TmsIds.Count > 0) TmsLeaveAll(ch);
         _state.Characters.Remove(ch.CharId);
@@ -866,29 +964,30 @@ public sealed partial class WorldService
             if (mem.OnlineChar is { } ch) SendToChar(ch, build());
     }
 
-    private void SendPartyJoinReq(Party party, Character newMember)
+    /// <summary>C++ SendMW_PARTYJOIN_REQ (SSSender.cpp:716): tells <paramref name="receiver"/> about <paramref name="member"/>.</summary>
+    private static byte[] BuildPartyJoinReq(Character receiver, Party party, ushort commander, Character member)
     {
         var w = new PacketWriter(Msg.MW_PARTYJOIN_REQ);
-        w.WriteUInt32(newMember.CharId);
-        w.WriteUInt32(newMember.Key);
+        w.WriteUInt32(receiver.CharId);
+        w.WriteUInt32(receiver.Key);
         w.WriteUInt16(party.Id);
-        w.WriteString(newMember.Name);
-        w.WriteUInt32(newMember.CharId);
+        w.WriteString(member.Name);
+        w.WriteUInt32(member.CharId);
         w.WriteUInt32(party.ChiefId);
-        w.WriteUInt16(party.CorpsId);
-        w.WriteString(newMember.Guild?.Name ?? "");
-        w.WriteByte(newMember.Level);
-        w.WriteUInt32(newMember.MaxHP);
-        w.WriteUInt32(newMember.HP);
-        w.WriteUInt32(newMember.MaxMP);
-        w.WriteUInt32(newMember.MP);
-        w.WriteByte(newMember.Race);
-        w.WriteByte(newMember.Sex);
-        w.WriteByte(newMember.Face);
-        w.WriteByte(newMember.Hair);
+        w.WriteUInt16(commander);
+        w.WriteString(member.Guild?.Name ?? "");
+        w.WriteByte(member.Level);
+        w.WriteUInt32(member.MaxHP);
+        w.WriteUInt32(member.HP);
+        w.WriteUInt32(member.MaxMP);
+        w.WriteUInt32(member.MP);
+        w.WriteByte(member.Race);
+        w.WriteByte(member.Sex);
+        w.WriteByte(member.Face);
+        w.WriteByte(member.Hair);
         w.WriteByte(party.ObtainType);
-        w.WriteByte(newMember.Class);
-        foreach (var m in party.Members) SendToChar(m, w.ToArray());
+        w.WriteByte(member.Class);
+        return w.ToArray();
     }
 
     // ----- senders (Phase 1) -----

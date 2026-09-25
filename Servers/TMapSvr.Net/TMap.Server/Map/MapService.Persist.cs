@@ -266,20 +266,22 @@ public sealed partial class MapService
         var charData = BuildCharSave(ch);
         var quests = BuildQuestSaves(ch, NowMs);
         var inventory = _itemIdReady ? BuildInvenSaves(ch) : ((List<InvenSaveData>, List<ItemSaveData>)?)null;
-        _ = FlushSaveAsync(ch.CharId, charData, quests, inventory);   // fire-and-forget; snapshot is immutable
+        var hotkeys = BuildHotkeySaves(ch);
+        _ = FlushSaveAsync(ch.CharId, charData, quests, inventory, hotkeys);   // fire-and-forget; snapshot is immutable
     }
 
     /// <summary>The off-thread write (never throws unobserved — errors are logged and swallowed). The inventory
     /// rewrite runs only when a snapshot is supplied (i.e. the id seed is ready) — else the DB keeps its last
     /// item state, never a destructive empty rewrite.</summary>
     private async Task FlushSaveAsync(uint charId, CharSaveData charData, IReadOnlyList<QuestSaveRow> quests,
-        (List<InvenSaveData> invens, List<ItemSaveData> items)? inventory)
+        (List<InvenSaveData> invens, List<ItemSaveData> items)? inventory, IReadOnlyList<HotkeySaveRow> hotkeys)
     {
         try
         {
             await _gameDb!.SaveCharAsync(charData);
             await _gameDb.SaveQuestsAsync(charId, quests);
             if (inventory is { } inv) await _gameDb.SaveInventoryAsync(charId, inv.invens, inv.items);
+            await _gameDb.SaveHotkeysAsync(charId, hotkeys);
         }
         catch (Exception ex)
         {
@@ -298,7 +300,7 @@ public sealed partial class MapService
             var charData = BuildCharSave(ch);
             var quests = BuildQuestSaves(ch, NowMs);
             var inventory = _itemIdReady ? BuildInvenSaves(ch) : ((List<InvenSaveData>, List<ItemSaveData>)?)null;
-            await FlushSaveAsync(ch.CharId, charData, quests, inventory);
+            await FlushSaveAsync(ch.CharId, charData, quests, inventory, BuildHotkeySaves(ch));
         }
     }
 }

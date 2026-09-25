@@ -38,6 +38,7 @@ public sealed partial class MapService
         _state = state;
         _world = world;
         _gameDb = gameDb;
+        PostStore = gameDb;
         _templates = templates;
         _log = log;
     }
@@ -77,6 +78,7 @@ public sealed partial class MapService
             SendMW_CLOSECHAR_ACK(session.CharId, session.Key);
 
         SaveCharData(session);   // flush the char record + dirty quests on logout (C++ SetEventCloseSession)
+        if (session.CharId != 0) EraseBill(session.CharId, 0);   // C++ SM_POSTBILLERASE_REQ(id, 0)
         _state.Remove(session);
 
         // C++ CTMap::LeaveMAP(player) takes the player off its cell first, then runs LeavePlayer over the 3×3:
@@ -96,7 +98,30 @@ public sealed partial class MapService
             switch (r.Id)
             {
                 case Msg.CS_CONNECT_REQ: await OnCS_CONNECT_REQ(session, r); break;
+                case Msg.CS_POSTSEND_REQ: await OnCS_POSTSEND_REQ(session, r); break;
+                case Msg.CS_POSTLIST_REQ: await OnCS_POSTLIST_REQ(session, r); break;
+                case Msg.CS_POSTVIEW_REQ: await OnCS_POSTVIEW_REQ(session, r); break;
+                case Msg.CS_POSTDEL_REQ: await OnCS_POSTDEL_REQ(session, r); break;
+                case Msg.CS_POSTGETITEM_REQ: await OnCS_POSTGETITEM_REQ(session, r); break;
+                case Msg.CS_POSTRETURN_REQ: await OnCS_POSTRETURN_REQ(session, r); break;
                 case Msg.CS_CONREADY_REQ: OnCS_CONREADY_REQ(session, r); break;
+                case Msg.CS_HOTKEYADD_REQ: OnCS_HOTKEYADD_REQ(session, r); break;
+                case Msg.CS_INVENADD_REQ: OnCS_INVENADD_REQ(session, r); break;
+                case Msg.CS_ITEMUPGRADE_REQ: OnCS_ITEMUPGRADE_REQ(session, r); break;
+                case Msg.CS_REFINE_REQ: OnCS_REFINE_REQ(session, r); break;
+                case Msg.CS_ITEMCHANGE_REQ: OnCS_ITEMCHANGE_REQ(session, r); break;
+                case Msg.CS_REVIVALASK_REQ: OnCS_REVIVALASK_REQ(session, r); break;
+                case Msg.CS_TELEPORT_REQ: OnCS_TELEPORT_REQ(session, r); break;
+                case Msg.CS_INVENDEL_REQ: OnCS_INVENDEL_REQ(session, r); break;
+                case Msg.CS_INVENMOVE_REQ: OnCS_INVENMOVE_REQ(session, r); break;
+                case Msg.CS_SETRETURNPOS_REQ: OnCS_SETRETURNPOS_REQ(session, r); break;
+                case Msg.CS_PARTYADD_REQ: OnCS_PARTYADD_REQ(session, r); break;
+                case Msg.CS_PARTYJOIN_REQ: OnCS_PARTYJOIN_REQ(session, r); break;
+                case Msg.CS_PARTYDEL_REQ: OnCS_PARTYDEL_REQ(session, r); break;
+                case Msg.CS_CHGPARTYCHIEF_REQ: OnCS_CHGPARTYCHIEF_REQ(session, r); break;
+                case Msg.CS_CHGPARTYTYPE_REQ: OnCS_CHGPARTYTYPE_REQ(session, r); break;
+                case Msg.CS_PARTYMOVE_REQ: OnCS_PARTYMOVE_REQ(session, r); break;
+                case Msg.CS_HOTKEYDEL_REQ: OnCS_HOTKEYDEL_REQ(session, r); break;
                 case Msg.CS_MOVE_REQ: OnCS_MOVE_REQ(session, r); break;
                 case Msg.CS_JUMP_REQ: OnCS_JUMP_REQ(session, r); break;
                 case Msg.CS_BLOCK_REQ: OnCS_BLOCK_REQ(session, r); break;
@@ -174,6 +199,18 @@ public sealed partial class MapService
                 case Msg.MW_CHECKMAIN_REQ: OnMW_CHECKMAIN_REQ(r); break;
                 case Msg.MW_CONRESULT_REQ: OnMW_CONRESULT_REQ(r); break;
                 case Msg.MW_CHAT_REQ: OnMW_CHAT_REQ(r); break;
+                case Msg.MW_PARTYADD_REQ: OnMW_PARTYADD_REQ(r); break;
+                case Msg.MW_POSTRECV_REQ: OnMW_POSTRECV_REQ(r); break;
+                case Msg.MW_STARTTELEPORT_REQ: OnMW_STARTTELEPORT_REQ(r); break;
+                case Msg.MW_TELEPORT_REQ: OnMW_TELEPORT_REQ(r); break;
+                case Msg.MW_CONLIST_REQ: OnMW_CONLIST_REQ(r); break;
+                case Msg.MW_PARTYJOIN_REQ: OnMW_PARTYJOIN_REQ(r); break;
+                case Msg.MW_PARTYDEL_REQ: OnMW_PARTYDEL_REQ(r); break;
+                case Msg.MW_PARTYATTR_REQ: OnMW_PARTYATTR_REQ(r); break;
+                case Msg.MW_CHGPARTYCHIEF_REQ: OnMW_CHGPARTYCHIEF_REQ(r); break;
+                case Msg.MW_CHGPARTYTYPE_REQ: OnMW_CHGPARTYTYPE_REQ(r); break;
+                case Msg.MW_PARTYMANSTAT_REQ: OnMW_PARTYMANSTAT_REQ(r); break;
+                case Msg.MW_PARTYMOVE_REQ: OnMW_PARTYMOVE_REQ(r); break;
                 case Msg.MW_TERMINATE_REQ: OnMW_TERMINATE_REQ(r); break;
                 case Msg.MW_CLOSECHAR_REQ: OnMW_CLOSECHAR_REQ(r); break;
                 case Msg.SM_TIMER_REQ: break; // world-driven tick; local timer already ticks
@@ -207,7 +244,7 @@ public sealed partial class MapService
         _log.LogWarning("World link down; clients will re-handshake on reconnect.");
     }
 
-    public Task OnTimerAsync()
+    public async Task OnTimerAsync()
     {
         _tickSeconds++;
         NowMs = unchecked((uint)(_tickSeconds * 1000L)); // advance the map ms clock (skill cooldowns)
@@ -215,13 +252,14 @@ public sealed partial class MapService
         RunMaintainSkills(NowMs);              // expire ended buffs/debuffs (C++ CheckMaintainSkill, before Recover)
         RunSwitchReverts(NowMs);               // auto-revert duration-limited switches (C++ m_vTSWITCHOBJ sweep)
         RunRecover(NowMs);                     // HP/MP regeneration (players + monsters)
+        RunAftermath(NowMs);                   // one step of death-penalty recovery when due (CTPlayer::OnTimer)
         RunCorpseExpiry(_tickSeconds * 1000L); // despawn + re-arm lootable corpses past their lifetime
         RunScheduledAi(_tickSeconds * 1000L);  // Due TAICHART commands (the local SM_AICMD stand-in)
         RunPendingResetHome();                 // abandoned monsters back to their spawn (SM_RESETHOST_ACK)
         RunMonsterAI(_tickSeconds * 1000L);    // legacy sweep — script-less monsters only (roam / chase)
         RunPeriodicSaves(NowMs);               // 30-min per-char DB save (no-op DB-free); off-thread write
         FlushItemDirect();                     // incremental item persistence (TSaveItemDirect); off-thread write
+        await RunPostBills();                  // unpaid bills past 3 days go back to their sender
         // Still deferred here: war timers — see PORT_STATUS.md.
-        return Task.CompletedTask;
     }
 }

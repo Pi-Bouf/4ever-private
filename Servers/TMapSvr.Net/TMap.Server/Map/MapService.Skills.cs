@@ -227,5 +227,6 @@ public sealed partial class MapService
         w.WriteUInt32(MaxMpFor(ch));
         w.WriteUInt32(ch.Mp);
         p.Send(w);
+        NotifyPartyManStat(p, attackId, attackType, MaxHpFor(ch), ch.Hp, MaxMpFor(ch), ch.Mp);
     }
 }

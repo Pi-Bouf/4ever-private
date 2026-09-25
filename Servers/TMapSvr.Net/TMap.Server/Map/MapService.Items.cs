@@ -234,7 +234,7 @@ public sealed partial class MapService
     }
 
     /// <summary>C++ <c>SendCS_HPMP_ACK</c> to the actor only (the <c>bLevel</c> arg is not on the wire).</summary>
-    private static void SendSelfHpMp(ClientSession s, uint id, uint maxHp, uint hp, uint maxMp, uint mp)
+    private void SendSelfHpMp(ClientSession s, uint id, uint maxHp, uint hp, uint maxMp, uint mp)
     {
         var w = new PacketWriter(Msg.CS_HPMP_ACK, capacity: 24);
         w.WriteUInt32(id);
@@ -244,6 +244,7 @@ public sealed partial class MapService
         w.WriteUInt32(maxMp);
         w.WriteUInt32(mp);
         s.Send(w);
+        NotifyPartyManStat(s, id, OtPc, maxHp, hp, maxMp, mp);
     }
 
     /// <summary>C++ <c>CTObjBase::CanPush(vector)</c> — can every item (and any stack remainder) be placed by
@@ -504,7 +505,11 @@ public sealed partial class MapService
         w.WriteUInt32(MaxMpFor(ch));
         w.WriteUInt32(ch.Mp);
         var ack = w.ToArray();
-        foreach (var other in _state.InView(s)) other.Send(ack);
+        foreach (var other in _state.InView(s))
+        {
+            other.Send(ack);
+            NotifyPartyManStat(other, ch.CharId, OtPc, MaxHpFor(ch), ch.Hp, MaxMpFor(ch), ch.Mp);
+        }
     }
 
     private static void SendCS_ITEMUSE_ACK(ClientSession s, ItemUseResult result, ushort delayGroup, byte kind, uint delay)

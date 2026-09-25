@@ -268,7 +268,7 @@ public sealed partial class MapService
         w.WriteByte(0);                   // bColor (TNCOLOR_ALLI)
         w.WriteUInt32(ch.RegionId);
         w.WriteByte(0);                   // bInPcBang
-        w.WriteByte(0);                   // aftermath.m_bStep
+        w.WriteByte(ch.Persist.Aftermath); // aftermath.m_bStep
         w.WriteUInt32(0);                 // dwRankPoint
         w.WriteUInt16(0);                 // wCastle
         w.WriteByte(0);                   // bCamp

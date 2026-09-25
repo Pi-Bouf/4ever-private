@@ -722,9 +722,9 @@ public sealed partial class MapService
     }
 
     /// <summary>C++ <c>CQuestTeleport::ExecQuest</c> — when runnable, teleport to the QTT_MAPID/LEFT/HEIGHT/TOP
-    /// destination, then recurse children. <b>Same-map only</b> (reuses the movement grid re-exchange, Phase 21);
-    /// a cross-map target (a different <c>wMapID</c>) needs the <c>MW_*</c> cross-map plane and is deferred — the
-    /// reposition is skipped but the child chain still runs, matching the C++ recurse-after-teleport.</summary>
+    /// destination through the ordinary <see cref="Teleport(ClientSession, Character, byte, ushort, float, float, float)"/>
+    /// (a short hop is local, anything else goes through the world), then recurse children — the C++ recurses
+    /// right after starting the teleport, not after it lands.</summary>
     private void ExecTeleport(ClientSession s, Character ch, QuestTemplate q, uint monId, float x, float y, float z)
     {
         if (CanRunQuest(ch, q, out _) != QctNone) return;
@@ -738,7 +738,7 @@ public sealed partial class MapService
                 case QttHeight: py = t.TermId; break;
                 case QttTop: pz = t.TermId; break;
             }
-        if (mapId == ch.MapId) RelocateAndExchangeView(s, px, py, pz);   // cross-map deferred
+        Teleport(s, ch, s.Channel, mapId, px, py, pz);
         ExecChildren(s, ch, q, monId, x, y, z);
     }
 

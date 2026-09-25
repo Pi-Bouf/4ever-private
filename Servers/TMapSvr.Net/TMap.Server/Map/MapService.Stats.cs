@@ -60,7 +60,7 @@ public sealed partial class MapService
         w.WriteByte(StatEngine.ChargeProb(ch, t));
         w.WriteByte(StatEngine.CriticalMagicProb(ch, t));
         w.WriteUInt16(0); // m_wSkillPoint (not modelled yet; CS_CHARINFO_ACK also emits 0)
-        w.WriteByte(0);   // m_aftermath.m_bStep (death-penalty step; aftermath deferred)
+        w.WriteByte(ch.Persist.Aftermath);   // m_aftermath.m_bStep (the death-penalty step)
         to.Send(w);
     }
 }

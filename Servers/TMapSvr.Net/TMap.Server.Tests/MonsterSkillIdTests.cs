@@ -56,7 +56,7 @@ public class MonsterSkillIdTests
     public async Task SwingAnnounce_CarriesTheChartSkill_NeverZero()
     {
         var (h, c, _) = await Setup(MapTestHarness.WithMonsterMelee());
-        h.Service.RunMonsterAI(1_000);
+        await h.MonsterTurnAsync(1_000);
 
         var ack = c.Last(Msg.CS_MONATTACK_ACK);
         Assert.NotNull(ack);
@@ -67,7 +67,7 @@ public class MonsterSkillIdTests
     public async Task HitResult_CarriesTheSameSkill_NeverZero()
     {
         var (h, c, _) = await Setup(MapTestHarness.WithMonsterMelee());
-        h.Service.RunMonsterAI(1_000);
+        await h.MonsterTurnAsync(1_000);
 
         var ack = c.Last(Msg.CS_DEFEND_ACK);
         Assert.NotNull(ack);
@@ -81,7 +81,7 @@ public class MonsterSkillIdTests
         store.MonsterTemplates[500] = new MonsterTemplate(500, 5, 0);   // like the 8 live skill-less monsters
         var (h, c, ch) = await Setup(store);
 
-        h.Service.RunMonsterAI(1_000);
+        await h.MonsterTurnAsync(1_000);
 
         Assert.False(c.Has(Msg.CS_MONATTACK_ACK));
         Assert.Equal(100u, ch.Hp);
@@ -95,7 +95,7 @@ public class MonsterSkillIdTests
         store.MonsterTemplates[500] = new MonsterTemplate(500, 5, 0, Skill1: 4242);
         var (h, c, ch) = await Setup(store);
 
-        h.Service.RunMonsterAI(1_000);
+        await h.MonsterTurnAsync(1_000);
 
         Assert.False(c.Has(Msg.CS_MONATTACK_ACK));
         Assert.Equal(100u, ch.Hp);
@@ -109,7 +109,7 @@ public class MonsterSkillIdTests
         store.Skills[702] = Skill(702);
         var (h, c, _) = await Setup(store);
 
-        h.Service.RunMonsterAI(1_000);
+        await h.MonsterTurnAsync(1_000);
 
         var ack = c.Last(Msg.CS_MONATTACK_ACK);
         Assert.NotNull(ack);

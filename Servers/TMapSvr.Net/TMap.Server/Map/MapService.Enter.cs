@@ -522,6 +522,8 @@ public sealed partial class MapService
                     ch.Persist.LastDestination = c.LastDestination; ch.Persist.TemptedMon = c.TemptedMon;
                     ch.Persist.Aftermath = c.Aftermath; ch.Persist.StatLevel = c.StatLevel;
                     ch.Persist.StatPoint = c.StatPoint; ch.Persist.StatExp = c.StatExp;
+                    RestoreAftermath(ch);        // re-armed through SetAftermath, as the C++ load does
+                    await LoadPendingBills(ch.CharId);   // C++ DM_POSTBILL_REQ from DM_ENTERMAPSVR_ACK
                     ch.DbLoaded = true;          // a real row ⇒ eligible to be saved back
                     ch.LastSaveMs = NowMs;       // first periodic save one interval after load (C++ m_dwSaveTick)
                 }
@@ -580,23 +582,7 @@ public sealed partial class MapService
             // already excluded by the query (bStorageType <> 2). Anything else is dropped.
             if (row.StorageType is not (Proto.StorageInven or Proto.StorageCabinet)) continue;
 
-            var template = _templates.Item(row.TemplateId);
-            // C++ drops any persisted item whose wItemID has no TITEMCHART template (FindTItem == NULL). Only
-            // apply that once the chart is loaded — DB-free/degraded operation would otherwise drop everything.
-            if (template is null && _templates.HasItems) continue;
-
-            var item = new Item
-            {
-                DlId = row.DlId,
-                ItemSlot = row.ItemSlot, TemplateId = row.TemplateId, Level = row.Level, Count = row.Count,
-                GLevel = row.GLevel, DuraMax = row.DuraMax, DuraCur = row.DuraCur, RefineCur = row.RefineCur,
-                EndTime = row.EndTime, GradeEffect = row.GradeEffect, Gem = row.Gem, MoggItemId = row.MoggItemId,
-                Template = template,
-            };
-            for (int i = 0; i < 6; i++) item.Ext[i] = row.Ext[i];
-            // C++ CreateItem filter: skip id/value-0 slots, drop unknown-magic-id (chart-gated), dedup by id.
-            Item.AddPersistedMagic(item, row.Magic, row.Value, _templates);
-            LinkItemAttr(item);
+            if (ItemFromRow(row) is not { } item) continue;
 
             if (row.StorageType == Proto.StorageCabinet)
             {
@@ -671,6 +657,28 @@ public sealed partial class MapService
     /// key), with the lowest-id row as fallback (<c>m_mapTItemAttr.begin()</c>). No-op if the attr chart
     /// isn't loaded.
     /// </summary>
+    /// <summary>C++ <c>CreateItem</c> from a persisted <c>TITEMTABLE</c> row — null when the template is unknown
+    /// (C++ drops it; only once the chart is loaded, so DB-free operation keeps everything).</summary>
+    private Item? ItemFromRow(FullItemRow row)
+    {
+        var template = _templates.Item(row.TemplateId);
+        if (template is null && _templates.HasItems) return null;
+
+        var item = new Item
+        {
+            DlId = row.DlId,
+            ItemSlot = row.ItemSlot, TemplateId = row.TemplateId, Level = row.Level, Count = row.Count,
+            GLevel = row.GLevel, DuraMax = row.DuraMax, DuraCur = row.DuraCur, RefineCur = row.RefineCur,
+            EndTime = row.EndTime, GradeEffect = row.GradeEffect, Gem = row.Gem, MoggItemId = row.MoggItemId,
+            Template = template,
+        };
+        for (int i = 0; i < 6; i++) item.Ext[i] = row.Ext[i];
+        // C++ CreateItem filter: skip id/value-0 slots, drop unknown-magic-id (chart-gated), dedup by id.
+        Item.AddPersistedMagic(item, row.Magic, row.Value, _templates);
+        LinkItemAttr(item);
+        return item;
+    }
+
     private void LinkItemAttr(Item item)
     {
         if (item.Template is null || !_templates.HasItemAttrs) return;

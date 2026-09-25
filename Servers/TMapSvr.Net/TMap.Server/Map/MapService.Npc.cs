@@ -24,6 +24,8 @@ public sealed partial class MapService
 {
     private const byte TnpcItem = 2;        // TNPC_TYPE TNPC_ITEM (gold shop)
     private const byte TnpcPvPoint = 21;    // TNPC_TYPE TNPC_PVPOINT (PvP-point shop — pricing deferred)
+    private const byte TnpcReturn = 14;     // TNPC_TYPE TNPC_RETURN (sets the return point)
+    private const byte TnpcPortal = 8;      // TNPC_TYPE TNPC_PORTAL (teleporter)
     private const byte ItemtradeSell = 2;   // ITEMTRADE_SELL bit of m_bIsSell
 
     /// <summary>Builds the runtime NPC registry from the loaded charts (C++ startup <c>CTBLNpc</c> loop +
@@ -43,6 +45,12 @@ public sealed partial class MapService
             if (def.Type is TnpcItem or TnpcPvPoint)
                 foreach (var itemId in def.ItemIds)
                     if (_templates.Item(itemId) is { } t) npc.Items[itemId] = t;
+            if (def.Type == TnpcReturn)
+                foreach (var spawnPos in def.ItemIds) npc.SpawnPosId = spawnPos;
+            if (def.Type == TnpcPortal)
+                foreach (var portal in def.ItemIds)
+                    if (_templates.Portals.ContainsKey(portal)) npc.PortalId = portal;
+            npc.RequiredItemId = def.ItemId;
             _state.AddNpc(npc);
         }
         if (_templates.Npcs.Count > 0)

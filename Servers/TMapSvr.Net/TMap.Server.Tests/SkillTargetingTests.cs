@@ -187,7 +187,7 @@ public class SkillTargetingTests
         h.Service.CombatRng = new Random(1);
         hostClient.Clear(); viewer.Clear();
 
-        h.Service.RunMonsterAI(1_000);
+        await h.MonsterTurnAsync(1_000);
 
         Assert.True(hostClient.Has(Msg.CS_MONATTACK_ACK));
         Assert.False(viewer.Has(Msg.CS_MONATTACK_ACK));   // else every viewer would re-announce the swing

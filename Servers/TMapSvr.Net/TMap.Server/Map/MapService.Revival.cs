@@ -12,10 +12,9 @@ namespace TMap.Server.Map;
 /// <para><b>Restore fractions (value-exact):</b> <c>REVIVAL_NPC</c> (town, C++ AFTERMATH_ATONCE) = 30%,
 /// <c>REVIVAL_GHOST</c> (in-place) = 40%; HP clamped to ≥ 1 (C++ <c>if(!m_dwHP) m_dwHP = 1</c>).</para>
 ///
-/// <para><b>Deferred (documented — PORT_STATUS.md):</b> the death penalty (<c>SetAftermath</c> — the
-/// aftermath stat reduction is a buff subsystem, already stubbed to 0 in the stat sheet), <c>RespawnCompanion</c>
-/// (pets), the <c>TREVIVAL_SKILL</c> revival-protection buff (<c>ForceMaintain</c>), the <c>REVIVAL_HELP</c>
-/// priest-resurrection ask flow (<c>CS_REVIVALASK</c>/<c>CS_REVIVALREPLY</c>), and BoW/BR respawn placement.
+/// <para>The death penalty, the revival-protection buff and priest resurrection live in
+/// <c>MapService.Aftermath.cs</c> (<see cref="Revive"/>). <b>Deferred:</b> <c>RespawnCompanion</c> (pets) and
+/// BoW/BR respawn placement.
 /// A dead-only guard (<c>Hp == 0</c>) is added — the C++ handler has none, but a live client never sends this
 /// and it prevents a stray request from teleporting/resetting a live player.</para>
 /// </summary>
@@ -35,22 +34,9 @@ public sealed partial class MapService
         ch.PosY = posY;
         RelocateAndExchangeView(s, posX, posY, posZ);
 
-        // Restore HP/MP by type (C++ Revival: ATONCE/NPC 30%, GHOST 40%; DWORD truncation; HP ≥ 1). Back to NORMAL.
-        ch.Mode = MtNormal;
-        ch.Action = 0; // TA_STAND
-        uint maxHp = MaxHpFor(ch), maxMp = MaxMpFor(ch);
-        double frac = type == (byte)RevivalType.Npc ? 0.3 : 0.4;
-        ch.Hp = Math.Max(1u, (uint)(maxHp * frac));
-        ch.Mp = (uint)(maxMp * frac);
-        ch.RecoverHpTick = NowMs; ch.RecoverMpTick = NowMs; // regen resumes cleanly from now
-
-        // Broadcast the revival + the restored bar to the 3×3 view (incl. self — C++ GetNeighbor).
-        var reviveAck = BuildRevivalAck(ch.CharId, ch.PosX, ch.PosY, ch.PosZ);
-        foreach (var p in _state.InView(s))
-        {
-            p.Send(reviveAck);
-            SendSelfHpMp(p, ch.CharId, maxHp, ch.Hp, maxMp, ch.Mp);
-        }
+        // C++ Revival(bType == REVIVAL_NPC ? AFTERMATH_ATONCE : AFTERMATH_GHOST): the death penalty, then HP/MP
+        // by kind (30% / 40%, HP ≥ 1), back to NORMAL, the broadcast and the revival-protection buff.
+        if (s.IsMain) Revive(s, ch, type == (byte)RevivalType.Npc ? AftermathAtOnce : AftermathGhost, null, 0);
     }
 
     /// <summary>C++ <c>SendCS_REVIVAL_ACK</c> (CSSender.cpp:1404) — dwCharID + the revival position.</summary>

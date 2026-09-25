@@ -30,6 +30,17 @@ public sealed class Npc
     /// NPC's <c>TNPCITEMCHART</c> ids resolved against the loaded item chart.</summary>
     public Dictionary<ushort, ItemTemplate> Items { get; } = new();
 
+    /// <summary>C++ <c>m_wSpawnPosID</c> — for a <c>TNPC_RETURN</c> NPC, the spawn point it sets as the player's
+    /// return point (its <c>TNPCITEMCHART</c> id; the last row wins, as in the C++ load loop, TMapSvr.cpp:3869).</summary>
+    public ushort SpawnPosId { get; set; }
+
+    /// <summary>C++ <c>m_pPortal</c> — for a <c>TNPC_PORTAL</c> NPC, the portal it sends players through (its
+    /// <c>TNPCITEMCHART</c> id; the last row wins).</summary>
+    public ushort PortalId { get; set; }
+
+    /// <summary>C++ <c>m_wItemID</c> (TNPCCHART) — an item the player must carry to use this NPC's portal.</summary>
+    public ushort RequiredItemId { get; set; }
+
     /// <summary>C++ <c>CTNpc::GetItem(WORD)</c> — the stocked item template for an id, or null (not in stock).</summary>
     public ItemTemplate? GetItem(ushort itemId) => Items.GetValueOrDefault(itemId);
 

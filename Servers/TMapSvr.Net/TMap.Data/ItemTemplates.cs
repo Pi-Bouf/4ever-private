@@ -24,7 +24,11 @@ public sealed record ItemTemplate(ushort ItemId, byte RefineMax, float[] Revisio
     ushort DelayGroup = 0, byte Consumable = 1,
     // NPC shop: the trade-permission mask (m_bIsSell — ITEMTRADE_SELL=2 lets it be sold to an NPC,
     // ITEMTRADE_DEAL=1 / ITEMTRADE_CABINET=4 are the other bits). Default 0 ⇒ not sellable.
-    byte IsSell = 0);
+    byte IsSell = 0,
+    // Crafting: a scroll's own grade (m_bGrade — the downgrade step / magic-scroll probability), which crafts the
+    // item accepts (bCanGrade/bCanMagic/bCanRare/bCanWrap/bCanColor), and the template durability (dwDuraMax).
+    byte Grade = 0, byte CanGrade = 0, byte CanMagic = 0, byte CanRare = 0, byte CanWrap = 0, byte CanColor = 0,
+    uint DuraMax = 0);
 
 /// <summary>
 /// An item-attribute row from <c>TITEMATTRCHART</c> (C++ <c>CTBLItemAttrChart</c> → <c>tagITEMATTR</c>,
@@ -40,7 +44,18 @@ public sealed record ItemAttr(ushort Id, byte Kind, byte Grade, ushort MinAp, us
 /// (0 ⇒ 1.0, else the 1-based index into the item template's <see cref="ItemTemplate.Revision"/>);
 /// <see cref="MaxValue"/> is the scalar used by <c>CTItem::GetMagicValue</c>.
 /// </summary>
-public sealed record MagicTemplate(byte MagicId, byte RvType, ushort MaxValue);
+public sealed record MagicTemplate(byte MagicId, byte RvType, ushort MaxValue,
+    // Crafting (C++ TITEMMAGIC): the item kinds it may appear on (dwKind bit kind-1), whether a magic / rare
+    // scroll may roll it, the exclusion group two options on one item may not share, the option kind (non-zero
+    // blocks upgrading), and the value bound a rolled option scales from.
+    uint Kind = 0, byte IsMagic = 0, byte IsRare = 0, byte ExclIndex = 0, byte OptionKind = 0, ushort RareBound = 0);
+
+/// <summary>One cash-gamble prize (C++ <c>TCASHGAMBLE</c> from <c>TVIEW_CASHGAMBLECHART</c>): its weight, how many
+/// days the prize lasts (0 = forever) and the prize item itself.</summary>
+public sealed record CashGambleRow(uint Id, uint Prob, ushort Group, ushort UseTime, FullItemRow Item);
+
+/// <summary>One option an accessory scroll can add (C++ <c>ACCESSORYMAGIC</c> from <c>ACCESSORYMAGICTABLE</c>).</summary>
+public sealed record AccessoryMagicRow(uint Id, byte MagicId, ushort MinValue, ushort MaxValue);
 
 /// <summary>
 /// A 2nd-ability formula row from <c>TFORMULACHART</c> (C++ <c>CTBLFormulaChart</c> → <c>m_mapTFORMULA</c>,
@@ -100,6 +115,13 @@ public sealed class TemplateStore
     /// from <c>TNPCITEMCHART</c>), keyed by NPC id. The map server builds its runtime NPC objects from these.</summary>
     public Dictionary<ushort, NpcDef> Npcs { get; } = new();
 
+    /// <summary>C++ <c>m_mapTSPAWNPOS</c> — named spawn points by <c>wID</c> (TSPAWNPOSCHART).</summary>
+    public Dictionary<ushort, SpawnPosRow> SpawnPositions { get; } = new();
+
+    /// <summary>C++ <c>m_mapTPortal</c> — portals by <c>wPortalID</c>, each with its destinations (TPORTALCHART +
+    /// TDESTINATIONCHART).</summary>
+    public Dictionary<ushort, PortalRow> Portals { get; } = new();
+
     /// <summary>C++ <c>m_mapQUESTTEMP</c> — quest templates keyed by quest id. The map server builds the
     /// trigger index (<c>m_mapTRIGGER</c>) from these at bring-up. Test-injectable; the DB load is deferred
     /// (the quest-table schema is unverified — see PORT_STATUS.md).</summary>
@@ -151,6 +173,29 @@ public sealed class TemplateStore
     public Dictionary<ushort, ItemAttr> ItemAttrs { get; } = new(); // C++ m_mapTItemAttr, keyed by wID
     /// <summary>Item-level → grade byte (C++ <c>m_itemgrade[level].m_bGrade</c>, ITEMLEVEL_COUNT = 50).</summary>
     public byte[] ItemGrades { get; } = new byte[50];
+
+    /// <summary>C++ <c>m_itemgrade[level].m_bProb</c> / <c>m_dwMoney</c> — the upgrade success chance and cost.</summary>
+    public byte[] ItemGradeProb { get; } = new byte[50];
+    public uint[] ItemGradeMoney { get; } = new uint[50];
+
+    /// <summary>C++ <c>m_gemgrade[gem].m_bProb</c> (TGEMGRADECHART), gem 0..5.</summary>
+    public byte[] GemProbs { get; } = new byte[6];
+
+    /// <summary>C++ <c>m_vItemMagic[kind]</c> — the magic options that may roll on an item kind (1..25), in chart
+    /// order. Built from each option's <see cref="MagicTemplate.Kind"/> mask.</summary>
+    public Dictionary<byte, List<MagicTemplate>> MagicsByKind { get; } = new();
+
+    /// <summary>C++ <c>TLEVELCHART.dwRefineCost</c> by level (keyed by the power level of the item refined).</summary>
+    public Dictionary<int, uint> RefineCostByLevel { get; } = new();
+
+    /// <summary>C++ <c>m_mapCashGameble</c> — the prizes of each gamble group, in chart order.</summary>
+    public Dictionary<ushort, List<CashGambleRow>> CashGamble { get; } = new();
+
+    /// <summary>C++ <c>m_mapMaxCashGambleProb</c> — each group's total weight.</summary>
+    public Dictionary<ushort, uint> CashGambleTotal { get; } = new();
+
+    /// <summary>C++ <c>m_vAccessoryMagic</c> (ACCESSORYMAGICTABLE) — empty in the live data.</summary>
+    public List<AccessoryMagicRow> AccessoryMagic { get; } = new();
     /// <summary>The <c>SetItemAttr</c> fallback row — C++ <c>m_mapTItemAttr.begin()</c> = the lowest-<c>wID</c>
     /// entry (a <c>std::map</c>). Set once after the attr chart loads.</summary>
     public ItemAttr? DefaultAttr { get; set; }

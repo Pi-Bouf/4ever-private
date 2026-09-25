@@ -89,12 +89,15 @@ public static class StatEngine
         return (float)(seed * Math.Pow(t.Rate1st, Level(ch) - 1));
     }
 
-    /// <summary>Effective primary stat = base + equipped-gear enchants + the maintained-buff delta (C++
-    /// <c>GetSTR…</c>: <c>fSTR += CalcAbilityValue((DWORD)fSTR, MTYPE_STR)</c> — the int delta added to the FLOAT
-    /// base, off the truncated value). Pet/aftermath layers stay stubbed. FLOAT.</summary>
+    /// <summary>Effective primary stat = base less the death penalty, + equipped-gear enchants + the
+    /// maintained-buff delta (C++ <c>GetSTR…</c>: <c>CalcAfterMath(fSTR)</c> on the base, then
+    /// <c>fSTR += CalcItemAbility</c>, then <c>fSTR += CalcAbilityValue((DWORD)fSTR, MTYPE_STR)</c> — the int delta
+    /// added to the FLOAT, off the truncated value). The pet layer stays stubbed. FLOAT.</summary>
     public static float Stat(Character ch, byte mtype, TemplateStore t, ushort baseMin = 0)
     {
-        float v = BaseStat(ch, mtype, t, baseMin) + SumMagic(ch, mtype, t);
+        float b = BaseStat(ch, mtype, t, baseMin);
+        b -= b * ch.AftermathStatDec / 100f;                  // CTObjBase::CalcAfterMath (TObjBase.cpp:4609)
+        float v = b + SumMagic(ch, mtype, t);
         return v + CalcAbilityValue(ch, (uint)v, mtype);   // C++ passes dwSTR = (DWORD)fSTR by value
     }
 

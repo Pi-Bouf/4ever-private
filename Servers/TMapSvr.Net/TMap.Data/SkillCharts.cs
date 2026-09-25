@@ -31,7 +31,10 @@ public sealed record SkillTemplate(
     uint ReuseDelay, int ReuseDelayInc, uint LoopDelay, uint KindDelay,
     byte SpeedApply, byte Positive, ushort MapId,
     uint Duration = 0, uint DurationInc = 0, byte MaintainKind = 0, byte Priority = 0, byte StaticFlag = 0,
-    uint ClassId = 0, float Rate1stX = 1f, uint Aggro = 0)
+    uint ClassId = 0, float Rate1stX = 1f, uint Aggro = 0,
+    // C++ m_bGlobal: a skill every character may use without learning it. Placing it on the hotkey bar grants it
+    // (CTPlayer::AddHotKey, TPlayer.cpp:860) and clearing that slot takes it away again. 5 of 765 live skills.
+    bool Global = false)
 {
     /// <summary>C++ <c>CTSkillTemp::GetAggro</c> (TSkillTemp.cpp:448) — the hate a hostile cast adds to a
     /// monster at <paramref name="level"/>: <c>m_dwAggro·pow(m_f1stRateX, exp)/100</c> (<c>exp = 0</c> at
@@ -64,7 +67,7 @@ public sealed record SkillTemplate(
     public bool IsStatic => StaticFlag != 0;
 
     private const byte SptPositive = 1;              // SPT_* (NetCode.h:2263)
-    private const byte SaBuff = 3;                   // SKILL_ACTION SA_BUFF (NetCode.h:1533)
+    public const byte SaBuff = 3;                    // SKILL_ACTION SA_BUFF (NetCode.h:1533)
     /// <summary>SKILL_DATA_TYPE SDT_CURE (NetCode.h:1540) — a cure/dispel data row.</summary>
     public const byte SdtCure = 5;
 
@@ -74,7 +77,7 @@ public sealed record SkillTemplate(
 
     // ---- SKILL_DATA_TYPE (bType), SKILL_DATA_INC (bInc), SKILL_DATA_ATTR (bAttr), SKILL_ATTACK_TYPE,
     // and the MTYPE_* / MAGIC_TYPE selectors this engine uses (NetCode.h / TMapType.h). ----
-    private const byte SdtAbility = 1;                                       // SDT_ABILITY
+    public const byte SdtAbility = 1;                                        // SDT_ABILITY
     private const byte SviIncrease = 1, SviDecrease = 2, SviMultiply = 3, SviDivide = 4, SviPercent = 5;
     private const byte SattPhysic = 1, SattLong = 2, SattMagicNo = 3;        // SATT_* (magic attrs are 3..9)
     /// <summary>SKILL_ATTACK_TYPE (TMapType.h:356).</summary>
