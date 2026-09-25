@@ -57,10 +57,11 @@ public sealed partial class MapService
             byte keyDir = r.ReadByte();             // bKeyDIR
             byte action = r.ReadByte();             // bAction
 
-            if (objType == RecallMon.OtRecall)
+            if (objType is RecallMon.OtRecall or RecallMon.OtCompanion)
             {
-                // C++ pPlayer->FindRecallMon: the sender's own summon only.
-                if (!s.Char.Recalls.TryGetValue(monId, out var rec) || rec.OwnerId != s.CharId || !rec.InMap) continue;
+                // C++ pPlayer->FindRecallMon / FindCompanion: the sender's own summon or companion only.
+                var own = objType == RecallMon.OtRecall ? s.Char.Recalls : s.Char.CompanionObjs;
+                if (!own.TryGetValue(monId, out var rec) || rec.OwnerId != s.CharId || !rec.InMap) continue;
                 if (rec.Hp == 0) { mouseDir = Monster.TkdirN; keyDir = Monster.TkdirN; }
                 if (rec.Action == TaDead || posX <= 0 || posZ <= 0) continue;
                 rec.MouseDir = mouseDir; rec.KeyDir = keyDir; rec.Action = action;
@@ -155,7 +156,7 @@ public sealed partial class MapService
         foreach (var m in recalls ?? Array.Empty<RecallMon>())
         {
             w.WriteUInt32(m.Id);
-            w.WriteByte(RecallMon.OtRecall);
+            w.WriteByte(m.ObjType);
             w.WriteFloat(m.PosX); w.WriteFloat(m.PosY); w.WriteFloat(m.PosZ);
             w.WriteUInt16(m.Pitch); w.WriteUInt16(m.Dir);
             w.WriteByte(m.MouseDir); w.WriteByte(m.KeyDir); w.WriteByte(m.Action);

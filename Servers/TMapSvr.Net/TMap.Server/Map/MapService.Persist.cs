@@ -296,7 +296,8 @@ public sealed partial class MapService
         var inventory = _itemIdReady ? BuildInvenSaves(ch) : ((List<InvenSaveData>, List<ItemSaveData>)?)null;
         var hotkeys = BuildHotkeySaves(ch);
         var pets = PetSnapshot(ch);
-        _ = EnqueueDbWrite(() => FlushSaveAsync(ch.CharId, charData, quests, inventory, hotkeys, pets));   // snapshot is immutable
+        var comps = (CompanionSnapshot(ch), ch.CompanionSlot, ch.Medals);
+        _ = EnqueueDbWrite(() => FlushSaveAsync(ch.CharId, charData, quests, inventory, hotkeys, pets, comps));   // snapshot is immutable
     }
 
     /// <summary>The off-thread write (never throws unobserved — errors are logged and swallowed). The inventory
@@ -304,7 +305,7 @@ public sealed partial class MapService
     /// item state, never a destructive empty rewrite.</summary>
     private async Task FlushSaveAsync(uint charId, CharSaveData charData, IReadOnlyList<QuestSaveRow> quests,
         (List<InvenSaveData> invens, List<ItemSaveData> items)? inventory, IReadOnlyList<HotkeySaveRow> hotkeys,
-        IReadOnlyList<PetRow>? pets = null)
+        IReadOnlyList<PetRow>? pets = null, (List<CompanionRow> Rows, byte Slot, uint Medals)? comps = null)
     {
         try
         {
@@ -313,6 +314,7 @@ public sealed partial class MapService
             if (inventory is { } inv) await _gameDb.SaveInventoryAsync(charId, inv.invens, inv.items);
             await _gameDb.SaveHotkeysAsync(charId, hotkeys);
             if (pets is { Count: > 0 }) await SavePetsAsync(charId, pets);
+            if (comps is { } cs) await SaveCompanionsAsync(charId, cs.Rows, cs.Slot, cs.Medals);
         }
         catch (Exception ex)
         {
@@ -333,7 +335,8 @@ public sealed partial class MapService
             var inventory = _itemIdReady ? BuildInvenSaves(ch) : ((List<InvenSaveData>, List<ItemSaveData>)?)null;
             var hotkeys = BuildHotkeySaves(ch);
             var pets = PetSnapshot(ch);
-            await EnqueueDbWrite(() => FlushSaveAsync(ch.CharId, charData, quests, inventory, hotkeys, pets));
+            var comps = (CompanionSnapshot(ch), ch.CompanionSlot, ch.Medals);
+            await EnqueueDbWrite(() => FlushSaveAsync(ch.CharId, charData, quests, inventory, hotkeys, pets, comps));
         }
     }
 }

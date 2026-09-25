@@ -186,12 +186,12 @@ public sealed partial class MapService
     private void EnterRecall(RecallMon mon)
     {
         _state.AddRecall(mon);
-        foreach (var p in _state.PlayersAround(mon)) SendCS_ADDRECALLMON_ACK(p, mon, newMember: true);
+        foreach (var p in _state.PlayersAround(mon)) ShowSummon(p, mon, newMember: true);
     }
 
     private void LeaveRecall(RecallMon mon, bool exitMap, bool forever)
     {
-        foreach (var p in _state.PlayersAround(mon)) SendCS_DELRECALLMON_ACK(p, mon.OwnerId, mon.Id, exitMap, forever);
+        foreach (var p in _state.PlayersAround(mon)) HideSummon(p, mon, exitMap, forever);
         _state.RemoveRecall(mon);
     }
 
@@ -199,7 +199,7 @@ public sealed partial class MapService
     /// <c>CS_ENTER_ACK</c>, so a rider's mount exists on the client when its rider appears).</summary>
     private void SendRecallsInView(ClientSession s)
     {
-        foreach (var m in _state.RecallsInView(s)) SendCS_ADDRECALLMON_ACK(s, m, newMember: false);
+        foreach (var m in _state.RecallsInView(s)) ShowSummon(s, m, newMember: false);
     }
 
     /// <summary>A summon moved by its owner's client: re-bucket and exchange it with players it came into or out of
@@ -208,8 +208,8 @@ public sealed partial class MapService
     {
         var diff = _state.MoveRecall(mon, x, z);
         if (!diff.CellChanged) return;
-        foreach (var p in diff.Left) SendCS_DELRECALLMON_ACK(p, mon.OwnerId, mon.Id, exitMap: false, forever: true);
-        foreach (var p in diff.Entered) SendCS_ADDRECALLMON_ACK(p, mon, newMember: false);
+        foreach (var p in diff.Left) HideSummon(p, mon, exitMap: false, forever: true);
+        foreach (var p in diff.Entered) ShowSummon(p, mon, newMember: false);
     }
 
     /// <summary>C++ <c>ExitMAP</c> (TMapSvr.cpp:7419): off the mount, and every summon leaves the map with its owner —
@@ -278,6 +278,20 @@ public sealed partial class MapService
     }
 
     // ================================ senders ================================
+
+    /// <summary>Shows a summon to one player — a companion with <c>CS_ADDSPOLECNIKMON_ACK</c>, anything else with
+    /// <c>CS_ADDRECALLMON_ACK</c> (C++ <c>CTCell</c> keeps them in separate maps and calls the matching sender).</summary>
+    private void ShowSummon(ClientSession p, RecallMon m, bool newMember)
+    {
+        if (m.IsCompanion) SendCS_ADDSPOLECNIKMON_ACK(p, m, newMember);
+        else SendCS_ADDRECALLMON_ACK(p, m, newMember);
+    }
+
+    private void HideSummon(ClientSession p, RecallMon m, bool exitMap, bool forever)
+    {
+        if (m.IsCompanion) SendCS_DELSPOLECNIKMON_ACK(p, m.OwnerId, m.Id, exitMap);
+        else SendCS_DELRECALLMON_ACK(p, m.OwnerId, m.Id, exitMap, forever);
+    }
 
     /// <summary>C++ <c>SendCS_ADDRECALLMON_ACK</c> (CSSender.cpp:769) — field-exact.</summary>
     private void SendCS_ADDRECALLMON_ACK(ClientSession s, RecallMon m, bool newMember)

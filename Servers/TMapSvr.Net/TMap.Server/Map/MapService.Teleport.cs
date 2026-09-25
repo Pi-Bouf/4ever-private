@@ -233,6 +233,7 @@ public sealed partial class MapService
         if (s.State != EnterState.InGame) return;
 
         RecallsExitMap(s, ch);
+        CompanionExitMap(ch);
         var watching = _state.MonstersInView(s).ToList();
         foreach (var other in _state.Neighbors(s).ToList())
         {

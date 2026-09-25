@@ -190,6 +190,18 @@ public sealed class Character
     /// <summary>C++ <c>m_dwMedals</c> — the medal currency (pays for mount effects). Not loaded yet, so 0.</summary>
     public uint Medals { get; set; }
 
+    /// <summary>The owned companions by slot 0..4 (C++ <c>m_mapComp</c>).</summary>
+    public SortedDictionary<byte, Companion> Companions { get; } = new();
+
+    /// <summary>C++ <c>m_bCompanionSlot</c> — the summoned companion's slot, 0xFF for none. It drives the owner
+    /// bonuses even while no companion is out (the owner dead, for instance).</summary>
+    public byte CompanionSlot { get; set; } = 0xFF;
+
+    /// <summary>The companion creatures in the world (C++ <c>m_mapCompanion</c>).</summary>
+    public Dictionary<uint, RecallMon> CompanionObjs { get; } = new();
+
+    public Companion? SummonedCompanion => Companions.GetValueOrDefault(CompanionSlot);
+
     /// <summary>C++ <c>FindRecallPet</c> (TPlayer.cpp:4170) — the called mount, if any.</summary>
     public RecallMon? FindRecallPet() => Recalls.Values.FirstOrDefault(m => m.RecallType == RecallMon.TypePet);
 

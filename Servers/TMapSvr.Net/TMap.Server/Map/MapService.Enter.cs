@@ -213,6 +213,7 @@ public sealed partial class MapService
         SendCS_QUESTLIST_ACK(s, ch);
         SendQuestTimers(s, ch);   // C++ SendQuestTimer(m_dwTick) — restores active-timer countdowns on relog
         SendCS_PETLIST_ACK(s, ch);   // C++ sends it after CS_CHARSTATINFO_ACK (SSHandler.cpp:2171)
+        SendCS_COMPANIONLIST_ACK(s, ch);
     }
 
     private void OnMW_ROUTE_REQ(PacketReader r)
@@ -366,6 +367,7 @@ public sealed partial class MapService
             SendMonstersInView(s); // and the newcomer learns of the monsters already in its view (CTCell::EnterPlayer)
             SendSwitchesAndGatesInView(s); // + the switches/gates already in view (CTCell::EnterPlayer switch/gate loops)
             RecallsEnterMap(s, s.Char);    // summons that followed through a teleport come back (InitMap)
+            CompanionEnterMap(s, s.Char);  // and the summoned companion is called out (InitMap)
             _log.LogInformation("Char {Char} live on map {Map} ch {Ch}.", s.CharId, s.Char.MapId, s.Channel);
         }
     }
@@ -487,7 +489,7 @@ public sealed partial class MapService
         w.WriteUInt32(ch.PvpUseablePoint);
         w.WriteUInt32(0);            // month PvP point
         w.WriteString(DateTime.Now.ToString("tt hh : mm")); // strTajm (server clock)
-        w.WriteUInt32(0);            // medals
+        w.WriteUInt32(ch.Medals);    // medals
         s.Send(w);
     }
 
@@ -542,6 +544,7 @@ public sealed partial class MapService
 
                 await TryLoadInventoryAsync(ch);
                 await LoadPetsAsync(s, ch);
+                await LoadCompanionsAsync(ch);
 
                 // C++ clamps the persisted current HP/MP DOWN to the computed max at load (no refill), so the
                 // in-memory value is never over-max (matters once regen/damage/save read it). Charts-gated.
@@ -688,8 +691,18 @@ public sealed partial class MapService
         return item;
     }
 
+    /// <summary>C++ <c>SetItemAttr</c> (TMapSvr.cpp:6952, added by this repo): a companion rune with no species yet
+    /// takes the one <c>TCOMPANIONRUNECHART</c> gives its item id (stored in <c>dwTime5</c>, IEV_COMPANION).</summary>
+    private void StampCompanionRune(Item item)
+    {
+        if (item.Template is { Type: 22 } && item.Ext[Item.IevCompanion] == 0
+            && _templates.CompanionRunes.TryGetValue(item.TemplateId, out var species))
+            item.Ext[Item.IevCompanion] = species;
+    }
+
     private void LinkItemAttr(Item item)
     {
+        StampCompanionRune(item);
         if (item.Template is null || !_templates.HasItemAttrs) return;
         ushort key = (ushort)(item.Template.AttrId + _templates.GradeForLevel(item.Level) + item.Gem);
         item.Attr = _templates.Attr(key) ?? _templates.DefaultAttr;

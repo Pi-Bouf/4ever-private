@@ -98,7 +98,8 @@ public static class StatEngine
         float b = BaseStat(ch, mtype, t, baseMin);
         b -= b * ch.AftermathStatDec / 100f;                  // CTObjBase::CalcAfterMath (TObjBase.cpp:4609)
         float v = b + SumMagic(ch, mtype, t);
-        return v + CalcAbilityValue(ch, (uint)v, mtype);   // C++ passes dwSTR = (DWORD)fSTR by value
+        v += CalcAbilityValue(ch, (uint)v, mtype);         // C++ passes dwSTR = (DWORD)fSTR by value
+        return v + MapService.CompanionStat(ch, mtype);    // CTPlayer::GetSTR… + CalcPetATTR
     }
 
     /// <summary>Effective stat truncated toward zero (C++ <c>GetAbility</c> → <c>DWORD(GetSTR())</c>).</summary>
@@ -115,8 +116,12 @@ public static class StatEngine
     public static uint MaxMp(Character ch, TemplateStore t)
     {
         if (!t.HasStats || t.Formula(FtypeMp) is not { } f) return ch.MaxMp;
-        return Buffed(ch, f.Init + (uint)(Stat(ch, MtypeMen, t) * f.RateX) + (uint)SumMagic(ch, MtypeMmp, t), MtypeMmp);
+        return Buffed(ch, f.Init + (uint)(Stat(ch, MtypeMen, t) * f.RateX) + (uint)SumMagic(ch, MtypeMmp, t), MtypeMmp)
+               + Pet(ch, MtypeMmp, t);
     }
+
+    /// <summary>C++ <c>(DWORD)CalcPetBonus(id)</c>, added after the buff layer in GetMaxMP / the level and crit getters.</summary>
+    private static uint Pet(Character ch, byte bonusId, TemplateStore t) => (uint)MapService.CompanionBonusValue(ch, bonusId, t);
 
     /// <summary>C++ <c>GetPureMaxHP</c> (TObjBase.cpp:1991) — the base formula only: <c>init + BASE-CON·rateX</c>,
     /// with no item ability, buff or pet bonus. Used for the skill HP-cost percentage (<c>GetRequiredHP</c>).</summary>
@@ -227,21 +232,21 @@ public static class StatEngine
 
     // Level accessors — WORD. Base + item enchant + maintained-buff delta; guild StatLevel + pet bonuses stubbed.
     public static ushort AttackLevel(Character ch, TemplateStore t)
-        => (ushort)Buffed(ch, Calc2ndAbility(ch, FtypeAl, t) + (uint)SumMagic(ch, MtypeAl, t), MtypeAl);
+        => (ushort)(Buffed(ch, Calc2ndAbility(ch, FtypeAl, t) + (uint)SumMagic(ch, MtypeAl, t), MtypeAl) + Pet(ch, MtypeAl, t));
     public static ushort DefendLevel(Character ch, TemplateStore t)
-        => (ushort)Buffed(ch, Calc2ndAbility(ch, FtypeDl, t) + (uint)SumMagic(ch, MtypeDl, t), MtypeDl);
+        => (ushort)(Buffed(ch, Calc2ndAbility(ch, FtypeDl, t) + (uint)SumMagic(ch, MtypeDl, t), MtypeDl) + Pet(ch, MtypeDl, t));
     public static ushort MagicAtkLevel(Character ch, TemplateStore t)
-        => (ushort)Buffed(ch, Calc2ndAbility(ch, FtypeMal, t) + (uint)SumMagic(ch, MtypeMal, t), MtypeMal);
+        => (ushort)(Buffed(ch, Calc2ndAbility(ch, FtypeMal, t) + (uint)SumMagic(ch, MtypeMal, t), MtypeMal) + Pet(ch, MtypeMal, t));
     public static ushort MagicDefLevel(Character ch, TemplateStore t)
-        => (ushort)Buffed(ch, Calc2ndAbility(ch, FtypeMdl, t) + (uint)SumMagic(ch, MtypeMdl, t), MtypeMdl);
+        => (ushort)(Buffed(ch, Calc2ndAbility(ch, FtypeMdl, t) + (uint)SumMagic(ch, MtypeMdl, t), MtypeMdl) + Pet(ch, MtypeMdl, t));
 
     // Crit / charge — BYTE. Base + item enchant + maintained-buff delta; pet bonuses stubbed.
     public static byte CriticalPysProb(Character ch, TemplateStore t)
-        => (byte)Buffed(ch, Calc2ndAbility(ch, FtypePcr, t) + (uint)SumMagic(ch, MtypeCr, t), MtypeCr);
+        => (byte)(Buffed(ch, Calc2ndAbility(ch, FtypePcr, t) + (uint)SumMagic(ch, MtypeCr, t), MtypeCr) + Pet(ch, MtypeCr, t));
     public static byte CriticalMagicProb(Character ch, TemplateStore t)
-        => (byte)Buffed(ch, Calc2ndAbility(ch, FtypeMcr, t) + (uint)SumMagic(ch, MtypeMcr, t), MtypeMcr);
+        => (byte)(Buffed(ch, Calc2ndAbility(ch, FtypeMcr, t) + (uint)SumMagic(ch, MtypeMcr, t), MtypeMcr) + (byte)Pet(ch, MtypeMcr, t));
     public static byte ChargeProb(Character ch, TemplateStore t)   // field 28 (cast-maintenance prob)
-        => (byte)Buffed(ch, Calc2ndAbility(ch, FtypeMsp, t) + (uint)SumMagic(ch, MtypeCmp, t), MtypeCmp);
+        => (byte)(Buffed(ch, Calc2ndAbility(ch, FtypeMsp, t) + (uint)SumMagic(ch, MtypeCmp, t), MtypeCmp) + (byte)Pet(ch, MtypeCmp, t));
     public static byte ChargeSpeed(Character ch, TemplateStore t)  // field 27 (magic cast speed)
         => (byte)Buffed(ch, Calc2ndAbility(ch, FtypeMcs, t) + (uint)SumMagic(ch, MtypeMcs, t), MtypeMcs);
 

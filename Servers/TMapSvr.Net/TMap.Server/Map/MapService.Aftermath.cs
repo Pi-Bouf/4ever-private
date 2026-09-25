@@ -101,6 +101,7 @@ public sealed partial class MapService
             case AftermathNone: ch.Hp = maxHp; ch.Mp = maxMp; break;
         }
         if (ch.Hp == 0) ch.Hp = 1;
+        RespawnCompanion(s, ch);                                        // TPlayer.cpp:3744
         ch.RecoverHpTick = NowMs; ch.RecoverMpTick = NowMs;
 
         var reviveAck = BuildRevivalAck(ch.CharId, ch.PosX, ch.PosY, ch.PosZ);

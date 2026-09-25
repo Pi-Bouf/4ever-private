@@ -177,6 +177,13 @@ public sealed class TemplateStore
     /// <summary>Item-level → grade byte (C++ <c>m_itemgrade[level].m_bGrade</c>, ITEMLEVEL_COUNT = 50).</summary>
     public byte[] ItemGrades { get; } = new byte[50];
 
+    /// <summary>C++ <c>m_mapCompBonus</c> — TCOMPANIONBONUSCHART by bonus id (the first row of a duplicated id wins,
+    /// as the C++ <c>map::insert</c> does).</summary>
+    public Dictionary<byte, CompanionBonus> CompanionBonuses { get; } = new();
+
+    /// <summary>C++ <c>m_mapCompRune</c> — TCOMPANIONRUNECHART: a companion rune's item id → the species it creates.</summary>
+    public Dictionary<ushort, ushort> CompanionRunes { get; } = new();
+
     /// <summary>C++ <c>m_mapTPET</c> — the mount templates (TMOUNTCHART) by mount id.</summary>
     public Dictionary<ushort, MountTemplate> Mounts { get; } = new();
 

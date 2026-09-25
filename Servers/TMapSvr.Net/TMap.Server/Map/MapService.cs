@@ -40,6 +40,7 @@ public sealed partial class MapService
         _gameDb = gameDb;
         PostStore = gameDb;
         PetStore = gameDb;
+        CompanionStore = gameDb;
         _templates = templates;
         _log = log;
     }
@@ -79,7 +80,7 @@ public sealed partial class MapService
             SendMW_CLOSECHAR_ACK(session.CharId, session.Key);
 
         SaveCharData(session);   // flush the char record + dirty quests on logout (C++ SetEventCloseSession)
-        if (session.Char is { } leaving) ClearRecalls(session, leaving);   // summons leave with their owner
+        if (session.Char is { } leaving) { ClearRecalls(session, leaving); ClearCompanionObjs(leaving); }
         if (session.CharId != 0) EraseBill(session.CharId, 0);   // C++ SM_POSTBILLERASE_REQ(id, 0)
         _state.Remove(session);
 
@@ -125,6 +126,23 @@ public sealed partial class MapService
                 case Msg.CS_DELETESADDLE_REQ: await OnCS_DELETESADDLE_REQ(session, r); break;
                 case Msg.CS_DELRECALLMON_REQ: OnCS_DELRECALLMON_REQ(session, r); break;
                 case Msg.CS_CHGMODERECALLMON_REQ: OnCS_CHGMODERECALLMON_REQ(session, r); break;
+                case Msg.CS_CREATECOMPANION_REQ: OnCS_CREATECOMPANION_REQ(session, r); break;
+                case Msg.CS_DELETECOMPANION_REQ: await OnCS_DELETECOMPANION_REQ(session, r); break;
+                case Msg.CS_COMPANIONRECALL_REQ: OnCS_COMPANIONRECALL_REQ(session, r); break;
+                case Msg.CS_COMPANIONCANCEL_REQ: OnCS_COMPANIONCANCEL_REQ(session, r); break;
+                case Msg.CS_HIDECOMPANION_REQ: OnCS_HIDECOMPANION_REQ(session, r); break;
+                case Msg.CS_COMPANIONUPGRADE_REQ: OnCS_COMPANIONUPGRADE_REQ(session, r); break;
+                case Msg.CS_COMPANIONLUP_REQ: OnCS_COMPANIONLUP_REQ(session, r); break;
+                case Msg.CS_USEPETITEM_REQ: OnCS_USEPETITEM_REQ(session, r); break;
+                case Msg.CS_USECOMPANIONITEM_REQ: OnCS_USECOMPANIONITEM_REQ(session, r); break;
+                case Msg.CS_DELETECOMPITEMS_REQ: OnCS_DELETECOMPITEMS_REQ(session, r); break;
+                case Msg.CS_CHANGECOMPANIONEFFECT_REQ: OnCS_CHANGECOMPANIONEFFECT_REQ(session, r); break;
+                case Msg.CS_USECOMPANIONPOWDER_REQ: OnCS_USECOMPANIONPOWDER_REQ(session, r); break;
+                case Msg.CS_USECOMPRESET_REQ: OnCS_USECOMPRESET_REQ(session, r); break;
+                case Msg.CS_FINISHCOMPANIONTRANSFER_ACK: OnCS_FINISHCOMPANIONTRANSFER_ACK(session, r); break;
+                case Msg.CS_CHGMODESPOLECNIKMON_REQ: OnCS_CHGMODESPOLECNIKMON_REQ(session, r); break;
+                case Msg.CS_DELSPOLECNIKMON_REQ: OnCS_DELSPOLECNIKMON_REQ(session, r); break;
+                case Msg.CS_SPOLECNIKRECALL_REQ: break;   // its C++ body is commented out
                 case Msg.CS_INVENDEL_REQ: OnCS_INVENDEL_REQ(session, r); break;
                 case Msg.CS_INVENMOVE_REQ: OnCS_INVENMOVE_REQ(session, r); break;
                 case Msg.CS_SETRETURNPOS_REQ: OnCS_SETRETURNPOS_REQ(session, r); break;
@@ -223,6 +241,8 @@ public sealed partial class MapService
                 case Msg.MW_CREATERECALLMON_REQ: OnMW_CREATERECALLMON_REQ(r); break;
                 case Msg.MW_RECALLMONDEL_REQ: OnMW_RECALLMONDEL_REQ(r); break;
                 case Msg.MW_PETRIDING_REQ: OnMW_PETRIDING_REQ(r); break;
+                case Msg.MW_CREATESPOLECNIKMON_REQ: OnMW_CREATESPOLECNIKMON_REQ(r); break;
+                case Msg.MW_SPOLECNIKMONDEL_REQ: OnMW_SPOLECNIKMONDEL_REQ(r); break;
                 case Msg.MW_RECALLMONDATA_REQ: break;   // cross-server summon handoff — never sent to a single map server
                 case Msg.MW_CHGPARTYCHIEF_REQ: OnMW_CHGPARTYCHIEF_REQ(r); break;
                 case Msg.MW_CHGPARTYTYPE_REQ: OnMW_CHGPARTYTYPE_REQ(r); break;
@@ -271,6 +291,7 @@ public sealed partial class MapService
         RunRecover(NowMs);                     // HP/MP regeneration (players + monsters)
         RunAftermath(NowMs);                   // one step of death-penalty recovery when due (CTPlayer::OnTimer)
         RunRecallTimers();                     // summons whose life ran out are sent away (CheckTimeRecallMon)
+        RunCompanionTimers(NowMs);             // companion stamina/exp each minute, expired companion items
         RunCorpseExpiry(_tickSeconds * 1000L); // despawn + re-arm lootable corpses past their lifetime
         RunScheduledAi(_tickSeconds * 1000L);  // Due TAICHART commands (the local SM_AICMD stand-in)
         RunPendingResetHome();                 // abandoned monsters back to their spawn (SM_RESETHOST_ACK)

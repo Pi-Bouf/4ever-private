@@ -181,8 +181,8 @@ public sealed partial class MapService
             // C++ CTCell::EnterPlayer (TCell.cpp:103): the monster sees the newcomer.
             if (m.Ai is not null) OnAiEvent(m, AiTrigger.Enter, 0, s.CharId, s.CharId, OtPc);
         }
-        foreach (var m in diff.LeftRecalls) SendCS_DELRECALLMON_ACK(s, m.OwnerId, m.Id, exitMap: false, forever: true);
-        foreach (var m in diff.EnteredRecalls) SendCS_ADDRECALLMON_ACK(s, m, newMember: false);
+        foreach (var m in diff.LeftRecalls) HideSummon(s, m, exitMap: false, forever: true);
+        foreach (var m in diff.EnteredRecalls) ShowSummon(s, m, newMember: false);
         ApplySwitchGateDiff(s, diff); // switches/gates entering/leaving the 3×3 (static objects, Phase 32)
     }
 

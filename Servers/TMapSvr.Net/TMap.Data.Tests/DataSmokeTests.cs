@@ -188,4 +188,60 @@ WHERE x.bDelete = 0 AND y.bDelete = 0", c);
 
         _out.WriteLine($"Loaded {store.AiScripts.Count} AI scripts over {store.MonsterTemplates.Count} monster templates.");
     }
+
+    /// <summary>The companion procedures against the live database (TSaveCompanion / TDeleteCompanion /
+    /// TSaveLastCompanion / TGetLastCompanion / TSaveMedals / TGetMedals), on a character id no player has. Every row
+    /// it writes is removed in <c>finally</c>. Also checks the new charts load.</summary>
+    [Fact]
+    public async Task CompanionProcedures_RoundTrip_WhenConfigured()
+    {
+        if (!Configured()) return;
+        var db = new GameDatabase(GameCs!);
+        const uint charId = 2_000_000_001;
+        long end = DateTimeOffset.UtcNow.ToUnixTimeSeconds() / 60 * 60 + 3600;   // smalldatetime keeps minutes
+        try
+        {
+            var a = new CompanionRow(0, 31125, 3, "PortTestA", 77, 40000, 2, 5, new byte[] { 1, 2, 3, 4, 5, 6 }, 13,
+                new ushort[] { 18084, 0 }, new long[] { end, 0 }, 0);
+            var b = a with { Slot = 1, Name = "PortTestB", Life = 11000, ItemIds = new ushort[] { 0, 0 }, EndTimes = new long[2] };
+            await db.SaveCompanionAsync(charId, a);
+            await db.SaveCompanionAsync(charId, b);
+            await db.SaveLastCompanionAsync(charId, 1);
+            await db.SaveMedalsAsync(charId, 1234);
+
+            var load = await db.LoadCompanionsAsync(charId);
+            Assert.Equal(2, load.Companions.Count);
+            var la = load.Companions.Single(c => c.Slot == 0);
+            Assert.Equal("PortTestA", la.Name);
+            Assert.Equal(32767u, la.Life);                                  // clamped to the SMALLINT column
+            Assert.Equal(new byte[] { 1, 2, 3, 4, 5, 6 }, la.Stats);
+            Assert.Equal((ushort)18084, la.ItemIds[0]);
+            Assert.Equal(end, la.EndTimes[0]);
+            Assert.Equal(0, la.EndTimes[1]);                                // 1900-01-01 reads back as 0
+            Assert.Equal((byte)1, load.SummonedSlot);
+            Assert.Equal(1234u, load.Medals);
+
+            await db.DeleteCompanionAsync(charId, 1);
+            Assert.Single((await db.LoadCompanionsAsync(charId)).Companions);
+
+            var none = await db.LoadCompanionsAsync(3_000_000_003);           // nobody: no slot, no medals
+            Assert.Equal((byte)0xFF, none.SummonedSlot);
+            Assert.Equal(0u, none.Medals);
+        }
+        finally
+        {
+            await using var c = new Microsoft.Data.SqlClient.SqlConnection(GameCs);
+            await c.OpenAsync();
+            await using var cmd = new Microsoft.Data.SqlClient.SqlCommand(@"DELETE FROM TCOMPANIONTABLE WHERE dwCharID=@c;
+DELETE FROM TCOMPANIONITEMTABLE WHERE dwCharID=@c; DELETE FROM TLASTCOMPANIONTABLE WHERE dwCharID=@c; DELETE FROM TMEDALS WHERE dwCharID=@c;", c);
+            cmd.Parameters.AddWithValue("@c", (int)charId);
+            await cmd.ExecuteNonQueryAsync();
+        }
+
+        var store = await db.LoadTemplatesAsync();
+        Assert.Equal(40, store.Mounts.Count);
+        Assert.Equal(44, store.CompanionRunes.Count);
+        Assert.Equal(new CompanionBonus(11, 1f, 2f), store.CompanionBonuses[11]);
+        Assert.Equal(10, store.CompanionBonuses.Count);                    // 12 rows, 11 and 12 duplicated
+    }
 }

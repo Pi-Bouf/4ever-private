@@ -11,9 +11,15 @@ namespace TMap.Server.Map;
 public sealed class RecallMon
 {
     public const byte OtRecall = 7;                  // OBJ_TYPE OT_RECALL
+    public const byte OtCompanion = 18;              // OBJ_TYPE OT_COMPANION
     public const byte TypePet = 7;                   // TRECALL_TYPE TRECALLTYPE_PET
 
     public uint Id { get; set; }
+
+    /// <summary><c>OT_RECALL</c>, or <c>OT_COMPANION</c> for a companion (C++ <c>CTCompanion : CTRecallMon</c>) —
+    /// the same object, shown with its own packets and kept in its owner's companion list.</summary>
+    public byte ObjType { get; set; } = OtRecall;
+    public bool IsCompanion => ObjType == OtCompanion;
     public uint OwnerId { get; set; }                // m_dwHostID — the owning player's char id
     public ushort ChartId { get; set; }              // m_pMON->m_wID
     public MonsterTemplate? Template { get; set; }
@@ -86,4 +92,28 @@ public sealed class Pet
     public long EndTime { get; set; }
     public byte Effect { get; set; }
     public MountTemplate? Template { get; set; }
+}
+
+/// <summary>An owned companion (C++ <c>tagCOMP</c>, TMapType.h:2172): the record, apart from the creature it becomes
+/// when summoned. Stats are STR, DEX, CON, INT, WIS, MEN; <see cref="Life"/> is its stamina (a DWORD despite the C++
+/// <c>m_wLife</c> name).</summary>
+public sealed class Companion
+{
+    public byte Slot { get; set; }
+    public uint MonId { get; set; }
+    public byte Level { get; set; } = 1;
+    public string Name { get; set; } = "";
+    public uint Exp { get; set; }
+    public uint NextExp { get; set; } = 3600;
+    public uint Life { get; set; } = 11000;
+    public byte Effect { get; set; }
+    public byte StatPoints { get; set; }
+    public byte[] Stats { get; } = new byte[6];
+    public ushort[] ItemIds { get; } = new ushort[2];
+    public long[] EndTimes { get; } = new long[2];
+    public uint Tick { get; set; }
+    public byte BonusId { get; set; }
+
+    /// <summary>C++ <c>m_dwNextExp = pow(level, 2) · 3600</c>.</summary>
+    public static uint NextExpFor(byte level) => (uint)(level * level) * 3600;
 }

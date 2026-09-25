@@ -154,6 +154,8 @@ public sealed partial class GameDatabase
         @"SELECT wID, bLevel, wMonAttr, wExp, bMoneyProb, dwMinMoney, dwMaxMoney, bItemProb, bDropCount, bAIType, wSkill1, wSkill2, wSkill3, wSkill4, wChaseRange,
                  bRecallType, wSummonAttr, bClass, bRace, bIsSelf, bCanSelect, bCanAttack FROM TMONSTERCHART";
     private const string MountChartSql = @"SELECT wMountID, wDefMonID, wUpgMonID FROM TMOUNTCHART";
+    private const string CompanionBonusChartSql = @"SELECT bBonusID, fBase, fLevelMultiplier FROM TCOMPANIONBONUSCHART";
+    private const string CompanionRuneChartSql = @"SELECT wItemID, wMonID FROM TCOMPANIONRUNECHART";
     // The AI-script tables (C++ CTBLAICommand / CTBLAICondition / CTBLAIChart, DBAccess.h:365-414).
     // Loaded in that order — commands first (they are the targets the chart rows reference), then each
     // command's guards, then the trigger→command bindings per bAIType.
@@ -406,6 +408,19 @@ public sealed partial class GameDatabase
                 ushort id = r.GetUShortSafe(0);
                 store.Mounts[id] = new MountTemplate(id, r.GetUShortSafe(1), r.GetUShortSafe(2));
             }
+
+        await using (var cmd = new SqlCommand(CompanionBonusChartSql, c))
+        await using (var r = await cmd.ExecuteReaderAsync(ct))
+            while (await r.ReadAsync(ct))
+            {
+                byte id = r.GetByteSafe(0);
+                store.CompanionBonuses.TryAdd(id, new CompanionBonus(id, r.GetFloatSafe(1), r.GetFloatSafe(2)));
+            }
+
+        await using (var cmd = new SqlCommand(CompanionRuneChartSql, c))
+        await using (var r = await cmd.ExecuteReaderAsync(ct))
+            while (await r.ReadAsync(ct))
+                store.CompanionRunes[r.GetUShortSafe(0)] = r.GetUShortSafe(1);
 
         // The AI scripts. Command templates → their conditions → the per-bAIType trigger bindings.
         var aiCommands = new Dictionary<uint, AiCommandTemplate>();
