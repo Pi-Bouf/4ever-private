@@ -59,6 +59,7 @@ static const TConfigDefaultInt s_DefaultInts[] =
 	{ _T("Settings"), _T("MOUSECLICKMOVE"),        0    },
 	{ _T("Settings"), _T("AUTOTARGETING"),         1    },
 	{ _T("Settings"), _T("FontSize"),              100  },
+	{ _T("Settings"), _T("GroupMonNames"),         1    },
 	{ _T("Settings"), _T("FIRST"),                 1    },
 
 	// [Launcher] -- patch config + flags
@@ -74,6 +75,8 @@ static const TConfigDefaultStr s_DefaultStrs[] =
 	{ _T("Settings"), _T("WindowedMode"),  _T("FALSE") },
 	{ _T("Settings"), _T("UseShader"),     _T("TRUE")  },
 	{ _T("Settings"), _T("OBJRange"),      _T("1.0")   },
+	{ _T("Settings"), _T("GroupMonNamesNear"),  _T("20.0") },
+	{ _T("Settings"), _T("GroupMonNamesRatio"), _T("0.5")  },
 	{ _T("Settings"), _T("Font"),          _T("")      },
 	{ _T("Settings"), _T("FontQuality"),   _T("ANTIALIASED_QUALITY") },
 

@@ -97,6 +97,9 @@ public:
 	static CT3DVertex m_vTRECTVB;								// Common rect vertex buffer
 	static TOPTION m_vTOPTION;									// Advenced game option
 	static BYTE m_bTOPTIONLEVEL;								// Advenced game option level
+	static BYTE m_bGroupMonNames;								// config.ini GroupMonNames: merge same-name monster labels
+	static FLOAT m_fGroupMonNamesNear;							// config.ini GroupMonNamesNear: closer than this (units) = always own label
+	static FLOAT m_fGroupMonNamesRatio;							// config.ini GroupMonNamesRatio: ground merge radius = ratio x distance to you
 
 	static CTChatFrame *m_pChatFrame;							// Chat Frame
 
@@ -1464,6 +1467,12 @@ public:
 	void RenderTTEXT( LPLISTTOBJBASE pLIST);
 	void RenderTTEXT( BYTE bIsEXTVisible);
 	D3DXVECTOR3 GetBaseNamePosition(CTClientObjBase *pTOBJ);
+
+	// Monster name grouping: same-name monsters close together on screen share one "Name (N)" label.
+	BYTE CanGroupTNAME( CTClientObjBase *pTOBJ);
+	void BuildTNAMEGROUP();
+	std::map<CTClientObjBase *, INT> m_mapTNAMEGROUP;					// this frame: group label -> member count, hidden member -> 0
+	std::map<CTClientObjBase *, CTClientObjBase *> m_mapTNAMEGROUPID;	// last frame's group of each monster (anti-flicker)
 
 	void ResetObjUserTitlePos( CTClientObjBase *pTOBJ, const D3DXVECTOR3 &vPROJ);
 	void ResetObjNamePos( CTClientObjBase *pTOBJ, const D3DXVECTOR3 &vPROJ);

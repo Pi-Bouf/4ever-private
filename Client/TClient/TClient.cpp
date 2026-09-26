@@ -1028,6 +1028,21 @@ void CTClientApp::LoadStdProfileSettings()
 		_T("FarIMAGE"),
 		CTClientGame::m_vTOPTION.m_bFarIMAGE);
 
+	CTClientGame::m_bGroupMonNames = (BYTE) GetProfileInt(
+		_T("Settings"),
+		_T("GroupMonNames"),
+		CTClientGame::m_bGroupMonNames);
+
+	CTClientGame::m_fGroupMonNamesNear = FLOAT(atof(GetProfileString(
+		_T("Settings"),
+		_T("GroupMonNamesNear"),
+		_T("20.0"))));
+
+	CTClientGame::m_fGroupMonNamesRatio = FLOAT(atof(GetProfileString(
+		_T("Settings"),
+		_T("GroupMonNamesRatio"),
+		_T("0.5"))));
+
 	CTClientGame::m_vTOPTION.m_bAutoHelp = (BYTE) GetProfileInt(
 		_T("Settings"),
 		_T("AUTOHELP"),

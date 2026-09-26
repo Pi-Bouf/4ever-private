@@ -120,6 +120,9 @@ struct TOBJ_LENGTH_SORTER
 LPTEXTURESET CTClientGame::m_pTGROUNDTEX = NULL;
 CT3DVertex CTClientGame::m_vTRECTVB;
 BYTE CTClientGame::m_bTOPTIONLEVEL = TOPTIONLEVEL_HI;
+BYTE CTClientGame::m_bGroupMonNames = TRUE;
+FLOAT CTClientGame::m_fGroupMonNamesNear = 20.0f;
+FLOAT CTClientGame::m_fGroupMonNamesRatio = 0.5f;
 
 LPTEXTURESET CTClientGame::m_pTCOMMANDERICON = NULL;
 LPTEXTURESET CTClientGame::m_pTCHIEFICON = NULL;
@@ -2726,7 +2729,10 @@ void CTClientGame::RenderTOBJ( CTClientObjBase *pTOBJ,
 		pTOBJ->GetPositionX(),
 		pTOBJ->GetPositionZ()) ? TRUE : FALSE;
 
-	if( pTOBJ->m_bAlpha >= ALPHA_MAX && (
+	// Dynamic billboards (distant objects drawn as a render-to-texture impostor) render nothing on modern
+	// GPUs: monsters vanished beyond ~7 units unless large on screen, while their names still showed.
+	// Always draw the real mesh instead.
+	if( FALSE && pTOBJ->m_bAlpha >= ALPHA_MAX && (
 		pTOBJ->m_bType != OT_NPC ||
 		pTOBJ->m_bNPCType != TNPC_BOX) &&
 		CTDynamicBillboard::CanUSE(
@@ -2790,6 +2796,7 @@ void CTClientGame::RenderTTEXT( BYTE bIsEXTVisible)
 	if(!(m_pDevice->m_vCAPS.RasterCaps & D3DPRASTERCAPS_WFOG))
 		m_pDevice->m_pDevice->SetRenderState( D3DRS_FOGENABLE, FALSE);
 	m_pTextCAM->Activate(TRUE);
+	BuildTNAMEGROUP();
 
 	for( int i=0; i<INT(m_vMAP.m_vDRAWBSP.size()); i++)
 		RenderTTEXT(&m_vMAP.m_vDRAWBSP[i]->m_vTDRAW);
@@ -2807,7 +2814,8 @@ void CTClientGame::RenderTTEXT( LPLISTTOBJBASE pLIST)
 	LISTTOBJBASE::iterator itTOBJ;
 
 	for( itTOBJ = pLIST->begin(); itTOBJ != pLIST->end(); itTOBJ++)
-		if( (*itTOBJ)->GetDrawName() || (*itTOBJ)->m_bDrawTalk || (*itTOBJ) == m_pTARGET )
+		if( (*itTOBJ) == m_pTARGET ||
+			(((*itTOBJ)->GetDrawName() || (*itTOBJ)->m_bDrawTalk) && (*itTOBJ)->m_bAlpha) )	// no floating names over culled (invisible) models
 			RenderTTEXT(*itTOBJ);
 }
 
@@ -2854,6 +2862,12 @@ D3DXVECTOR3 CTClientGame::GetBaseNamePosition(CTClientObjBase *pTOBJ)
 
 void CTClientGame::RenderTTEXT( CTClientObjBase *pTOBJ)
 {
+	std::map<CTClientObjBase *, INT>::iterator itGROUP = m_mapTNAMEGROUP.find(pTOBJ);
+	INT nGROUP = itGROUP != m_mapTNAMEGROUP.end() ? itGROUP->second : 1;
+
+	if(!nGROUP)		// shown by its group's label
+		return;
+
 	D3DXVECTOR3 vTPOS = GetBaseNamePosition( pTOBJ );
 	CTClientObjBase *pTHOST = pTOBJ;
 
@@ -2937,6 +2951,14 @@ void CTClientGame::RenderTTEXT( CTClientObjBase *pTOBJ)
 
 		if(pTOBJ->m_bType == OT_COMPANION )
 			strTEXT.Empty();
+
+		if( nGROUP > 1 )
+		{
+			CString strCOUNT;
+
+			strCOUNT.Format( _T(" x%d"), nGROUP);
+			strTEXT += strCOUNT;
+		}
 
 		pTOBJ->m_vNAME.MakeText( m_pDevice->m_pDevice, strTEXT, CRect( 0, 0, 0, 0), DT_CALCRECT|DT_CENTER);
 		FLOAT fBaseHeight = FLOAT(pTOBJ->m_vNAME.GetHeight());
@@ -29062,5 +29084,128 @@ void CTClientGame::AddEffectString(BYTE bEffect, CString &strText) //Let's be ho
 	case IE_E22: // STORM RED
 		strText += " (Storm Red)";
 		break;
+	}
+}
+
+// ----- Monster name grouping -----------------------------------------------------------------------
+// Same-name monsters standing close together share one "Name xN" label drawn over the nearest one.
+// Distances are measured on the ground (camera-angle independent) and the merge radius grows with the
+// distance to you (GroupMonNamesRatio), so far packs merge and near ones split; within GroupMonNamesNear
+// every monster keeps its own label. Links chain (A-B, B-C => A,B,C), so a stretched pack stays one group.
+// The target, the hovered monster, talking and dead monsters always keep their own label.
+
+BYTE CTClientGame::CanGroupTNAME( CTClientObjBase *pTOBJ)
+{
+	return pTOBJ &&
+		pTOBJ->m_bType == OT_MON &&
+		pTOBJ != m_pTARGET &&
+		pTOBJ != m_pHIT &&
+		!pTOBJ->m_bDrawTalk &&
+		pTOBJ->m_bAlpha &&
+		pTOBJ->GetDrawName() &&
+		!pTOBJ->IsDead() ? TRUE : FALSE;
+}
+
+void CTClientGame::BuildTNAMEGROUP()
+{
+	struct TNAMEITEM
+	{
+		CTClientObjBase *m_pTOBJ;
+		CTClientObjBase *m_pPREV;		// last frame's group (NULL if none)
+		CString m_strNAME;
+		DWORD m_dwColor;
+		FLOAT m_fX;
+		FLOAT m_fZ;
+		FLOAT m_fDIST;					// distance to you (camera target)
+	};
+
+	std::map<CTClientObjBase *, CTClientObjBase *> mapPREV;
+	mapPREV.swap(m_mapTNAMEGROUPID);
+	m_mapTNAMEGROUP.clear();
+
+	if( !m_bGroupMonNames || m_fGroupMonNamesRatio <= 0.0f )
+		return;
+
+	std::vector<TNAMEITEM> vITEM;
+	std::vector<LPLISTTOBJBASE> vLIST;
+
+	for( int i=0; i<INT(m_vMAP.m_vDRAWBSP.size()); i++)
+		vLIST.push_back(&m_vMAP.m_vDRAWBSP[i]->m_vTDRAW);
+	vLIST.push_back(&m_vMAP.m_vTDRAW);
+
+	for( size_t l=0; l<vLIST.size(); l++)
+		for( LISTTOBJBASE::iterator it = vLIST[l]->begin(); it != vLIST[l]->end(); it++)
+		{
+			CTClientObjBase *pTOBJ = (*it);
+			if( !CanGroupTNAME(pTOBJ) || pTOBJ->m_fCamDIST < m_fGroupMonNamesNear )
+				continue;
+
+			std::map<CTClientObjBase *, CTClientObjBase *>::iterator itPREV = mapPREV.find(pTOBJ);
+
+			TNAMEITEM vITEMONE;
+			vITEMONE.m_pTOBJ = pTOBJ;
+			vITEMONE.m_pPREV = itPREV != mapPREV.end() ? itPREV->second : NULL;
+			vITEMONE.m_strNAME = pTOBJ->GetName();
+			vITEMONE.m_dwColor = GetObjectColor(pTOBJ);
+			vITEMONE.m_fX = pTOBJ->GetPositionX();
+			vITEMONE.m_fZ = pTOBJ->GetPositionZ();
+			vITEMONE.m_fDIST = pTOBJ->m_fCamDIST;
+			vITEM.push_back(vITEMONE);
+		}
+
+	// nearest first: each group's label sits on its nearest member
+	std::sort( vITEM.begin(), vITEM.end(), [](const TNAMEITEM& a, const TNAMEITEM& b) { return a.m_fDIST < b.m_fDIST; });
+
+	// union-find over "same name + colour, close on the ground" links
+	std::vector<size_t> vROOT( vITEM.size());
+	for( size_t i=0; i<vITEM.size(); i++)
+		vROOT[i] = i;
+
+	auto FindROOT = [&vROOT](size_t n) -> size_t
+	{
+		while( vROOT[n] != n )
+			n = vROOT[n] = vROOT[vROOT[n]];
+		return n;
+	};
+
+	for( size_t i=0; i<vITEM.size(); i++)
+		for( size_t j=i+1; j<vITEM.size(); j++)
+		{
+			if( vITEM[j].m_dwColor != vITEM[i].m_dwColor || vITEM[j].m_strNAME != vITEM[i].m_strNAME )
+				continue;
+
+			// radius follows the nearer monster's distance; pairs grouped last frame get 10% slack (anti-flicker)
+			FLOAT fRANGE = m_fGroupMonNamesRatio * min( vITEM[i].m_fDIST, vITEM[j].m_fDIST);
+			fRANGE *= vITEM[i].m_pPREV && vITEM[i].m_pPREV == vITEM[j].m_pPREV ? 1.1f : 0.9f;
+
+			FLOAT fDX = vITEM[j].m_fX - vITEM[i].m_fX;
+			FLOAT fDZ = vITEM[j].m_fZ - vITEM[i].m_fZ;
+
+			if( fDX * fDX + fDZ * fDZ > fRANGE * fRANGE )
+				continue;
+
+			size_t nRI = FindROOT(i);
+			size_t nRJ = FindROOT(j);
+
+			if( nRI != nRJ )
+				vROOT[max( nRI, nRJ)] = min( nRI, nRJ);		// keep the nearest member as root
+		}
+
+	// root = nearest member (lowest index) = the label; everyone else is hidden
+	std::vector<INT> vCOUNT( vITEM.size(), 0);
+	for( size_t i=0; i<vITEM.size(); i++)
+		vCOUNT[FindROOT(i)]++;
+
+	for( size_t i=0; i<vITEM.size(); i++)
+	{
+		size_t nROOT = FindROOT(i);
+		CTClientObjBase *pLABEL = vITEM[nROOT].m_pTOBJ;
+
+		m_mapTNAMEGROUPID[vITEM[i].m_pTOBJ] = pLABEL;
+
+		if( nROOT != i )
+			m_mapTNAMEGROUP[vITEM[i].m_pTOBJ] = 0;
+		else if( vCOUNT[i] > 1 )
+			m_mapTNAMEGROUP[pLABEL] = vCOUNT[i];
 	}
 }
