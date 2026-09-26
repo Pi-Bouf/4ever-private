@@ -253,26 +253,183 @@ void CTCMLParserDlg::OnBnClickedButtonHeader()
 
 void CTCMLParserDlg::OnBnClickedCompile()
 {
-	CFile vDEST(LPCSTR(m_strDEST), CFile::modeCreate | CFile::modeWrite | CFile::typeBinary);
+	CompileTIF( LPCSTR(m_strSRC), LPCSTR(m_strDEST));
+	CDialog::OnOK();
+}
+
+// ----- v2 .tif writer ----------------------------------------------------------------------------------
+// The UI copies the full icon list into every slot (the 2141-icon item list ~320 times), so a plain (v1)
+// .tif is ~99% duplicates. v2, read by TCMLParser::Load (Lib/Own/TCML):
+//   i32 TCML_TIF_V2_MAGIC (-2)
+//   i32 sharedCount, then per list: i32 childCount + childCount nodes (v1 node format)
+//   i32 frameCount, then the frames -- an image list whose child count is < 0 uses shared list (-count-1)
+//   fonts (unchanged)
+// Only image lists whose children occur 2+ times are shared (same rule as Tools/TifDedupe).
+
+static void AppendHEADER( std::string& strOUT, LP_COMPDESC pCOMP)	// node bytes before its child count
+{
+	strOUT.append( (const char *) &pCOMP->id, sizeof(DWORD));
+	strOUT.append( (const char *) &pCOMP->type, sizeof(BYTE));
+
+	strOUT.append( (const char *) pCOMP->menu, TCML_MENU_COUNT * sizeof(DWORD));
+	strOUT.append( (const char *) pCOMP->images, 2 * sizeof(DWORD));
+	strOUT.append( (const char *) &pCOMP->tipface, sizeof(DWORD));
+	strOUT.append( (const char *) &pCOMP->face, sizeof(DWORD));
+	strOUT.append( (const char *) &pCOMP->style, sizeof(DWORD));
+	strOUT.append( (const char *) &pCOMP->color, sizeof(DWORD));
+	strOUT.append( (const char *) &pCOMP->sound, sizeof(DWORD));
+
+	strOUT.append( (const char *) &pCOMP->hmargine, sizeof(int));
+	strOUT.append( (const char *) &pCOMP->vmargine, sizeof(int));
+	strOUT.append( (const char *) &pCOMP->x, sizeof(int));
+	strOUT.append( (const char *) &pCOMP->y, sizeof(int));
+	strOUT.append( (const char *) &pCOMP->width, sizeof(int));
+	strOUT.append( (const char *) &pCOMP->height, sizeof(int));
+
+	strOUT.append( (const char *) &pCOMP->display, sizeof(BYTE));
+	strOUT.append( (const char *) &pCOMP->align, sizeof(BYTE));
+	strOUT.append( (const char *) &pCOMP->ex, sizeof(TSATR));
+
+	int nCount = INT(strlen(pCOMP->tooltip));
+	strOUT.append( (const char *) &nCount, sizeof(int));
+	strOUT.append( pCOMP->tooltip, nCount);
+
+	nCount = INT(strlen(pCOMP->text));
+	strOUT.append( (const char *) &nCount, sizeof(int));
+	strOUT.append( pCOMP->text, nCount);
+}
+
+static void AppendINT( std::string& strOUT, int nValue)
+{
+	strOUT.append( (const char *) &nValue, sizeof(int));
+}
+
+static int CountCHILD( LP_COMPDESC pCHILD)
+{
+	int nCount = 0;
+
+	for( ; pCHILD; pCHILD = pCHILD->next)
+		nCount++;
+
+	return nCount;
+}
+
+static void AppendFRAMEV1( std::string& strOUT, LP_COMPDESC pCOMP)	// node + whole subtree, plain layout
+{
+	AppendHEADER( strOUT, pCOMP);
+	AppendINT( strOUT, CountCHILD(pCOMP->child));
+
+	for( LP_COMPDESC pCHILD = pCOMP->child; pCHILD; pCHILD = pCHILD->next)
+		AppendFRAMEV1( strOUT, pCHILD);
+}
+
+static std::string ChildBLOB( LP_COMPDESC pCOMP)						// the node's children, plain layout
+{
+	std::string strBLOB;
+
+	for( LP_COMPDESC pCHILD = pCOMP->child; pCHILD; pCHILD = pCHILD->next)
+		AppendFRAMEV1( strBLOB, pCHILD);
+
+	return strBLOB;
+}
+
+static BYTE IsShareCandidate( LP_COMPDESC pCOMP)
+{
+	return pCOMP->type == TCML_TYPE_IMAGELIST && pCOMP->child ? TRUE : FALSE;
+}
+
+static void CountSHARED( LP_COMPDESC pCOMP, std::map<std::string, int>& mapCOUNT)
+{
+	if(IsShareCandidate(pCOMP))
+		mapCOUNT[ChildBLOB(pCOMP)]++;
+
+	for( LP_COMPDESC pCHILD = pCOMP->child; pCHILD; pCHILD = pCHILD->next)
+		CountSHARED( pCHILD, mapCOUNT);
+}
+
+struct TSHAREDTABLE
+{
+	std::map<std::string, int> m_mapCOUNT;			// children blob -> occurrences
+	std::map<std::string, int> m_mapINDEX;			// children blob -> shared index
+	std::vector<const std::string *> m_vBLOB;		// shared index -> blob (keys of m_mapINDEX)
+	std::vector<int> m_vCOUNT;						// shared index -> child count
+};
+
+static void AppendFRAMEV2( std::string& strOUT, LP_COMPDESC pCOMP, TSHAREDTABLE& vTABLE)
+{
+	AppendHEADER( strOUT, pCOMP);
+
+	if(IsShareCandidate(pCOMP))
+	{
+		std::string strBLOB = ChildBLOB(pCOMP);
+
+		if( vTABLE.m_mapCOUNT[strBLOB] >= 2 )
+		{
+			std::map<std::string, int>::iterator itINDEX = vTABLE.m_mapINDEX.find(strBLOB);
+
+			if( itINDEX == vTABLE.m_mapINDEX.end() )
+			{
+				itINDEX = vTABLE.m_mapINDEX.insert(std::make_pair( strBLOB, INT(vTABLE.m_vBLOB.size()))).first;
+				vTABLE.m_vBLOB.push_back(&itINDEX->first);
+				vTABLE.m_vCOUNT.push_back(CountCHILD(pCOMP->child));
+			}
+
+			AppendINT( strOUT, -(itINDEX->second + 1));
+			return;
+		}
+	}
+
+	AppendINT( strOUT, CountCHILD(pCOMP->child));
+
+	for( LP_COMPDESC pCHILD = pCOMP->child; pCHILD; pCHILD = pCHILD->next)
+		AppendFRAMEV2( strOUT, pCHILD, vTABLE);
+}
+
+BOOL CTCMLParserDlg::CompileTIF( LPCSTR szSRC, LPCSTR szDEST)
+{
+	CFile vDEST( szDEST, CFile::modeCreate | CFile::modeWrite | CFile::typeBinary);
 	TCMLParser vTParser;
 
 	COMP_MAP::iterator itCOMP;
 	FONT_MAP::iterator itFONT;
 
-	int nret = vTParser.Parse((char *)LPCTSTR(m_strSRC));
+	int nret = vTParser.Parse((char *) szSRC);
 	if (nret != 0)
 	{
 		CString strFMT;
 		strFMT.Format("Error :%d",
 			nret);
-		AfxMessageBox(strFMT);
+
+		if (!g_bBatch) AfxMessageBox(strFMT);
+		else OutputDebugStringA("TCMLParser: compile " + strFMT + "\n");
+	}
+
+	// pass 1: how often each image list's children occur
+	TSHAREDTABLE vTABLE;
+	for (itCOMP = vTParser.m_Comps.begin(); itCOMP != vTParser.m_Comps.end(); itCOMP++)
+		CountSHARED( (*itCOMP).second, vTABLE.m_mapCOUNT);
+
+	// pass 2: frames, collecting the shared lists on first use
+	std::string strBODY;
+	for (itCOMP = vTParser.m_Comps.begin(); itCOMP != vTParser.m_Comps.end(); itCOMP++)
+		AppendFRAMEV2( strBODY, (*itCOMP).second, vTABLE);
+
+	std::string strHEAD;
+	AppendINT( strHEAD, TCML_TIF_V2_MAGIC);
+	AppendINT( strHEAD, INT(vTABLE.m_vBLOB.size()));
+	vDEST.Write( strHEAD.data(), UINT(strHEAD.size()));
+
+	for( size_t i=0; i<vTABLE.m_vBLOB.size(); i++)
+	{
+		int nCount = vTABLE.m_vCOUNT[i];
+
+		vDEST.Write( &nCount, sizeof(int));
+		vDEST.Write( vTABLE.m_vBLOB[i]->data(), UINT(vTABLE.m_vBLOB[i]->size()));
 	}
 
 	int nCount = INT(vTParser.m_Comps.size());
 	vDEST.Write(&nCount, sizeof(int));
-
-	for (itCOMP = vTParser.m_Comps.begin(); itCOMP != vTParser.m_Comps.end(); itCOMP++)
-		WriteFRAME(&vDEST, (*itCOMP).second);
+	vDEST.Write( strBODY.data(), UINT(strBODY.size()));
 
 	nCount = INT(vTParser.m_Fonts.size());
 	vDEST.Write(&nCount, sizeof(int));
@@ -280,7 +437,7 @@ void CTCMLParserDlg::OnBnClickedCompile()
 	for (itFONT = vTParser.m_Fonts.begin(); itFONT != vTParser.m_Fonts.end(); itFONT++)
 		vDEST.Write((*itFONT).second, sizeof(TCML_LOGFONT));
 
-	CDialog::OnOK();
+	return nret == 0;
 }
 
 int CTCMLParserDlg::GetNodeCount(LP_COMPDESC pCOMP)
@@ -414,6 +571,29 @@ void CTCMLParserDlg::LoadFrames()
 
 	fread(&nCount, sizeof(int), 1, pFILE);
 
+	// v2: remember where each shared child list lives; ConvertFrame expands references in place
+	m_vSHAREDPOS.clear();
+	m_vSHAREDCOUNT.clear();
+	if (nCount == TCML_TIF_V2_MAGIC)
+	{
+		int nSHARED = 0;
+		fread(&nSHARED, sizeof(int), 1, pFILE);
+
+		for (int i = 0; i < nSHARED; i++)
+		{
+			int nKIDS = 0;
+			fread(&nKIDS, sizeof(int), 1, pFILE);
+
+			m_vSHAREDCOUNT.push_back(nKIDS);
+			m_vSHAREDPOS.push_back(ftell(pFILE));
+
+			for (int k = 0; k < nKIDS; k++)
+				SkipFRAME(pFILE);
+		}
+
+		fread(&nCount, sizeof(int), 1, pFILE);
+	}
+
 
 	// Create text file for append
 	CFile finalTSC("DECOMPILED_FRAMES.tsc", CFile::modeCreate | CFile::modeWrite | CFile::typeText);
@@ -520,6 +700,26 @@ Node CTCMLParserDlg::ConvertFrame(FILE *pFILE, bool isFrame, int level)
 	Node node = Node::FromFrameDesc(pFRAME->m_vCOMP, &defineValues, level);
 
 	level++;
+
+	if (nCount < 0)
+	{
+		// v2: shared child list -- decompile it here, at this node's depth
+		size_t nIndex = size_t(-(nCount + 1));
+
+		if (nIndex < m_vSHAREDPOS.size())
+		{
+			long lRETURN = ftell(pFILE);
+			fseek(pFILE, m_vSHAREDPOS[nIndex], SEEK_SET);
+
+			for (int i = 0; i < m_vSHAREDCOUNT[nIndex]; i++)
+				node.AddChild(ConvertFrame(pFILE, false, level));
+
+			fseek(pFILE, lRETURN, SEEK_SET);
+		}
+
+		return node;
+	}
+
 	for (int i = 0; i < nCount; i++)
 	{
 		Node nodeChild = ConvertFrame(pFILE, false, level);
@@ -528,4 +728,26 @@ Node CTCMLParserDlg::ConvertFrame(FILE *pFILE, bool isFrame, int level)
 	}
 
 	return node;
+}
+
+// Skip one node + its subtree (v2 decompile: step over the shared-list table)
+void CTCMLParserDlg::SkipFRAME(FILE *pFILE)
+{
+	const long lFIXED = sizeof(DWORD) + sizeof(BYTE) +
+		(TCML_MENU_COUNT + 2 + 5) * sizeof(DWORD) +		// menu, images, tooltip/font/style/color/snd
+		6 * sizeof(int) + 2 * sizeof(BYTE) +				// margins, pos/size, display/align
+		sizeof(TSATR);
+	int nCount = 0;
+
+	fseek(pFILE, lFIXED, SEEK_CUR);
+
+	fread(&nCount, sizeof(int), 1, pFILE);				// tooltip
+	if (nCount > 0) fseek(pFILE, nCount, SEEK_CUR);
+
+	fread(&nCount, sizeof(int), 1, pFILE);				// text
+	if (nCount > 0) fseek(pFILE, nCount, SEEK_CUR);
+
+	fread(&nCount, sizeof(int), 1, pFILE);				// children (< 0 = shared reference, nothing inline)
+	for (int i = 0; i < nCount; i++)
+		SkipFRAME(pFILE);
 }

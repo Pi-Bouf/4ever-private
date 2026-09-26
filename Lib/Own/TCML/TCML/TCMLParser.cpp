@@ -49,8 +49,29 @@ void TCMLParser::Load( char* fname, TCMLParserProgress* pProgress)
 	}
 
     int nCount = 0;
- 
+
     fread( &nCount, sizeof(int), 1, pFILE);
+
+	m_vSHAREDCHILD.clear();
+	if( nCount == TCML_TIF_V2_MAGIC )
+	{
+		// v2: shared child-list table first, then the frame count (see Tools/TifDedupe)
+		int nSHARED = 0;
+
+		fread( &nSHARED, sizeof(int), 1, pFILE);
+		m_vSHAREDCHILD.reserve(max( nSHARED, 0));
+
+		for( int i=0; i<nSHARED; i++)
+		{
+			int nKIDS = 0;
+
+			fread( &nKIDS, sizeof(int), 1, pFILE);
+			m_vSHAREDCHILD.push_back(LoadCHILDREN( pFILE, nKIDS));
+		}
+
+		fread( &nCount, sizeof(int), 1, pFILE);
+	}
+
     for( int i=0; i<nCount; i++)
     {
 		FRAMEDESC_SHAREDPTR pFRAME = LoadFRAME(pFILE);
@@ -86,8 +107,23 @@ void TCMLParser::Load( char* fname, TCMLParserProgress* pProgress)
     }
 
     m_bDeleteFont = TRUE;
- 
+	m_vSHAREDCHILD.clear();		// the chains stay alive through the frames that reference them
+
     fclose(pFILE);
+}
+
+FRAMEDESC_SHAREDPTR TCMLParser::LoadCHILDREN( FILE *pFILE, int nCount)
+{
+	FRAMEDESC_SHAREDPTR pHEAD = nullptr;
+	FRAMEDESC_SHAREDPTR *pNEXT = &pHEAD;
+
+	for (int i = 0; i < nCount; i++)
+	{
+		(*pNEXT) = LoadFRAME(pFILE);
+		pNEXT = const_cast<FRAMEDESC_SHAREDPTR*>(&(*pNEXT)->m_pNEXT);
+	}
+
+	return pHEAD;
 }
  
 FRAMEDESC_SHAREDPTR TCMLParser::LoadFRAME( FILE *pFILE)
@@ -140,14 +176,18 @@ FRAMEDESC_SHAREDPTR TCMLParser::LoadFRAME( FILE *pFILE)
     }
 
     fread( &nCount, sizeof(int), 1, pFILE);
-    pNEXT = &pFRAME->m_pCHILD;
 
-	for (int i = 0; i < nCount; i++)
+	if( nCount < 0 )
 	{
-		(*pNEXT) = LoadFRAME(pFILE);
-		pNEXT = const_cast<FRAMEDESC_SHAREDPTR*>(&(*pNEXT)->m_pNEXT);
+		// v2: reference to a shared child list
+		size_t nIndex = size_t(-(nCount + 1));
+
+		if( nIndex < m_vSHAREDCHILD.size() )
+			pFRAME->m_pCHILD = m_vSHAREDCHILD[nIndex];
 	}
- 
+	else
+		pFRAME->m_pCHILD = LoadCHILDREN( pFILE, nCount);
+
     return pFRAME;
 }
  

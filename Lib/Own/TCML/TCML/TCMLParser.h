@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <vector>
 using namespace std;
 
 typedef struct tagFRAMEDESC		FRAMEDESC, *LP_FRAMEDESC;
@@ -164,6 +165,7 @@ public:
 
 	FRAMEDESC_SHAREDPTR FindFrameTemplate(unsigned int id);
 	FRAMEDESC_SHAREDPTR LoadFRAME( FILE *pFILE);
+	FRAMEDESC_SHAREDPTR LoadCHILDREN( FILE *pFILE, int nCount);
 
 	int AddParserTemplate( LP_COMPDESC ptr);
 
@@ -179,6 +181,12 @@ public:
 	FONT_MAP	m_Fonts;
 	FONT_MAP::iterator m_it;
 	BYTE m_bDeleteFont;
+
+	// .tif v2: child lists stored once and referenced by index (a node's child count < 0 => list -count-1).
+	// Identical lists (e.g. the 2141-icon item list in every slot) share one read-only chain in memory.
+	std::vector<FRAMEDESC_SHAREDPTR> m_vSHAREDCHILD;
 };
+
+#define TCML_TIF_V2_MAGIC		(-2)	// first int of a v2 .tif (a v1 .tif starts with its positive frame count)
 
 #endif

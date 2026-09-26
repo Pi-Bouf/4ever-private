@@ -53,6 +53,14 @@ public:
 	// Head-less batch decompile entry (LoadHeaders + LoadFrames).
 	void RunBatch();
 
+	// Compile a .tsc into a v2 .tif (identical image-list children stored once, see TCML_TIF_V2_MAGIC).
+	BOOL CompileTIF( LPCSTR szSRC, LPCSTR szDEST);
+
+	// v2 decompile: file offset + child count of each shared child list
+	std::vector<long> m_vSHAREDPOS;
+	std::vector<int> m_vSHAREDCOUNT;
+	void SkipFRAME( FILE *pFILE);
+
 	// Generated message map functions
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);

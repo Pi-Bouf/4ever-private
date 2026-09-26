@@ -54,7 +54,19 @@ BOOL CTCMLParserApp::InitInstance()
 	// such as the name of your company or organization
 	SetRegistryKey(_T("Tachyon Engine"));
 
-	// Head-less batch decompile:
+	// Head-less batch compile (writes a v2 .tif, shared image lists):
+	//   TCMLParser.exe /compile <source.tsc> <TClientCmd.tif>
+	if (__argc >= 4 && _stricmp(__argv[1], "/compile") == 0)
+	{
+		extern bool g_bBatch;
+		g_bBatch = true;
+
+		CTCMLParserDlg dlg;
+		dlg.CompileTIF(__argv[2], __argv[3]);
+		return FALSE;
+	}
+
+	// Head-less batch decompile (reads v1 and v2 .tif):
 	//   TCMLParser.exe <TClientID.h> <TClientCmd.tif> [output_dir]
 	// Reuses the dialog's LoadHeaders()/LoadFrames() exactly as the GUI does,
 	// writing DECOMPILED_FRAMES/FONTS/DEFINES.tsc to the output dir (or cwd).
