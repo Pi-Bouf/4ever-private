@@ -27,6 +27,11 @@ public:
 		BYTE bSTEP,
 		BYTE bProgress);
 
+	// Warms the OS file cache for the files Load() is about to read (cold-start speedup).
+	static void StartPrefetch(
+		CString strGroupID,
+		int nTextureDetail);
+
 public:
 	VECTORSTRING m_vMESHFILE;
 	VECTORSTRING m_vANIFILE;

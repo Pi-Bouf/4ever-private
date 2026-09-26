@@ -84,6 +84,7 @@ using namespace std;
 #define TGDICOLOR_OFFSET											3
 
 #define DEF_BLENDTICK												120
+#define TLOADING_FRAME_MS											16
 #define MAX_PIVOT													255
 #define WEIGHT_COUNT												3
 #define MP_COUNT													4

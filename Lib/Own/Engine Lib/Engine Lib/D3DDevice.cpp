@@ -1034,75 +1034,17 @@ void CD3DDevice::ApplyGammaRamp()
 
 void CD3DDevice::InitCAPS()
 {
-	IDxDiagProvider *pProvider = NULL;
-	DXDIAG_INIT_PARAMS vPARAM;
+	// System and video memory only feed the texture-detail / shader thresholds (1GB, 2GB, 256MB).
+	// This used to query the DxDiag provider (with WHQL checks), which is slow at startup.
+	MEMORYSTATUSEX vSTATUS;
 
-	if( FAILED(CoCreateInstance(
-		CLSID_DxDiagProvider,
-		NULL,
-		CLSCTX_INPROC_SERVER,
-		IID_IDxDiagProvider,
-		(LPVOID *) &pProvider)))
-		return;
+	ZeroMemory( &vSTATUS, sizeof(MEMORYSTATUSEX));
+	vSTATUS.dwLength = sizeof(MEMORYSTATUSEX);
 
-	ZeroMemory( &vPARAM, sizeof(DXDIAG_INIT_PARAMS));
-	vPARAM.dwDxDiagHeaderVersion = DXDIAG_DX9_SDK_VERSION;
-	vPARAM.bAllowWHQLChecks = TRUE;
-	vPARAM.pReserved = NULL;
-	vPARAM.dwSize = sizeof(DXDIAG_INIT_PARAMS);
+	if(GlobalMemoryStatusEx(&vSTATUS))
+		m_lSYSMEM = vSTATUS.ullTotalPhys;
 
-	if(SUCCEEDED(pProvider->Initialize(&vPARAM)))
-	{
-		IDxDiagContainer *pROOT = NULL;
-
-		if(SUCCEEDED(pProvider->GetRootContainer(&pROOT)))
-		{
-			IDxDiagContainer *pContainer = NULL;
-
-			if(SUCCEEDED(pROOT->GetChildContainer( L"DxDiag_SystemInfo", &pContainer)))
-			{
-				VARIANT vVALUE;
-				VariantInit(&vVALUE);
-
-				if(SUCCEEDED(pContainer->GetProp( L"ullPhysicalMemory", &vVALUE)))
-					m_lSYSMEM = _wtoi64(vVALUE.bstrVal);
-
-				VariantClear(&vVALUE);
-				pContainer->Release();
-			}
-
-			if(SUCCEEDED(pROOT->GetChildContainer( L"DxDiag_DisplayDevices", &pContainer)))
-			{
-				DWORD dwCount = 0;
-
-				if( SUCCEEDED(pContainer->GetNumberOfChildContainers(&dwCount)) && dwCount > 0 )
-				{
-					WCHAR szNAME[MAX_PATH];
-
-					if(SUCCEEDED(pContainer->EnumChildContainerNames( 0, szNAME, MAX_PATH)))
-					{
-						IDxDiagContainer *pDisplay = NULL;
-
-						if(SUCCEEDED(pContainer->GetChildContainer( szNAME, &pDisplay)))
-						{
-							VARIANT vVALUE;
-							VariantInit(&vVALUE);
-
-							if(SUCCEEDED(pDisplay->GetProp( L"szDisplayMemoryEnglish", &vVALUE)))
-								m_lVIDEOMEM = _wtoi64(vVALUE.bstrVal);
-
-							VariantClear(&vVALUE);
-							pDisplay->Release();
-						}
-					}
-				}
-
-				pContainer->Release();
-			}
-
-			pROOT->Release();
-		}
-	}
-
-	pProvider->Release();
+	// Same unit as DxDiag's szDisplayMemoryEnglish (MB, dedicated + shared).
+	if(m_pDevice)
+		m_lVIDEOMEM = ULONGLONG(m_pDevice->GetAvailableTextureMem()) / (1024 * 1024);
 }

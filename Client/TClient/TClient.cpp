@@ -489,19 +489,28 @@ BOOL CTClientApp::InitInstance()
 		NULL,
 		OPEN_EXISTING,
 		FILE_ATTRIBUTE_NORMAL |
-		FILE_FLAG_RANDOM_ACCESS,
+		FILE_FLAG_SEQUENTIAL_SCAN,
 		NULL);
 
 	if(hFile != INVALID_HANDLE_VALUE)
 	{
+		// XOR of the exe in 8-byte words. Read in large blocks instead of one ReadFile per word;
+		// a short last word only overwrites its first bytes, exactly like the old per-word ReadFile.
+		static const DWORD TCHECK_BLOCK = 1024 * 1024;
+		LPBYTE pBLOCK = new BYTE[TCHECK_BLOCK];
 		INT64 dlValue = 0;
 		DWORD dwRead = 0;
-		BYTE bResult = ReadFile(hFile, (LPVOID)&dlValue, sizeof(INT64), &dwRead, NULL);
-		while(bResult && dwRead)
+
+		while( ReadFile( hFile, pBLOCK, TCHECK_BLOCK, &dwRead, NULL) && dwRead )
 		{
-			m_dlCheckFile ^= dlValue;
-			bResult = ReadFile(hFile, (LPVOID)&dlValue, sizeof(INT64), &dwRead, NULL);
+			for( DWORD i=0; i<dwRead; i += sizeof(INT64))
+			{
+				memcpy( &dlValue, pBLOCK + i, min( DWORD(sizeof(INT64)), dwRead - i));
+				m_dlCheckFile ^= dlValue;
+			}
 		}
+
+		delete[] pBLOCK;
 		CloseHandle(hFile);
 	}
 
@@ -544,6 +553,9 @@ BOOL CTClientApp::InitInstance()
 	m_dwAppTick = GetTickCount();
 
 	LoadStdProfileSettings();
+	CTachyonRes::StartPrefetch(
+		_T("TClient"),
+		m_pTachyonWnd->m_Device.m_option.m_nTextureDetail);
 
 	if(!m_pTachyonWnd->Create())
 		return FALSE;

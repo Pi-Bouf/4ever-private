@@ -1,6 +1,7 @@
 ﻿#include "StdAfx.h"
 #include <iostream>
 #include "md5.h"
+#include "TBufferedFile.h"
 
 CD3DDevice *CTachyonRes::m_pDEVICE = NULL;
 CTachyonMedia CTachyonRes::m_MEDIA;
@@ -144,6 +145,14 @@ void CTachyonRes::RenderBACK( BYTE bSTEP,
 
 	if( !bExistRealTime && bPrvProgress == bProgress )
 		return ;
+
+	// Loaders call this once per resource; cap the redraw at ~60 fps so drawing doesn't eat the load time.
+	static DWORD dwLastDraw = 0;
+	DWORD dwDrawTime = timeGetTime();
+
+	if( bProgress < 100 && dwLastDraw && dwDrawTime - dwLastDraw < TLOADING_FRAME_MS )
+		return ;
+	dwLastDraw = dwDrawTime;
 
 	bPrvProgress = bProgress;
 
@@ -383,6 +392,129 @@ void CTachyonRes::RenderBACK( BYTE bSTEP,
 }
 #endif
 
+#define TPREFETCH_BLOCK			(1024 * 1024)
+#define TPREFETCH_THREAD		2
+
+static HANDLE g_hPREFETCH[TPREFETCH_THREAD] = { NULL, NULL };
+static volatile LONG g_bStopPrefetch = FALSE;
+
+// Appends the data file names listed in a resource index (int count, int total, count x [int len, chars]).
+static void PrefetchIndexFiles( CString strINDEX, VECTORSTRING& vFILE)
+{
+	FILE *pFILE = NULL;
+
+	if( fopen_s( &pFILE, LPCSTR(strINDEX), "rb") || !pFILE )
+		return;
+
+	int nCount = 0;
+	int nTotal = 0;
+
+	if( fread( &nCount, sizeof(int), 1, pFILE) == 1 &&
+		fread( &nTotal, sizeof(int), 1, pFILE) == 1 )
+	{
+		for( int i=0; i<nCount; i++)
+		{
+			int nLength = 0;
+
+			if( fread( &nLength, sizeof(int), 1, pFILE) != 1 || nLength <= 0 || nLength >= MAX_PATH )
+				break;
+
+			CString strFILE;
+			if( fread( strFILE.GetBuffer(nLength), 1, nLength, pFILE) != size_t(nLength) )
+				break;
+
+			strFILE.ReleaseBuffer(nLength);
+			vFILE.push_back(_T(".\\Data\\") + strFILE);
+		}
+	}
+
+	fclose(pFILE);
+}
+
+// Reads each file front to back and throws the data away; the loaders then hit the file cache.
+static DWORD WINAPI PrefetchThread( LPVOID pParam)
+{
+	VECTORSTRING *pFILE = (VECTORSTRING *) pParam;
+	LPBYTE pBLOCK = new BYTE[TPREFETCH_BLOCK];
+
+	for( size_t i=0; i<pFILE->size() && !g_bStopPrefetch; i++)
+	{
+		HANDLE hFile = CreateFile(
+			LPCSTR((*pFILE)[i]),
+			GENERIC_READ,
+			FILE_SHARE_READ|FILE_SHARE_WRITE,
+			NULL,
+			OPEN_EXISTING,
+			FILE_ATTRIBUTE_NORMAL,
+			NULL);
+
+		if( hFile == INVALID_HANDLE_VALUE )
+			continue;
+
+		DWORD dwRead = 0;
+		while( !g_bStopPrefetch && ReadFile( hFile, pBLOCK, TPREFETCH_BLOCK, &dwRead, NULL) && dwRead );
+
+		CloseHandle(hFile);
+	}
+
+	delete[] pBLOCK;
+	delete pFILE;
+
+	return 0;
+}
+
+void CTachyonRes::StartPrefetch( CString strGroupID,
+								 int nTextureDetail)
+{
+	// Two readers in parallel keep more requests in flight on the disk: the first covers what
+	// Load() reads first (textures, images), the second gets a head start on animations and meshes.
+	VECTORSTRING *pFIRST = new VECTORSTRING();
+	VECTORSTRING *pSECOND = new VECTORSTRING();
+	CString strINDEX;
+
+	if( nTextureDetail >= 0 && nTextureDetail < TEXTURE_DETAIL_COUNT )
+	{
+		strINDEX.Format( ".\\Index\\%u_%sS.IDX", nTextureDetail, strGroupID);
+		PrefetchIndexFiles( strINDEX, *pFIRST);
+	}
+
+	PrefetchIndexFiles( _T(".\\Index\\") + strGroupID + _T("List.LST"), *pFIRST);
+	PrefetchIndexFiles( _T(".\\Index\\") + strGroupID + _T("I.IDX"), *pFIRST);
+
+	PrefetchIndexFiles( _T(".\\Index\\") + strGroupID + _T("A.IDX"), *pSECOND);
+	PrefetchIndexFiles( _T(".\\Index\\") + strGroupID + _T("M.IDX"), *pSECOND);
+	PrefetchIndexFiles( _T(".\\Index\\") + strGroupID + _T("O.IDX"), *pSECOND);
+	PrefetchIndexFiles( _T(".\\Index\\") + strGroupID + _T("X.IDX"), *pSECOND);
+
+	VECTORSTRING *pLIST[TPREFETCH_THREAD] = { pFIRST, pSECOND };
+	g_bStopPrefetch = FALSE;
+
+	for( int i=0; i<TPREFETCH_THREAD; i++)
+	{
+		g_hPREFETCH[i] = CreateThread( NULL, 0, PrefetchThread, pLIST[i], 0, NULL);
+
+		if(g_hPREFETCH[i])
+			SetThreadPriority( g_hPREFETCH[i], THREAD_PRIORITY_BELOW_NORMAL);
+		else
+			delete pLIST[i];
+	}
+}
+
+// Stops the prefetch and waits for it (at most one block per thread). Must run before any
+// code opens resource files with a plain CFile, whose default share mode is exclusive.
+static void StopPrefetch()
+{
+	InterlockedExchange( &g_bStopPrefetch, TRUE);
+
+	for( int i=0; i<TPREFETCH_THREAD; i++)
+		if(g_hPREFETCH[i])
+		{
+			WaitForSingleObject( g_hPREFETCH[i], INFINITE);
+			CloseHandle(g_hPREFETCH[i]);
+			g_hPREFETCH[i] = NULL;
+		}
+}
+
 void CTachyonRes::Init( CString strGroupID, BYTE bGroupID)
 {
 	m_bGroupID = bGroupID;
@@ -402,6 +534,8 @@ void CTachyonRes::Load( CString strGroupID)
 	LoadOBJ(strGroupID);
 	LoadSFX(strGroupID);
 	LoadMAP(strGroupID);
+
+	StopPrefetch();
 }
 
 void CTachyonRes::Complate()
@@ -805,7 +939,7 @@ void CTachyonRes::LoadTEX( CString strGroupID)
 	int nIndex = 0;
 
 	strINDEX.Format( ".\\Index\\%u_%sS.IDX", m_pDEVICE->m_option.m_nTextureDetail, strGroupID);
-	CFile file( strINDEX, CFile::modeRead|CFile::typeBinary);
+	CTBufferedFile file( strINDEX, CFile::modeRead|CFile::typeBinary);
 
 	file.Read( &nCount, sizeof(int));
 	file.Read( &nTotal, sizeof(int));
@@ -869,7 +1003,7 @@ void CTachyonRes::LoadIMGBUF( CString strGroupID)
 	int nIndex = 0;
 
 	strINDEX.Format( ".\\Index\\%sList.LST", strGroupID);
-	CFile file( strINDEX, CFile::modeRead|CFile::typeBinary);
+	CTBufferedFile file( strINDEX, CFile::modeRead|CFile::typeBinary);
 
 	file.Read( &nCount, sizeof(int));
 	file.Read( &nTotal, sizeof(int));
@@ -888,7 +1022,7 @@ void CTachyonRes::LoadIMG( CString strGroupID)
 	int nIndex = 0;
 
 	strINDEX.Format( ".\\Index\\%sI.IDX", strGroupID);
-	CFile file( strINDEX, CFile::modeRead|CFile::typeBinary);
+	CTBufferedFile file( strINDEX, CFile::modeRead|CFile::typeBinary);
 
 	file.Read( &nCount, sizeof(int));
 	file.Read( &nTotal, sizeof(int));
@@ -954,7 +1088,7 @@ void CTachyonRes::LoadMEDIA( CString strGroupID)
 	int nCount = 0;
 
 	strINDEX.Format( ".\\Index\\%sW.IDX", strGroupID);
-	CFile file( strINDEX, CFile::modeRead|CFile::typeBinary);
+	CTBufferedFile file( strINDEX, CFile::modeRead|CFile::typeBinary);
 
 	file.Read( &nCount, sizeof(int));
 	file.Read( &nTotal, sizeof(int));
@@ -990,7 +1124,7 @@ void CTachyonRes::LoadANI( CString strGroupID)
 	int nIndex = 0;
 
 	strINDEX.Format( ".\\Index\\%sA.IDX", strGroupID);
-	CFile file( strINDEX, CFile::modeRead|CFile::typeBinary);
+	CTBufferedFile file( strINDEX, CFile::modeRead|CFile::typeBinary);
 
 	file.Read( &nCount, sizeof(int));
 	file.Read( &nTotal, sizeof(int));
@@ -1056,7 +1190,7 @@ void CTachyonRes::LoadMESH( CString strGroupID)
 	CString strINDEX;
 
 	strINDEX.Format( ".\\Index\\%sM.IDX", strGroupID);
-	CFile file( strINDEX, CFile::modeRead|CFile::typeBinary);
+	CTBufferedFile file( strINDEX, CFile::modeRead|CFile::typeBinary);
 
 	file.Read( &nCount, sizeof(int));
 	file.Read( &nTotal, sizeof(int));
@@ -1111,7 +1245,7 @@ void CTachyonRes::LoadOBJ( CString strGroupID)
 	int nIndex = 0;
 
 	strINDEX.Format( ".\\Index\\%sO.IDX", strGroupID);
-	CFile file( strINDEX, CFile::modeRead|CFile::typeBinary);
+	CTBufferedFile file( strINDEX, CFile::modeRead|CFile::typeBinary);
 
 	file.Read( &nCount, sizeof(int));
 	file.Read( &nTotal, sizeof(int));
@@ -1164,7 +1298,7 @@ void CTachyonRes::LoadSFX( CString strGroupID)
 	int nIndex = 0;
 
 	strINDEX.Format( ".\\Index\\%sX.IDX", strGroupID);
-	CFile file( strINDEX, CFile::modeRead|CFile::typeBinary);
+	CTBufferedFile file( strINDEX, CFile::modeRead|CFile::typeBinary);
 
 	file.Read( &nCount, sizeof(int));
 	file.Read( &nTotal, sizeof(int));
@@ -1212,7 +1346,7 @@ void CTachyonRes::LoadMAP( CString strGroupID)
 	int nCount = 0;
 
 	strINDEX.Format( ".\\Index\\%sP.IDX", strGroupID);
-	CFile file( strINDEX, CFile::modeRead|CFile::typeBinary);
+	CTBufferedFile file( strINDEX, CFile::modeRead|CFile::typeBinary);
 
 	file.Read( &nCount, sizeof(int));
 	file.Read( &nTotal, sizeof(int));
@@ -1241,7 +1375,7 @@ void CTachyonRes::LoadTEX( CString strFILE,
 						   int& nIndex,
 						   int nTotal) 
 {
-	CFile file( _T(".\\Data\\") + strFILE, CFile::modeRead|CFile::typeBinary);
+	CTBufferedFile file( _T(".\\Data\\") + strFILE, CFile::modeRead|CFile::typeBinary);
 
 	DWORD dwLENGTH = DWORD(file.GetLength());
 	DWORD dwPOS = DWORD(file.GetPosition());
@@ -1334,7 +1468,7 @@ void CTachyonRes::LoadIMGBUF( CString strFILE,
 							  int& nIndex,
 							  int nTotal)
 {
-	CFile file( _T(".\\Data\\") + strFILE, CFile::modeRead|CFile::typeBinary);
+	CTBufferedFile file( _T(".\\Data\\") + strFILE, CFile::modeRead|CFile::typeBinary);
 
 	DWORD dwLENGTH = DWORD(file.GetLength());
 	DWORD dwPOS = DWORD(file.GetPosition());
@@ -1384,7 +1518,7 @@ void CTachyonRes::LoadIMG( CString strFILE,
 						   int& nIndex,
 						   int nTotal)
 {
-	CFile file( _T(".\\Data\\") + strFILE, CFile::modeRead|CFile::typeBinary);
+	CTBufferedFile file( _T(".\\Data\\") + strFILE, CFile::modeRead|CFile::typeBinary);
 
 	DWORD dwLENGTH = DWORD(file.GetLength());
 	DWORD dwPOS = DWORD(file.GetPosition());
@@ -1478,7 +1612,7 @@ void CTachyonRes::LoadANI( DWORD dwFileID,
 						   int& nIndex,
 						   int nTotal)
 {
-	CFile file( _T(".\\Data\\") + m_vANIFILE[dwFileID], CFile::modeRead|CFile::typeBinary);
+	CTBufferedFile file( _T(".\\Data\\") + m_vANIFILE[dwFileID], CFile::modeRead|CFile::typeBinary);
 
 	DWORD dwLENGTH = DWORD(file.GetLength());
 	DWORD dwPOS = DWORD(file.GetPosition());
@@ -1552,7 +1686,7 @@ void CTachyonRes::LoadMESH( DWORD dwBASE,
 							int& nIndex,
 							int nTotal)
 {
-	CFile file( _T(".\\Data\\") + m_vMESHFILE[dwFileID], CFile::modeRead|CFile::typeBinary);
+	CTBufferedFile file( _T(".\\Data\\") + m_vMESHFILE[dwFileID], CFile::modeRead|CFile::typeBinary);
 
 	DWORD dwLENGTH = DWORD(file.GetLength());
 	DWORD dwPOS = DWORD(file.GetPosition());
@@ -1703,7 +1837,7 @@ void CTachyonRes::LoadOBJ( CString strFILE,
 {
 	
 
-	CFile file( _T(".\\Data\\") + strFILE, CFile::modeRead|CFile::typeBinary);
+	CTBufferedFile file( _T(".\\Data\\") + strFILE, CFile::modeRead|CFile::typeBinary);
 
 	DWORD dwLENGTH = DWORD(file.GetLength());
 	DWORD dwPOS = DWORD(file.GetPosition());
@@ -1961,7 +2095,7 @@ void CTachyonRes::LoadSFX( CString strFILE,
 						   int& nIndex,
 						   int nTotal)
 {
-	CFile file( _T(".\\Data\\") + strFILE, CFile::modeRead|CFile::typeBinary);
+	CTBufferedFile file( _T(".\\Data\\") + strFILE, CFile::modeRead|CFile::typeBinary);
 
 	DWORD dwLENGTH = DWORD(file.GetLength());
 	DWORD dwPOS = DWORD(file.GetPosition());
