@@ -11214,7 +11214,7 @@ int CTClientGame::OnGM_LEVEL1()
 		if(bEMPTY)
 		{
 			m_pMainWnd->SendCS_CREATECHAR_REQ(
-		    BYTE(1),
+		    BYTE(m_pMainWnd->m_pTGROUP ? m_pMainWnd->m_pTGROUP->m_bGroupID : 1),	// selected world (was hardcoded to 1)
 			strNAME, i,
 			m_pMainWnd->m_vNEWTCHAR.m_bClass,
 			m_pMainWnd->m_vNEWTCHAR.m_bRace,
@@ -11260,7 +11260,7 @@ int CTClientGame::OnGM_LEVEL2()
 		if(bEMPTY)
 		{
 			m_pMainWnd->SendCS_CREATECHAR_REQ(
-			1,
+			BYTE(m_pMainWnd->m_pTGROUP ? m_pMainWnd->m_pTGROUP->m_bGroupID : 1),	// selected world (was hardcoded to 1)
 			strNAME, i,
 			m_pMainWnd->m_vNEWTCHAR.m_bClass,
 			m_pMainWnd->m_vNEWTCHAR.m_bRace,
@@ -11306,7 +11306,7 @@ int CTClientGame::OnGM_LEVEL3()
 		if(bEMPTY)
 		{
 			m_pMainWnd->SendCS_CREATECHAR_REQ(
-			1,
+			BYTE(m_pMainWnd->m_pTGROUP ? m_pMainWnd->m_pTGROUP->m_bGroupID : 1),	// selected world (was hardcoded to 1)
 			strNAME, i,
 			m_pMainWnd->m_vNEWTCHAR.m_bClass,
 			m_pMainWnd->m_vNEWTCHAR.m_bRace,

@@ -61,7 +61,7 @@ void CTClientWnd::SendCS_CHARLIST_REQ()
 	CPacket vMSG;
 
 	vMSG.SetID(CS_CHARLIST_REQ)
-		<< BYTE(1);
+		<< BYTE(m_pTGROUP ? m_pTGROUP->m_bGroupID : 1);	// selected world (was hardcoded to 1)
 
 	m_pTNet->Say(&vMSG);
 }
