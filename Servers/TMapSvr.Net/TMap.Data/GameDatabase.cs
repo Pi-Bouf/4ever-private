@@ -155,7 +155,7 @@ public sealed partial class GameDatabase
     // (multi-machine topology); this single-server port loads all rows and buckets them by (channel, map).
     private const string MonsterChartSql =
         @"SELECT wID, bLevel, wMonAttr, wExp, bMoneyProb, dwMinMoney, dwMaxMoney, bItemProb, bDropCount, bAIType, wSkill1, wSkill2, wSkill3, wSkill4, wChaseRange,
-                 bRecallType, wSummonAttr, bClass, bRace, bIsSelf, bCanSelect, bCanAttack FROM TMONSTERCHART";
+                 bRecallType, wSummonAttr, bClass, bRace, bIsSelf, bCanSelect, bCanAttack, bTame FROM TMONSTERCHART";
     private const string MountChartSql = @"SELECT wMountID, wDefMonID, wUpgMonID FROM TMOUNTCHART";
     private const string CompanionBonusChartSql = @"SELECT bBonusID, fBase, fLevelMultiplier FROM TCOMPANIONBONUSCHART";
     private const string CompanionRuneChartSql = @"SELECT wItemID, wMonID FROM TCOMPANIONRUNECHART";
@@ -412,7 +412,7 @@ public sealed partial class GameDatabase
                     ChaseRange: r.GetUShortSafe(14),
                     RecallType: r.GetByteSafe(15), SummonAttr: r.GetUShortSafe(16), Class: r.GetByteSafe(17),
                     Race: r.GetByteSafe(18), IsSelf: r.GetByteSafe(19), CanSelect: r.GetByteSafe(20),
-                    CanAttack: r.GetByteSafe(21));
+                    CanAttack: r.GetByteSafe(21), Tame: r.GetByteSafe(22));
             }
 
         await using (var cmd = new SqlCommand(MountChartSql, c))

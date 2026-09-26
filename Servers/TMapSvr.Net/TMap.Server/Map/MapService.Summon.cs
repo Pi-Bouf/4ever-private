@@ -17,7 +17,7 @@ namespace TMap.Server.Map;
 /// <para>Its life is the skill's buff duration; a new main / mine / auto summon replaces the old one, and at most one
 /// "maintain" object is kept. Self-objects die with their owner, when their time is up, when the owner leaves the map
 /// or logs out, and when dismissed.</para>
-/// <para><b>Not ported:</b> taming (<c>SER_MONSTER</c> — the tamed-monster evolution), the owner's passive bonuses to
+/// <para>Taming (<c>SER_MONSTER</c>) lives in MapService.Tame.cs. <b>Not ported:</b> the owner's passive bonuses to
 /// a summon's life (<c>SCT_INCLIFTTIME</c>) and to the number of maintain objects (<c>MTYPE_RMC</c>) — passive skills
 /// are not modelled, so these are 0 and 1 — and the doppelganger's equipped-skill check. The summon belongs to the
 /// skill's target in the C++; here the target must be the caster, the only case the client sends.</para>
@@ -57,9 +57,15 @@ public sealed partial class MapService
         foreach (var d in tpl.Data)
         {
             if (d.Type is not (SdtRecall or SdtTrap)) continue;
-            if (d.Exec == SerMonster) continue;                       // taming — see the class remarks
-
-            ushort monId = (ushort)tpl.GetValue(d, level);
+            // Evocate Monster cast on oneself calls the tamed monster (old sources' TObjBase.cpp PerformSkill:
+            // SER_MONSTER takes m_wTemptedMon, fails without one); cast on an enemy, see MapService.Tame.cs.
+            ushort monId;
+            if (d.Exec == SerMonster)
+            {
+                if (ch.Persist.TemptedMon == 0) return;               // PERFORM_FAIL
+                monId = ch.Persist.TemptedMon;
+            }
+            else monId = (ushort)tpl.GetValue(d, level);
             if (!_templates.MonsterTemplates.TryGetValue(monId, out var mt)) return;   // PERFORM_MISS
             uint attr = (uint)(mt.SummonAttr | (Math.Min(ch.Level, MaxSummonAttrLevel) << 16));
             CheckRecallMon(s, ch, mt);

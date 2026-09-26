@@ -86,7 +86,10 @@ public sealed partial class MapService
                 result = SkillUseResult.NeedMp;
             else if (ch.Hp < skill.GetRequiredHp(StatEngine.PureMaxHp(ch, _templates)))
                 result = SkillUseResult.NeedHp;
-            // SKILL_NEEDPREVACT + the charge latch are deferred (see the type doc).
+            // SKILL_NEEDPREVACT (for wPrevActiveID) + the charge latch are deferred (see the type doc).
+            // Evocate Monster with nothing tamed answers SKILL_NEEDPREVACT (CSHandler.cpp:1321).
+            else if (skill.Template is { } mr && mr.IsMonRecall() && ch.Persist.TemptedMon == 0)
+                result = SkillUseResult.NeedPrevAct;
             else if (skill.Template is { } st)
                 foreach (var d in st.Data)
                     if (d.Type is SdtRecall or SdtTrap && d.Exec != SerMonster

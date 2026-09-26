@@ -15787,6 +15787,10 @@ CTClientObjBase* CTClientGame::GetSkillTarget(CTClientObjBase* pTARGET, LPTSKILL
 	case TSKILLTARGET_ENEMY			:
 		if( pTARGET && m_pMainChar->IsAlliance(pTARGET) )
 			pTARGET = NULL;
+
+		// Evocate Monster is always cast on oneself: it calls the tamed monster
+		if( pTSKILL->m_wSkillID == TEVOCATE_MONSTER_SKILL )
+			pTARGET = m_pMainChar;
 		break;
 
 	case TSKILLTARGET_NONE			: 
@@ -24452,6 +24456,9 @@ BYTE CTClientGame::CheckSkillTarget( CTClientObjBase *pTATTACK,
 		break;
 
 	case TSKILLTARGET_ENEMY:
+		if( pTSKILL->m_wSkillID == TEVOCATE_MONSTER_SKILL )
+			return pTATTACK == pTDEFEND ? SKILL_SUCCESS : SKILL_WRONGTARGET;
+
 		{
 			BOOL bAlliance = pTDEFEND->IsDisguise() &&
 				pTATTACK->m_bType == OT_MON &&

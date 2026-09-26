@@ -154,6 +154,7 @@
 #define CASHCABINET_MAX_ITEM_ON_PR		30		// PR: Period Rental
 
 #define TDEF_SKILL_NPC					((WORD) 22047)
+#define TEVOCATE_MONSTER_SKILL			((WORD) 618)		// always cast on oneself: calls the tamed monster (old sources)
 #define TID_HIDING_SKILL				221
 
 #define GM_START_4STORY					(0x00000000)

@@ -27,7 +27,9 @@ public sealed record MonsterTemplate(ushort Id, byte Level, ushort MonAttr,
     // (m_bRecallType — TRECALLTYPE_PET = 7 for mounts), the attr-chart id its stats come from at the owner's level
     // (m_wSummonAttr), the class/race/self/select flags CreateRecallMon copies.
     byte RecallType = 0, ushort SummonAttr = 0, byte Class = 0, byte Race = 0, byte IsSelf = 0, byte CanSelect = 0,
-    byte CanAttack = 0)
+    byte CanAttack = 0,
+    // m_bTame: the sorcerer's Enslave Monster can take it (old sources' SDT_TEMPT check, TObjBase.cpp).
+    byte Tame = 0)
 {
     /// <summary>The non-empty skill slots in chart order (wSkill1 first).</summary>
     public IEnumerable<ushort> Skills

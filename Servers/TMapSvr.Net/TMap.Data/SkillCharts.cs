@@ -216,6 +216,36 @@ public sealed record SkillTemplate(
         return false;
     }
 
+    /// <summary>SKILL_DATA_TYPE SDT_RECALL / SDT_AI, SDT_AI_TYPE SDT_TEMPT, SKILL_EXEC_RECALL SER_MONSTER,
+    /// SKILL_CURE_TYPE SCT_REVIVAL (NetCode.h).</summary>
+    public const byte SdtRecall = 2, SdtAi = 7, SdtTempt = 4, SerMonster = 7, SctRevival = 1;
+
+    /// <summary>C++ <c>CTSkillTemp::CanDefendAtDie</c> (TSkillTemp.cpp:505) — a revival or an enslave skill, the only
+    /// ones that can land on a corpse.</summary>
+    public bool CanDefendAtDie()
+    {
+        foreach (var d in Data)
+            if ((d.Type == SdtCure && d.Exec == SctRevival) || (d.Type == SdtAi && d.Exec == SdtTempt)) return true;
+        return false;
+    }
+
+    /// <summary>The skill carries an <c>SDT_AI</c>/<c>SDT_TEMPT</c> row — the sorcerer's Enslave Monster.</summary>
+    public bool IsTempt()
+    {
+        foreach (var d in Data)
+            if (d.Type == SdtAi && d.Exec == SdtTempt) return true;
+        return false;
+    }
+
+    /// <summary>C++ <c>CTSkillTemp::IsMonRecall</c> (TSkillTemp.cpp:519) — an <c>SDT_RECALL</c>/<c>SER_MONSTER</c> row:
+    /// the sorcerer's Evocate Monster, which summons the enslaved monster.</summary>
+    public bool IsMonRecall()
+    {
+        foreach (var d in Data)
+            if (d.Type == SdtRecall && d.Exec == SerMonster) return true;
+        return false;
+    }
+
     /// <summary>SKILL_DATA_TYPE SDT_STATUS (NetCode.h:1552) — a status-effect data row.</summary>
     public const byte SdtStatus = 6;
     /// <summary>SDT_STATUS_TYPE HP↔MP execs (NetCode.h:1737) — swap HP↔MP, and sacrifice half HP into MP; the

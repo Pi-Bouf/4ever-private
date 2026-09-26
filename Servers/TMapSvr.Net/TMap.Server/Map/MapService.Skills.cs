@@ -32,9 +32,14 @@ public sealed partial class MapService
     /// held at level 0 has not been learned — in the old sources (Source 3.3 and OLD SOURCES) it simply does not
     /// exist: <c>CTPlayer::InitializeSkill</c> deletes a skill from <c>m_mapTSKILL</c> (and the hotkeys) when a reset
     /// brings it to 0, so every cast answers <c>SKILL_NOTFOUND</c>. This database lists every class skill at level 0
-    /// (<c>TSTARTSKILL</c>, for the skill window's "learn" buttons), so the same rule is applied at lookup.</summary>
+    /// (<c>TSTARTSKILL</c>, for the skill window's "learn" buttons), so the same rule is applied at lookup.
+    /// A skill whose max level is 0 has no levels at all — Stance, Inner Eye, Falcon Eye, Rumapark's Retribution,
+    /// Enslave and Evocate Monster: it is innate, held at level 0 for good (the client shows no level gauge for
+    /// it), and always usable.</summary>
     private static Skill? LearnedSkill(Character ch, ushort skillId)
-        => ch.Skills.FirstOrDefault(k => k.SkillId == skillId && k.Level > 0);
+        => ch.Skills.FirstOrDefault(k => k.SkillId == skillId && IsLearned(k));
+
+    private static bool IsLearned(Skill k) => k.Level > 0 || k.Template is { MaxLevel: 0 };
 
     private void OnCS_SKILLUSE_REQ(ClientSession s, PacketReader r)
     {

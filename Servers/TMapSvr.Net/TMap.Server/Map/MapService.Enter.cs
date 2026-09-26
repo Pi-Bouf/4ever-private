@@ -214,6 +214,7 @@ public sealed partial class MapService
         SendQuestTimers(s, ch);   // C++ SendQuestTimer(m_dwTick) — restores active-timer countdowns on relog
         SendCS_PETLIST_ACK(s, ch);   // C++ sends it after CS_CHARSTATINFO_ACK (SSHandler.cpp:2171)
         SendCS_COMPANIONLIST_ACK(s, ch);
+        SummonTamedAtLogin(s, ch);   // C++ InitCharInfo ends with the sorcerer's tamed monster
     }
 
     private void OnMW_ROUTE_REQ(PacketReader r)

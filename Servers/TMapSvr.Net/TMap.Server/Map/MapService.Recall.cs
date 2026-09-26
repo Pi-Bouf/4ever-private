@@ -71,8 +71,11 @@ public sealed partial class MapService
     }
 
     /// <summary>C++ <c>SendMW_RECALLMONDEL_ACK</c> — ask the world to remove a summon everywhere.</summary>
-    private void SendMW_RECALLMONDEL_ACK(uint charId, uint key, uint monId, bool forever = true)
+    private void SendMW_RECALLMONDEL_ACK(uint charId, uint key, uint monId, bool forever = true,
+        [System.Runtime.CompilerServices.CallerMemberName] string caller = "",
+        [System.Runtime.CompilerServices.CallerLineNumber] int line = 0)
     {
+        _log.LogDebug("[summon] DEL asked for {Mon} of char {Char} by {Caller}:{Line}.", monId, charId, caller, line);
         var w = new PacketWriter(Msg.MW_RECALLMONDEL_ACK, capacity: 16);
         w.WriteUInt32(charId); w.WriteUInt32(key); w.WriteUInt32(monId); w.WriteByte((byte)(forever ? 1 : 0));
         _world.Send(w);

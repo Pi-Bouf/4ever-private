@@ -175,11 +175,13 @@ public sealed partial class MapService
             return;
         }
 
-        // Otherwise this phase covers only a player attacking a live field monster.
+        // Otherwise this phase covers only a player attacking a field monster: a live one, or a corpse for the
+        // skills that can land on one (C++ OS_DEAD && !CanDefendAtDie — Enslave Monster).
         if (targetType != Monster.OtMon) return;
-        if (_state.FindMonster(targetId) is not { Hp: > 0 } mon) return;
-
+        if (_state.FindMonster(targetId) is not { } mon) return;
         var atkTpl = atkSkill?.Template;
+        if (mon.Hp == 0 && atkTpl?.CanDefendAtDie() != true) return;
+
         var power = AttackerPower.Of(ch, _templates, atkTpl) with { Level = attackerLevel };
         ch.EnterBattle(NowMs, RecoverInit);   // the attacking player enters battle on any swing, hit or miss
         HitMonster(ch, power, attackId, attackType, hostId, atkTpl, atkSkill?.Level ?? skillLevel, canSelect, mon,
@@ -200,6 +202,7 @@ public sealed partial class MapService
         // single GetAtkHitType roll. Each damage COMPONENT below re-picks the physical/magic band from its own
         // data-row attr (a skill can carry both — C++ CalcDamage switches attr per row).
         bool isMagic = p.IsMagic, isLong = p.IsLong;
+        bool corpse = mon.Hp == 0;   // a skill landing on a corpse (Enslave): no damage, no hate, no death
         uint apMin = p.ApMin(isMagic, isLong), apMax = p.ApMax(isMagic, isLong);
         byte critRate = p.Crit; ushort attackLevel = p.AttackLevel; byte attackerLevel = p.Level;
 
@@ -210,24 +213,25 @@ public sealed partial class MapService
 
         // ---- CalcDamage — the exec-aware per-data-row dispatch (HP/MP damage + heal/drain), or the basic
         // fallback when the skill has no damage rows (a basic attack / a pure buff / DB-free). ----
-        var dmg = CalcMonsterDamage(p, mon, atkTpl, ackSkillLevel, hitType, isMagic, isLong, triple);
+        var dmg = corpse ? new DamageResult(0, 0, new())
+            : CalcMonsterDamage(p, mon, atkTpl, ackSkillLevel, hitType, isMagic, isLong, triple);
 
         // Aggro happens on any swing, hit or miss; the monster's mode/target are driven by the hate table (C++ Defend's
         // opening SetAggro, Phase 44): Aggravate accumulates the attacker's hate and, if it wins the 10% sticky-target
         // rule, flips the monster into battle onto them (ApplyRetarget → EnterBattle + CS_MONHOST_ACK).
-        Aggravate(mon, p, atkTpl, ackSkillLevel, canSelect, hostId, attackId, attackType);
+        if (!corpse) Aggravate(mon, p, atkTpl, ackSkillLevel, canSelect, hostId, attackId, attackType);
         uint hpBefore = mon.Hp;
         ApplyMonsterDamage(mon, dmg);   // C++ OnDamage: HP/MP damage floors at 0, heal clamps to max
         // Loot/exp owner = the HP actually removed this swing (party bucket if partied — Phase 17/38; 0 on a miss/heal).
         mon.AddDamage(owner.CharId, owner.GetPartyId(), hpBefore - mon.Hp);
 
         // bAtkHit carries the hit result (HT_MISS/NORMAL/CRITICAL), overridden to HT_LASTHIT on the killing blow.
-        byte atkHit = hitType == HtMiss ? HtMiss : (mon.Hp == 0 ? HtLastHit : hitType);
+        byte atkHit = hitType == HtMiss || corpse ? hitType : (mon.Hp == 0 ? HtLastHit : hitType);
 
         // ---- apply a debuff maintain to the monster (C++ Defend: MaintainSkill + PushMaintainSkill on a landed
         // hit) — a skill can both damage and debuff; the ACK's bIsMaintain/dwMaintainTick announce it (Phase 31). ----
         byte isMaintain = 0; uint maintainTick = 0;
-        if (hitType != HtMiss && atkTpl is { } dbt && dbt.IsMaintainType())
+        if (hitType != HtMiss && !corpse && atkTpl is { } dbt && dbt.IsMaintainType())
         {
             var snap = new MaintainSnapshot(attackId, attackType, hostId, OtPc, critRate, attackLevel, attackerLevel,
                 isMagic ? 0 : apMin, isMagic ? 0 : apMax, isMagic ? apMin : 0, isMagic ? apMax : 0,
@@ -241,14 +245,20 @@ public sealed partial class MapService
 
         // ---- lifedrain (C++ PerformSkill SDT_ABILITY MTYPE_HI/MI) — a fraction of the HP/MP damage dealt is
         // sent to the world as MW_GETBLOOD_ACK, which grants it to the attacker (post-damage). ----
-        if (hitType != HtMiss && atkTpl is { } lt) SendLifeDrain(lt, ackSkillLevel, attackId, attackType, hostId, dmg);
+        if (hitType != HtMiss && !corpse && atkTpl is { } lt) SendLifeDrain(lt, ackSkillLevel, attackId, attackType, hostId, dmg);
+
+        // ---- the player's taming skills (C++ PerformSkill SDT_TEMPT / SDT_RECALL SER_MONSTER on a monster) — a
+        // failure clears bPerform in the ACK. ----
+        bool performed = true;
+        if (hitType != HtMiss && attackType == OtPc && atkTpl is { } pt)
+            performed = PerformTameSkill(owner, pt, mon, attackerLevel);
 
         // ---- broadcast the hit (with the full per-exec damage map) + the new HP/MP bar to nearby players ----
         // Byte-audit (Phase 28): bHit carries the attacker's crit prob; bPerform is FALSE on a miss; the damage
         // map is keyed by each component's m_bExec (MTYPE_DAMAGE 30 / MTYPE_MDAMAGE 88 / MTYPE_HP 14 / MTYPE_MP 22).
         var defendAck = BuildCS_DEFEND_ACK(attackId, hostId, mon, attackType, actId, aniId,
             attackLevel, attackerLevel, apMin, apMax, isMagic, critRate, canSelect, p.Country, p.AidCountry,
-            skillId, ackSkillLevel, atkHit, hitType != HtMiss, atkX, atkY, atkZ, defX, defY, defZ, dmg.Map,
+            skillId, ackSkillLevel, atkHit, hitType != HtMiss && performed, atkX, atkY, atkZ, defX, defY, defZ, dmg.Map,
             isMaintain, maintainTick);
         foreach (var viewer in _state.PlayersAround(mon))
         {
@@ -257,7 +267,7 @@ public sealed partial class MapService
         }
 
         // ---- death → despawn → respawn re-arm ----
-        if (hitType != HtMiss && mon.Hp == 0) OnMonsterDeath(mon);
+        if (hitType != HtMiss && !corpse && mon.Hp == 0) OnMonsterDeath(mon);
     }
 
     /// <summary>The net HP/MP change a hit inflicts on the defender plus the per-exec damage map that fills

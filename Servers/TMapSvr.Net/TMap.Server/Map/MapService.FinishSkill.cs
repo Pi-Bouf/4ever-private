@@ -85,7 +85,7 @@ public sealed partial class MapService
         // Skill level from the attacker's own copy (C++ FindTSkill(m_wTriggerID); triggerID == wSkillID here).
         // One the character holds at level 0 is not learned (see LearnedSkill): the cast does nothing.
         var own = ch.Skills.FirstOrDefault(k => k.SkillId == skillId);
-        if (own is { Level: 0 })
+        if (own is not null && !IsLearned(own))
         { _log.LogDebug("FINISHSKILL from char {Char}: skill {Skill} is not learned (level 0); dropped.", s.CharId, skillId); return; }
         byte skillLevel = own?.Level ?? 0;
         ushort trans = TransHpMp(tpl);
