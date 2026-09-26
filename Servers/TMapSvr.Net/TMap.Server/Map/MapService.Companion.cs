@@ -278,7 +278,7 @@ public sealed partial class MapService
             PosX = rec.X, PosY = rec.Y, PosZ = rec.Z, Dir = rec.Dir,
         };
         mon.Hp = mon.MaxHp; mon.Mp = mon.MaxMp;
-        foreach (var id in rec.Skills) if (_templates.Skills.ContainsKey(id)) mon.Skills.Add(id);
+        AddSummonSkills(mon, rec.Skills, rec.SkillLevel);
         ch.CompanionObjs[mon.Id] = mon;
 
         SendCS_UPDATESPAWNEDCOMPANION_REQ(s, ch.CompanionSlot);
@@ -292,6 +292,7 @@ public sealed partial class MapService
         uint charId = r.ReadUInt32(); r.ReadUInt32();
         uint monId = r.ReadUInt32(); r.ReadByte();
         if (_state.FindByChar(charId) is not { Char: { } ch } || !ch.CompanionObjs.Remove(monId, out var mon)) return;
+        SummonOnDie(mon);                                               // C++ DeleteCompanion → CTCompanion::OnDie
         if (mon.InMap) LeaveRecall(mon, exitMap: true, forever: false);
     }
 

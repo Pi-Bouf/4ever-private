@@ -57,7 +57,7 @@ public sealed partial class MapService
         float posX = r.ReadFloat(), posY = r.ReadFloat(), posZ = r.ReadFloat();   // the ground point
         ushort skillId = r.ReadUInt16();    // wSkillID
         r.ReadUInt32();                     // IsLinked
-        r.ReadUInt32();                     // IsFake (only meaningful for an OT_RECALL fake — unported)
+        bool fake = r.ReadUInt32() != 0;    // IsFake — a doppelganger's hit, which always misses
         r.ReadUInt16();                     // wAttackPartyID
         byte count = r.ReadByte();          // bDefendCount
         var targets = new (uint Id, byte Type)[count];
@@ -71,7 +71,14 @@ public sealed partial class MapService
         if (tpl.MapId != InvalidMapId && tpl.MapId != ch.MapId)
         { _log.LogDebug("FINISHSKILL from char {Char}: skill {Skill} restricted to map {SkillMap}, char on {Map}; dropped.", s.CharId, skillId, tpl.MapId, ch.MapId); return; }
 
-        // The attacker: a player acting as itself (see the hardening note). Summon attackers are unported.
+        // A summon / placed object of the sender (C++ FindTarget(pPlayer, bType, dwID) — the sender's own).
+        if (attackType is RecallMon.OtRecall or RecallMon.OtSelf && attackId == s.CharId)
+        {
+            SummonFinishSkill(s, ch, attackType, objId, tpl, fake, posX, posY, posZ, targets);
+            return;
+        }
+
+        // The attacker: a player acting as itself (see the hardening note).
         if (attackType != OtPc || attackId != s.CharId || objId != s.CharId)
         { _log.LogDebug("FINISHSKILL from char {Char}: attacker {Attack}/{Obj} type {Type} is not the sender; dropped.", s.CharId, attackId, objId, attackType); return; }
 

@@ -67,6 +67,12 @@ public sealed partial class MapService
             MonsterSkillUse(s, attackId, skillId, actionId, actId, aniId, posX, posY, posZ, targets);
             return;
         }
+        // A summon / placed object: its owner's client announces it (CSHandler.cpp:2496-2528).
+        if (attackType is RecallMon.OtRecall or RecallMon.OtSelf)
+        {
+            SummonSkillUse(s, s.Char, attackType, attackId, skillId, actionId, actId, aniId, posX, posY, posZ, targets);
+            return;
+        }
         if (attackType != OtPc) return;
         if (_state.FindByChar(attackId) is not { State: EnterState.InGame, Char: { } ch } casterSession) return;
 

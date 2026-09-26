@@ -197,6 +197,9 @@ public sealed class Character
     /// bonuses even while no companion is out (the owner dead, for instance).</summary>
     public byte CompanionSlot { get; set; } = 0xFF;
 
+    /// <summary>The player's placed objects by id (C++ <c>m_mapSelfMon</c>) — traps, crystals, eyes, arrow rains.</summary>
+    public SortedDictionary<uint, RecallMon> SelfObjs { get; } = new();
+
     /// <summary>The companion creatures in the world (C++ <c>m_mapCompanion</c>).</summary>
     public Dictionary<uint, RecallMon> CompanionObjs { get; } = new();
 

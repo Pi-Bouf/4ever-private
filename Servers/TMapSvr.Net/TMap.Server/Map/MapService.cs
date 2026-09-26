@@ -291,6 +291,7 @@ public sealed partial class MapService
         RunRecover(NowMs);                     // HP/MP regeneration (players + monsters)
         RunAftermath(NowMs);                   // one step of death-penalty recovery when due (CTPlayer::OnTimer)
         RunRecallTimers();                     // summons whose life ran out are sent away (CheckTimeRecallMon)
+        RunSelfObjTimers();                    // and placed objects whose time is up die
         RunCompanionTimers(NowMs);             // companion stamina/exp each minute, expired companion items
         RunCorpseExpiry(_tickSeconds * 1000L); // despawn + re-arm lootable corpses past their lifetime
         RunScheduledAi(_tickSeconds * 1000L);  // Due TAICHART commands (the local SM_AICMD stand-in)

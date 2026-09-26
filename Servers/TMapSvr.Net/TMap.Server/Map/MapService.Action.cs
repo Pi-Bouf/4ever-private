@@ -25,8 +25,8 @@ namespace TMap.Server.Map;
 /// <para><b>Deferred</b> (columns/subsystems this port does not carry): the <c>SKILL_NEEDPREVACT</c> check
 /// (<c>m_wPrevActiveID</c> is not among the loaded <c>TSKILLCHART</c> columns), the charge-skill latch
 /// (<c>m_dwActionTime</c> / <c>m_wCurChargeSkill</c>, same reason), <c>EraseBuffByAttack</c>, and the
-/// <c>OT_RECALL</c> / <c>OT_SELF</c> / <c>OT_COMPANION</c> actor kinds (summons/pets are unported) — those
-/// resolve to no object and fall through silently, exactly as the C++ does for an unknown id.</para>
+/// summon actors resolve among the sender's own (C++ <c>FindRecallMon</c> / <c>FindSelfObj</c> / <c>FindCompanion</c>),
+/// the reply going to the players around the summon.</para>
 /// </summary>
 public sealed partial class MapService
 {
@@ -48,6 +48,7 @@ public sealed partial class MapService
         // ---- resolve the acting object (C++ switch on bObjType) ----
         // OT_PC resolves to the SENDER itself (not a lookup by dwObjID) — the C++ assigns pOBJ = pPlayer.
         float posX, posZ;
+        RecallMon? summon = null;
         if (objType == OtPc)
         {
             if (!s.IsMain) return;
@@ -60,7 +61,15 @@ public sealed partial class MapService
         }
         else
         {
-            return; // OT_RECALL / OT_SELF / OT_COMPANION — summons unported, no object resolves
+            summon = objType switch
+            {
+                RecallMon.OtRecall when s.IsMain => ch.Recalls.GetValueOrDefault(objId),
+                RecallMon.OtSelf => ch.SelfObjs.GetValueOrDefault(objId),
+                RecallMon.OtCompanion when s.IsMain => ch.CompanionObjs.GetValueOrDefault(objId),
+                _ => null,
+            };
+            if (summon is not { InMap: true }) return;
+            posX = summon.PosX; posZ = summon.PosZ;
         }
 
         // ---- skill preconditions (C++ runs these only for a PC actor casting a real skill) ----
@@ -78,11 +87,17 @@ public sealed partial class MapService
             else if (ch.Hp < skill.GetRequiredHp(StatEngine.PureMaxHp(ch, _templates)))
                 result = SkillUseResult.NeedHp;
             // SKILL_NEEDPREVACT + the charge latch are deferred (see the type doc).
+            else if (skill.Template is { } st)
+                foreach (var d in st.Data)
+                    if (d.Type is SdtRecall or SdtTrap && d.Exec != SerMonster
+                        && _templates.MonsterTemplates.TryGetValue((ushort)st.GetValue(d, skill.Level), out var mt) && mt.Id != 0)
+                        CheckRecallMon(s, ch, mt);   // starting a summon cast sends the old main summon away
         }
 
         // ---- broadcast (C++ GetNeerPlayer when a skill is involved, GetNeighbor otherwise; both keep self) ----
         var ack = BuildCS_ACTION_ACK(result, objId, objType, actionId, actId, aniId, skillId);
-        foreach (var viewer in skillId != 0 ? _state.NearView(s) : _state.InView(s))
+        var viewers = summon is not null ? _state.PlayersAround(summon) : skillId != 0 ? _state.NearView(s) : _state.InView(s);
+        foreach (var viewer in viewers)
             viewer.Send(ack);
     }
 

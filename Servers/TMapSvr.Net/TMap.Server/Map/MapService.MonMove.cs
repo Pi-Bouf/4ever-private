@@ -57,10 +57,15 @@ public sealed partial class MapService
             byte keyDir = r.ReadByte();             // bKeyDIR
             byte action = r.ReadByte();             // bAction
 
-            if (objType is RecallMon.OtRecall or RecallMon.OtCompanion)
+            if (objType is RecallMon.OtRecall or RecallMon.OtCompanion or RecallMon.OtSelf)
             {
-                // C++ pPlayer->FindRecallMon / FindCompanion: the sender's own summon or companion only.
-                var own = objType == RecallMon.OtRecall ? s.Char.Recalls : s.Char.CompanionObjs;
+                // C++ pPlayer->FindRecallMon / FindCompanion / FindSelfObj: the sender's own object only.
+                IReadOnlyDictionary<uint, RecallMon> own = objType switch
+                {
+                    RecallMon.OtRecall => s.Char.Recalls,
+                    RecallMon.OtCompanion => s.Char.CompanionObjs,
+                    _ => s.Char.SelfObjs,
+                };
                 if (!own.TryGetValue(monId, out var rec) || rec.OwnerId != s.CharId || !rec.InMap) continue;
                 if (rec.Hp == 0) { mouseDir = Monster.TkdirN; keyDir = Monster.TkdirN; }
                 if (rec.Action == TaDead || posX <= 0 || posZ <= 0) continue;

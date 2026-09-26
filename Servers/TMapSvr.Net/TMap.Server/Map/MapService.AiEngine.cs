@@ -419,10 +419,9 @@ public sealed partial class MapService
         if (!isBegin && (mon.TargetId != rhId || mon.TargetType != rhType))
             return AiComplete(b, mon, eventHost, rhId, rhType);   // C++ skips the swing but still chains
 
-        if (_state.FindByChar(mon.TargetId) is { State: EnterState.InGame, Char: { Hp: > 0 } target }
-            && _tickSeconds * 1000L >= mon.AtkNextMs)
+        if (ResolveMonTarget(mon) is { } target && _tickSeconds * 1000L >= mon.AtkNextMs)
         {
-            AttackPlayer(mon, target, _tickSeconds * 1000L);
+            AttackTarget(mon, target, _tickSeconds * 1000L);
             mon.AtkNextMs = _tickSeconds * 1000L + (mon.AtkSpeed != 0 ? mon.AtkSpeed : DefaultAtkSpeedMs);
         }
 

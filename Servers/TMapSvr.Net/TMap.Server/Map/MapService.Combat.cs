@@ -111,6 +111,19 @@ public sealed partial class MapService
         if (_state.FindMonster(monId) is not { Hp: > 0 } mon) return;
         if (!_templates.MonsterTemplates.TryGetValue(mon.ChartId, out var chart) || !chart.Skills.Contains(skillId))
             return;                                                                          // the monster's own skill
+        if (targetType is RecallMon.OtRecall or RecallMon.OtSelf or RecallMon.OtCompanion)
+        {
+            // FindTarget(pPlayer, type, id): only the reporter's own summons.
+            IReadOnlyDictionary<uint, RecallMon> own = targetType switch
+            {
+                RecallMon.OtRecall => reporter.Recalls,
+                RecallMon.OtSelf => reporter.SelfObjs,
+                _ => reporter.CompanionObjs,
+            };
+            if (own.TryGetValue(targetId, out var summon) && summon is { InMap: true, Hp: > 0 })
+                MonsterHitsSummon(s, reporter, mon, summon, skillId, actId, aniId, atkX, atkY, atkZ, defX, defY, defZ, echo);
+            return;
+        }
         if (targetType != OtPc) return;
 
         // FindTarget(pPlayer, OT_PC, id): a player on the reporter's map; a dead one cannot be hit.
@@ -149,6 +162,9 @@ public sealed partial class MapService
                     ApplyPlayerCure(s, ch, targetId, tpl, lvl, attackId, transHp, transMp, atkX, atkY, atkZ);
                 if (tpl.HasVitalsStatus())
                     ApplyPlayerStatus(s, ch, targetId, tpl, lvl, attackId, atkX, atkY, atkZ);
+                // PerformSkill SDT_RECALL / SDT_TRAP — summon skills are cast on oneself.
+                if (targetId == ch.CharId && tpl.Data.Any(d => d.Type is SdtRecall or SdtTrap))
+                    PerformSummon(s, ch, tpl, lvl, (atkX, atkY, atkZ));
             }
             return;
         }
@@ -158,43 +174,46 @@ public sealed partial class MapService
         if (_state.FindMonster(targetId) is not { Hp: > 0 } mon) return;
 
         var atkTpl = atkSkill?.Template;
+        var power = AttackerPower.Of(ch, _templates, atkTpl) with { Level = attackerLevel };
+        ch.EnterBattle(NowMs, RecoverInit);   // the attacking player enters battle on any swing, hit or miss
+        HitMonster(ch, power, attackId, attackType, hostId, atkTpl, atkSkill?.Level ?? skillLevel, canSelect, mon,
+            actId, aniId, skillId, forceMiss: false, triple: false, atkX, atkY, atkZ, defX, defY, defZ);
+    }
+
+    /// <summary>
+    /// One hit on a live field monster (the monster half of C++ <c>CTObjBase::Defend</c>), from any attacker: a player
+    /// or one of its summons. <paramref name="owner"/> is who gets the credit (exp, loot, the hate's host);
+    /// <paramref name="p"/> is the attacker's figures. <paramref name="forceMiss"/> is a doppelganger's fake hit;
+    /// <paramref name="triple"/> an auto-AI summon's ×3 damage (C++ CalcDamage).
+    /// </summary>
+    private void HitMonster(Character owner, AttackerPower p, uint attackId, byte attackType, uint hostId,
+        SkillTemplate? atkTpl, byte ackSkillLevel, byte canSelect, Monster mon, uint actId, uint aniId, ushort skillId,
+        bool forceMiss, bool triple, float atkX, float atkY, float atkZ, float defX, float defY, float defZ)
+    {
         // The DISPLAY attack profile (by the skill's overall attack type) — fills CS_DEFEND_ACK and drives the
         // single GetAtkHitType roll. Each damage COMPONENT below re-picks the physical/magic band from its own
         // data-row attr (a skill can carry both — C++ CalcDamage switches attr per row).
-        bool isMagic = atkTpl?.GetAttackType() == SkillTemplate.SatMagic;
-        bool isLong = atkTpl?.IsLongAttack() ?? false;    // long/bow ⇒ the FTYPE_LAP ability set
-        uint apMin, apMax; byte critRate; ushort attackLevel;
-        if (isMagic)
-        {
-            apMin = StatEngine.MinMagicAp(ch, _templates); apMax = StatEngine.MaxMagicAp(ch, _templates);
-            critRate = StatEngine.CriticalMagicProb(ch, _templates); attackLevel = StatEngine.MagicAtkLevel(ch, _templates);
-        }
-        else
-        {
-            apMin = StatEngine.MinAp(ch, arrow: isLong, _templates); apMax = StatEngine.MaxAp(ch, arrow: isLong, _templates);
-            critRate = StatEngine.CriticalPysProb(ch, _templates); attackLevel = StatEngine.AttackLevel(ch, _templates);
-        }
+        bool isMagic = p.IsMagic, isLong = p.IsLong;
+        uint apMin = p.ApMin(isMagic, isLong), apMax = p.ApMax(isMagic, isLong);
+        byte critRate = p.Crit; ushort attackLevel = p.AttackLevel; byte attackerLevel = p.Level;
 
         // GetAtkHitType (on the defender = the monster): a level-scaled accuracy roll then a crit roll. Decided
         // ONCE per hit (C++ attacker-side, pre-Defend); every damage component then applies the same result.
-        byte hitType = HitTypeVsMonster(CombatRng, _templates.Formula(isMagic ? FtypeMar : FtypePar),
+        byte hitType = forceMiss ? HtMiss : HitTypeVsMonster(CombatRng, _templates.Formula(isMagic ? FtypeMar : FtypePar),
             attackerLevel, mon.Level, isMagic ? mon.MagicDefLevel : mon.DefendLevel, critRate, attackLevel);
-        byte ackSkillLevel = atkSkill?.Level ?? skillLevel;
 
         // ---- CalcDamage — the exec-aware per-data-row dispatch (HP/MP damage + heal/drain), or the basic
         // fallback when the skill has no damage rows (a basic attack / a pure buff / DB-free). ----
-        var dmg = CalcMonsterDamage(ch, mon, atkTpl, ackSkillLevel, hitType, isMagic, isLong);
+        var dmg = CalcMonsterDamage(p, mon, atkTpl, ackSkillLevel, hitType, isMagic, isLong, triple);
 
-        // Combat entry (C++ ChgMode(MT_BATTLE)) + aggro happen on any swing, hit or miss. The attacker enters
-        // battle here; the monster's mode/target are driven by the hate table (C++ Defend's opening SetAggro,
-        // Phase 44): Aggravate accumulates the attacker's hate and, if it wins the 10% sticky-target rule, flips
-        // the monster into battle onto them (ApplyRetarget → EnterBattle + CS_MONHOST_ACK).
-        ch.EnterBattle(NowMs, RecoverInit);
-        Aggravate(mon, ch, atkTpl, ackSkillLevel, canSelect, hostId, attackId);
+        // Aggro happens on any swing, hit or miss; the monster's mode/target are driven by the hate table (C++ Defend's
+        // opening SetAggro, Phase 44): Aggravate accumulates the attacker's hate and, if it wins the 10% sticky-target
+        // rule, flips the monster into battle onto them (ApplyRetarget → EnterBattle + CS_MONHOST_ACK).
+        Aggravate(mon, p, atkTpl, ackSkillLevel, canSelect, hostId, attackId, attackType);
         uint hpBefore = mon.Hp;
         ApplyMonsterDamage(mon, dmg);   // C++ OnDamage: HP/MP damage floors at 0, heal clamps to max
         // Loot/exp owner = the HP actually removed this swing (party bucket if partied — Phase 17/38; 0 on a miss/heal).
-        mon.AddDamage(ch.CharId, ch.GetPartyId(), hpBefore - mon.Hp);
+        mon.AddDamage(owner.CharId, owner.GetPartyId(), hpBefore - mon.Hp);
 
         // bAtkHit carries the hit result (HT_MISS/NORMAL/CRITICAL), overridden to HT_LASTHIT on the killing blow.
         byte atkHit = hitType == HtMiss ? HtMiss : (mon.Hp == 0 ? HtLastHit : hitType);
@@ -204,9 +223,9 @@ public sealed partial class MapService
         byte isMaintain = 0; uint maintainTick = 0;
         if (hitType != HtMiss && atkTpl is { } dbt && dbt.IsMaintainType())
         {
-            var snap = new MaintainSnapshot(ch.CharId, OtPc, hostId, OtPc, critRate, attackLevel, attackerLevel,
+            var snap = new MaintainSnapshot(attackId, attackType, hostId, OtPc, critRate, attackLevel, attackerLevel,
                 isMagic ? 0 : apMin, isMagic ? 0 : apMax, isMagic ? apMin : 0, isMagic ? apMax : 0,
-                canSelect, ch.Country, atkX, atkY, atkZ);
+                canSelect, p.Country, atkX, atkY, atkZ);
             if (ApplyMaintainToMonster(mon, dbt, ackSkillLevel, 0, snap, NowMs) is { } applied)
             {
                 isMaintain = 1;
@@ -222,13 +241,13 @@ public sealed partial class MapService
         // Byte-audit (Phase 28): bHit carries the attacker's crit prob; bPerform is FALSE on a miss; the damage
         // map is keyed by each component's m_bExec (MTYPE_DAMAGE 30 / MTYPE_MDAMAGE 88 / MTYPE_HP 14 / MTYPE_MP 22).
         var defendAck = BuildCS_DEFEND_ACK(attackId, hostId, mon, attackType, actId, aniId,
-            attackLevel, attackerLevel, apMin, apMax, isMagic, critRate, canSelect, ch.Country, ch.AidCountry,
+            attackLevel, attackerLevel, apMin, apMax, isMagic, critRate, canSelect, p.Country, p.AidCountry,
             skillId, ackSkillLevel, atkHit, hitType != HtMiss, atkX, atkY, atkZ, defX, defY, defZ, dmg.Map,
             isMaintain, maintainTick);
-        foreach (var p in _state.PlayersAround(mon))
+        foreach (var viewer in _state.PlayersAround(mon))
         {
-            p.Send(defendAck);
-            SendMonsterHpMp(p, mon);
+            viewer.Send(defendAck);
+            SendMonsterHpMp(viewer, mon);
         }
 
         // ---- death → despawn → respawn re-arm ----
@@ -255,8 +274,8 @@ public sealed partial class MapService
     /// <c>CalcValue</c> term is applied here), <c>DistributeSkill</c> (pet damage share), the AUTOAI-recall ×3
     /// (pets), the shield-block roll (a monster has no equipped-item model → shield DP 0), and the custom
     /// Araz ≥3000 hard-coded skills.</para></summary>
-    private DamageResult CalcMonsterDamage(Character ch, Monster mon, SkillTemplate? tpl, byte level,
-        byte hitType, bool isMagic, bool isLong)
+    private DamageResult CalcMonsterDamage(AttackerPower ch, Monster mon, SkillTemplate? tpl, byte level,
+        byte hitType, bool isMagic, bool isLong, bool triple = false)
     {
         var map = new List<(byte Exec, uint Value)>();
         if (hitType == HtMiss) return new DamageResult(0, 0, map);   // C++ Defend skips CalcDamage on a miss
@@ -265,7 +284,7 @@ public sealed partial class MapService
         var rows = tpl?.Data.Where(d => d.Type == SdtAbility && IsDamageExec(d.Exec)).ToList();
         if (rows is not { Count: > 0 })
         {
-            uint dmg = BasicRoll(ch, mon, tpl, level, hitType, isMagic, isLong);
+            uint dmg = BasicRoll(ch, mon, tpl, level, hitType, isMagic, isLong, triple);
             if (dmg != 0) map.Add((MtypeDamage, (ushort)dmg));   // (WORD)dwValue
             return new DamageResult((int)dmg, 0, map);
         }
@@ -283,13 +302,13 @@ public sealed partial class MapService
             {
                 case MtypeDamage:   // HP damage — crit off the MAX band (physical) / MIN band (magic)
                 {
-                    uint v = RollExec(ch, mon, tpl!, d, level, hitType, magicAttr, mpPool: false);
+                    uint v = RollExec(ch, mon, tpl!, d, level, hitType, magicAttr, mpPool: false, triple);
                     if (v != 0) { nDamageHp += (int)v; MapInsert(map, MtypeDamage, v); }
                     break;
                 }
                 case MtypeMdamage:  // MP damage — crit off the MIN band
                 {
-                    uint v = RollExec(ch, mon, tpl!, d, level, hitType, magicAttr, mpPool: true);
+                    uint v = RollExec(ch, mon, tpl!, d, level, hitType, magicAttr, mpPool: true, triple);
                     if (v != 0) { nDamageMp += (int)v; MapInsert(map, MtypeMdamage, v); }
                     break;
                 }
@@ -331,15 +350,17 @@ public sealed partial class MapService
     /// <summary>The basic weapon-attack roll (no damage-row skill): the physical-or-magic AP−DP band, crit per
     /// the FTYPE_PCD/MCD formula (physical off max, magic off min), then the instance-skill MTYPE_DAMAGE scaling
     /// (identity when the skill has no such row) — the Phase-13/15 behavior, preserved byte-for-byte.</summary>
-    private uint BasicRoll(Character ch, Monster mon, SkillTemplate? tpl, byte level, byte hitType, bool isMagic, bool isLong)
+    private uint BasicRoll(AttackerPower ch, Monster mon, SkillTemplate? tpl, byte level, byte hitType, bool isMagic, bool isLong,
+        bool triple = false)
     {
-        uint apMin = isMagic ? StatEngine.MinMagicAp(ch, _templates) : StatEngine.MinAp(ch, arrow: isLong, _templates);
-        uint apMax = isMagic ? StatEngine.MaxMagicAp(ch, _templates) : StatEngine.MaxAp(ch, arrow: isLong, _templates);
+        uint apMin = ch.ApMin(isMagic, isLong);
+        uint apMax = ch.ApMax(isMagic, isLong);
         uint dp = isMagic ? mon.MagicDefPower : mon.DefendPower;   // + GetShieldDP()/GetShieldMDP() == 0 (a monster has no shield)
         int a = Math.Max((int)(apMin - dp), 5), b = Math.Max((int)(apMax - dp), 7);
         uint roll = hitType == HtCritical
             ? CritDamage(CombatRng, _templates.Formula(isMagic ? FtypeMcd : FtypePcd), (uint)(isMagic ? a : b))
             : (uint)(a + CombatRng.Next(Math.Max(b - a, 1)));
+        if (triple) roll *= 3;
         return tpl is { } st ? st.ScaleDamage(level, roll) : roll;
     }
 
@@ -348,17 +369,18 @@ public sealed partial class MapService
     /// band (HP-damage physical crits off <c>dwB</c>, everything else off <c>dwA</c>) via FTYPE_PCD/MCD, then
     /// the instance-skill scaling <c>CalcValue(SDT_ABILITY, exec, roll)</c> (C++ <c>CalcAbilityValue</c> instance
     /// term), 0-floored. The buff/remain/cure amplification layers are deferred.</summary>
-    private uint RollExec(Character ch, Monster mon, SkillTemplate tpl, SkillDataRow d, byte level,
-        byte hitType, bool magicAttr, bool mpPool)
+    private uint RollExec(AttackerPower ch, Monster mon, SkillTemplate tpl, SkillDataRow d, byte level,
+        byte hitType, bool magicAttr, bool mpPool, bool triple = false)
     {
         bool arrow = d.Attr == SattLong || tpl.IsLongAttack();
-        uint apMin = magicAttr ? StatEngine.MinMagicAp(ch, _templates) : StatEngine.MinAp(ch, arrow, _templates);
-        uint apMax = magicAttr ? StatEngine.MaxMagicAp(ch, _templates) : StatEngine.MaxAp(ch, arrow, _templates);
+        uint apMin = ch.ApMin(magicAttr, arrow);
+        uint apMax = ch.ApMax(magicAttr, arrow);
         uint dp = magicAttr ? mon.MagicDefPower : mon.DefendPower;
         int a = Math.Max((int)(apMin - dp), 5), b = Math.Max((int)(apMax - dp), 7);
         uint roll = hitType == HtCritical
             ? CritDamage(CombatRng, _templates.Formula(magicAttr ? FtypeMcd : FtypePcd), (uint)(!magicAttr && !mpPool ? b : a))
             : (uint)(a + CombatRng.Next(Math.Max(b - a, 1)));
+        if (triple) roll *= 3;                                         // an auto-AI summon's hit (C++ CalcDamage)
         return (uint)Math.Max(0, (int)roll + tpl.CalcValue(level, SdtAbility, d.Exec, roll));
     }
 

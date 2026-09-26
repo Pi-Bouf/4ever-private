@@ -320,11 +320,11 @@ public static class StatEngine
 
     // ==================== equipped-gear ability sums (CalcItemAbility) ====================
 
-    private enum Ab { MaxAp, MinAp, MaxLap, MinLap, MaxMap, MinMap, Pdp, Mdp, AtkSpeedS, AtkSpeedL }
+    public enum Ab { MaxAp, MinAp, MaxLap, MinLap, MaxMap, MinMap, Pdp, Mdp, AtkSpeedS, AtkSpeedL }
 
     /// <summary>Σ over the equipped (0xFE) container of each item's enchant magic of the given type
     /// (the <c>GetMagicValue(MTYPE_*)</c> branch of C++ <c>CalcItemAbility</c>); broken items skipped.</summary>
-    private static int SumMagic(Character ch, byte mtype, TemplateStore t)
+    public static int SumMagic(Character ch, byte mtype, TemplateStore t)
     {
         var equip = ch.Equipped;
         if (equip is null) return 0;
@@ -336,7 +336,7 @@ public static class StatEngine
 
     /// <summary>Σ over the equipped container of each item's AP/DP getter (or weapon <c>SpeedInc</c>) — the
     /// item-getter branch of C++ <c>CalcItemAbility</c>; broken items skipped.</summary>
-    private static int SumGetter(Character ch, Ab ab, TemplateStore t)
+    public static int SumGetter(Character ch, Ab ab, TemplateStore t)
     {
         var equip = ch.Equipped;
         if (equip is null) return 0;

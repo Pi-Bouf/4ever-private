@@ -33,14 +33,15 @@ public sealed partial class MapService
     /// <summary>C++ <c>CTObjBase::Defend</c>'s opening <c>SetAggro</c> (TMonster.cpp:935) — a hostile hit adds hate
     /// and may flip the monster's target. Only a hostile (offensive) skill aggros; a basic attack (no template) is
     /// treated as hostile with the floor aggro of 1 (<c>max(1, GetAggro)</c>).</summary>
-    private void Aggravate(Monster mon, Character ch, SkillTemplate? atkTpl, byte level, byte canSelect,
-        uint hostId, uint attackId)
+    private void Aggravate(Monster mon, AttackerPower p, SkillTemplate? atkTpl, byte level, byte canSelect,
+        uint hostId, uint attackId, byte attackType)
     {
         if (atkTpl is { } t && !t.IsNegative) return;                         // a positive skill never aggros
         int aggro = (int)Math.Max(1u, atkTpl?.GetAggro(level) ?? 0u);         // max(1, GetAggro(level))
-        byte atkCountry = GetAttackCountry(ch.Country, ch.AidCountry);
+        byte atkCountry = GetAttackCountry(p.Country, p.AidCountry);
         uint objId = canSelect != 0 ? attackId : hostId;                      // bCanSelect ? attacker : host (TMonster.cpp:939)
-        var dec = mon.SetAggro(hostId, objId, OtPc, atkCountry, ch.Class, 0, 0, aggro, active: true);
+        byte objType = canSelect != 0 ? attackType : OtPc;                    // bCanSelect ? bAttackType : OT_PC
+        var dec = mon.SetAggro(hostId, objId, objType, atkCountry, p.Class, 0, 0, aggro, active: true);
         if (dec is { } d) ApplyRetarget(mon, d);
     }
 
@@ -63,7 +64,9 @@ public sealed partial class MapService
         mon.HostId = dec.HostId;
         mon.TargetId = dec.ObjId;
         mon.TargetType = dec.ObjType;
-        byte tc = _state.FindByChar(dec.ObjId)?.Char is { } tch ? WarCountryOf(tch) : (byte)0;
+        // The target's war country — a summon's is its owner's.
+        uint who = dec.ObjType == OtPc ? dec.ObjId : dec.HostId;
+        byte tc = _state.FindByChar(who)?.Char is { } tch ? WarCountryOf(tch) : (byte)0;
         mon.AddAggro(dec.HostId, dec.ObjId, dec.ObjType, tc, 1);              // ChgHost AddAggro(...,1)
         NotifyHost(mon);
     }

@@ -313,13 +313,13 @@ public sealed class MapGrid
     public void AddRecall(RecallMon m)
     {
         uint key = KeyOf(m.PosX, m.PosZ);
-        GetOrCreate(key).Recalls[m.Id] = m;
+        GetOrCreate(key).Recalls[m.Key] = m;
         m.CellKey = key;
     }
 
     public void RemoveRecall(RecallMon m)
     {
-        if (_cells.TryGetValue(m.CellKey, out var cell)) cell.Recalls.Remove(m.Id);
+        if (_cells.TryGetValue(m.CellKey, out var cell)) cell.Recalls.Remove(m.Key);
     }
 
     /// <summary>Re-buckets a moving summon and reports the players that start / stop seeing it.</summary>
@@ -333,8 +333,8 @@ public sealed class MapGrid
         var (ocx, ocz) = Split(oldKey);
         var (ncx, ncz) = Split(newKey);
         var old3 = NeighborsAt(ocx, ocz, self: null).ToList();
-        if (_cells.TryGetValue(oldKey, out var oldCell)) oldCell.Recalls.Remove(m.Id);
-        GetOrCreate(newKey).Recalls[m.Id] = m;
+        if (_cells.TryGetValue(oldKey, out var oldCell)) oldCell.Recalls.Remove(m.Key);
+        GetOrCreate(newKey).Recalls[m.Key] = m;
         m.CellKey = newKey;
         var new3 = NeighborsAt(ncx, ncz, self: null).ToList();
 

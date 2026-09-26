@@ -119,7 +119,7 @@ public sealed partial class MapService
         };
         mon.Hp = mon.MaxHp;                                                              // see the class remarks
         mon.Mp = mon.MaxMp;
-        foreach (var id in rec.Skills) if (_templates.Skills.ContainsKey(id)) mon.Skills.Add(id);
+        AddSummonSkills(mon, rec.Skills, rec.SkillLevel);
         if (rec.Time != 0) { mon.RecallTickMs = NowMs; mon.DurationMs = rec.Time; }
 
         ch.Recalls[mon.Id] = mon;
@@ -130,9 +130,21 @@ public sealed partial class MapService
     /// owner's current main or mine summon — one of those at a time.</summary>
     private void CheckRecallMon(ClientSession s, Character ch, MonsterTemplate tpl)
     {
-        if (tpl.RecallType is not (TrecallMain or TrecallMine or TrecallAutoAi)) return;
-        foreach (var m in ch.Recalls.Values)
-            if (m.RecallType is TrecallMain or TrecallMine) SendMW_RECALLMONDEL_ACK(ch.CharId, s.Key, m.Id);
+        if (tpl.RecallType is TrecallMain or TrecallMine or TrecallAutoAi)
+        {
+            foreach (var m in ch.Recalls.Values)
+                if (m.RecallType is TrecallMain or TrecallMine) SendMW_RECALLMONDEL_ACK(ch.CharId, s.Key, m.Id);
+            foreach (var m in ch.SelfObjs.Values.ToList())
+                if (m.RecallType == TrecallAutoAi) DeleteSelfObj(ch, m.Id);
+        }
+        else if (tpl.RecallType == TrecallMaintain)
+        {
+            // Keep at most max(GetRecallCount, 1) - 1 older ones, newest first (C++ reverse walk): with no passive
+            // bonus, casting a new one removes every existing one.
+            int cap = 1, current = 0;
+            foreach (var m in ch.SelfObjs.Values.Reverse().ToList())
+                if (m.RecallType == TrecallMaintain && cap <= ++current) DeleteSelfObj(ch, m.Id);
+        }
     }
 
     private void OnMW_RECALLMONDEL_REQ(PacketReader r)
@@ -157,6 +169,7 @@ public sealed partial class MapService
     {
         if (!ch.Recalls.TryGetValue(monId, out var mon)) return;
         if (ch.Riding == mon.Id) PetRiding(s, ch, 0);
+        SummonOnDie(mon);
         if (mon.InMap) LeaveRecall(mon, exitMap: true, forever);
         ch.Recalls.Remove(monId);
     }
@@ -169,7 +182,7 @@ public sealed partial class MapService
         uint monId = r.ReadUInt32();
         byte type = r.ReadByte();
         if (type == RecallMon.OtRecall) SendMW_RECALLMONDEL_ACK(ch.CharId, s.Key, monId);
-        // OT_SELF: self-objects are not ported.
+        else if (type == RecallMon.OtSelf) DeleteSelfObj(ch, monId);   // local: no world round trip
     }
 
     private void OnCS_CHGMODERECALLMON_REQ(ClientSession s, PacketReader r)
@@ -217,6 +230,7 @@ public sealed partial class MapService
     private void RecallsExitMap(ClientSession s, Character ch)
     {
         PetRiding(s, ch, 0);
+        ClearSelfObjs(ch);                                              // C++ ClearSelfMon(FALSE): placed objects stay behind
         foreach (var m in ch.Recalls.Values)
             if (m.InMap) LeaveRecall(m, exitMap: true, forever: false);
     }
@@ -245,6 +259,7 @@ public sealed partial class MapService
     private void ClearRecalls(ClientSession s, Character ch)
     {
         ch.Riding = 0;
+        ClearSelfObjs(ch);
         foreach (var m in ch.Recalls.Values)
             if (m.InMap) LeaveRecall(m, exitMap: true, forever: true);
         ch.Recalls.Clear();
@@ -258,6 +273,7 @@ public sealed partial class MapService
             if (ch.Riding == m.Id) PetRiding(s, ch, 0);
             SendMW_RECALLMONDEL_ACK(ch.CharId, s.Key, m.Id);
         }
+        ClearSelfObjs(ch);
     }
 
     /// <summary>C++ <c>CheckTimeRecallMon</c> (TPlayer.cpp:4193), from the map timer: a summon whose life ran out is
@@ -283,13 +299,15 @@ public sealed partial class MapService
     /// <c>CS_ADDRECALLMON_ACK</c> (C++ <c>CTCell</c> keeps them in separate maps and calls the matching sender).</summary>
     private void ShowSummon(ClientSession p, RecallMon m, bool newMember)
     {
-        if (m.IsCompanion) SendCS_ADDSPOLECNIKMON_ACK(p, m, newMember);
+        if (m.IsSelf) SendCS_ADDSELFOBJ_ACK(p, m, newMember);
+        else if (m.IsCompanion) SendCS_ADDSPOLECNIKMON_ACK(p, m, newMember);
         else SendCS_ADDRECALLMON_ACK(p, m, newMember);
     }
 
     private void HideSummon(ClientSession p, RecallMon m, bool exitMap, bool forever)
     {
-        if (m.IsCompanion) SendCS_DELSPOLECNIKMON_ACK(p, m.OwnerId, m.Id, exitMap);
+        if (m.IsSelf) SendCS_DELSELFOBJ_ACK(p, m.Id, exitMap);
+        else if (m.IsCompanion) SendCS_DELSPOLECNIKMON_ACK(p, m.OwnerId, m.Id, exitMap);
         else SendCS_DELRECALLMON_ACK(p, m.OwnerId, m.Id, exitMap, forever);
     }
 

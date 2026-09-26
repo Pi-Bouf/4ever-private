@@ -263,6 +263,9 @@ public sealed class Monster
     public IReadOnlyDictionary<long, AggroEntry> AggroTable => _aggro;
 
     /// <summary>C++ <c>FindAggro</c> (TMonster.cpp:244) — the accumulated hate an entity holds (0 if none).</summary>
+    /// <summary>The hate-table key of an (object id, object type) pair.</summary>
+    public static long AggroKey(uint id, byte type) => Key(id, type);
+
     public uint FindAggro(uint id, byte type) => _aggro.TryGetValue(Key(id, type), out var e) ? e.Aggro : 0;
 
     /// <summary>C++ <c>ResetHost</c>'s <c>m_mapAggro.clear()</c> (TMonster.cpp:2412).</summary>

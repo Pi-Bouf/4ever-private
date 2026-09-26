@@ -83,14 +83,13 @@ public sealed partial class MapService
     /// the leash naturally tightens as the target flees.</summary>
     private void ChaseTarget(Monster mon, long nowMs)
     {
-        if (mon.TargetId == 0
-            || _state.FindByChar(mon.TargetId) is not { State: EnterState.InGame, Char: { Hp: > 0 } target })
+        if (ResolveMonTarget(mon) is not { } target)   // a player or one of its summons
         {
             Disengage(mon, mon.TargetId, mon.TargetType != 0 ? mon.TargetType : OtPc, (uint)nowMs); // target gone / dead → re-pick or go home
             return;
         }
 
-        float dx = target.PosX - mon.StartX, dz = target.PosZ - mon.StartZ;
+        float dx = target.X - mon.StartX, dz = target.Z - mon.StartZ;
         float dist2 = dx * dx + dz * dz;
         // fled past the leash (C++ m_wChaseRange < GetDistance(anchor,pos); the port measures the target's distance
         // from the anchor since the monster is pinned there): drop this target, re-pick the next in-view attacker.
@@ -100,7 +99,7 @@ public sealed partial class MapService
         {
             if (nowMs >= mon.AtkNextMs)
             {
-                AttackPlayer(mon, target, nowMs);
+                AttackTarget(mon, target, nowMs);
                 mon.AtkNextMs = nowMs + (mon.AtkSpeed != 0 ? mon.AtkSpeed : DefaultAtkSpeedMs);
             }
             return;
@@ -108,7 +107,7 @@ public sealed partial class MapService
 
         if (nowMs < mon.RoamNextMs) return; // chase cadence
         foreach (var p in _state.PlayersAround(mon))
-            SendCS_MONACTION_ACK(p, mon.Id, TaFollow, target.PosX, target.PosY, target.PosZ, mon.TargetId, OtPc);
+            SendCS_MONACTION_ACK(p, mon.Id, TaFollow, target.X, target.Y, target.Z, target.Id, target.Type);
         mon.RoamNextMs = nowMs + ChaseIntervalMs;
     }
 
@@ -117,7 +116,7 @@ public sealed partial class MapService
     /// reports it with <c>CS_DEFEND_REQ</c> (attacker = the monster), which <see cref="MonsterHitsPlayer"/>
     /// resolves. Dealing it at the announce hit players at any distance — even running away — and ahead of the
     /// animation.</summary>
-    private void AttackPlayer(Monster mon, Character target, long nowMs)
+    private void AttackTarget(Monster mon, MonTarget target, long nowMs)
     {
         // C++ BeginAtk/Attack only swing when the monster has an m_pNextSkill, and announce that skill's id. A
         // monster's basic attack is one of its chart skills (there is no skill 0) — and this client dereferences
@@ -126,15 +125,15 @@ public sealed partial class MapService
         // not attack, exactly as in the C++.
         ushort skillId = SelectMonsterSkill(mon);
         if (skillId == 0) return;
-        _log.LogDebug("[mon] ATTACK mon {Mon} -> char {Char} skill {Skill} at distance {Dist:F1}.",
-            mon.Id, target.CharId, skillId,
-            MathF.Sqrt((mon.PosX - target.PosX) * (mon.PosX - target.PosX) + (mon.PosZ - target.PosZ) * (mon.PosZ - target.PosZ)));
+        _log.LogDebug("[mon] ATTACK mon {Mon} -> {Type}:{Target} skill {Skill} at distance {Dist:F1}.",
+            mon.Id, target.Type, target.Id, skillId,
+            MathF.Sqrt((mon.PosX - target.X) * (mon.PosX - target.X) + (mon.PosZ - target.Z) * (mon.PosZ - target.Z)));
 
         // CS_MONATTACK_ACK goes to the HOST alone (C++ pHOST->SendCS_MONATTACK_ACK): it is an instruction, not
         // a broadcast — the host answers with CS_SKILLUSE_REQ for the monster, whose ACK animates everyone.
         // Broadcasting it made every nearby client send that request, playing the swing once per viewer. A
         // monster with no assigned host (the script-less path) is hosted by the player it is attacking.
-        _state.FindByChar(mon.HostId != 0 ? mon.HostId : target.CharId)?.Send(BuildMonsterAttackAck(mon, target.CharId, skillId));
+        _state.FindByChar(mon.HostId != 0 ? mon.HostId : target.OwnerId)?.Send(BuildMonsterAttackAck(mon, target.Id, target.Type, skillId));
     }
 
     /// <summary>The landed half of a monster swing: C++ <c>OnCS_DEFEND_REQ</c> with <c>bAttackType == OT_MON</c>
@@ -174,7 +173,7 @@ public sealed partial class MapService
             : target.Hp == 0 ? HtLastHit
             : shieldDp != 0 ? HtBlock
             : hitType;
-        var hitAck = BuildMonsterHitAck(mon, target, dmg, atkHit, landed: hitType != HtMiss, skillId, skillLevel,
+        var hitAck = BuildMonsterHitAck(mon, target.CharId, OtPc, dmg, atkHit, landed: hitType != HtMiss, skillId, skillLevel,
             hostId, actId, aniId, atkX, atkY, atkZ, defX, defY, defZ, e);
         // C++ Defend: CS_HPMP_ACK only when the hit changed something (bHPMP), with MP shown as 0 on a kill.
         bool hpmp = target.Hp != hpBefore;
@@ -220,28 +219,28 @@ public sealed partial class MapService
     }
 
     /// <summary>C++ <c>SendCS_MONATTACK_ACK</c> (CSSender.cpp:1208) — the monster's swing announce.</summary>
-    private static byte[] BuildMonsterAttackAck(Monster mon, uint targetId, ushort skillId)
+    private static byte[] BuildMonsterAttackAck(Monster mon, uint targetId, byte targetType, ushort skillId)
     {
         var w = new PacketWriter(Msg.CS_MONATTACK_ACK, capacity: 16);
         w.WriteUInt32(mon.Id);       // dwAttackID
         w.WriteUInt32(targetId);     // dwTargetID
         w.WriteByte(Monster.OtMon);  // bAttackType
-        w.WriteByte(OtPc);           // bTargetType
+        w.WriteByte(targetType);     // bTargetType — a player, or one of its summons
         w.WriteUInt16(skillId);      // wSkillID — must exist in the client's skill chart
         return w.ToArray();
     }
 
     /// <summary>The hit result for a monster→player attack — the same <c>CS_DEFEND_ACK</c> layout as the
     /// player→monster path, with the monster as attacker and the player as target.</summary>
-    private static byte[] BuildMonsterHitAck(Monster mon, Character target, uint dmg, byte atkHit, bool landed, ushort skillId,
+    private static byte[] BuildMonsterHitAck(Monster mon, uint targetId, byte targetType, uint dmg, byte atkHit, bool landed, ushort skillId,
         byte skillLevel, uint hostId, uint actId, uint aniId,
         float atkX, float atkY, float atkZ, float defX, float defY, float defZ, MonsterHitEcho echo)
     {
         var w = new PacketWriter(Msg.CS_DEFEND_ACK, capacity: 96);
         w.WriteUInt32(mon.Id);        // dwAttackID
-        w.WriteUInt32(target.CharId); // dwTargetID
+        w.WriteUInt32(targetId);      // dwTargetID
         w.WriteByte(Monster.OtMon);   // bAttackType
-        w.WriteByte(OtPc);            // bTargetType
+        w.WriteByte(targetType);      // bTargetType
         w.WriteUInt32(hostId);        // dwHostID — the client that reported the hit (C++ dwHostID = pPlayer->m_dwID)
         w.WriteByte(OtPc);            // bHostType (C++ Defend passes OT_PC)
         w.WriteUInt32(actId);         // dwActID — echoed from the request

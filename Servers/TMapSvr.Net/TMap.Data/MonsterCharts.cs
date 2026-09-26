@@ -69,7 +69,11 @@ public sealed record MonAttrRow(ushort Id, byte Level, uint MaxHp, uint MaxMp, u
     uint AtkMin = 0, uint AtkMax = 0, uint AtkSpeed = 0,
     // Combat quality: as the DEFENDER — magic defence (wMDP) + the defend levels (wDL/wMDL) that
     // feed the attacker's hit-rate roll; as the ATTACKER — its own attack level (wAL) + crit prob (bCriticalPP).
-    uint MagicDefPower = 0, ushort DefendLevel = 0, ushort MagicDefLevel = 0, byte CritProb = 0, ushort AttackLevel = 0);
+    uint MagicDefPower = 0, ushort DefendLevel = 0, ushort MagicDefLevel = 0, byte CritProb = 0, ushort AttackLevel = 0,
+    // The raw parts a summon's getters combine (C++ CTRecallMon::GetMinAP… add the owner's item ability on top):
+    // wAP / wLAP / wMAP, the weapon band wMinWAP / wMaxWAP, wMAL, bCriticalMP, and the defence parts wDP / wMDP / wWDP.
+    ushort Ap = 0, ushort LongAp = 0, ushort MagicAp = 0, ushort MinWap = 0, ushort MaxWap = 0, ushort MagicAtkLevel = 0,
+    byte CritMagicProb = 0, ushort RawDp = 0, ushort RawMdp = 0, ushort Wdp = 0);
 
 /// <summary>
 /// A spawn-point definition from <c>TMONSPAWNCHART</c> (C++ <c>CTBLMonSpawn</c> → <c>tagTMONSPAWN</c>). The

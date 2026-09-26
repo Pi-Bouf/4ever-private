@@ -172,7 +172,8 @@ public sealed partial class GameDatabase
         @"SELECT wMonID, bChartType, wItemID, wWeight, bItemProb_N1, bItemProb_N2, bItemProb_N3, bItemProb_N4
                  FROM TMONITEMCHART ORDER BY wMonID";
     private const string MonAttrChartSql =
-        @"SELECT wID, bLevel, dwMaxHP, dwMaxMP, wDP, wAP, wMinWAP, wMaxWAP, dwAtkSpeed, wMDP, wDL, wMDL, bCriticalPP, wAL, wWDP FROM TMONATTRCHART";
+        @"SELECT wID, bLevel, dwMaxHP, dwMaxMP, wDP, wAP, wMinWAP, wMaxWAP, dwAtkSpeed, wMDP, wDL, wMDL, bCriticalPP, wAL, wWDP,
+                 wLAP, wMAP, wMAL, bCriticalMP FROM TMONATTRCHART";
     private const string MonSpawnChartSql =
         @"SELECT wID, wMapID, fPosX, fPosY, fPosZ, wDir, bCountry, bCount, bRange, bProb, dwRegion, dwDelay, bEvent, bArea FROM TMONSPAWNCHART";
     private const string MapMonChartSql = @"SELECT wSpawnID, wMonID, bLeader, bEssential, bProb FROM TMAPMONCHART ORDER BY wSpawnID";
@@ -198,7 +199,7 @@ public sealed partial class GameDatabase
         @"SELECT wID, bKind, dwUseMP, bUseMPType, dwUseHP, bUseHPType, bLevel, bMaxLevel, bNextLevel,
                  dwReuseDelay, nReuseDelayInc, dwLoopDelay, dwKindDelay, bSpeedApply, bPositive, wMapID,
                  dwDuration, dwDurationInc, bMaintainType, bPriority, bStatic, dwClassID, bGlobal,
-                 bIsRide, bIsHideSkill, bIsDismount, bEraseAct FROM TSKILLCHART";
+                 bIsRide, bIsHideSkill, bIsDismount, bEraseAct, bTargetRange FROM TSKILLCHART";
     // The skill-effect rows (CTBLSkillData → CTSkillTemp::m_vData). C++ runs one query per skill;
     // this bulk load buckets by wSkillID (natural table order per skill matches the per-skill fetch order).
     private const string SkillDataChartSql =
@@ -369,7 +370,7 @@ public sealed partial class GameDatabase
                     Priority: r.GetByteSafe(19), StaticFlag: r.GetByteSafe(20), ClassId: r.GetUIntSafe(21),
                     Rate1stX: store.Rate1st, Global: r.GetByteSafe(22) != 0,
                     IsRide: r.GetByteSafe(23) != 0, IsHideSkill: r.GetByteSafe(24) != 0,
-                    IsDismount: r.GetByteSafe(25) != 0, EraseAct: r.GetByteSafe(26));
+                    IsDismount: r.GetByteSafe(25) != 0, EraseAct: r.GetByteSafe(26), TargetRange: r.GetByteSafe(27));
             }
 
         await using (var cmd = new SqlCommand(SkillDataChartSql, c))
@@ -470,7 +471,10 @@ public sealed partial class GameDatabase
                     new MonAttrRow(id, level, r.GetUIntSafe(2), r.GetUIntSafe(3), r.GetUShortSafe(4) + wWdp,
                         AtkMin: ap + minWap, AtkMax: ap + maxWap, AtkSpeed: r.GetUIntSafe(8), // C++ GetMin/MaxAP
                         MagicDefPower: r.GetUShortSafe(9) + wWdp, DefendLevel: r.GetUShortSafe(10),
-                        MagicDefLevel: r.GetUShortSafe(11), CritProb: r.GetByteSafe(12), AttackLevel: r.GetUShortSafe(13));
+                        MagicDefLevel: r.GetUShortSafe(11), CritProb: r.GetByteSafe(12), AttackLevel: r.GetUShortSafe(13),
+                        Ap: (ushort)ap, LongAp: r.GetUShortSafe(15), MagicAp: r.GetUShortSafe(16), MinWap: (ushort)minWap,
+                        MaxWap: (ushort)maxWap, MagicAtkLevel: r.GetUShortSafe(17), CritMagicProb: r.GetByteSafe(18),
+                        RawDp: r.GetUShortSafe(4), RawMdp: r.GetUShortSafe(9), Wdp: (ushort)wWdp);
             }
 
         // The per-monster item drop rows, bucketed onto their monster template by wMonID.

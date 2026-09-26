@@ -143,13 +143,13 @@ public sealed class MapState
 
     // ---- summons (C++ CTCell::m_mapRECALLMON; ids come from the world, apart from field-monster ids) ----
 
-    private readonly Dictionary<uint, RecallMon> _recalls = new();
+    private readonly Dictionary<ulong, RecallMon> _recalls = new();   // keyed by (object type, id): self-object ids are map-local
 
     /// <summary>Places a summon on its (channel, map) grid and in the registry (C++ <c>CTMap::EnterMAP(recall)</c>).</summary>
     public void AddRecall(RecallMon m)
     {
         GridFor(m.Channel, m.MapId).AddRecall(m);
-        _recalls[m.Id] = m;
+        _recalls[m.Key] = m;
         m.InMap = true;
     }
 
@@ -157,17 +157,21 @@ public sealed class MapState
     public void RemoveRecall(RecallMon m)
     {
         if (_grids.TryGetValue((m.Channel, m.MapId), out var g)) g.RemoveRecall(m);
-        if (_recalls.TryGetValue(m.Id, out var cur) && ReferenceEquals(cur, m)) _recalls.Remove(m.Id);
+        if (_recalls.TryGetValue(m.Key, out var cur) && ReferenceEquals(cur, m)) _recalls.Remove(m.Key);
         m.InMap = false;
     }
 
     public CellDiff MoveRecall(RecallMon m, float x, float z) =>
         _grids.TryGetValue((m.Channel, m.MapId), out var g) ? g.MoveRecall(m, x, z) : CellDiff.None;
 
-    public RecallMon? FindRecall(uint id) => _recalls.GetValueOrDefault(id);
+    public RecallMon? FindRecall(byte objType, uint id) => _recalls.GetValueOrDefault(((ulong)objType << 32) | id);
 
     public IEnumerable<RecallMon> RecallsInView(ClientSession s) =>
         s.Grid?.RecallsInView(s.CellKey) ?? Enumerable.Empty<RecallMon>();
+
+    /// <summary>Monsters in a summon's 3×3 view block.</summary>
+    public IEnumerable<Monster> MonstersAround(RecallMon m) =>
+        _grids.TryGetValue((m.Channel, m.MapId), out var g) ? g.MonstersInView(m.CellKey) : Enumerable.Empty<Monster>();
 
     /// <summary>Players in a summon's 3×3 view block.</summary>
     public IEnumerable<ClientSession> PlayersAround(RecallMon m) =>

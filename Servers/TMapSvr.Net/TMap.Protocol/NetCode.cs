@@ -266,6 +266,8 @@ public static class Msg
     public const ushort CS_ADDRECALLMON_ACK = CS_MAP + 0x00D9;
     public const ushort CS_DELRECALLMON_ACK = CS_MAP + 0x00DA;
     public const ushort CS_DELRECALLMON_REQ = CS_MAP + 0x00E1;      // dwMonID · bType
+    public const ushort CS_ADDSELFOBJ_ACK = CS_MAP + 0x00F4;        // a placed object (C++ CTSelfObj) comes into view
+    public const ushort CS_DELSELFOBJ_ACK = CS_MAP + 0x00F5;        // dwObjID · bExitMap
     public const ushort CS_CHGMODERECALLMON_REQ = CS_MAP + 0x00E2;  // dwMonID · bMode
     public const ushort MW_CREATERECALLMON_REQ = MW_BASE + 0x00B8;
     public const ushort MW_CREATERECALLMON_ACK = MW_BASE + 0x00B9;

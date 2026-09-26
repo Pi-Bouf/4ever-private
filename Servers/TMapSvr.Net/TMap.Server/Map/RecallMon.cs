@@ -12,6 +12,7 @@ public sealed class RecallMon
 {
     public const byte OtRecall = 7;                  // OBJ_TYPE OT_RECALL
     public const byte OtCompanion = 18;              // OBJ_TYPE OT_COMPANION
+    public const byte OtSelf = 11;                   // OBJ_TYPE OT_SELF — a placed object (C++ CTSelfObj)
     public const byte TypePet = 7;                   // TRECALL_TYPE TRECALLTYPE_PET
 
     public uint Id { get; set; }
@@ -20,6 +21,19 @@ public sealed class RecallMon
     /// the same object, shown with its own packets and kept in its owner's companion list.</summary>
     public byte ObjType { get; set; } = OtRecall;
     public bool IsCompanion => ObjType == OtCompanion;
+    public bool IsSelf => ObjType == OtSelf;
+
+    /// <summary>The registry / cell key — (object type, id), since a self-object id is map-local and may equal a
+    /// world-allocated summon id.</summary>
+    public ulong Key => ((ulong)ObjType << 32) | Id;
+
+    /// <summary>C++ <c>CTSelfObj</c>'s power snapshot (<c>m_dwPysMinPower</c>… <c>m_wAtkAL</c>): the caster's attack
+    /// power when it was placed. Only shown in <c>CS_ADDSELFOBJ_ACK</c> — its hits use the summon getters.</summary>
+    public uint SnapPysMin { get; set; }
+    public uint SnapPysMax { get; set; }
+    public uint SnapMgMin { get; set; }
+    public uint SnapMgMax { get; set; }
+    public ushort SnapAttackLevel { get; set; }
     public uint OwnerId { get; set; }                // m_dwHostID — the owning player's char id
     public ushort ChartId { get; set; }              // m_pMON->m_wID
     public MonsterTemplate? Template { get; set; }
@@ -63,7 +77,8 @@ public sealed class RecallMon
     public long RecallTickMs { get; set; }
     public uint DurationMs { get; set; }
 
-    public List<ushort> Skills { get; } = new();
+    /// <summary>The summon's skills at <c>min(bSkillLevel, maxLevel)</c>, each with its own cooldown (C++ <c>m_mapTSKILL</c>).</summary>
+    public List<Skill> Skills { get; } = new();
     public List<MaintainSkill> MaintainSkills { get; } = new();
 
     public uint CellKey { get; set; }

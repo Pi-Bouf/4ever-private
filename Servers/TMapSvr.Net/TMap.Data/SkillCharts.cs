@@ -38,7 +38,9 @@ public sealed record SkillTemplate(
     // Riding (C++ m_bIsRide / m_bIsHideSkill / m_bIsDismount / m_bEraseAct): a buff that blocks calling or mounting a
     // pet (unless it is a hide skill), a hit that throws the target off its mount, and the actions that end a buff
     // (BUFFERASEACTION_TYPE — EraseBuffByRide tests m_bEraseAct & BEA_RIDE, BEA_RIDE = 3).
-    bool IsRide = false, bool IsHideSkill = false, bool IsDismount = false, byte EraseAct = 0)
+    bool IsRide = false, bool IsHideSkill = false, bool IsDismount = false, byte EraseAct = 0,
+    // m_bTargetRange (TSKILLRANGE_TYPE): TSKILLRANGE_POINT = 1 places a summon on the ground point the client picked.
+    byte TargetRange = 0)
 {
     /// <summary>C++ <c>CTSkillTemp::GetAggro</c> (TSkillTemp.cpp:448) — the hate a hostile cast adds to a
     /// monster at <paramref name="level"/>: <c>m_dwAggro·pow(m_f1stRateX, exp)/100</c> (<c>exp = 0</c> at
@@ -48,6 +50,21 @@ public sealed record SkillTemplate(
     /// <para><b>Deferred:</b> the <c>dwAggro</c> chart column isn't loaded (see PORT_STATUS.md), so live
     /// magnitude collapses to <c>max(1,0)=1</c> per hit until it is — the retarget <i>mechanics</i> are exact;
     /// tests set <see cref="Aggro"/> directly to exercise the magnitude formula.</para></summary>
+    /// <summary>C++ <c>CTSkillTemp::GetValue</c> (TSkillTemp.cpp:62) — a data row's value at a skill level, by its
+    /// <c>m_bCalc</c> mode (flat / +inc per level / rate power / −inc per level). A summon skill's row names the
+    /// monster it summons this way.</summary>
+    public int GetValue(SkillDataRow d, byte level) => d.Calc switch
+    {
+        0 => d.Value,
+        1 => d.Value + (level - 1) * d.ValueInc,
+        2 => (int)(d.Value * Math.Pow(Rate1stX, level == 0 ? 0 : StartLevel + (level - 1) * NextLevel) / 100),
+        3 => d.Value - (level - 1) * d.ValueInc,
+        _ => 0,
+    };
+
+    /// <summary>C++ <c>CTSkill::GetMaintainTick</c> (TSkill.cpp:147) — <c>duration + durationInc·(level-1)</c>.</summary>
+    public uint MaintainTick(byte level) => Duration + DurationInc * (uint)(level - 1);
+
     public uint GetAggro(byte level)
     {
         if (Aggro == 0) return 0;
