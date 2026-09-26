@@ -30,6 +30,10 @@ public sealed class Npc
     /// NPC's <c>TNPCITEMCHART</c> ids resolved against the loaded item chart.</summary>
     public Dictionary<ushort, ItemTemplate> Items { get; } = new();
 
+    /// <summary>C++ <c>m_mapSkill</c> — for a skill trainer (<c>TNPC_SKILL_MASTER</c>/<c>TNPC_SKILL_RENT</c>), the skills
+    /// it teaches: its <c>TNPCITEMCHART</c> ids resolved against the skill chart.</summary>
+    public Dictionary<ushort, SkillTemplate> Skills { get; } = new();
+
     /// <summary>C++ <c>m_wSpawnPosID</c> — for a <c>TNPC_RETURN</c> NPC, the spawn point it sets as the player's
     /// return point (its <c>TNPCITEMCHART</c> id; the last row wins, as in the C++ load loop, TMapSvr.cpp:3869).</summary>
     public ushort SpawnPosId { get; set; }

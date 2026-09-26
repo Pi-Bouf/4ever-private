@@ -24,6 +24,9 @@ public sealed record SkillDataRow(byte Action, byte Type, byte Attr, byte Exec, 
 /// "level" field), and <see cref="Rate1stX"/> is <b>not</b> a chart column — the C++ stamps every template
 /// with the global <c>f1stRateX = TFORMULACHART[FTYPE_1ST].fRateX</c> at load (TMapSvr.cpp:2596-2655),
 /// which is exactly the value the stat engine caches as <c>TemplateStore.Rate1st</c>.</remarks>
+/// <summary>One <c>TSKILLPOINTCHART</c> row (C++ <c>TSKILLPOINT</c>): what one level of a skill costs to learn.</summary>
+public readonly record struct SkillPointRow(byte SkillPoint, byte GroupPoint, byte ParentLevel, uint Payback);
+
 public sealed record SkillTemplate(
     ushort Id, byte Kind,
     uint UseMp, byte UseMpType, uint UseHp, byte UseHpType,
@@ -40,8 +43,29 @@ public sealed record SkillTemplate(
     // (BUFFERASEACTION_TYPE — EraseBuffByRide tests m_bEraseAct & BEA_RIDE, BEA_RIDE = 3).
     bool IsRide = false, bool IsHideSkill = false, bool IsDismount = false, byte EraseAct = 0,
     // m_bTargetRange (TSKILLRANGE_TYPE): TSKILLRANGE_POINT = 1 places a summon on the ground point the client picked.
-    byte TargetRange = 0)
+    byte TargetRange = 0,
+    // Learning (CS_SKILLBUY): m_fPrice scales the level chart's dwMoney into the price; m_wParentSkillID is the skill
+    // that must be known first (its level checked against TSKILLPOINTCHART.bPrevSkillLevel).
+    float Price = 0f, ushort ParentSkillId = 0)
 {
+    /// <summary>The per-level learning costs (C++ <c>m_mapTSkillPoint</c>, loaded from <c>TSKILLPOINTCHART</c>).</summary>
+    public Dictionary<byte, SkillPointRow> Points { get; } = new();
+
+    /// <summary>C++ <c>CTSkillTemp::GetNeedSkillPoint</c> (TSkillTemp.cpp:405) — skill points to reach <paramref name="level"/>.</summary>
+    public byte GetNeedSkillPoint(byte level) => Points.TryGetValue(level, out var p) ? p.SkillPoint : (byte)0;
+
+    /// <summary>C++ <c>CTSkillTemp::GetNeedKindPoint</c> (TSkillTemp.cpp:414) — points already spent in the skill's kind
+    /// (its skill-window tab) needed to learn <paramref name="level"/>.</summary>
+    public byte GetNeedKindPoint(byte level) => Points.TryGetValue(level, out var p) ? p.GroupPoint : (byte)0;
+
+    /// <summary>C++ <c>CTSkillTemp::CheckParentSkill</c> (TSkillTemp.cpp:423) — the parent skill is high enough to learn
+    /// <paramref name="learnLevel"/>.</summary>
+    public bool CheckParentSkill(byte learnLevel, byte parentLevel)
+        => Points.TryGetValue(learnLevel, out var p) && p.ParentLevel <= parentLevel;
+
+    /// <summary>C++ <c>CTSkillTemp::GetPrice</c> (TSkillTemp.cpp:400) — <c>DWORD(dwMoney · m_fPrice)</c>.</summary>
+    public uint GetPrice(uint money) => (uint)(money * Price);
+
     /// <summary>C++ <c>CTSkillTemp::GetAggro</c> (TSkillTemp.cpp:448) — the hate a hostile cast adds to a
     /// monster at <paramref name="level"/>: <c>m_dwAggro·pow(m_f1stRateX, exp)/100</c> (<c>exp = 0</c> at
     /// level 0, else <c>m_bStartLevel + (level-1)·m_bNextLevel</c>), truncated to DWORD <b>before</b> the

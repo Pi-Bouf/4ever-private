@@ -277,6 +277,11 @@ public sealed partial class MapService
         return a;
     }
 
+    /// <summary>The skills to save (C++ <c>SendDM_SAVECHAR_REQ</c>'s skill loop: every held skill, its remaining reuse
+    /// time). Batch-thread; the result is an immutable snapshot.</summary>
+    public static List<SkillSaveRow> BuildSkillSaves(Character ch, uint nowMs)
+        => ch.Skills.OrderBy(k => k.SkillId).Select(k => new SkillSaveRow(k.SkillId, k.Level, k.GetReuseRemainTick(nowMs))).ToList();
+
     /// <summary>The periodic-save tick (C++ per-player <c>OnTimer</c> 30-min flush). Saves every due session.</summary>
     public void RunPeriodicSaves(uint nowMs)
     {
@@ -297,7 +302,8 @@ public sealed partial class MapService
         var hotkeys = BuildHotkeySaves(ch);
         var pets = PetSnapshot(ch);
         var comps = (CompanionSnapshot(ch), ch.CompanionSlot, ch.Medals);
-        _ = EnqueueDbWrite(() => FlushSaveAsync(ch.CharId, charData, quests, inventory, hotkeys, pets, comps));   // snapshot is immutable
+        var skills = BuildSkillSaves(ch, NowMs);
+        _ = EnqueueDbWrite(() => FlushSaveAsync(ch.CharId, charData, quests, inventory, hotkeys, pets, comps, skills));   // snapshot is immutable
     }
 
     /// <summary>The off-thread write (never throws unobserved — errors are logged and swallowed). The inventory
@@ -305,10 +311,12 @@ public sealed partial class MapService
     /// item state, never a destructive empty rewrite.</summary>
     private async Task FlushSaveAsync(uint charId, CharSaveData charData, IReadOnlyList<QuestSaveRow> quests,
         (List<InvenSaveData> invens, List<ItemSaveData> items)? inventory, IReadOnlyList<HotkeySaveRow> hotkeys,
-        IReadOnlyList<PetRow>? pets = null, (List<CompanionRow> Rows, byte Slot, uint Medals)? comps = null)
+        IReadOnlyList<PetRow>? pets = null, (List<CompanionRow> Rows, byte Slot, uint Medals)? comps = null,
+        IReadOnlyList<SkillSaveRow>? skills = null)
     {
         try
         {
+            if (skills is not null) await _gameDb!.SaveSkillsAsync(charId, skills);
             await _gameDb!.SaveCharAsync(charData);
             await _gameDb.SaveQuestsAsync(charId, quests);
             if (inventory is { } inv) await _gameDb.SaveInventoryAsync(charId, inv.invens, inv.items);
@@ -336,7 +344,8 @@ public sealed partial class MapService
             var hotkeys = BuildHotkeySaves(ch);
             var pets = PetSnapshot(ch);
             var comps = (CompanionSnapshot(ch), ch.CompanionSlot, ch.Medals);
-            await EnqueueDbWrite(() => FlushSaveAsync(ch.CharId, charData, quests, inventory, hotkeys, pets, comps));
+            var skills = BuildSkillSaves(ch, NowMs);
+            await EnqueueDbWrite(() => FlushSaveAsync(ch.CharId, charData, quests, inventory, hotkeys, pets, comps, skills));
         }
     }
 }

@@ -58,9 +58,8 @@ public sealed partial class MapService
         w.WriteUInt32(ch.Gold);
         w.WriteUInt32(ch.Silver);
         w.WriteUInt32(ch.Cooper);
-        w.WriteUInt16(0);                       // m_wSkillPoint (SP currency unported — CHARINFO also emits 0)
-        w.WriteUInt16(0); w.WriteUInt16(0);     // arPoint[0..3] — the per-kind invested-SP summary (unported)
-        w.WriteUInt16(0); w.WriteUInt16(0);
+        w.WriteUInt16((ushort)ch.SkillPoint);   // m_wSkillPoint
+        foreach (var k in SkillKindPoints(ch)) w.WriteUInt16(k);   // arPoint[0..3] — points spent per skill tab
         s.Send(w);
     }
 }

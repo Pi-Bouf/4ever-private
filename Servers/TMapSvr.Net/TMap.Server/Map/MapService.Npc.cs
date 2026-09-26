@@ -45,6 +45,9 @@ public sealed partial class MapService
             if (def.Type is TnpcItem or TnpcPvPoint)
                 foreach (var itemId in def.ItemIds)
                     if (_templates.Item(itemId) is { } t) npc.Items[itemId] = t;
+            if (def.Type is TnpcSkillMaster or TnpcSkillRent)
+                foreach (var skillId in def.ItemIds)
+                    if (_templates.Skills.TryGetValue(skillId, out var st)) npc.Skills[skillId] = st;
             if (def.Type == TnpcReturn)
                 foreach (var spawnPos in def.ItemIds) npc.SpawnPosId = spawnPos;
             if (def.Type == TnpcPortal)

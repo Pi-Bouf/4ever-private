@@ -436,13 +436,10 @@ public sealed partial class MapService
         w.WriteFloat(ch.PosY);
         w.WriteFloat(ch.PosZ);
         w.WriteUInt16(ch.Dir);
-        w.WriteUInt16(0);            // wSkillPoint (my)
+        w.WriteUInt16((ushort)ch.SkillPoint);   // wSkillPoint (my)
         w.WriteByte(0);              // bLuckyNumber
         w.WriteUInt32(0);            // aid left time
-        w.WriteUInt16(0);            // skill kind point 1
-        w.WriteUInt16(0);            // skill kind point 2
-        w.WriteUInt16(0);            // skill kind point 3
-        w.WriteUInt16(0);            // skill kind point 4
+        foreach (var k in SkillKindPoints(ch)) w.WriteUInt16(k);   // skill kind points 1-4 (GetSkillKindPoint)
         w.WriteUInt32(0);            // dwRankPoint
         w.WriteByte(0);              // non-BOW build flag (FALSE)
 

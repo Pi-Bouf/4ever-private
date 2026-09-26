@@ -61,6 +61,9 @@ public readonly record struct ItemSaveData(
     byte GLevel, uint DuraMax, uint DuraCur, byte RefineCur, long EndTime, byte GradeEffect,
     byte[] Magic, ushort[] Value, uint[] Ext, byte Gem, ushort MoggItemId);
 
+/// <summary>A skill to save (C++ <c>TSaveSkill</c>: <c>wSkill · bLevel · dwTick</c>).</summary>
+public readonly record struct SkillSaveRow(ushort SkillId, byte Level, uint RemainTick);
+
 /// <summary>A learned skill row from <c>TSKILLTABLE</c> (CTBLSkill).</summary>
 public readonly record struct SkillLoadRow(ushort SkillId, byte Level, uint RemainTick);
 
@@ -199,7 +202,10 @@ public sealed partial class GameDatabase
         @"SELECT wID, bKind, dwUseMP, bUseMPType, dwUseHP, bUseHPType, bLevel, bMaxLevel, bNextLevel,
                  dwReuseDelay, nReuseDelayInc, dwLoopDelay, dwKindDelay, bSpeedApply, bPositive, wMapID,
                  dwDuration, dwDurationInc, bMaintainType, bPriority, bStatic, dwClassID, bGlobal,
-                 bIsRide, bIsHideSkill, bIsDismount, bEraseAct, bTargetRange FROM TSKILLCHART";
+                 bIsRide, bIsHideSkill, bIsDismount, bEraseAct, bTargetRange, fPrice, wParentSkillID FROM TSKILLCHART";
+    // The learning costs per skill level (CTBLSkillPoint → CTSkillTemp::m_mapTSkillPoint).
+    private const string SkillPointChartSql =
+        @"SELECT wID, bLevel, bSkillPoint, bGroupPoint, bPrevSkillLevel, dwPayback FROM TSKILLPOINTCHART";
     // The skill-effect rows (CTBLSkillData → CTSkillTemp::m_vData). C++ runs one query per skill;
     // this bulk load buckets by wSkillID (natural table order per skill matches the per-skill fetch order).
     private const string SkillDataChartSql =
@@ -370,8 +376,15 @@ public sealed partial class GameDatabase
                     Priority: r.GetByteSafe(19), StaticFlag: r.GetByteSafe(20), ClassId: r.GetUIntSafe(21),
                     Rate1stX: store.Rate1st, Global: r.GetByteSafe(22) != 0,
                     IsRide: r.GetByteSafe(23) != 0, IsHideSkill: r.GetByteSafe(24) != 0,
-                    IsDismount: r.GetByteSafe(25) != 0, EraseAct: r.GetByteSafe(26), TargetRange: r.GetByteSafe(27));
+                    IsDismount: r.GetByteSafe(25) != 0, EraseAct: r.GetByteSafe(26), TargetRange: r.GetByteSafe(27),
+                    Price: r.IsDBNull(28) ? 0f : Convert.ToSingle(r.GetValue(28)), ParentSkillId: r.GetUShortSafe(29));
             }
+
+        await using (var cmd = new SqlCommand(SkillPointChartSql, c))
+        await using (var r = await cmd.ExecuteReaderAsync(ct))
+            while (await r.ReadAsync(ct))
+                if (store.Skills.TryGetValue(r.GetUShortSafe(0), out var sk))
+                    sk.Points[r.GetByteSafe(1)] = new SkillPointRow(r.GetByteSafe(2), r.GetByteSafe(3), r.GetByteSafe(4), r.GetUIntSafe(5));
 
         await using (var cmd = new SqlCommand(SkillDataChartSql, c))
         await using (var r = await cmd.ExecuteReaderAsync(ct))
@@ -723,6 +736,33 @@ FROM TCHARTABLE WHERE dwCharID = @dwCharID AND bDelete = 0";
             }
         }
         catch (SqlException ex) when (ex.Number == 2812) { /* proc absent — tolerate */ }
+    }
+
+    /// <summary>The character's skills — C++ <c>OnDM_SAVECHAR_REQ</c> writes each one (<c>TSaveSkill</c>, into
+    /// <c>TTEMPSKILLTABLE</c>) and <c>TLogout</c> then replaces the character's <c>TSKILLTABLE</c> rows with them (this
+    /// baseline's <c>TSaveCharDataEnd</c> has that copy commented out). The same end state, in one transaction: the rows
+    /// deleted and every held skill — level 0 included — written back with its remaining reuse time.</summary>
+    public async Task SaveSkillsAsync(uint charId, IReadOnlyList<SkillSaveRow> skills, CancellationToken ct = default)
+    {
+        await using var c = await OpenAsync(ct);
+        await using var tx = (SqlTransaction)await c.BeginTransactionAsync(ct);
+        int cid = unchecked((int)charId);
+        await using (var del = new SqlCommand("DELETE FROM TSKILLTABLE WHERE dwCharID = @c", c, tx))
+        {
+            del.Parameters.Add(SqlProc.In("@c", SqlDbType.Int, cid));
+            await del.ExecuteNonQueryAsync(ct);
+        }
+        foreach (var k in skills)
+        {
+            await using var ins = new SqlCommand(
+                "INSERT INTO TSKILLTABLE (dwCharID, wSkillID, bLevel, dwRemainTick) VALUES (@c, @s, @l, @t)", c, tx);
+            ins.Parameters.Add(SqlProc.In("@c", SqlDbType.Int, cid));
+            ins.Parameters.Add(SqlProc.In("@s", SqlDbType.SmallInt, unchecked((short)k.SkillId)));
+            ins.Parameters.Add(SqlProc.In("@l", SqlDbType.TinyInt, k.Level));
+            ins.Parameters.Add(SqlProc.In("@t", SqlDbType.Int, unchecked((int)k.RemainTick)));
+            await ins.ExecuteNonQueryAsync(ct);
+        }
+        await tx.CommitAsync(ct);
     }
 
     public async Task SaveQuestsAsync(uint charId, IReadOnlyList<QuestSaveRow> quests, CancellationToken ct = default)

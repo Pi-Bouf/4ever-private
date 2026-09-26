@@ -172,6 +172,10 @@ public sealed partial class MapService
                 case Msg.CS_DEFEND_REQ: OnCS_DEFEND_REQ(session, r); break;
                 case Msg.CS_SKILLUSE_REQ: OnCS_SKILLUSE_REQ(session, r); break;
                 case Msg.CS_SKILLEND_REQ: OnCS_SKILLEND_REQ(session, r); break;
+                case Msg.CS_SKILLBUY_REQ: OnCS_SKILLBUY_REQ(session, r); break;
+                case Msg.CS_NPCITEMLIST_REQ: OnCS_NPCITEMLIST_REQ(session, r); break;
+                case Msg.CS_SKILLINIT_REQ: OnCS_SKILLINIT_REQ(session, r); break;
+                case Msg.CS_SKILLINITPOSSIBLE_REQ: OnCS_SKILLINITPOSSIBLE_REQ(session, r); break;
                 case Msg.CS_SWITCHCHANGE_REQ: OnCS_SWITCHCHANGE_REQ(session, r); break;
                 case Msg.CS_MONITEMLIST_REQ: OnCS_MONITEMLIST_REQ(session, r); break;
                 case Msg.CS_MONMONEYTAKE_REQ: OnCS_MONMONEYTAKE_REQ(session, r); break;

@@ -62,7 +62,13 @@ public static class Msg
     public const ushort CS_DIE_ACK = CS_MAP + 0x0025;      // a target died (dwID + bType)
     public const ushort CS_REVIVAL_REQ = CS_MAP + 0x0026;  // a dead player revives: fPos + bType (REVIVAL_TYPE)
     public const ushort CS_REVIVAL_ACK = CS_MAP + 0x0027;  // dwCharID + revival position (broadcast)
-    public const ushort CS_SKILLBUY_REQ = CS_MAP + 0x0032; // learn/level-up a skill from an NPC — REQ handler deferred (SP/price/teach-list unported)
+    public const ushort CS_SKILLBUY_REQ = CS_MAP + 0x0032; // learn/level-up a skill from an NPC (the skill window asks TDEF_SKILL_NPC 22047)
+    public const ushort CS_NPCITEMLIST_REQ = CS_MAP + 0x0082; // an NPC's list (wNpcID) — the skill trainers' list is ported
+    public const ushort CS_SKILLINIT_REQ = CS_MAP + 0x0189;   // reset scroll: wSkillID, bInvenID, bItemID
+    public const ushort CS_SKILLINIT_ACK = CS_MAP + 0x018A;   // bResult, wSkillID
+    public const ushort CS_SKILLLIST_ACK = CS_MAP + 0x018B;   // wSkillPoint, kind[4], bCount, {wSkillID, bLevel, dwTick}
+    public const ushort CS_SKILLINITPOSSIBLE_REQ = CS_MAP + 0x018C; // bInvenID, bItemID
+    public const ushort CS_SKILLINITPOSSIBLE_ACK = CS_MAP + 0x018D; // bCount, {wSkillID}
     public const ushort CS_SKILLBUY_ACK = CS_MAP + 0x0033; // a skill was learned/leveled: bRet,wSkillID,bLevel,Tick,gold,silver,copper,skillPoint,kind[4]
     // Every ordinary player attack in this build. Despite the _ACK suffix it is CLIENT -> SERVER: a late
     // addition (near the end of the table) that moves hit resolution server-side. The client routes a finished
