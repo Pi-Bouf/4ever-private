@@ -68,13 +68,20 @@ public sealed partial class MapService
     /// <summary>Despawn + re-arm any corpse whose lifetime has elapsed (driven off the tick).</summary>
     public void RunCorpseExpiry(long nowMs)
     {
-        foreach (var mon in _state.AllMonsters().Where(m => m.Dead && m.CorpseExpireMs <= nowMs).ToList())
+        // Collect first (despawning mutates the registry), into a reused list: this runs every tick over every monster.
+        foreach (var mon in _state.AllMonsters())
+            if (mon.Dead && mon.CorpseExpireMs <= nowMs) _expiredCorpses.Add(mon);
+        if (_expiredCorpses.Count == 0) return;
+        foreach (var mon in _expiredCorpses)
         {
             CancelAi(mon);   // its scripted Leave must not outlive the body
             DespawnMonster(mon);
             RearmSpawnSlot(mon.Id, nowMs);
         }
+        _expiredCorpses.Clear();
     }
+
+    private readonly List<Monster> _expiredCorpses = new();
 
     // ---- EXP ----
 

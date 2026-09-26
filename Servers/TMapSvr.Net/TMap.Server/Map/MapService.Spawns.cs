@@ -83,6 +83,7 @@ public sealed partial class MapService
         public required MonsterSpawnDef Def;
         public required byte Channel;
         public required SpawnSlot[] Slots;
+        public bool Removed;   // set by DelMonSpawn so a regen sweep already in flight skips it
     }
 
     private sealed class SpawnSlot
@@ -126,10 +127,16 @@ public sealed partial class MapService
     public void RunMonsterRegen(long nowMs)
     {
         // Snapshot: filling an original's slot may fire its regen-del link, which DelMonSpawns a dynamic spawn
-        // (mutating _spawns). Skip any spawn removed earlier this sweep.
-        foreach (var sp in _spawns.ToList())
+        // (mutating _spawns). Skip any spawn removed earlier this sweep. The snapshot buffer is reused and the
+        // removal check is a flag: a fresh ToList + List.Contains per spawn was O(n²) — ~235 ms per tick with
+        // 18k spawn points — plus a large-object-heap allocation every second.
+        int count = _spawns.Count;
+        if (_regenSnapshot.Length < count) _regenSnapshot = new SpawnPoint[count + count / 4];
+        _spawns.CopyTo(_regenSnapshot);
+        for (int i = 0; i < count; i++)
         {
-            if (!_spawns.Contains(sp)) continue;
+            var sp = _regenSnapshot[i];
+            if (sp.Removed) continue;
             foreach (var slot in sp.Slots)
             {
                 if (slot.Live is not null || nowMs < slot.NextRegenMs) continue;
@@ -137,7 +144,10 @@ public sealed partial class MapService
                 if (!TryFillSlot(sp, slot, nowMs, rollProb: true)) slot.NextRegenMs = nowMs + sp.Def.Spawn.Delay;
             }
         }
+        Array.Clear(_regenSnapshot, 0, count);   // don't keep removed spawn points alive until the next tick
     }
+
+    private SpawnPoint[] _regenSnapshot = Array.Empty<SpawnPoint>();
 
     /// <summary>Fills one empty spawn slot with a monster (C++ regen body / <c>InitMonster</c>): optionally
     /// prob-gated, then a weighted type-pick, level-attr resolve, radius scatter, and <see cref="SpawnMonster"/>.
@@ -231,6 +241,7 @@ public sealed partial class MapService
         {
             foreach (var slot in sp.Slots)
                 if (slot.Live is { } m) { DespawnMonster(m, exitMap: true); slot.Live = null; }
+            sp.Removed = true;
             _spawns.Remove(sp);
         }
         // Recycle a dynamic (SE_DYNAMIC) spawn's reserved id once no channel still holds it.

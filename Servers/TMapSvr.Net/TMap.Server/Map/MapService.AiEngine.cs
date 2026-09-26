@@ -142,18 +142,12 @@ public sealed partial class MapService
         }
     }
 
-    /// <summary>Drop every queued command for a monster that is leaving the map for good, so a dead entry
-    /// cannot resurrect it. (The C++ leans on the <c>m_dwHostKEY</c> epoch plus the map lookup in
-    /// <c>OnSM_AICMD_ACK</c>; we bump the epoch too, but clearing is cheap and exact.)</summary>
-    private void CancelAi(Monster mon)
-    {
-        mon.HostKey++;
-        if (_aiQueue.Count == 0) return;
-        var kept = new List<(PendingAi, long)>(_aiQueue.Count);
-        while (_aiQueue.TryDequeue(out var item, out var pri))
-            if (!ReferenceEquals(item.Mon, mon)) kept.Add((item, pri));
-        foreach (var (item, pri) in kept) _aiQueue.Enqueue(item, pri);
-    }
+    /// <summary>Invalidate every queued command for a monster that is leaving the map for good, so a dead entry
+    /// cannot resurrect it. Like the C++ (the <c>m_dwHostKEY</c> epoch plus the map lookup in
+    /// <c>OnSM_AICMD_ACK</c>), this only bumps the epoch: <see cref="RunScheduledAi"/> drops the stale entries
+    /// when they come due (epoch mismatch, or the id now maps to a respawned object). Rebuilding the whole queue
+    /// here cost ~5 ms and a ~640 KB large-object allocation per monster death.</summary>
+    private static void CancelAi(Monster mon) => mon.HostKey++;
 
     // ======================================================================================
     // The client-reported aggro bounds (CS_ENTERLB / LEAVELB / ENTERAB / LEAVEAB)
