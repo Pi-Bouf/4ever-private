@@ -28,6 +28,14 @@ public sealed partial class MapService
     // ---- TATTACK_DELAY (NetCode.h) — the m_bSpeedApply selector fallback when no template is linked. ----
     private const byte TadPhysical = 1;
 
+    /// <summary>C++ <c>FindTSkill</c> for casting: the character's copy of the skill, if it has learned it. A skill
+    /// held at level 0 has not been learned — in the old sources (Source 3.3 and OLD SOURCES) it simply does not
+    /// exist: <c>CTPlayer::InitializeSkill</c> deletes a skill from <c>m_mapTSKILL</c> (and the hotkeys) when a reset
+    /// brings it to 0, so every cast answers <c>SKILL_NOTFOUND</c>. This database lists every class skill at level 0
+    /// (<c>TSTARTSKILL</c>, for the skill window's "learn" buttons), so the same rule is applied at lookup.</summary>
+    private static Skill? LearnedSkill(Character ch, ushort skillId)
+        => ch.Skills.FirstOrDefault(k => k.SkillId == skillId && k.Level > 0);
+
     private void OnCS_SKILLUSE_REQ(ClientSession s, PacketReader r)
     {
         // Request layout (CSHandler.cpp:2459-2471) then bCount × {dwTarget, bTargetType, bIsTarget}.
@@ -77,7 +85,7 @@ public sealed partial class MapService
         if (_state.FindByChar(attackId) is not { State: EnterState.InGame, Char: { } ch } casterSession) return;
 
         // ---- skill known? (pATTACK->FindTSkill(wSkillID)) ----
-        var skill = ch.Skills.FirstOrDefault(k => k.SkillId == skillId);
+        var skill = LearnedSkill(ch, skillId);
         if (skill is null) { SendSkillUseFail(s, SkillUseResult.NotFound, attackId, attackType, skillId, actionId, actId, aniId); return; }
 
         // ---- MP cost (GetRequiredMP vs GetPureMaxMP; strict <) ----

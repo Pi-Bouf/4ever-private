@@ -154,7 +154,8 @@ public sealed class MapWorker : BackgroundService
             {
                 _log.LogError(ex, "Batch item {Kind} failed.", item.Kind);
             }
-            if (token.IsCancellationRequested && reader.Count == 0) break;
+            // Stop once the queue is drained (an unbounded single-reader channel has no Count — TryPeek instead).
+            if (token.IsCancellationRequested && !reader.TryPeek(out _)) break;
         }
     }
 

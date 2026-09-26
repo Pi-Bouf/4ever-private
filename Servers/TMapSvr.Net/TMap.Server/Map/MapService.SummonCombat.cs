@@ -69,15 +69,18 @@ public sealed partial class MapService
     private void SummonSkillUse(ClientSession s, Character ch, byte type, uint id, ushort skillId, byte actionId, uint actId,
         uint aniId, float x, float y, float z, (uint id, byte type)[] targets)
     {
-        if (OwnSummon(s, ch, type, id) is not { InMap: true } m) return;
+        if (OwnSummon(s, ch, type, id) is not { InMap: true } m)
+        { _log.LogDebug("[summon] SKILLUSE {Type}:{Id} skill {Skill}: not {Char}'s summon on this map; dropped.", type, id, skillId, ch.CharId); return; }
+        _log.LogDebug("[summon] SKILLUSE {Type}:{Id} skill {Skill} -> {Targets}.", type, id, skillId,
+            string.Join(",", targets.Select(t => $"{t.type}:{t.id}")));
         if (m.Skills.FirstOrDefault(k => k.SkillId == skillId) is not { } skill)
-        { SendSkillUseFail(s, SkillUseResult.NotFound, id, type, skillId, actionId, actId, aniId); return; }
+        { _log.LogDebug("[summon] SKILLUSE {Id} skill {Skill} refused.", id, skillId); SendSkillUseFail(s, SkillUseResult.NotFound, id, type, skillId, actionId, actId, aniId); return; }
 
         uint needMp = skill.GetRequiredMp(m.MaxMp);
-        if (m.Mp < needMp) { SendSkillUseFail(s, SkillUseResult.NeedMp, id, type, skillId, actionId, actId, aniId); return; }
+        if (m.Mp < needMp) { _log.LogDebug("[summon] SKILLUSE {Id} skill {Skill} refused.", id, skillId); SendSkillUseFail(s, SkillUseResult.NeedMp, id, type, skillId, actionId, actId, aniId); return; }
         uint needHp = skill.GetRequiredHp(m.MaxHp);
-        if (m.Hp <= needHp) { SendSkillUseFail(s, SkillUseResult.NeedHp, id, type, skillId, actionId, actId, aniId); return; }
-        if (!skill.CanUse(NowMs)) { SendSkillUseFail(s, SkillUseResult.SpeedyUse, id, type, skillId, actionId, actId, aniId); return; }
+        if (m.Hp <= needHp) { _log.LogDebug("[summon] SKILLUSE {Id} skill {Skill} refused.", id, skillId); SendSkillUseFail(s, SkillUseResult.NeedHp, id, type, skillId, actionId, actId, aniId); return; }
+        if (!skill.CanUse(NowMs)) { _log.LogDebug("[summon] SKILLUSE {Id} skill {Skill} refused.", id, skillId); SendSkillUseFail(s, SkillUseResult.SpeedyUse, id, type, skillId, actionId, actId, aniId); return; }
 
         skill.UseSkill(NowMs, m.Attr?.AtkSpeed ?? 0, 100);             // CTMonster::GetAtkSpeed = attr dwAtkSpeed
         if (needHp != 0 || needMp != 0) { m.Hp -= needHp; m.Mp -= needMp; }
@@ -101,11 +104,21 @@ public sealed partial class MapService
     private void SummonFinishSkill(ClientSession s, Character ch, byte type, uint id, SkillTemplate tpl, bool fake,
         float x, float y, float z, (uint Id, byte Type)[] targets)
     {
-        if (OwnSummon(s, ch, type, id) is not { InMap: true } m) return;
+        if (OwnSummon(s, ch, type, id) is not { InMap: true } m)
+        { _log.LogDebug("[summon] FINISHSKILL {Type}:{Id} skill {Skill}: not {Char}'s summon on this map; dropped.", type, id, tpl.Id, ch.CharId); return; }
+        _log.LogDebug("[summon] FINISHSKILL {Type}:{Id} skill {Skill} -> {Targets}.", type, id, tpl.Id,
+            string.Join(",", targets.Select(t => $"{t.Type}:{t.Id}")));
         var skill = m.Skills.FirstOrDefault(k => k.SkillId == tpl.Id);   // FindTSkill(m_wTriggerID)
         byte level = skill?.Level ?? 0;
         var power = HitPower(m, tpl, ch);
-        byte canSelect = type == RecallMon.OtRecall ? (m.Template?.CanSelect ?? 1) : (byte)1;
+        // Who the monster hates. The old games (Source 3.3, OLD SOURCES) had no FINISHSKILL: a summon's hit came as
+        // CS_DEFEND_REQ carrying the client's m_vTSKILLDATA.m_bAglow, and the monster hated the summon when it was set
+        // (and its owner once it died). That flag starts as the template's bCanSelect (CTClientRecall::InitRecall) and
+        // is overwritten by CS_SKILLUSE_ACK — the template's for OT_RECALL, TRUE for OT_SELF (OnCS_SKILLUSE_REQ). A
+        // "skill" placed object never sends SKILLUSE (CheckAutoSKILL → ShotSkill → RangeSHOT → Defend), so it keeps
+        // its template's: Mana Storm / Rain of Arrows / Ice Rain (not selectable) anger the owner, the Dark Crystal
+        // and the eyes themselves. The 5.0 FINISHSKILL (bType == OT_PC: always the owner) is not kept.
+        byte canSelect = type == RecallMon.OtRecall || m.RecallType == TrecallSkill ? (m.Template?.CanSelect ?? 1) : (byte)1;
         bool triple = type == RecallMon.OtRecall && m.RecallType == TrecallAutoAi;
         byte attackCountry = GetAttackCountry(m.Country, m.AidCountry);
 

@@ -199,11 +199,15 @@ public sealed partial class MapService
     private void EnterRecall(RecallMon mon)
     {
         _state.AddRecall(mon);
+        _log.LogDebug("[summon] ENTER {Type}:{Id} tpl {Tpl} recallType {RecallType} owner {Owner} at ({X:F1},{Z:F1}) life {Life} ms, viewers [{Viewers}].",
+            mon.ObjType, mon.Id, mon.ChartId, mon.RecallType, mon.OwnerId, mon.PosX, mon.PosZ, mon.DurationMs,
+            string.Join(",", _state.PlayersAround(mon).Select(p => p.CharId)));
         foreach (var p in _state.PlayersAround(mon)) ShowSummon(p, mon, newMember: true);
     }
 
     private void LeaveRecall(RecallMon mon, bool exitMap, bool forever)
     {
+        _log.LogDebug("[summon] LEAVE {Type}:{Id} owner {Owner} (exitMap {Exit}, forever {Forever}).", mon.ObjType, mon.Id, mon.OwnerId, exitMap, forever);
         foreach (var p in _state.PlayersAround(mon)) HideSummon(p, mon, exitMap, forever);
         _state.RemoveRecall(mon);
     }

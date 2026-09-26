@@ -124,14 +124,18 @@ public sealed partial class MapService
 
         if (mon.HighestSurvivor() is { } top)
         {
-            bool inView = top.ObjType == OtPc && _state.PlayersAround(mon).Any(p =>
-                p.State == EnterState.InGame && p.Char is { CharId: var cid } && cid == top.ObjId);
+            bool inView = IsNeighbor(mon, top.ObjType, top.ObjId);
             if (!inView) LeaveAggro(mon, top.HostId, top.ObjId, top.ObjType, nowMs);
             else if (top.ObjId != mon.TargetId || top.ObjType != mon.TargetType) ApplyRetarget(mon, top);
             return;
         }
         LeaveLb(mon, hostId, rhId, rhType, nowMs);
     }
+
+    /// <summary>C++ <c>CTMap::FindNeighbor</c> — the player or summon is in the monster's 3×3 view.</summary>
+    private bool IsNeighbor(Monster mon, byte type, uint id) => type == OtPc
+        ? _state.PlayersAround(mon).Any(p => p.State == EnterState.InGame && p.Char is { CharId: var cid } && cid == id)
+        : _state.FindRecall(type, id) is { InMap: true } m && _state.MonstersAround(m).Contains(mon);
 
     /// <summary>Nothing left to fight. The C++ fires <c>AT_LEAVELB</c> and lets the script decide: script 1 runs
     /// ChgMode (BATTLE → GOHOME) then Gohome, so the monster runs back to its anchor, still driven by its host

@@ -199,6 +199,7 @@ public sealed partial class MapService
                 case Msg.CS_CHAT_REQ: OnCS_CHAT_REQ(session, r); break;
                 case Msg.CS_REGION_REQ: OnCS_REGION_REQ(session, r); break;
                 case Msg.CS_PINGMEASUREMENT_REQ: OnCS_PINGMEASUREMENT_REQ(session, r); break;
+                case Msg.CS_COUNTDOWN_REQ: OnCS_COUNTDOWN_REQ(session, r); break;
                 case Msg.CS_DISCONNECT_REQ: OnCS_DISCONNECT_REQ(session, r); break;
                 case Msg.CS_TERMINATE_REQ: OnCS_TERMINATE_REQ(session, r); break;
                 case Msg.CS_CHGCHANNEL_REQ: OnCS_CHGCHANNEL_REQ(session, r); break;

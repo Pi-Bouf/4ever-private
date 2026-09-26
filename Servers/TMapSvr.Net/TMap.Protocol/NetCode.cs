@@ -258,6 +258,8 @@ public static class Msg
     public const ushort CS_REFINE_ACK = CS_MAP + 0x01C1;          // result inv [item]
     public const ushort CS_ITEMCHANGE_REQ = CS_MAP + 0x01F4;      // inv slot
     public const ushort CS_ITEMCHANGE_ACK = CS_MAP + 0x01F5;      // result wNewID bNewCount
+    public const ushort CS_COUNTDOWN_REQ = CS_MAP + 0x01F6;       // dwCommand (GM_EXIT_GAME / GM_EXIT)
+    public const ushort CS_COUNTDOWN_ACK = CS_MAP + 0x01F7;       // dwCommand echoed; client then runs it
     public const ushort CS_CHANGEITEMATTR_ACK = CS_MAP + 0x01F8;  // inv item
     public const ushort CS_HOTKEYADD_REQ = CS_MAP + 0x009F;    // bType · wID · bTargetInven · bTargetPos
     public const ushort CS_HOTKEYDEL_REQ = CS_MAP + 0x00A1;    // bInvenID · bPos

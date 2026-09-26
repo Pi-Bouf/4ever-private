@@ -80,13 +80,19 @@ public sealed partial class MapService
         byte skillLevel = r.ReadByte();       // bSkillLevel
         float atkX = r.ReadFloat(), atkY = r.ReadFloat(), atkZ = r.ReadFloat();
         float defX = r.ReadFloat(), defY = r.ReadFloat(), defZ = r.ReadFloat();
-        r.ReadUInt32();                       // dwRemainTick
+        uint remainTick = r.ReadUInt32();     // dwRemainTick — how long a summon's aura buff lasts
 
         if (s.State != EnterState.InGame || s.Char is not { } ch) return;
         if (attackType == Monster.OtMon)
         {
             OnMonsterHitReport(s, ch, attackId, targetId, targetType, skillId, actId, aniId,
                 atkX, atkY, atkZ, defX, defY, defZ, new MonsterHitEcho(canSelect, mgMin, mgMax, aidCountry));
+            return;
+        }
+        if (attackType is RecallMon.OtRecall or RecallMon.OtSelf)
+        {
+            OnSummonDefendReport(s, ch, hostId, attackId, attackType, targetId, targetType, canSelect, skillId, remainTick,
+                atkX, atkY, atkZ, defX, defY, defZ);
             return;
         }
         if (attackType != OtPc) return;
@@ -148,7 +154,7 @@ public sealed partial class MapService
         float atkX, float atkY, float atkZ, float defX, float defY, float defZ)
     {
         // Resolve the attacking skill (C++ FindTSkill(m_wTriggerID); for a basic attack triggerID == wSkillID).
-        var atkSkill = ch.Skills.FirstOrDefault(k => k.SkillId == skillId);
+        var atkSkill = LearnedSkill(ch, skillId);
 
         // ---- PC→PC: a positive maintain-type skill applies a buff, and/or a cure skill dispels/heals, on
         // self/an ally (no PvP damage). C++ Defend runs MaintainSkill + PerformSkill(SDT_CURE) both. ----
@@ -281,8 +287,11 @@ public sealed partial class MapService
         if (hitType == HtMiss) return new DamageResult(0, 0, map);   // C++ Defend skips CalcDamage on a miss
 
         // The skill's damage rows (SDT_ABILITY + a damage exec). No such rows ⇒ the basic-attack fallback.
+        // A skill without any deals nothing (C++ CalcDamage only walks the rows — the Chaos Eye's bomb, whose damage
+        // is its linked skill's); only a hit with no skill at all takes the basic-attack fallback.
         var rows = tpl?.Data.Where(d => d.Type == SdtAbility && IsDamageExec(d.Exec)).ToList();
-        if (rows is not { Count: > 0 })
+        if (rows is { Count: 0 }) return new DamageResult(0, 0, map);
+        if (rows is null)
         {
             uint dmg = BasicRoll(ch, mon, tpl, level, hitType, isMagic, isLong, triple);
             if (dmg != 0) map.Add((MtypeDamage, (ushort)dmg));   // (WORD)dwValue

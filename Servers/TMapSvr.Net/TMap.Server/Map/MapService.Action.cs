@@ -77,7 +77,7 @@ public sealed partial class MapService
         var result = SkillUseResult.Success;
         if (skillId != 0 && objType == OtPc)
         {
-            var skill = ch.Skills.FirstOrDefault(k => k.SkillId == skillId);
+            var skill = LearnedSkill(ch, skillId);
             if (skill is null)
                 result = SkillUseResult.NotFound;
             else if (!skill.CanUse(NowMs))

@@ -17,6 +17,18 @@ public sealed partial class MapService
         s.Send(w);
     }
 
+    private void OnCS_COUNTDOWN_REQ(ClientSession s, PacketReader r)
+    {
+        // "Character selection" / "Exit" after the 8s outro: the client waits for this echo before it runs
+        // dwCommand (GM_EXIT_GAME -> relog to char select, GM_EXIT -> quit). C++ also sets m_bGraceExit,
+        // which only skips the combat-logout death penalty (not ported).
+        if (!s.IsMain || s.Char is null) return;
+        uint command = r.ReadUInt32();
+        var w = new PacketWriter(Msg.CS_COUNTDOWN_ACK);
+        w.WriteUInt32(command);
+        s.Send(w);
+    }
+
     private void OnCS_DISCONNECT_REQ(ClientSession s, PacketReader r)
     {
         // C++: CloseSession(pPlayer). The socket teardown drives OnClientDisconnectAsync (world close + view leave).

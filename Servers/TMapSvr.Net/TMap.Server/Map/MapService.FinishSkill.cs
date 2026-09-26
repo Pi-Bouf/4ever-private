@@ -83,7 +83,11 @@ public sealed partial class MapService
         { _log.LogDebug("FINISHSKILL from char {Char}: attacker {Attack}/{Obj} type {Type} is not the sender; dropped.", s.CharId, attackId, objId, attackType); return; }
 
         // Skill level from the attacker's own copy (C++ FindTSkill(m_wTriggerID); triggerID == wSkillID here).
-        byte skillLevel = ch.Skills.FirstOrDefault(k => k.SkillId == skillId)?.Level ?? 0;
+        // One the character holds at level 0 is not learned (see LearnedSkill): the cast does nothing.
+        var own = ch.Skills.FirstOrDefault(k => k.SkillId == skillId);
+        if (own is { Level: 0 })
+        { _log.LogDebug("FINISHSKILL from char {Char}: skill {Skill} is not learned (level 0); dropped.", s.CharId, skillId); return; }
+        byte skillLevel = own?.Level ?? 0;
         ushort trans = TransHpMp(tpl);
         byte attackCountry = GetAttackCountry(ch.Country, ch.AidCountry);
 

@@ -13,9 +13,9 @@ namespace TMap.Server.Tests;
 public class SummonTests
 {
     private const byte OtPc = 1, OtMon = 2, OtRecall = 7, OtSelf = 11, TcontryN = 3;
-    private const ushort RainSkill = 600, RitualSkill = 601, CrystalSkill = 602, AutoSkill = 603;
-    private const ushort RainMon = 20001, RitualMon = 21100, CrystalMon = 22200, AutoMon = 22300;
-    private const ushort SummonHit = 700, RainHit = 425;
+    private const ushort RainSkill = 600, RitualSkill = 601, CrystalSkill = 602, AutoSkill = 603, EyeSkill = 604;
+    private const ushort RainMon = 20001, RitualMon = 21100, CrystalMon = 22200, AutoMon = 22300, EyeMon = 22201;
+    private const ushort SummonHit = 700, RainHit = 425, AuraSkill = 643, BombSkill = 626;
     private const ushort RainAttr = 301, RitualAttr = 2001, CrystalAttr = 1001;
     private const byte Level = 10, SkillLevel = 3;
     private const uint Key = 4;
@@ -38,16 +38,25 @@ public class SummonTests
         Summon(RitualSkill, RitualMon, 0, 0, 0);
         Summon(CrystalSkill, CrystalMon, 30000, 10000, 1);
         Summon(AutoSkill, AutoMon, 0, 0, 0);
+        Summon(EyeSkill, EyeMon, 600000, 300000, 1);
         foreach (var id in new[] { SummonHit, RainHit })
         {
             var s = Skill(id, positive: 0);                                    // a hostile skill: it aggros
             s.Data.Add(new SkillDataRow(0, 1 /* SDT_ABILITY */, 1 /* SATT_PHYSIC */, 30 /* MTYPE_DAMAGE */, 0, 0, 0, 0));
             t.Skills[id] = s;
         }
+        var aura = Skill(AuraSkill);                                           // the Protection Crystal's buff
+        aura.Data.Add(new SkillDataRow(3 /* SA_BUFF */, 1 /* SDT_ABILITY */, 1, 12, 5, 180, 0, 0));
+        t.Skills[AuraSkill] = aura;
+        var bomb = Skill(BombSkill, positive: 0);                              // the Chaos Eye's bomb: only a link row
+        bomb.Data.Add(new SkillDataRow(0, 6 /* SDT_STATUS */, 3, 29 /* SDT_STATUS_LINK */, 1, 627, 0, 0));
+        t.Skills[BombSkill] = bomb;
         t.MonsterTemplates[RainMon] = new MonsterTemplate(RainMon, 1, 0, Skill1: RainHit, RecallType: 4, SummonAttr: RainAttr, IsSelf: 1);
         t.MonsterTemplates[RitualMon] = new MonsterTemplate(RitualMon, 1, 0, Skill1: SummonHit, RecallType: 1, SummonAttr: RitualAttr, CanSelect: 1);
         t.MonsterTemplates[AutoMon] = new MonsterTemplate(AutoMon, 1, 0, Skill1: SummonHit, RecallType: 2, SummonAttr: RitualAttr, CanSelect: 1);
-        t.MonsterTemplates[CrystalMon] = new MonsterTemplate(CrystalMon, 1, 0, RecallType: 5, SummonAttr: CrystalAttr, IsSelf: 1);
+        t.MonsterTemplates[EyeMon] = new MonsterTemplate(EyeMon, 1, 0, Skill1: SummonHit, RecallType: 2, SummonAttr: CrystalAttr,
+            IsSelf: 1, CanSelect: 1);                                          // the Chaos Eye: a selectable auto-AI object
+        t.MonsterTemplates[CrystalMon] = new MonsterTemplate(CrystalMon, 1, 0, Skill1: AuraSkill, RecallType: 5, SummonAttr: CrystalAttr, IsSelf: 1);
         foreach (var attr in new[] { RainAttr, RitualAttr, CrystalAttr })
             t.MonAttrs[TemplateStore.MonAttrKey(attr, Level)] = new MonAttrRow(attr, Level, 400, 100, 0,
                 AttackLevel: 30, Ap: 50, MinWap: 0, MaxWap: 0, CritProb: 0);
@@ -66,7 +75,7 @@ public class SummonTests
         var t = Store();
         var h = new MapTestHarness(t);
         var ch = new Character { CharId = 1, Name = "Summoner", MaxHp = 500, Hp = 500, AidCountry = TcontryN };
-        foreach (var id in new[] { RainSkill, RitualSkill, CrystalSkill, AutoSkill })
+        foreach (var id in new[] { RainSkill, RitualSkill, CrystalSkill, AutoSkill, EyeSkill })
             ch.Skills.Add(new Map.Skill { SkillId = id, Level = SkillLevel, Template = t.Skills[id] });
         var (s, c) = await h.EnterAsync(1, 1, Key, x: 100, z: 100, preSeeded: ch);
         ch.Level = Level;
@@ -228,10 +237,65 @@ public class SummonTests
 
         Assert.Equal(400u - 50u, mob.Hp);
         Assert.Equal(1u, mob.KeeperId);                                  // the owner's kill
-        Assert.True(mob.AggroTable.ContainsKey(Monster.AggroKey(900, OtRecall)));   // selectable: the summon is hated
+        Assert.True(mob.AggroTable.ContainsKey(Monster.AggroKey(900, OtRecall)));   // the old games: a selectable summon
+        Assert.Equal((900u, OtRecall), (mob.TargetId, mob.TargetType));  // is hated itself (not 5.0's always-the-owner)
         var r = new PacketReader(c.Last(Msg.CS_DEFEND_ACK)!);
         Assert.Equal(900u, r.ReadUInt32()); Assert.Equal(mob.Id, r.ReadUInt32()); Assert.Equal(OtRecall, r.ReadByte());
         r.ReadByte(); Assert.Equal(1u, r.ReadUInt32());                 // host = the owner
+    }
+
+    /// <summary>The monster fighting the summon (hate seeded straight into its table).</summary>
+    private static void HateSummon(Monster mob, uint summonId)
+    {
+        mob.EnterBattle(0, 0);
+        mob.HostId = 1; mob.TargetId = summonId; mob.TargetType = OtRecall;
+        mob.AddAggro(1, summonId, OtRecall, 0, 5);
+    }
+
+    [Fact]
+    public async Task AStormsHit_AngersTheMonsterAtItsOwner()
+    {
+        var (h, s, _, ch, mob) = await Setup();
+        await h.Service.DispatchClientAsync(s, Cast(RainSkill));       // a "skill" object whose template is not selectable
+        uint id = ch.SelfObjs.Keys.Single();
+
+        await h.Service.DispatchClientAsync(s, Finish(id, OtSelf, RainHit, new[] { (mob.Id, OtMon) }));
+
+        Assert.Equal((1u, OtPc), (mob.TargetId, mob.TargetType));       // never SKILLUSE'd: keeps its template's flag
+    }
+
+    [Fact]
+    public async Task AnEyesHit_AngersTheMonsterAtTheEye()
+    {
+        var (h, s, _, ch, mob) = await Setup();
+        await h.Service.DispatchClientAsync(s, Cast(EyeSkill));
+        uint id = ch.SelfObjs.Keys.Single();
+
+        await h.Service.DispatchClientAsync(s, Finish(id, OtSelf, SummonHit, new[] { (mob.Id, OtMon) }));
+
+        Assert.Equal((id, OtSelf), (mob.TargetId, mob.TargetType));     // SKILLUSE's TRUE for OT_SELF
+    }
+
+    [Fact]
+    public async Task AnUnlearnedSummonSkill_SummonsNothing()
+    {
+        var (h, s, _, ch, _) = await Setup();
+        ch.Skills.Single(k => k.SkillId == RitualSkill).Level = 0;       // listed (TSTARTSKILL) but not learned
+
+        await h.Service.DispatchClientAsync(s, Cast(RitualSkill));
+
+        Assert.False(h.World.Has(Msg.MW_CREATERECALLMON_ACK));
+    }
+
+    [Fact]
+    public async Task AnUnlearnedSkill_IsNotFound()
+    {
+        var (h, s, c, ch, _) = await Setup();
+        ch.Skills.Single(k => k.SkillId == RitualSkill).Level = 0;
+
+        await h.Service.DispatchClientAsync(s, MapTestHarness.SkillUseReq(1, RitualSkill));
+
+        Assert.Equal((byte)SkillUseResult.NotFound, new PacketReader(c.Last(Msg.CS_SKILLUSE_ACK)!).ReadByte());
     }
 
     [Fact]
@@ -305,7 +369,7 @@ public class SummonTests
     {
         var (h, s, c, ch, mob) = await Setup();
         var summon = await Summon(h, s, ch, RitualSkill, 900);
-        await h.Service.DispatchClientAsync(s, Finish(900, OtRecall, SummonHit, new[] { (mob.Id, OtMon) }));   // the monster hates it
+        HateSummon(mob, 900);
         summon.Hp = 10;
         h.World.Clear(); c.Clear();
 
@@ -331,8 +395,7 @@ public class SummonTests
     {
         var (h, s, c, ch, mob) = await Setup();
         await Summon(h, s, ch, RitualSkill, 900);
-        await h.Service.DispatchClientAsync(s, Finish(900, OtRecall, SummonHit, new[] { (mob.Id, OtMon) }));
-        Assert.Equal((900u, OtRecall), (mob.TargetId, mob.TargetType));
+        HateSummon(mob, 900);
         c.Clear();
 
         await h.MonsterTurnAsync(60_000);
@@ -340,6 +403,114 @@ public class SummonTests
         var r = new PacketReader(c.Last(Msg.CS_MONATTACK_ACK)!);
         Assert.Equal(mob.Id, r.ReadUInt32()); Assert.Equal(900u, r.ReadUInt32()); r.ReadByte();
         Assert.Equal(OtRecall, r.ReadByte());
+    }
+
+    [Fact]
+    public async Task AMonsterChasingASummon_KeepsItAsItsHostMovesIt()
+    {
+        var (h, s, _, ch, mob) = await Setup();
+        await Summon(h, s, ch, RitualSkill, 900);
+        HateSummon(mob, 900);
+
+        await h.Service.DispatchClientAsync(s, MonMove(mob.Id, 105, 105));
+
+        Assert.Equal((900u, OtRecall), (mob.TargetId, mob.TargetType));   // not dropped as a "missing player"
+        Assert.Equal((byte)1, mob.Mode);
+    }
+
+    [Fact]
+    public async Task LosingItsTarget_TheMonsterTurnsOnASummonInView()
+    {
+        var (h, s, _, ch, mob) = await Setup();
+        await Summon(h, s, ch, RitualSkill, 900);
+        HateSummon(mob, 900);
+        mob.TargetId = 77; mob.TargetType = OtPc;                        // a player who is gone
+        mob.AddAggro(77, 77, OtPc, 0, 1);
+
+        await h.Service.DispatchClientAsync(s, MonMove(mob.Id, 105, 105));
+
+        Assert.Equal((900u, OtRecall), (mob.TargetId, mob.TargetType));   // C++ FindNeighbor finds summons too
+    }
+
+    private static byte[] MonMove(uint monId, float x, float z)
+    {
+        var w = new PacketWriter(Msg.CS_MONMOVE_REQ);
+        w.WriteUInt16(1); w.WriteUInt32(monId); w.WriteByte(OtMon); w.WriteByte(1); w.WriteUInt16(0);
+        w.WriteFloat(x); w.WriteFloat(0); w.WriteFloat(z); w.WriteUInt16(0); w.WriteUInt16(0);
+        w.WriteByte(1); w.WriteByte(1); w.WriteByte(3);
+        return w.ToArray();
+    }
+
+    // ================================ the crystal's aura (CS_DEFEND_REQ from a summon) ================================
+
+    /// <summary>What a client sends for a summon's buff (CheckAutoSKILL / CheckMaintainOBJ): <c>CS_DEFEND_REQ</c>
+    /// naming the summon's owner as host, lasting <paramref name="remain"/> ms.</summary>
+    private static byte[] AuraReq(uint crystal, uint target, byte targetType, uint remain, ushort skill = AuraSkill)
+    {
+        var raw = MapTestHarness.DefendReq(crystal, target, attackType: OtSelf, targetType: targetType, skillId: skill, hostId: 1);
+        BitConverter.GetBytes(remain).CopyTo(raw, raw.Length - 4);      // dwRemainTick
+        return raw;
+    }
+
+    [Fact]
+    public async Task TheCrystal_BuffsItself_ForWhatIsLeftOfItsLife()
+    {
+        var (h, s, c, ch, _) = await Setup();
+        await h.Service.DispatchClientAsync(s, Cast(CrystalSkill));
+        var crystal = ch.SelfObjs.Values.Single();
+        c.Clear();
+
+        await h.Service.DispatchClientAsync(s, AuraReq(crystal.Id, crystal.Id, OtSelf, 25_000));
+
+        var buff = Assert.Single(crystal.MaintainSkills);
+        Assert.Equal(AuraSkill, buff.SkillId);
+        Assert.Equal(25_000u, buff.MaintainTick);
+        var r = new PacketReader(c.Last(Msg.CS_DEFEND_ACK)!);
+        Assert.Equal(crystal.Id, r.ReadUInt32()); Assert.Equal(crystal.Id, r.ReadUInt32()); Assert.Equal(OtSelf, r.ReadByte());
+    }
+
+    [Fact]
+    public async Task APlayerInTheCrystalsAura_GetsItsBuff_UntilTheyLeaveIt()
+    {
+        var (h, s, _, ch, _) = await Setup();
+        await h.Service.DispatchClientAsync(s, Cast(CrystalSkill));
+        var crystal = ch.SelfObjs.Values.Single();
+
+        await h.Service.DispatchClientAsync(s, AuraReq(crystal.Id, 1, OtPc, 25_000));
+
+        var buff = Assert.Single(ch.MaintainSkills);
+        Assert.Equal((AuraSkill, crystal.Id, OtSelf, 25_000u), (buff.SkillId, buff.AttackId, buff.AttackType, buff.MaintainTick));
+        Assert.Equal((byte)SkillLevel, buff.Level);                     // the crystal's copy of the skill
+
+        var end = new PacketWriter(Msg.CS_SKILLEND_REQ);                 // walked out of range (CheckMaintainOBJ)
+        end.WriteUInt32(1); end.WriteByte(OtPc); end.WriteUInt32(1); end.WriteUInt32(crystal.Id); end.WriteByte(OtSelf);
+        end.WriteUInt16(AuraSkill); end.WriteUInt16(0); end.WriteByte(1);
+        await h.Service.DispatchClientAsync(s, end.ToArray());
+        Assert.Empty(ch.MaintainSkills);
+    }
+
+    [Fact]
+    public async Task OnlyTheReporter_CanBeTheAurasPlayerTarget()
+    {
+        var (h, s, _, ch, _) = await Setup();
+        await h.Service.DispatchClientAsync(s, Cast(CrystalSkill));
+        var crystal = ch.SelfObjs.Values.Single();
+        var (other, _) = await h.EnterAsync(2, 2, 2, name: "Other", x: 100, z: 100);
+
+        await h.Service.DispatchClientAsync(s, AuraReq(crystal.Id, 2, OtPc, 25_000));   // C++ FindTarget(pPlayer, OT_PC, id)
+
+        Assert.Empty(other.Char!.MaintainSkills);
+    }
+
+    [Fact]
+    public async Task ASkillWithoutDamageRows_DealsNoDamage()
+    {
+        var (h, s, _, ch, mob) = await Setup();
+        await Summon(h, s, ch, RitualSkill, 900);
+
+        await h.Service.DispatchClientAsync(s, Finish(900, OtRecall, BombSkill, new[] { (mob.Id, OtMon) }));
+
+        Assert.Equal(1000u, mob.Hp);        // C++ CalcDamage only walks the skill's rows: the linked skill does the damage
     }
 
     [Fact]

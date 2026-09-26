@@ -45,7 +45,7 @@ public sealed partial class MapService
     public void RunMaintainSkills(uint now)
     {
         foreach (var s in _state.AllInGame())
-            if (s.Char is { } ch) CheckMaintainPlayer(s, ch, now);
+            if (s.Char is { } ch) { CheckMaintainPlayer(s, ch, now); CheckMaintainSummons(ch, now); }
         foreach (var mon in _state.AllMonsters())
             CheckMaintainMonster(mon, now);
     }
@@ -434,7 +434,7 @@ public sealed partial class MapService
     {
         uint objId = r.ReadUInt32();
         byte objType = r.ReadByte();
-        r.ReadUInt32();               // dwHostID (RECALL routing — unported)
+        uint hostId = r.ReadUInt32(); // dwHostID — whose summon, for OT_RECALL
         uint attackId = r.ReadUInt32();
         byte attackType = r.ReadByte();
         ushort skillId = r.ReadUInt16();
@@ -458,6 +458,16 @@ public sealed partial class MapService
             if (idx >= 0) { EraseMaintainMonster(mon, idx); return; }
             var end = BuildSkillEndAck(objId, objType, skillId);
             foreach (var p in _state.PlayersAround(mon)) p.Send(end);
+        }
+        else if ((objType == RecallMon.OtRecall ? _state.FindByChar(hostId)?.Char?.Recalls
+                  : objType == RecallMon.OtSelf ? (IReadOnlyDictionary<uint, RecallMon>)ch.SelfObjs : null) is { } own
+                 && own.TryGetValue(objId, out var summon) && summon.InMap)
+        {
+            int idx = summon.MaintainSkills.FindIndex(m =>
+                m.AttackId == attackId && m.AttackType == attackType && m.SkillId == skillId);
+            if (idx >= 0) { EraseMaintainSummon(summon, idx); return; }
+            var end = BuildSkillEndAck(objId, objType, skillId);
+            foreach (var p in _state.PlayersAround(summon)) p.Send(end);
         }
         else
         {

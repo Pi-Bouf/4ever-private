@@ -103,7 +103,7 @@ public sealed partial class MapService
             if (mon.Mode == MtBattle)
             {
                 // Target gone, or dragged past the leash, drops aggro (C++ LeaveAggro, both arms).
-                if (mon.TargetId == 0 || _state.FindByChar(mon.TargetId) is not { State: EnterState.InGame })
+                if (ResolveMonTarget(mon) is null)
                     Disengage(mon, mon.TargetId, mon.TargetType, NowMs);
                 else if (Distance(mon.StartX, mon.StartZ, mon.PosX, mon.PosZ) > mon.ChaseRange)
                     Disengage(mon, mon.TargetId, mon.TargetType, NowMs);
