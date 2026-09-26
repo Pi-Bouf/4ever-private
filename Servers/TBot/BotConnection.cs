@@ -20,6 +20,9 @@ public sealed class BotConnection : IDisposable
     /// <summary>Raw bytes of the most recently received (decrypted) packet — for diagnostics.</summary>
     public byte[]? LastPacket { get; private set; }
 
+    /// <summary>Packets whose checksum did not verify after decoding — a server sending corrupt data.</summary>
+    public int BadPackets { get; private set; }
+
     public BotConnection(string host, int port, bool useCrypt = true)
     {
         _cipher = new ClientCipher { UseCrypt = useCrypt };
@@ -76,7 +79,7 @@ public sealed class BotConnection : IDisposable
         if (wSize > PacketHeader.Size)
             Array.Copy(ReadExactly(wSize - PacketHeader.Size), 0, packet, PacketHeader.Size, wSize - PacketHeader.Size);
 
-        _cipher.DecodeFromServer(packet);
+        if (!_cipher.DecodeFromServer(packet)) BadPackets++;
         LastPacket = packet;
         return new PacketReader(packet);
     }

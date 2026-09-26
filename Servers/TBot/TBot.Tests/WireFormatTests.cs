@@ -106,7 +106,7 @@ public class WireFormatTests
 
         var r = new PacketReader(packet);
         Assert.Equal(GameMsg.CS_CHARINFO_ACK, r.Id);
-        var spawn = GamePackets.ParseCharInfo(r);
+        var spawn = GamePackets.ParseCharInfo(packet);
 
         Assert.Equal("Pittt", spawn.Name);
         Assert.Equal(19, spawn.Level);

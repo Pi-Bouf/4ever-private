@@ -52,6 +52,16 @@ public sealed class BotConfig
     public byte Foot { get; set; }
     public byte LevelOption { get; set; }
 
+    /// <summary>Prefix for this bot's log lines (set per bot when a scenario runs several).</summary>
+    public string LogTag { get; set; } = "";
+
+    /// <summary>When set, runs a scripted multi-bot scenario instead of the walk: <c>features</c> drives party,
+    /// mail, hotkeys, bags and teleport between <see cref="Account"/> and <see cref="Account2"/>.</summary>
+    public string Scenario { get; set; } = "";
+
+    /// <summary>The second bot's account for a scenario (same password, first character).</summary>
+    public string Account2 { get; set; } = "";
+
     public float MoveRadius { get; set; } = 40f;
     public float MoveSpeed { get; set; } = 3.0f;
     public float MoveStep { get; set; } = 2.0f;

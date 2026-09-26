@@ -45,6 +45,20 @@ dotnet run -- --Bot:CreateAccount=true --Bot:Account=bot1 --Bot:Password=pw123 \
 Prerequisites for a full run: a login server, **TWorldSvr**, and the **C++ TMapSvr** all running and
 routed (restore the `.bak` DBs and run `Database/run-migrations.sh` for a local LAN setup).
 
+## Scenario: two bots, every feature
+
+`--Bot:Scenario=features` logs two accounts in side by side and drives party (invite, join, HP bars, loot type,
+leader change, kick), mail (send, notify, list, open, take money, delete), hotkeys, bags and a far NPC-portal
+teleport against the live cluster. Every reply is parsed the way TClient reads it and must be used up to its last
+byte; every packet must decode with a valid checksum; after logout the saved rows (money, position, hotkeys, bag)
+are checked in the DB. The characters' money, HP, position and test items are put back at the end.
+
+```bash
+dotnet run -- --Bot:Scenario=features --Bot:Account=tbot27 --Bot:Account2=tbot28 --Bot:Password=...               --Bot:Channel=1 --Bot:NoCrypt=false --Bot:MapNoCrypt=false               --Bot:GameConnectionString="Server=localhost,11433;Database=TGame_gsp;User ID=sa;Password=...;TrustServerCertificate=True;Encrypt=False"
+```
+
+Exit code 0 when every check passes.
+
 ## Tests
 
 `TBot.Tests` verifies the new wire format **without a live server** by pairing the bot's `ClientCipher`

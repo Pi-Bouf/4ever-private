@@ -12,6 +12,30 @@ public sealed class GameDb
     private readonly string _connectionString;
     public GameDb(string connectionString) => _connectionString = connectionString;
 
+    /// <summary>Runs one statement; <c>@p0..@pN</c> bind to <paramref name="args"/>. Returns rows affected.</summary>
+    public async Task<int> ExecAsync(string sql, params object[] args)
+    {
+        await using var c = new SqlConnection(_connectionString);
+        await c.OpenAsync();
+        await using var cmd = new SqlCommand(sql, c);
+        for (int i = 0; i < args.Length; i++) cmd.Parameters.AddWithValue($"@p{i}", args[i]);
+        return await cmd.ExecuteNonQueryAsync();
+    }
+
+    /// <summary>Reads the first row of a query as raw values (null when there is none).</summary>
+    public async Task<object[]?> RowAsync(string sql, params object[] args)
+    {
+        await using var c = new SqlConnection(_connectionString);
+        await c.OpenAsync();
+        await using var cmd = new SqlCommand(sql, c);
+        for (int i = 0; i < args.Length; i++) cmd.Parameters.AddWithValue($"@p{i}", args[i]);
+        await using var r = await cmd.ExecuteReaderAsync();
+        if (!await r.ReadAsync()) return null;
+        var row = new object[r.FieldCount];
+        r.GetValues(row);
+        return row;
+    }
+
     /// <summary>Copies map/region/position/country from <paramref name="fromCharId"/> onto
     /// <paramref name="toCharId"/> so the bot char spawns in that char's region. Returns the target spot.</summary>
     public async Task<(ushort MapId, uint Region, float X, float Y, float Z)> MatchPositionAsync(

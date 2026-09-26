@@ -1,0 +1,808 @@
+using TLogin.Protocol;
+
+namespace TBot;
+
+/// <summary>
+/// Scripted multi-bot checks against the live cluster. <c>features</c> logs two characters in side by side and
+/// drives the party, mail, hotkey, bag and teleport flows end to end, checking each reply against what the real
+/// client reads (TClient CSHandler.cpp) — every reply must be consumed to its last byte — and, after logout,
+/// what the map server saved. The characters' money, HP, position and test items are put back at the end.
+/// </summary>
+public static class Scenarios
+{
+    // CS_MAP offsets (CSProtocol.h), mirrored from TMap.Protocol/NetCode.cs.
+    private const ushort M = Msg.CS_MAP;
+    private const ushort CS_LEAVE_ACK = M + 0x0007, CS_HPMP_ACK = M + 0x0022, CS_ADDITEM_ACK = M + 0x002B,
+        CS_DELITEM_ACK = M + 0x002C, CS_MONEY_ACK = M + 0x0049,
+        CS_PARTYADD_REQ = M + 0x0040, CS_PARTYADD_ACK = M + 0x0041, CS_PARTYJOINASK_ACK = M + 0x0042,
+        CS_PARTYJOIN_REQ = M + 0x0043, CS_PARTYJOIN_ACK = M + 0x0044, CS_PARTYDEL_REQ = M + 0x0045,
+        CS_PARTYDEL_ACK = M + 0x0046, CS_PARTYMANSTAT_ACK = M + 0x0047, CS_PARTYATTR_ACK = M + 0x0048,
+        CS_CHGPARTYCHIEF_REQ = M + 0x0101, CS_CHGPARTYCHIEF_ACK = M + 0x0102,
+        CS_CHGPARTYTYPE_REQ = M + 0x0140, CS_CHGPARTYTYPE_ACK = M + 0x0141,
+        CS_HOTKEYADD_REQ = M + 0x009F, CS_HOTKEYDEL_REQ = M + 0x00A1, CS_HOTKEYCHANGE_ACK = M + 0x00A2,
+        CS_TELEPORT_REQ = M + 0x00D7, CS_TELEPORT_ACK = M + 0x00D8, CS_BEGINTELEPORT_ACK = M + 0x0139,
+        CS_INVENADD_REQ = M + 0x00E3, CS_INVENADD_ACK = M + 0x00E4, CS_INVENDEL_REQ = M + 0x00E5,
+        CS_INVENDEL_ACK = M + 0x00E6, CS_INVENMOVE_REQ = M + 0x00E7, CS_INVENMOVE_ACK = M + 0x00E8,
+        CS_POSTSEND_REQ = M + 0x0122, CS_POSTSEND_ACK = M + 0x0123, CS_POSTRECV_ACK = M + 0x0124,
+        CS_POSTLIST_ACK = M + 0x0125, CS_POSTVIEW_REQ = M + 0x0126, CS_POSTVIEW_ACK = M + 0x0127,
+        CS_POSTDEL_REQ = M + 0x0128, CS_POSTDEL_ACK = M + 0x0129, CS_POSTGETITEM_REQ = M + 0x012A,
+        CS_POSTGETITEM_ACK = M + 0x012B, CS_POSTLIST_REQ = M + 0x0225,
+        CS_PETMAKE_REQ = M + 0x012E, CS_PETMAKE_ACK = M + 0x012F, CS_PETLIST_ACK = M + 0x0132,
+        CS_PETRECALL_REQ = M + 0x0133, CS_PETRECALL_ACK = M + 0x0134, CS_PETRIDING_REQ = M + 0x0135,
+        CS_PETRIDING_ACK = M + 0x0136, CS_PETCANCEL_REQ = M + 0x01FB, CS_SENDSADDLE_REQ = M + 0x0320,
+        CS_ADDRECALLMON_ACK = M + 0x00D9, CS_DELRECALLMON_ACK = M + 0x00DA,
+        CS_COMPANIONLIST_ACK = M + 0x0329, CS_COMPANIONRECALL_REQ = M + 0x032E, CS_CREATECOMPANION_REQ = M + 0x033E,
+        CS_UPDATESPAWNEDCOMPANION_REQ = M + 0x0340, CS_CREATECOMPANION_ACK = M + 0x0341, CS_ADDSPOLECNIKMON_ACK = M + 0x0362,
+        CS_DELSPOLECNIKMON_ACK = M + 0x0364,
+        CS_SKILLUSE_REQ = M + 0x0034, CS_SKILLUSE_ACK = M + 0x0035, CS_DEFEND_ACK = M + 0x0021, CS_ADDMON_ACK = M + 0x0011,
+        CS_FINISHSKILL_ACK = M + 0x0377, CS_DELRECALLMON_REQ = M + 0x00E1, CS_ADDSELFOBJ_ACK = M + 0x00F4,
+        CS_DELSELFOBJ_ACK = M + 0x00F5,
+        CS_SKILLBUY_REQ = M + 0x0032, CS_SKILLBUY_ACK = M + 0x0033, CS_NPCITEMLIST_REQ = M + 0x0082, CS_NPCITEMLIST_ACK = M + 0x0083;
+
+    // Test fixtures.
+    private const ushort FarPortal = 4500;           // map 0 (3726.9, 146.0): ~390 m from the start area
+    private const ushort BagItem = 4;                // Cloth Bag (IT_INVEN, level 5)
+    private const byte BagSlot = 40;                 // a free backpack slot for it
+    private const long BagDlId = 900_000_001;        // well outside any id range a map server hands out
+    private const byte HotkeyPage = 2, HotkeySkill = 3;
+    private const uint TestCooper = 1000, MailCooper = 5, MailCost = 100;
+    private const ushort HorseItem = 7549, HorsePet = 13, StarterPet = 2;   // White Horse (permanent mount 13)
+    private const byte HorseSlot = 41;
+    private const long HorseDlId = 900_000_002;
+    private const string HorseName = "TBotHorse";
+    private const ushort RuneItem = 19019, RuneSpecies = 31125;   // Suckling Rune → Suckling (TCOMPANIONRUNECHART)
+    private const byte RuneSlot = 42;
+    private const long RuneDlId = 900_000_003;
+    private const string PalName = "TBotPal";
+    private const ushort RitualSkill = 623, RitualMon = 21100, IceRainSkill = 424, IceRainMon = 20001, SummonAttack = 700;
+    // Skill learning: the skill window's trainer (TDEF_SKILL_NPC) and a ranger skill the bot holds at level 0 (learnable at
+    // 4, 1 point; level 2 needs character level 4 + 16 = 20, the bot is 19). Price = TLEVELCHART(4).dwMoney 211 × fPrice 1.0275.
+    private const ushort SkillNpc = 22047, SandSkill = 209, SandPrice = 216, BotSkillPoints = 200;
+
+    private static readonly List<(string Name, bool Ok, string Detail)> Results = new();
+
+    public static async Task<int> RunAsync(BotConfig cfg, CancellationToken ct)
+    {
+        if (cfg.Scenario != "features") { Console.Error.WriteLine($"unknown scenario '{cfg.Scenario}'"); return 2; }
+        if (cfg.Account2.Length == 0 || cfg.GameConnectionString.Length == 0)
+        {
+            Console.Error.WriteLine("the features scenario needs --Bot:Account2 and --Bot:GameConnectionString");
+            return 2;
+        }
+        var db = new GameDb(cfg.GameConnectionString);
+        var cfgA = Clone(cfg, cfg.Account, "[A]");
+        var cfgB = Clone(cfg, cfg.Account2, "[B]");
+
+        uint idA = await FirstChar(db, cfg.Account), idB = await FirstChar(db, cfg.Account2);
+        var saved = await Snapshot(db, idA, idB);
+        try
+        {
+            await Prepare(db, idA, idB);
+            await RunFeatures(cfgA, cfgB, db, idA, idB);
+        }
+        finally
+        {
+            await Restore(db, saved, idA, idB);
+        }
+
+        Console.WriteLine();
+        Console.WriteLine("==== results ====");
+        foreach (var (name, ok, detail) in Results)
+            Console.WriteLine($"{(ok ? "PASS" : "FAIL")}  {name}{(detail.Length > 0 ? "  — " + detail : "")}");
+        int failed = Results.Count(r => !r.Ok);
+        Console.WriteLine($"{Results.Count - failed}/{Results.Count} passed");
+        return failed == 0 ? 0 : 1;
+    }
+
+    // ================================ the script ================================
+
+    private static async Task RunFeatures(BotConfig cfgA, BotConfig cfgB, GameDb db, uint idA, uint idB)
+    {
+        using (var a = new Bot(cfgA))
+        using (var b = new Bot(cfgB))
+        {
+            a.Enter();
+            b.Enter();
+            string nameA = a.Spawn.Name, nameB = b.Spawn.Name;
+            Thread.Sleep(1000);
+
+            Party(a, b, nameA, nameB);
+            Mail(a, b, nameA, nameB);
+            HotkeyAdd(a);
+            Bags(b);
+            Pets(a, b);
+            Companions(a, b);
+            Summons(a, b);
+            Skills(a);
+            Teleport(a, b);
+
+            foreach (var bot in new[] { a, b })
+                Check($"byte check: every packet to {bot.Tag} decodes with a valid checksum", bot.BadPackets == 0,
+                    $"{bot.BadPackets} of {bot.Received.Count} corrupt");
+            Report("byte check: " + a.Tag, ByteReport(a));
+            Report("byte check: " + b.Tag, ByteReport(b));
+        }
+
+        // Both are out: the map server saves on logout.
+        await Task.Delay(4000);
+        await CheckSaved(db, idA, idB);
+
+        // A second session removes the hotkey again, and that has to be saved too.
+        using (var a = new Bot(cfgA))
+        {
+            a.Enter();
+            a.Send(Req(CS_HOTKEYDEL_REQ, w => { w.WriteByte(HotkeyPage); w.WriteByte(0); }));
+            var comps = a.TryWait(CS_COMPANIONLIST_ACK);
+            Check("companions: the new companion is listed after relog", comps is not null
+                && ParseCompanionList(comps).Any(c => c.Name == PalName && c.MonId == RuneSpecies), Describe(comps));
+            var list = a.TryWait(CS_PETLIST_ACK);
+            Check("pets: the new pet is listed after relog", list is not null && ParsePetList(list).Any(p => p.Id == HorsePet && p.Name == HorseName),
+                Describe(list));
+            var r = a.TryWait(CS_HOTKEYCHANGE_ACK);
+            Check("hotkey: delete answered", r is not null && ParseHotkey(r) is var h && h.Set == HotkeyPage
+                && h.Slots.Count == 1 && h.Slots[0] == (0, 0, 0), Describe(r));
+        }
+        await Task.Delay(3000);
+        var row = await db.RowAsync("SELECT COUNT(*) FROM THOTKEYTABLE WHERE dwCharID=@p0 AND bInvenID=@p1", (int)idA, (int)HotkeyPage);
+        Check("hotkey: emptied page deleted from THOTKEYTABLE", row is not null && Convert.ToInt32(row[0]) == 0,
+            $"rows={row?[0]}");
+    }
+
+    private static void Party(Bot a, Bot b, string nameA, string nameB)
+    {
+        a.Send(Req(CS_PARTYADD_REQ, w => { w.WriteString(nameB); w.WriteByte(0); }));
+
+        var ask = b.TryWait(CS_PARTYJOINASK_ACK);
+        if (!Check("party: invite reaches the target (JOINASK)", ask is not null && Read(ask, r => (r.ReadString(), r.ReadByte())) is var q
+                && q.Item1 == nameA && q.Item2 == 0, Describe(ask)))
+            return;
+
+        b.Send(Req(CS_PARTYJOIN_REQ, w => { w.WriteString(nameA); w.WriteByte(0); w.WriteByte(0); })); // ASK_YES
+
+        var joinA = a.TryWait(CS_PARTYJOIN_ACK);
+        var joinB = b.TryWait(CS_PARTYJOIN_ACK);
+        var ja = joinA is null ? null : ParseJoin(joinA);
+        var jb = joinB is null ? null : ParseJoin(joinB);
+        Check("party: chief is told the member joined", ja is not null && ja.Value.MemberId == b.CharId && ja.Value.PartyId != 0
+            && ja.Value.ChiefId == a.CharId, ja?.ToString() ?? "no CS_PARTYJOIN_ACK");
+        Check("party: member is told about the chief", jb is not null && jb.Value.MemberId == a.CharId
+            && jb.Value.ChiefId == a.CharId, jb?.ToString() ?? "no CS_PARTYJOIN_ACK");
+        if (ja is null) return;
+
+        // The member was logged in at low HP: its regeneration ticks reach the chief as party HP bars.
+        var stat = a.TryWait(CS_PARTYMANSTAT_ACK, r => r.ReadUInt32() == b.CharId, 20000);
+        Check("party: member HP reaches the chief (MANSTAT)", stat is not null && Read(stat, r => (r.ReadUInt32(), r.ReadByte(),
+            r.ReadByte(), r.ReadUInt32(), r.ReadUInt32(), r.ReadUInt32(), r.ReadUInt32())) is var st && st.Item6 > 0, Describe(stat));
+
+        // PT_LOTTERY (3). Not PT_SOLO (1): that is the hidden one-player party, which masks every party field to 0.
+        a.Send(Req(CS_CHGPARTYTYPE_REQ, w => w.WriteByte(3)));
+        var type = a.TryWait(CS_CHGPARTYTYPE_ACK);
+        var typeB = b.TryWait(CS_CHGPARTYTYPE_ACK);
+        Check("party: loot type changed (chief)", type is not null && Read(type, r => (r.ReadByte(), r.ReadByte())) == (0, 3), Describe(type));
+        Check("party: loot type changed (member told too)", typeB is not null && Read(typeB, r => (r.ReadByte(), r.ReadByte())) == (0, 3),
+            Describe(typeB));
+
+        a.Discard(CS_PARTYATTR_ACK);
+        b.Discard(CS_PARTYATTR_ACK);
+        a.Send(Req(CS_CHGPARTYCHIEF_REQ, w => w.WriteUInt32(b.CharId)));
+        var attr = a.TryWait(CS_PARTYATTR_ACK, r => r.ReadUInt32() == a.CharId);
+        Check("party: leadership handed over (ATTR chief = member)", attr is not null
+            && Read(attr, r => (r.ReadUInt32(), r.ReadUInt16(), r.ReadUInt32(), r.ReadUInt16())) is var at && at.Item3 == b.CharId,
+            Describe(attr));
+        var chief = a.TryWait(CS_CHGPARTYCHIEF_ACK, timeoutMs: 1000);
+        Check("party: old chief told the change worked (PARTY_CHGCHIEF)", chief is not null && Read(chief, r => r.ReadByte()) == 10,
+            Describe(chief));
+
+        // The new chief removes the old one.
+        b.Send(Req(CS_PARTYDEL_REQ, w => w.WriteUInt32(a.CharId)));
+        var delA = a.TryWait(CS_PARTYDEL_ACK);
+        var delB = b.TryWait(CS_PARTYDEL_ACK);
+        Check("party: kicked player told (kick=1)", delA is not null && Read(delA, r => (r.ReadUInt32(), r.ReadUInt32(),
+            r.ReadUInt16(), r.ReadUInt16(), r.ReadByte())) is var da && da.Item1 == a.CharId && da.Item5 == 1, Describe(delA));
+        Check("party: chief told of the kick", delB is not null && Read(delB, r => (r.ReadUInt32(), r.ReadUInt32(),
+            r.ReadUInt16(), r.ReadUInt16(), r.ReadByte())).Item1 == a.CharId, Describe(delB));
+
+        // A player not online: the world answers the inviter.
+        a.Send(Req(CS_PARTYADD_REQ, w => { w.WriteString("NoSuchPlayerTBot"); w.WriteByte(0); }));
+        var fail = a.TryWait(CS_PARTYADD_ACK);
+        Check("party: invite to an unknown name refused", fail is not null && Read(fail, r => (r.ReadString(), r.ReadString(),
+            r.ReadByte())) is var f && f.Item3 != 0, Describe(fail));
+    }
+
+    private static void Mail(Bot a, Bot b, string nameA, string nameB)
+    {
+        a.Discard(CS_MONEY_ACK);
+        a.Send(PostSend("NoSuchPlayerTBot", "TBot", "x", 0));
+        var bad = a.TryWait(CS_POSTSEND_ACK);
+        Check("mail: unknown receiver refused (POST_NORECEIVER)", bad is not null && Read(bad, r => r.ReadByte()) == 1, Describe(bad));
+
+        a.Send(PostSend(nameB, "TBot test", "hello from TBot", MailCooper));
+        var sent = a.TryWait(CS_POSTSEND_ACK);
+        Check("mail: sent", sent is not null && Read(sent, r => r.ReadByte()) == 0, Describe(sent));
+        var money = a.TryWait(CS_MONEY_ACK);
+        Check("mail: sender charged postage + money", money is not null && Read(money, r => (r.ReadUInt32(), r.ReadUInt32(),
+            r.ReadUInt32())) is var m && m.Item3 == TestCooper - MailCost - MailCooper, Describe(money));
+
+        var recv = b.TryWait(CS_POSTRECV_ACK);
+        var rc = recv is null ? default : Read(recv, r => (r.ReadUInt32(), r.ReadByte(), r.ReadByte(), r.ReadString(),
+            r.ReadString(), r.ReadInt64()));
+        if (!Check("mail: receiver notified (POSTRECV)", recv is not null && rc.Item4 == nameA && rc.Item5 == "TBot test"
+                && Math.Abs(rc.Item6 - DateTimeOffset.UtcNow.ToUnixTimeSeconds()) < 120, Describe(recv)))
+            return;
+        uint postId = rc.Item1;
+
+        b.Send(Req(CS_POSTLIST_REQ, w => w.WriteUInt16(0)));
+        var list = b.TryWait(CS_POSTLIST_ACK);
+        bool listed = false;
+        if (list is not null)
+            Read(list, r =>
+            {
+                r.ReadUInt16(); r.ReadUInt16(); r.ReadUInt16();
+                ushort n = r.ReadUInt16();
+                for (int i = 0; i < n; i++)
+                {
+                    uint id = r.ReadUInt32(); r.ReadByte(); r.ReadByte(); string sender = r.ReadString();
+                    r.ReadString(); r.ReadInt64(); r.ReadByte();
+                    listed |= id == postId && sender == nameA;
+                }
+                return 0;
+            });
+        Check("mail: listed", listed, Describe(list));
+
+        b.Send(Req(CS_POSTVIEW_REQ, w => w.WriteUInt32(postId)));
+        var view = b.TryWait(CS_POSTVIEW_ACK);
+        Check("mail: opened", view is not null && Read(view, r => (r.ReadUInt32(), r.ReadByte(), r.ReadString(), r.ReadUInt32(),
+            r.ReadUInt32(), r.ReadUInt32(), r.ReadByte(), r.ReadByte())) is var v && v.Item1 == postId
+            && v.Item3 == "hello from TBot" && v.Item6 == MailCooper && v.Item8 == 0, Describe(view));
+
+        b.Discard(CS_MONEY_ACK);
+        b.Send(Req(CS_POSTGETITEM_REQ, w => w.WriteUInt32(postId)));
+        var got = b.TryWait(CS_POSTGETITEM_ACK);
+        var bm = b.TryWait(CS_MONEY_ACK);
+        Check("mail: money taken", got is not null && Read(got, r => r.ReadByte()) == 0 && bm is not null
+            && Read(bm, r => (r.ReadUInt32(), r.ReadUInt32(), r.ReadUInt32())).Item3 == MailCooper, $"{Describe(got)} / {Describe(bm)}");
+
+        b.Send(Req(CS_POSTDEL_REQ, w => w.WriteUInt32(postId)));
+        var del = b.TryWait(CS_POSTDEL_ACK);
+        Check("mail: deleted", del is not null && Read(del, r => r.ReadUInt32()) == postId, Describe(del));
+    }
+
+    private static void HotkeyAdd(Bot a)
+    {
+        a.Send(Req(CS_HOTKEYADD_REQ, w => { w.WriteByte(1); w.WriteUInt16(HotkeySkill); w.WriteByte(HotkeyPage); w.WriteByte(0); }));
+        var r = a.TryWait(CS_HOTKEYCHANGE_ACK);
+        Check("hotkey: added", r is not null && ParseHotkey(r) is var h && h.Set == HotkeyPage && h.Slots.Count == 1
+            && h.Slots[0] == (0, 1, HotkeySkill), Describe(r));
+    }
+
+    private static void Bags(Bot b)
+    {
+        b.Send(Req(CS_INVENDEL_REQ, w => { w.WriteByte(3); w.WriteByte(0xFF); w.WriteByte(0xFF); }));
+        var none = b.TryWait(CS_INVENDEL_ACK);
+        Check("bags: removing a missing bag fails", none is not null && Read(none, r => (r.ReadByte(), r.ReadByte(), r.ReadByte())).Item1 == 5,
+            Describe(none));
+
+        b.Send(Req(CS_INVENADD_REQ, w => { w.WriteByte(0); w.WriteByte(0xFF); w.WriteByte(BagSlot); }));
+        var gone = b.TryWait(CS_DELITEM_ACK);
+        var add = b.TryWait(CS_INVENADD_ACK);
+        Check("bags: bag equipped (item leaves the backpack)", gone is not null && Read(gone, r => (r.ReadByte(), r.ReadByte())) == (0xFF, BagSlot),
+            Describe(gone));
+        Check("bags: bag equipped (INVENADD)", add is not null && Read(add, r => (r.ReadByte(), r.ReadByte(), r.ReadUInt16(),
+            r.ReadInt64(), r.ReadByte())) is var ad && ad.Item1 == 0 && ad.Item2 == 0 && ad.Item3 == BagItem && ad.Item5 == 1, Describe(add));
+
+        b.Send(Req(CS_INVENMOVE_REQ, w => { w.WriteByte(0); w.WriteByte(1); }));
+        var mv = b.TryWait(CS_INVENMOVE_ACK);
+        Check("bags: bag moved to slot 1", mv is not null && Read(mv, r => (r.ReadByte(), r.ReadByte(), r.ReadByte())) == (0, 0, 1), Describe(mv));
+
+        b.Send(Req(CS_INVENDEL_REQ, w => { w.WriteByte(1); w.WriteByte(0xFF); w.WriteByte(BagSlot); }));
+        var back = b.TryWait(CS_ADDITEM_ACK);
+        var del = b.TryWait(CS_INVENDEL_ACK);
+        Check("bags: bag back in the backpack (ADDITEM)", back is not null && back.ReadByte() == 0xFF, Describe(back));
+        Check("bags: bag removed (INVENDEL)", del is not null && Read(del, r => (r.ReadByte(), r.ReadByte(), r.ReadByte())) == (0, 1, 1), Describe(del));
+    }
+
+    private static void Teleport(Bot a, Bot b)
+    {
+        b.Send(Req(CS_TELEPORT_REQ, w => { w.WriteUInt16(0); w.WriteUInt16(FarPortal); }));
+        var begin = b.TryWait(CS_BEGINTELEPORT_ACK);
+        Check("teleport: loading screen (BEGINTELEPORT)", begin is not null && Read(begin, r => (r.ReadByte(), r.ReadUInt16())).Item2 == 0,
+            Describe(begin));
+        var tp = b.TryWait(CS_TELEPORT_ACK, timeoutMs: 8000);
+        var t = tp is null ? default : Read(tp, r => (r.ReadByte(), r.ReadUInt32(), r.ReadByte(), r.ReadUInt32(), r.ReadUInt16(),
+            r.ReadFloat(), r.ReadFloat(), r.ReadFloat()));
+        Check("teleport: arrived at the portal (TELEPORT_ACK)", tp is not null && t.Item1 == 0 && t.Item2 == b.CharId && t.Item5 == 0
+            && Math.Abs(t.Item6 - 3726.88f) < 1 && Math.Abs(t.Item8 - 146.04f) < 1, Describe(tp));
+
+        var con = b.TryWait(GameMsg.CS_CONNECT_ACK, timeoutMs: 8000);
+        Check("teleport: re-entry granted (CONNECT_ACK)", con is not null && con.ReadByte() == 0, Describe(con));
+        if (con is null) return;
+        b.Send(GamePackets.BuildConReady());
+
+        var left = a.TryWait(CS_LEAVE_ACK, timeoutMs: 3000);
+        Check("teleport: the other bot saw it leave (LEAVE_ACK)", left is not null, Describe(left));
+
+        // Walk a few steps at the destination: a player not placed again would be dropped by the move guard.
+        Thread.Sleep(500);
+        for (int i = 1; i <= 5; i++)
+        {
+            b.Send(GamePackets.BuildMove(0, t.Item6 + i, t.Item7, t.Item8, 0, 0, 4, 4, 0, 0, 3f));
+            Thread.Sleep(200);
+        }
+        Check("teleport: still connected after walking there", !b.Closed, "");
+    }
+
+    private static void Pets(Bot a, Bot b)
+    {
+        var list = a.TryWait(CS_PETLIST_ACK, timeoutMs: 1000);
+        Check("pets: the account's pets are listed at login", list is not null && ParsePetList(list).Any(p => p.Id == StarterPet),
+            Describe(list));
+        Check("pets: the saddle state is sent at login", a.TryWait(CS_SENDSADDLE_REQ, timeoutMs: 1000) is { } sd
+            && Read(sd, r => (r.ReadUInt32(), r.ReadByte(), r.ReadInt64(), r.ReadUInt32())).Item1 == 0, "");
+
+        a.Send(Req(CS_PETMAKE_REQ, w => { w.WriteByte(0xFF); w.WriteByte(HorseSlot); w.WriteString(HorseName); }));
+        var made = a.TryWait(CS_PETMAKE_ACK);
+        Check("pets: a mount item makes a pet (permanent)", made is not null && Read(made, r => (r.ReadByte(), r.ReadUInt16(), r.ReadString(),
+            r.ReadInt64())) == (0, HorsePet, HorseName, 0L), Describe(made));
+
+        a.Send(Req(CS_PETRECALL_REQ, w => w.WriteUInt16(HorsePet)));
+        var addA = a.TryWait(CS_ADDRECALLMON_ACK, timeoutMs: 8000);
+        var addB = b.TryWait(CS_ADDRECALLMON_ACK, r => r.ReadUInt32() == a.CharId, 8000);
+        var mount = addA is null ? default : ParseAddRecall(addA);
+        Check("pets: calling the pet summons the mount (owner)", addA is not null && mount.Host == a.CharId && mount.PetId == HorsePet
+            && mount.Name == HorseName && mount.RecallType == 7, addA is null ? Describe(a.TryWait(CS_PETRECALL_ACK, timeoutMs: 1)) : mount.ToString());
+        Check("pets: the other player sees the mount", addB is not null && ParseAddRecall(addB).MonId == mount.MonId, Describe(addB));
+        if (addA is null) return;
+
+        a.Send(Req(CS_PETRIDING_REQ, w => { w.WriteUInt32(mount.MonId); w.WriteByte(1); }));
+        var rideA = a.TryWait(CS_PETRIDING_ACK);
+        var rideB = b.TryWait(CS_PETRIDING_ACK);
+        Check("pets: mounting is shown to the rider", rideA is not null && Read(rideA, r => (r.ReadByte(), r.ReadUInt32(), r.ReadUInt32(),
+            r.ReadByte())) == (0, a.CharId, mount.MonId, 1), Describe(rideA));
+        Check("pets: mounting is shown to the other player", rideB is not null && Read(rideB, r => (r.ReadByte(), r.ReadUInt32(),
+            r.ReadUInt32(), r.ReadByte())) == (0, a.CharId, mount.MonId, 1), Describe(rideB));
+
+        a.Send(Req(CS_PETRIDING_REQ, w => { w.WriteUInt32(mount.MonId); w.WriteByte(2); }));
+        var down = b.TryWait(CS_PETRIDING_ACK);
+        Check("pets: dismounting is shown", down is not null && Read(down, r => (r.ReadByte(), r.ReadUInt32(), r.ReadUInt32(),
+            r.ReadByte())).Item4 == 2, Describe(down));
+        a.Discard(CS_PETRIDING_ACK);
+
+        a.Send(Req(CS_PETCANCEL_REQ, _ => { }));
+        var gone = b.TryWait(CS_DELRECALLMON_ACK, timeoutMs: 8000);
+        var goneA = a.TryWait(CS_DELRECALLMON_ACK, timeoutMs: 8000);
+        Check("pets: sending the mount away removes it for everyone", gone is not null && goneA is not null
+            && Read(gone, r => (r.ReadUInt32(), r.ReadUInt32(), r.ReadByte(), r.ReadByte())).Item2 == mount.MonId
+            && Read(goneA, r => (r.ReadUInt32(), r.ReadUInt32(), r.ReadByte(), r.ReadByte())).Item2 == mount.MonId,
+            $"{Describe(gone)} / {Describe(goneA)}");
+    }
+
+    private static void Companions(Bot a, Bot b)
+    {
+        var none = a.TryWait(CS_COMPANIONLIST_ACK, timeoutMs: 1000);
+        Check("companions: the (empty) list is sent at login", none is not null && ParseCompanionList(none).Count == 0, Describe(none));
+
+        a.Send(Req(CS_CREATECOMPANION_REQ, w => { w.WriteByte(0xFF); w.WriteByte(RuneSlot); w.WriteString(PalName); }));
+        var ack = a.TryWait(CS_CREATECOMPANION_ACK);
+        Check("companions: a rune creates a companion (species stamped by the server)", ack is not null
+            && Read(ack, r => (r.ReadByte(), r.ReadByte())) == (0, 0), Describe(ack));
+        var list = a.TryWait(CS_COMPANIONLIST_ACK);
+        var entry = list is null ? default : ParseCompanionList(list).FirstOrDefault();
+        Check("companions: the list shows it", list is not null && entry.Name == PalName && entry.MonId == RuneSpecies && entry.Level == 1,
+            Describe(list));
+        var spawned = a.TryWait(CS_UPDATESPAWNEDCOMPANION_REQ, r => r.ReadByte() == 0, 8000);
+        Check("companions: it is marked summoned", spawned is not null && Read(spawned, r => r.ReadByte()) == 0, Describe(spawned));
+
+        var addA = a.TryWait(CS_ADDSPOLECNIKMON_ACK, timeoutMs: 8000);
+        var addB = b.TryWait(CS_ADDSPOLECNIKMON_ACK, r => r.ReadUInt32() == a.CharId, 8000);
+        var pal = addA is null ? default : ParseAddCompanion(addA);
+        Check("companions: it appears for its owner", addA is not null && pal.Host == a.CharId && pal.TempId == RuneSpecies, pal.ToString());
+        Check("companions: and for the other player", addB is not null && ParseAddCompanion(addB).MonId == pal.MonId, Describe(addB));
+        if (addA is null) return;
+
+        a.Send(Req(CS_COMPANIONRECALL_REQ, w => { w.WriteUInt32(RuneSpecies); w.WriteByte(0); }));   // same slot: dismiss
+        var gone = b.TryWait(CS_DELSPOLECNIKMON_ACK, timeoutMs: 8000);
+        Check("companions: summoning it again sends it away", gone is not null
+            && Read(gone, r => (r.ReadUInt32(), r.ReadUInt32(), r.ReadByte())).Item2 == pal.MonId, Describe(gone));
+        a.Discard(CS_DELSPOLECNIKMON_ACK);
+    }
+
+    private static PacketWriter FinishSkill(Bot a, uint objId, byte type, ushort skill, float x, float z, params (uint Id, byte Type)[] targets)
+        => Req(CS_FINISHSKILL_ACK, w =>
+        {
+            w.WriteUInt32(a.CharId); w.WriteUInt32(objId); w.WriteByte(type);
+            w.WriteFloat(x); w.WriteFloat(a.Spawn.Y); w.WriteFloat(z);
+            w.WriteUInt16(skill); w.WriteUInt32(0); w.WriteUInt32(0); w.WriteUInt16(0);
+            w.WriteByte((byte)targets.Length);
+            foreach (var (id, t) in targets) { w.WriteUInt32(id); w.WriteByte(t); }
+        });
+
+    private static (byte Ret, byte Level, uint Points) ReadSkillBuy(PacketReader p) => Read(p, r =>
+    {
+        byte ret = r.ReadByte(); r.ReadUInt16(); byte lvl = r.ReadByte();
+        r.ReadUInt32(); r.ReadUInt32(); r.ReadUInt32(); r.ReadUInt32();                  // Tick, gold, silver, copper
+        uint points = r.ReadUInt16();
+        for (int i = 0; i < 4; i++) r.ReadUInt16();                                      // the four tabs' spent points
+        return (ret, lvl, points);
+    });
+
+    private static void Skills(Bot a)
+    {
+        // The skill window's "learn" button: CS_SKILLBUY_REQ to the virtual trainer.
+        a.Send(Req(CS_SKILLBUY_REQ, w => { w.WriteUInt16(SkillNpc); w.WriteUInt16(SandSkill); }));
+        var ack = a.TryWait(CS_SKILLBUY_ACK, r => { r.ReadByte(); return r.ReadUInt16() == SandSkill; });
+        Check("skills: Throw Sand is learned from the skill window (level 0 → 1, one point)",
+            ack is not null && ReadSkillBuy(ack) == (0, 1, BotSkillPoints - 1u), Describe(ack));
+
+        a.Send(Req(CS_SKILLBUY_REQ, w => { w.WriteUInt16(SkillNpc); w.WriteUInt16(SandSkill); }));
+        var again = a.TryWait(CS_SKILLBUY_ACK, r => { r.ReadByte(); return r.ReadUInt16() == SandSkill; });
+        Check("skills: its level 2 waits for character level 20", again is not null && ReadSkillBuy(again) is { Ret: 5, Level: 1 },
+            Describe(again));                                                            // SKILL_NEEDLEVELUP
+
+        a.Send(Req(CS_NPCITEMLIST_REQ, w => w.WriteUInt16(SkillNpc)));
+        var list = a.TryWait(CS_NPCITEMLIST_ACK, r => r.ReadUInt16() == SkillNpc);
+        var ids = list is null ? new List<ushort>() : Read(list, r =>
+        {
+            r.ReadUInt16(); r.ReadByte(); r.ReadByte(); int n = r.ReadByte();
+            var l = new List<ushort>(); for (int i = 0; i < n; i++) { l.Add(r.ReadUInt16()); r.ReadUInt32(); } return l;
+        });
+        Check("skills: the trainer lists what can be learned now (not Throw Sand's level 2)",
+            list is not null && ids.Count > 0 && !ids.Contains(SandSkill), list is null ? "no reply" : $"{ids.Count} skills");
+    }
+
+    private static void Summons(Bot a, Bot b)
+    {
+        // A main summon (Dark Ritual): created through the world, seen by both.
+        a.Send(FinishSkill(a, a.CharId, 1, RitualSkill, a.Spawn.X, a.Spawn.Z, (a.CharId, 1)));
+        var addA = a.TryWait(CS_ADDRECALLMON_ACK, r => { r.ReadUInt32(); r.ReadUInt32(); return r.ReadUInt16() == RitualMon; }, 8000);
+        var addB = b.TryWait(CS_ADDRECALLMON_ACK, r => { r.ReadUInt32(); r.ReadUInt32(); return r.ReadUInt16() == RitualMon; }, 8000);
+        var ritual = addA is null ? default : ParseAddRecall(addA);
+        Check("summons: Dark Ritual summons its creature (owner)", addA is not null && ritual.Host == a.CharId && ritual.RecallType == 1,
+            addA is null ? "no reply" : ritual.ToString());
+        Check("summons: the other player sees it", addB is not null && ParseAddRecall(addB).MonId == ritual.MonId, Describe(addB));
+        if (addA is null) return;
+
+        // Its owner's client makes it swing.
+        a.Send(Req(CS_SKILLUSE_REQ, w =>
+        {
+            w.WriteUInt32(ritual.MonId); w.WriteByte(7); w.WriteByte(1); w.WriteUInt16(0); w.WriteUInt16(SummonAttack);
+            w.WriteByte(0); w.WriteUInt32(0); w.WriteUInt32(0); w.WriteFloat(0); w.WriteFloat(0); w.WriteFloat(0); w.WriteByte(0);
+        }));
+        var use = a.TryWait(CS_SKILLUSE_ACK, r => { r.ReadByte(); return r.ReadUInt32() == ritual.MonId; });
+        Check("summons: the summon's skill is announced", use is not null && Read(use, r =>
+        {
+            byte res = r.ReadByte(); r.ReadUInt32(); byte type = r.ReadByte(); r.ReadUInt16(); r.ReadUInt16(); r.ReadByte();
+            r.ReadUInt32(); r.ReadUInt32(); r.ReadByte(); r.ReadUInt16(); r.ReadByte();
+            for (int i = 0; i < 4; i++) r.ReadUInt32();
+            r.ReadUInt16(); r.ReadUInt16(); for (int i = 0; i < 6; i++) r.ReadByte();
+            r.ReadFloat(); r.ReadFloat(); r.ReadFloat(); byte n = r.ReadByte();
+            for (int i = 0; i < n; i++) { r.ReadUInt32(); r.ReadByte(); }
+            return (res, type);
+        }) == (0, 7), Describe(use));
+
+        // … and hit a monster nearby (the first one the owner was shown).
+        var monRaw = a.Received.FirstOrDefault(pk => PacketHeader.ReadId(pk) == CS_ADDMON_ACK);
+        if (monRaw is not null)
+        {
+            uint monId = BitConverter.ToUInt32(monRaw, PacketHeader.Size);
+            a.Send(FinishSkill(a, ritual.MonId, 7, SummonAttack, a.Spawn.X, a.Spawn.Z, (monId, 2)));
+            var hit = a.TryWait(CS_DEFEND_ACK, r => r.ReadUInt32() == ritual.MonId);
+            Check("summons: the summon's hit lands on a monster (owner is the host)", hit is not null && Read(hit, r =>
+            {
+                r.ReadUInt32(); uint target = r.ReadUInt32(); byte atkType = r.ReadByte(); r.ReadByte(); uint host = r.ReadUInt32();
+                r.ReadByte(); r.ReadUInt32(); r.ReadUInt32(); r.ReadByte(); r.ReadUInt32(); r.ReadByte(); r.ReadByte(); r.ReadUInt16();
+                r.ReadByte(); for (int i = 0; i < 4; i++) r.ReadUInt32(); r.ReadByte(); r.ReadByte(); r.ReadByte(); r.ReadByte();
+                r.ReadUInt16(); r.ReadByte(); r.ReadUInt16(); r.ReadByte();
+                for (int i = 0; i < 6; i++) r.ReadFloat();
+                byte n = r.ReadByte(); for (int i = 0; i < n; i++) { r.ReadByte(); r.ReadUInt32(); }
+                return (target, atkType, host);
+            }) == (monId, 7, a.CharId), Describe(hit));
+        }
+
+        a.Send(Req(CS_DELRECALLMON_REQ, w => { w.WriteUInt32(ritual.MonId); w.WriteByte(7); }));
+        var gone = b.TryWait(CS_DELRECALLMON_ACK, r => { r.ReadUInt32(); return r.ReadUInt32() == ritual.MonId; }, 8000);
+        Check("summons: dismissing it removes it for everyone", gone is not null, Describe(gone));
+
+        // A placed object (Ice Rain): made right here, no world round trip.
+        a.Send(FinishSkill(a, a.CharId, 1, IceRainSkill, a.Spawn.X + 3, a.Spawn.Z + 3, (a.CharId, 1)));
+        var selfA = a.TryWait(CS_ADDSELFOBJ_ACK);
+        var selfB = b.TryWait(CS_ADDSELFOBJ_ACK);
+        var obj = selfA is null ? default : Read(selfA, r =>
+        {
+            uint host = r.ReadUInt32(), id = r.ReadUInt32(); ushort tpl = r.ReadUInt16();
+            r.ReadByte(); r.ReadByte(); r.ReadByte(); r.ReadByte();
+            for (int i = 0; i < 4; i++) r.ReadUInt32();
+            r.ReadFloat(); r.ReadFloat(); r.ReadFloat(); r.ReadUInt16(); r.ReadUInt16();
+            r.ReadByte(); r.ReadByte(); r.ReadByte(); r.ReadUInt32(); byte type = r.ReadByte(); r.ReadByte(); r.ReadByte();
+            r.ReadUInt16(); r.ReadByte(); for (int i = 0; i < 5; i++) r.ReadUInt32();
+            byte n = r.ReadByte();
+            for (int i = 0; i < n; i++)
+            {
+                r.ReadUInt16(); r.ReadByte(); r.ReadUInt32(); r.ReadUInt32(); r.ReadByte(); r.ReadUInt32(); r.ReadByte(); r.ReadByte();
+                r.ReadUInt16(); r.ReadByte(); for (int k = 0; k < 4; k++) r.ReadUInt32(); r.ReadByte(); r.ReadByte();
+                r.ReadFloat(); r.ReadFloat(); r.ReadFloat();
+            }
+            return (host, id, tpl, type);
+        });
+        Check("summons: Ice Rain places its object (owner)", selfA is not null && obj.host == a.CharId && obj.tpl == IceRainMon && obj.type == 4,
+            Describe(selfA));
+        Check("summons: the other player sees the placed object", selfB is not null, Describe(selfB));
+        if (selfA is null) return;
+
+        a.Send(Req(CS_DELRECALLMON_REQ, w => { w.WriteUInt32(obj.id); w.WriteByte(11); }));
+        var del = b.TryWait(CS_DELSELFOBJ_ACK);
+        Check("summons: dismissing the placed object removes it", del is not null
+            && Read(del, r => (r.ReadUInt32(), r.ReadByte())).Item1 == obj.id, Describe(del));
+        a.Discard(CS_DELSELFOBJ_ACK);
+    }
+
+    private readonly record struct AddCompanion(uint Host, uint MonId, ushort TempId);
+
+    // TClient OnCS_ADDSPOLECNIKMON_ACK (CSHandler.cpp:7129) — every field.
+    private static AddCompanion ParseAddCompanion(PacketReader p) => Read(p, r =>
+    {
+        uint host = r.ReadUInt32(), mon = r.ReadUInt32(); ushort temp = r.ReadUInt16(); r.ReadUInt16(); r.ReadByte();
+        r.ReadString();
+        r.ReadByte(); r.ReadByte(); r.ReadByte(); r.ReadByte();
+        for (int i = 0; i < 4; i++) r.ReadUInt32();
+        r.ReadFloat(); r.ReadFloat(); r.ReadFloat(); r.ReadUInt16(); r.ReadUInt16();
+        r.ReadByte(); r.ReadByte(); r.ReadByte(); r.ReadByte(); r.ReadByte();
+        r.ReadUInt32(); r.ReadByte(); r.ReadByte(); r.ReadByte();
+        r.ReadUInt16(); r.ReadByte();
+        for (int i = 0; i < 4; i++) r.ReadUInt32();
+        return new AddCompanion(host, mon, temp);
+    });
+
+    // TClient OnCS_COMPANIONLIST_ACK (CSHandler.cpp:12533).
+    private static List<(byte Slot, uint MonId, string Name, byte Level)> ParseCompanionList(PacketReader p) => Read(p, r =>
+    {
+        byte n = r.ReadByte();
+        var list = new List<(byte, uint, string, byte)>();
+        for (int i = 0; i < n; i++)
+        {
+            byte slot = r.ReadByte(); uint mon = r.ReadUInt32(); string name = r.ReadString();
+            r.ReadUInt32(); r.ReadUInt32(); byte level = r.ReadByte(); r.ReadUInt32(); r.ReadByte(); r.ReadByte();
+            for (int k = 0; k < 6; k++) r.ReadByte();
+            for (int k = 0; k < 2; k++) { r.ReadUInt16(); r.ReadInt64(); }
+            r.ReadUInt32(); r.ReadByte(); r.ReadFloat();
+            list.Add((slot, mon, name, level));
+        }
+        return list;
+    });
+
+    private readonly record struct AddRecall(uint Host, uint MonId, ushort TempId, ushort PetId, string Name, byte RecallType);
+
+    // TClient OnCS_ADDRECALLMON_ACK (CSHandler.cpp:7351) — every field, to the last byte.
+    private static AddRecall ParseAddRecall(PacketReader p) => Read(p, r =>
+    {
+        uint host = r.ReadUInt32(), mon = r.ReadUInt32(); ushort temp = r.ReadUInt16(), pet = r.ReadUInt16(); r.ReadByte();
+        string name = r.ReadString();
+        r.ReadByte(); r.ReadByte(); r.ReadByte(); r.ReadByte();                    // country, aid, colour, level
+        for (int i = 0; i < 4; i++) r.ReadUInt32();                                  // max hp, hp, max mp, mp
+        r.ReadFloat(); r.ReadFloat(); r.ReadFloat(); r.ReadUInt16(); r.ReadUInt16();
+        r.ReadByte(); r.ReadByte(); r.ReadByte(); r.ReadByte(); r.ReadByte();        // mouse, key, action, mode, new
+        r.ReadUInt32(); byte type = r.ReadByte(); r.ReadByte(); r.ReadByte();          // region, recall type, hit, skill lvl
+        r.ReadUInt16(); r.ReadByte();                                                // AL, atk level
+        for (int i = 0; i < 5; i++) r.ReadUInt32();                                  // 4 powers + life tick
+        r.ReadUInt32(); r.ReadByte();                                                // target
+        byte n = r.ReadByte();
+        for (int i = 0; i < n; i++)
+        {
+            r.ReadUInt16(); r.ReadByte(); r.ReadUInt32(); r.ReadUInt32(); r.ReadByte(); r.ReadUInt32(); r.ReadByte(); r.ReadByte();
+            r.ReadUInt16(); r.ReadByte(); for (int k = 0; k < 4; k++) r.ReadUInt32(); r.ReadByte(); r.ReadByte();
+            r.ReadFloat(); r.ReadFloat(); r.ReadFloat();
+        }
+        return new AddRecall(host, mon, temp, pet, name, type);
+    });
+
+    // TClient OnCS_PETLIST_ACK (CSHandler.cpp:10138).
+    private static List<(ushort Id, string Name, long End, byte Effect)> ParsePetList(PacketReader p) => Read(p, r =>
+    {
+        byte n = r.ReadByte();
+        var list = new List<(ushort, string, long, byte)>();
+        for (int i = 0; i < n; i++) list.Add((r.ReadUInt16(), r.ReadString(), r.ReadInt64(), r.ReadByte()));
+        return list;
+    });
+
+    private static async Task CheckSaved(GameDb db, uint idA, uint idB)
+    {
+        var comp = await db.RowAsync("SELECT strName, dwMonID FROM TCOMPANIONTABLE WHERE dwCharID=@p0 AND bSlot=0", (int)idA);
+        Check("saved: the companion in TCOMPANIONTABLE", comp is not null && (string)comp[0] == PalName && Convert.ToInt32(comp[1]) == RuneSpecies,
+            comp is null ? "no row" : $"{comp[0]} / {comp[1]}");
+        var pet = await db.RowAsync("SELECT szName FROM TPETTABLE WHERE dwUserID=(SELECT dwUserID FROM TCHARTABLE WHERE dwCharID=@p0) AND wPetID=@p1",
+            (int)idA, (int)HorsePet);
+        Check("saved: the new pet in TPETTABLE", pet is not null && (string)pet[0] == HorseName, pet is null ? "no row" : $"name={pet[0]}");
+
+        var hk = await db.RowAsync("SELECT bType1, wID1 FROM THOTKEYTABLE WHERE dwCharID=@p0 AND bInvenID=@p1", (int)idA, (int)HotkeyPage);
+        Check("saved: hotkey page in THOTKEYTABLE", hk is not null && Convert.ToInt32(hk[0]) == 1 && Convert.ToInt32(hk[1]) == HotkeySkill,
+            hk is null ? "no row" : $"type={hk[0]} id={hk[1]}");
+
+        var pos = await db.RowAsync("SELECT wMapID, fPosX, fPosZ FROM TCHARTABLE WHERE dwCharID=@p0", (int)idB);
+        Check("saved: teleported position", pos is not null && Math.Abs(Convert.ToSingle(pos[1]) - 3726.88f) < 10
+            && Math.Abs(Convert.ToSingle(pos[2]) - 146.04f) < 10, pos is null ? "" : $"map {pos[0]} ({pos[1]}, {pos[2]})");
+
+        var ma = await db.RowAsync("SELECT dwCooper FROM TCHARTABLE WHERE dwCharID=@p0", (int)idA);
+        Check("saved: sender's money", ma is not null && Convert.ToInt64(ma[0]) == TestCooper - MailCost - MailCooper - SandPrice, $"cooper={ma?[0]}");
+        var sk = await db.RowAsync("SELECT bLevel, (SELECT wSkillPoint FROM TCHARTABLE WHERE dwCharID=@p0) FROM TSKILLTABLE WHERE dwCharID=@p0 AND wSkillID=@p1",
+            (int)idA, (int)SandSkill);
+        Check("saved: the learned skill in TSKILLTABLE and the points spent", sk is not null && Convert.ToInt32(sk[0]) == 1
+            && Convert.ToInt32(sk[1]) == BotSkillPoints - 1, sk is null ? "no row" : $"level {sk[0]}, {sk[1]} points");
+        var mb = await db.RowAsync("SELECT dwCooper FROM TCHARTABLE WHERE dwCharID=@p0", (int)idB);
+        Check("saved: receiver's money", mb is not null && Convert.ToInt64(mb[0]) == MailCooper, $"cooper={mb?[0]}");
+
+        var bag = await db.RowAsync("SELECT COUNT(*) FROM TITEMTABLE WHERE dwOwnerID=@p0 AND bOwnerType=0 AND bStorageType=0 " +
+            "AND dwStorageID=255 AND wItemID=@p1", (int)idB, (int)BagItem);
+        var bagInven = await db.RowAsync("SELECT COUNT(*) FROM TINVENTABLE WHERE dwCharID=@p0 AND bInvenID IN (0,1)", (int)idB);
+        Check("saved: bag back in the backpack, no bag slot left", bag is not null && Convert.ToInt32(bag[0]) == 1
+            && bagInven is not null && Convert.ToInt32(bagInven[0]) == 0, $"backpack={bag?[0]} bagRows={bagInven?[0]}");
+    }
+
+    // ================================ fixtures ================================
+
+    private sealed record Saved(object[] A, object[] B);
+
+    private static async Task<uint> FirstChar(GameDb db, string account)
+    {
+        var row = await db.RowAsync(@"SELECT TOP 1 c.dwCharID FROM TCHARTABLE c
+            JOIN TGlobal_gsp.dbo.TACCOUNT_PW u ON u.dwUserID = c.dwUserID WHERE u.szUserID=@p0 AND c.bDelete=0
+            ORDER BY c.bSlot", account);
+        return row is null ? throw new InvalidOperationException($"account '{account}' has no character") : Convert.ToUInt32(row[0]);
+    }
+
+    private const string CharCols = "dwGold, dwSilver, dwCooper, dwHP, wMapID, dwRegion, fPosX, fPosY, fPosZ";
+
+    private static async Task<Saved> Snapshot(GameDb db, uint idA, uint idB)
+        => new((await db.RowAsync($"SELECT {CharCols} FROM TCHARTABLE WHERE dwCharID=@p0", (int)idA))!,
+               (await db.RowAsync($"SELECT {CharCols} FROM TCHARTABLE WHERE dwCharID=@p0", (int)idB))!);
+
+    private static async Task Prepare(GameDb db, uint idA, uint idB)
+    {
+        await db.ExecAsync("UPDATE TCHARTABLE SET dwGold=0, dwSilver=0, dwCooper=@p1 WHERE dwCharID=@p0", (int)idA, (int)TestCooper);
+        await db.ExecAsync("UPDATE TCHARTABLE SET dwGold=0, dwSilver=0, dwCooper=0, dwHP=20 WHERE dwCharID=@p0", (int)idB);
+        await db.ExecAsync("DELETE FROM THOTKEYTABLE WHERE dwCharID=@p0 AND bInvenID=@p1", (int)idA, (int)HotkeyPage);
+        await db.ExecAsync("DELETE FROM TITEMTABLE WHERE dlID=@p0 OR (dwOwnerID=@p1 AND bOwnerType=0 AND bStorageType=0 AND dwStorageID=255 AND bItemID=@p2)",
+            BagDlId, (int)idB, (int)BagSlot);
+        await db.ExecAsync(@"INSERT INTO TITEMTABLE (dlID, bStorageType, dwStorageID, bOwnerType, dwOwnerID, bItemID, wItemID, bLevel,
+            bCount, bGLevel, dwDuraMax, dwDuraCur, bRefineCur, dEndTime, bGradeEffect, bMagic1, bMagic2, bMagic3, bMagic4, bMagic5,
+            bMagic6, wValue1, wValue2, wValue3, wValue4, wValue5, wValue6, dwTime1, dwTime2, dwTime3, dwTime4, dwTime5, dwTime6,
+            bGem, wMoggItemID)
+            VALUES (@p0, 0, 255, 0, @p1, @p2, @p3, 0, 1, 0, 0, 0, 0, '1900-01-01', 0, 0,0,0,0,0,0, 0,0,0,0,0,0, 0,0,0,0,0,0, 0, 0)",
+            BagDlId, (int)idB, (int)BagSlot, (int)BagItem);
+        await db.ExecAsync("DELETE FROM TPETTABLE WHERE dwUserID=(SELECT dwUserID FROM TCHARTABLE WHERE dwCharID=@p0) AND wPetID=@p1",
+            (int)idA, (int)HorsePet);
+        await db.ExecAsync("DELETE FROM TITEMTABLE WHERE dlID=@p0 OR (dwOwnerID=@p1 AND bOwnerType=0 AND bStorageType=0 AND dwStorageID=255 AND bItemID=@p2)",
+            HorseDlId, (int)idA, (int)HorseSlot);
+        await db.ExecAsync(@"INSERT INTO TITEMTABLE (dlID, bStorageType, dwStorageID, bOwnerType, dwOwnerID, bItemID, wItemID, bLevel,
+            bCount, bGLevel, dwDuraMax, dwDuraCur, bRefineCur, dEndTime, bGradeEffect, bMagic1, bMagic2, bMagic3, bMagic4, bMagic5,
+            bMagic6, wValue1, wValue2, wValue3, wValue4, wValue5, wValue6, dwTime1, dwTime2, dwTime3, dwTime4, dwTime5, dwTime6,
+            bGem, wMoggItemID)
+            VALUES (@p0, 0, 255, 0, @p1, @p2, @p3, 0, 1, 0, 0, 0, 0, '1900-01-01', 0, 0,0,0,0,0,0, 0,0,0,0,0,0, 0,0,0,0,0,0, 0, 0)",
+            HorseDlId, (int)idA, (int)HorseSlot, (int)HorseItem);
+        await ClearCompanions(db, idA);
+        await ResetSand(db, idA);
+        await db.ExecAsync("DELETE FROM TSKILLTABLE WHERE dwCharID=@p0 AND wSkillID IN (@p1, @p2)", (int)idA, (int)RitualSkill, (int)IceRainSkill);
+        await db.ExecAsync("INSERT INTO TSKILLTABLE (dwCharID, wSkillID, bLevel, dwRemainTick) VALUES (@p0, @p1, 1, 0), (@p0, @p2, 1, 0)",
+            (int)idA, (int)RitualSkill, (int)IceRainSkill);
+        await db.ExecAsync("DELETE FROM TITEMTABLE WHERE dlID=@p0 OR (dwOwnerID=@p1 AND bOwnerType=0 AND bStorageType=0 AND dwStorageID=255 AND bItemID=@p2)",
+            RuneDlId, (int)idA, (int)RuneSlot);
+        await db.ExecAsync(@"INSERT INTO TITEMTABLE (dlID, bStorageType, dwStorageID, bOwnerType, dwOwnerID, bItemID, wItemID, bLevel,
+            bCount, bGLevel, dwDuraMax, dwDuraCur, bRefineCur, dEndTime, bGradeEffect, bMagic1, bMagic2, bMagic3, bMagic4, bMagic5,
+            bMagic6, wValue1, wValue2, wValue3, wValue4, wValue5, wValue6, dwTime1, dwTime2, dwTime3, dwTime4, dwTime5, dwTime6,
+            bGem, wMoggItemID)
+            VALUES (@p0, 0, 255, 0, @p1, @p2, @p3, 0, 1, 0, 0, 0, 0, '1900-01-01', 0, 0,0,0,0,0,0, 0,0,0,0,0,0, 0,0,0,0,0,0, 0, 0)",
+            RuneDlId, (int)idA, (int)RuneSlot, (int)RuneItem);   // dwTime5 = 0: no species until the server stamps it
+        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] fixtures: A={idA} has {TestCooper} copper, B={idB} at 20 HP with a bag in slot {BagSlot}");
+    }
+
+    /// <summary>Throw Sand back to its TSTARTSKILL level 0, and the bot's skill points back to 200.</summary>
+    private static async Task ResetSand(GameDb db, uint id)
+    {
+        await db.ExecAsync("DELETE FROM TSKILLTABLE WHERE dwCharID=@p0 AND wSkillID=@p1", (int)id, (int)SandSkill);
+        await db.ExecAsync("INSERT INTO TSKILLTABLE (dwCharID, wSkillID, bLevel, dwRemainTick) VALUES (@p0, @p1, 0, 0)", (int)id, (int)SandSkill);
+        await db.ExecAsync("UPDATE TCHARTABLE SET wSkillPoint=@p1 WHERE dwCharID=@p0", (int)id, (int)BotSkillPoints);
+    }
+
+    private static async Task ClearCompanions(GameDb db, uint id)
+    {
+        foreach (var t in new[] { "TCOMPANIONTABLE", "TCOMPANIONITEMTABLE", "TLASTCOMPANIONTABLE", "TMEDALS" })
+            await db.ExecAsync($"DELETE FROM {t} WHERE dwCharID=@p0", (int)id);
+    }
+
+    private static async Task Restore(GameDb db, Saved s, uint idA, uint idB)
+    {
+        foreach (var (id, v) in new[] { (idA, s.A), (idB, s.B) })
+            await db.ExecAsync(@"UPDATE TCHARTABLE SET dwGold=@p1, dwSilver=@p2, dwCooper=@p3, dwHP=@p4, wMapID=@p5, dwRegion=@p6,
+                fPosX=@p7, fPosY=@p8, fPosZ=@p9 WHERE dwCharID=@p0", (int)id, v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8]);
+        await db.ExecAsync("DELETE FROM TITEMTABLE WHERE dwOwnerID=@p0 AND bOwnerType=0 AND bStorageType=0 AND wItemID=@p1", (int)idB, (int)BagItem);
+        await db.ExecAsync("DELETE FROM TINVENTABLE WHERE dwCharID=@p0 AND bInvenID IN (0,1)", (int)idB);
+        await db.ExecAsync("DELETE FROM THOTKEYTABLE WHERE dwCharID=@p0 AND bInvenID=@p1", (int)idA, (int)HotkeyPage);
+        await db.ExecAsync("DELETE FROM TPETTABLE WHERE dwUserID=(SELECT dwUserID FROM TCHARTABLE WHERE dwCharID=@p0) AND wPetID=@p1",
+            (int)idA, (int)HorsePet);
+        await db.ExecAsync("DELETE FROM TITEMTABLE WHERE dwOwnerID=@p0 AND bOwnerType=0 AND wItemID=@p1", (int)idA, (int)HorseItem);
+        await db.ExecAsync("DELETE FROM TITEMTABLE WHERE dwOwnerID=@p0 AND bOwnerType=0 AND wItemID=@p1", (int)idA, (int)RuneItem);
+        await ClearCompanions(db, idA);
+        await ResetSand(db, idA);
+        await db.ExecAsync("DELETE FROM TSKILLTABLE WHERE dwCharID=@p0 AND wSkillID IN (@p1, @p2)", (int)idA, (int)RitualSkill, (int)IceRainSkill);
+        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] fixtures restored");
+    }
+
+    // ================================ packets ================================
+
+    private static PacketWriter Req(ushort id, Action<PacketWriter> body)
+    {
+        var w = new PacketWriter(id);
+        body(w);
+        return w;
+    }
+
+    private static PacketWriter PostSend(string target, string title, string text, uint cooper) => Req(CS_POSTSEND_REQ, w =>
+    {
+        w.WriteString(target); w.WriteString(title); w.WriteString(text); w.WriteByte(0);   // POST_NORMAL
+        w.WriteUInt32(0); w.WriteUInt32(0); w.WriteUInt32(cooper);
+        w.WriteByte(0xFC); w.WriteByte(0);                                                // INVEN_NULL: no item
+    });
+
+    private readonly record struct Join(ushort PartyId, string Name, uint MemberId, uint ChiefId, ushort Commander, byte Level,
+        uint MaxHp, uint Hp, byte PartyType, byte Class);
+
+    // TClient OnCS_PARTYJOIN_ACK (CSHandler.cpp:4942-4958).
+    private static Join? ParseJoin(PacketReader p) => Read(p, r =>
+    {
+        ushort party = r.ReadUInt16(); string name = r.ReadString(); uint member = r.ReadUInt32(); uint chief = r.ReadUInt32();
+        ushort cmd = r.ReadUInt16(); r.ReadString(); byte level = r.ReadByte(); uint maxHp = r.ReadUInt32(), hp = r.ReadUInt32();
+        r.ReadUInt32(); r.ReadUInt32(); r.ReadByte(); r.ReadByte(); r.ReadByte(); r.ReadByte();
+        byte type = r.ReadByte(), cls = r.ReadByte();
+        return (Join?)new Join(party, name, member, chief, cmd, level, maxHp, hp, type, cls);
+    });
+
+    // TClient OnCS_HOTKEYCHANGE_ACK (CSHandler.cpp:5880-5902).
+    private static (byte Set, List<(byte Slot, byte Type, ushort Id)> Slots) ParseHotkey(PacketReader p) => Read(p, r =>
+    {
+        byte set = r.ReadByte(), n = r.ReadByte();
+        var slots = new List<(byte, byte, ushort)>();
+        for (int i = 0; i < n; i++) slots.Add((r.ReadByte(), r.ReadByte(), r.ReadUInt16()));
+        return (set, slots);
+    });
+
+    /// <summary>Parses a reply the way the client does and records whether that used up every byte of it.</summary>
+    private static T Read<T>(PacketReader r, Func<PacketReader, T> parse)
+    {
+        T v = parse(r);
+        if (r.Remaining != 0) Check($"byte check: 0x{r.Id:X4} fully read", false, $"{r.Remaining} byte(s) left over");
+        else Checked.Add(r.Id);
+        return v;
+    }
+
+    private static readonly HashSet<ushort> Checked = new();
+
+    private static string ByteReport(Bot bot)
+    {
+        var ids = bot.Received.GroupBy(PacketHeader.ReadId).OrderBy(g => g.Key)
+            .Select(g => $"{(Checked.Contains(g.Key) ? "+" : "")}0x{g.Key:X4}*{g.Count()}");
+        return string.Join(" ", ids);
+    }
+
+    private static string Describe(PacketReader? r)
+    {
+        if (r is null) return "no reply";
+        return Bot.Raw.TryGetValue(r, out var raw)
+            ? $"0x{r.Id:X4} body {Convert.ToHexString(raw, PacketHeader.Size, raw.Length - PacketHeader.Size)}"
+            : $"0x{r.Id:X4}";
+    }
+
+    // ================================ reporting ================================
+
+    private static bool Check(string name, bool ok, string detail)
+    {
+        Results.Add((name, ok, ok ? "" : detail));
+        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {(ok ? "PASS" : "FAIL")} {name}{(ok || detail.Length == 0 ? "" : " — " + detail)}");
+        return ok;
+    }
+
+    private static void Report(string name, string detail) => Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {name}: {detail}");
+
+    private static BotConfig Clone(BotConfig c, string account, string tag) => new()
+    {
+        LoginHost = c.LoginHost, LoginPort = c.LoginPort, Account = account, Password = c.Password, GroupId = c.GroupId,
+        Channel = c.Channel, NoCrypt = c.NoCrypt, MapNoCrypt = c.MapNoCrypt, OverrideVersion = c.OverrideVersion, LogTag = tag,
+    };
+}

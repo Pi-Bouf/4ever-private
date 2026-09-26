@@ -35,9 +35,9 @@ public sealed class BotRunner
 
     // ---- login server -------------------------------------------------------------------------------
 
-    private sealed record LoginResultData(uint UserId, uint CharId, uint Key, string WorldHost, ushort WorldPort);
+    internal sealed record LoginResultData(uint UserId, uint CharId, uint Key, string WorldHost, ushort WorldPort);
 
-    private LoginResultData RunLogin()
+    internal LoginResultData RunLogin()
     {
         Log($"connecting to login {_cfg.LoginHost}:{_cfg.LoginPort} ...");
         using var conn = new BotConnection(_cfg.LoginHost, _cfg.LoginPort, !_cfg.NoCrypt);
@@ -202,7 +202,7 @@ public sealed class BotRunner
     /// ENTERSVR→…→CHECKMAIN→CONRESULT handshake) → CS_CONREADY_REQ → wait for CS_CHARINFO_ACK.
     /// The player is locked server-side until CONNECT_ACK, so CONREADY must NOT be sent before it.
     /// </summary>
-    private CharSpawn ConnectAndEnter(BotConnection conn, LoginResultData login)
+    internal CharSpawn ConnectAndEnter(BotConnection conn, LoginResultData login, List<byte[]>? spill = null)
     {
         uint clientIp = Proto.IpToUInt(login.WorldHost); // mirrors the client passing its target address
         conn.Send(GamePackets.BuildConnect(Proto.ClientVersion, _cfg.Channel, login.UserId, login.CharId,
@@ -211,7 +211,14 @@ public sealed class BotRunner
 
         // CS_CONNECT_ACK (after the map↔world handshake) and CS_CHARINFO_ACK can arrive in either order,
         // so collect both in one loop: send CONREADY when CONNECT_ACK lands, capture spawn from CHARINFO.
+        // CS_CHARINFO_ACK is sent by the map during the world's MW_CHARINFO step, which happens BEFORE
+        // MW_CHECKMAIN/MW_CONRESULT — i.e. before the session reaches EnterState.Granted. The map drops a
+        // CS_CONREADY_REQ that arrives before Granted (MapService.Enter.cs OnCS_CONREADY_REQ), silently, so
+        // firing CONREADY on CHARINFO leaves the session stuck in Granted: it stays connected but is never
+        // placed in the grid, and every later CS_MOVE_REQ is discarded by the InGame guard. Wait for
+        // CS_CONNECT_ACK (sent on CONRESULT) before readying, and only leave once BOTH have landed.
         bool readied = false;
+        CharSpawn? spawn = null;
         var deadline = DateTime.UtcNow + TimeSpan.FromSeconds(20);
         while (DateTime.UtcNow < deadline)
         {
@@ -231,15 +238,16 @@ public sealed class BotRunner
             }
             else if (r.Id == GameMsg.CS_CHARINFO_ACK)
             {
-                var spawn = GamePackets.ParseCharInfo(conn.LastPacket!);
-                if (!readied) conn.Send(GamePackets.BuildConReady()); // be safe if CHARINFO led
+                spawn = GamePackets.ParseCharInfo(conn.LastPacket!);
                 Log($"in world: '{spawn.Name}' lvl {spawn.Level} @ map {spawn.MapId} " +
                     $"pos ({spawn.X:0.0}, {spawn.Y:0.0}, {spawn.Z:0.0}) dir {spawn.Dir}");
-                return spawn;
             }
-            // ignore add-connect / enter / nearby-entity / chat / etc.
+            else spill?.Add(conn.LastPacket!);   // anything else is kept for a scenario, or ignored
+
+            if (readied && spawn is { } s) return s;
         }
-        throw new TimeoutException("never received CS_CHARINFO_ACK");
+        if (spawn is null) throw new TimeoutException("never received CS_CHARINFO_ACK");
+        throw new TimeoutException("never received CS_CONNECT_ACK (session would stay un-entered)");
     }
 
     // ---- movement -----------------------------------------------------------------------------------
@@ -325,5 +333,5 @@ public sealed class BotRunner
 
     private static string UIntToIp(uint v) => $"{v & 0xFF}.{(v >> 8) & 0xFF}.{(v >> 16) & 0xFF}.{(v >> 24) & 0xFF}";
 
-    private static void Log(string msg) => Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {msg}");
+    private void Log(string msg) => Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {(_cfg.LogTag.Length > 0 ? _cfg.LogTag + " " : "")}{msg}");
 }
