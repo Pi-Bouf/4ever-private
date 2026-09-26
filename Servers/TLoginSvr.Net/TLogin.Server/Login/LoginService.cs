@@ -403,8 +403,19 @@ public sealed class LoginService
         foreach (var v in _veteran)
             if (v.Option == levelOption) level = v.Level;
 
-        var row = await g.Db.CreateCharAsync(new CreateCharArgs(name, st.UserId, groupId, slot, cls, race,
-            country, sex, hair, face, body, pants, hand, foot, levelOption));
+        CreateCharRow row;
+        try
+        {
+            row = await g.Db.CreateCharAsync(new CreateCharArgs(name, st.UserId, groupId, slot, cls, race,
+                country, sex, hair, face, body, pants, hand, foot, levelOption));
+        }
+        catch (Exception ex)
+        {
+            // Always answer: without a CS_CREATECHAR_ACK the client hangs on the create screen.
+            _log.LogError(ex, "CreateChar '{Name}' by user {User} failed in TCreateChar.", name, st.UserId);
+            Ack(CreateResult.Internal, 0, st.CreateCount, 0);
+            return;
+        }
 
         if (row.Ret == 0)
         {
