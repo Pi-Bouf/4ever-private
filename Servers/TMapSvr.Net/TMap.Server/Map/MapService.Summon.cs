@@ -17,9 +17,9 @@ namespace TMap.Server.Map;
 /// <para>Its life is the skill's buff duration; a new main / mine / auto summon replaces the old one, and at most one
 /// "maintain" object is kept. Self-objects die with their owner, when their time is up, when the owner leaves the map
 /// or logs out, and when dismissed.</para>
-/// <para>Taming (<c>SER_MONSTER</c>) lives in MapService.Tame.cs. <b>Not ported:</b> the owner's passive bonuses to
-/// a summon's life (<c>SCT_INCLIFTTIME</c>) and to the number of maintain objects (<c>MTYPE_RMC</c>) — passive skills
-/// are not modelled, so these are 0 and 1 — and the doppelganger's equipped-skill check. The summon belongs to the
+/// <para>The owner's remain skills may lengthen a summon's life (<c>SCT_INCLIFTTIME</c>) and allow more maintain
+/// objects (<c>MTYPE_RMC</c>); no live skill does, so these are 0 and 1. Taming (<c>SER_MONSTER</c>) lives in
+/// MapService.Tame.cs. <b>Not ported:</b> the doppelganger's equipped-skill check. The summon belongs to the
 /// skill's target in the C++; here the target must be the caster, the only case the client sends.</para>
 /// </summary>
 public sealed partial class MapService
@@ -79,7 +79,7 @@ public sealed partial class MapService
             }
             if (ch.Recalls.Count >= MaxRecallMon) return;             // PERFORM_FAIL — only moving summons count
 
-            uint life = tpl.MaintainTick(level);                        // + GetRecallLifeTime (passives unported)
+            uint life = tpl.MaintainTick(level) + GetRecallLifeTime(ch);   // the passive bonus
             if (mt.IsSelf != 0)
             {
                 var power = CasterPower(ch, tpl);

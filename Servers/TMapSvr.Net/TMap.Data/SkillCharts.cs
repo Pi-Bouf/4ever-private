@@ -46,7 +46,10 @@ public sealed record SkillTemplate(
     byte TargetRange = 0,
     // Learning (CS_SKILLBUY): m_fPrice scales the level chart's dwMoney into the price; m_wParentSkillID is the skill
     // that must be known first (its level checked against TSKILLPOINTCHART.bPrevSkillLevel).
-    float Price = 0f, ushort ParentSkillId = 0)
+    float Price = 0f, ushort ParentSkillId = 0,
+    // m_dwWeapon: the weapons a self-buff needs (bit IK-1 of an equipped item's kind); 0 = none. m_wPosture: the
+    // stance a buff belongs to — it falls off with that stance (CTPlayer::CheckEquipSkill).
+    uint WeaponId = 0, ushort Posture = 0)
 {
     /// <summary>The per-level learning costs (C++ <c>m_mapTSkillPoint</c>, loaded from <c>TSKILLPOINTCHART</c>).</summary>
     public Dictionary<byte, SkillPointRow> Points { get; } = new();
@@ -243,6 +246,34 @@ public sealed record SkillTemplate(
     {
         foreach (var d in Data)
             if (d.Type == SdtRecall && d.Exec == SerMonster) return true;
+        return false;
+    }
+
+    /// <summary>SKILL_ACTION SA_CONTINUE / SA_PASSIVE, SKILL_DATA_TYPE SDT_EQUIP (NetCode.h:1530/1540).</summary>
+    public const byte SaContinue = 1, SaPassive = 4, SdtEquip = 0;
+
+    /// <summary>C++ <c>CTSkillTemp::IsRemainType</c> (TSkillTemp.cpp:134) — an <c>SA_CONTINUE</c> row: once learned, the
+    /// skill sits in the owner's remain list (<c>m_vRemainSkill</c>) and its rows apply for good.</summary>
+    public bool IsRemainType() => _isRemain ??= Data.Any(d => d.Action == SaContinue);   // read by every stat getter
+    private bool? _isRemain;
+
+    /// <summary>C++ <c>CTSkillTemp::CanEquip</c> (TSkillTemp.cpp:209) — a weapon mastery: an <c>SDT_EQUIP</c> row for
+    /// the item kind <paramref name="kind"/>.</summary>
+    public bool CanEquip(byte kind)
+    {
+        foreach (var d in Data)
+            if (d.Type == SdtEquip && d.Exec == kind) return true;
+        return false;
+    }
+
+    private const byte SdtStatusAtkMode = 7, SdtStatusCrazeMode = 26, SdtStatusDefendMode = 27;
+
+    /// <summary>C++ <c>CTSkillTemp::IsPosture</c> (TSkillTemp.cpp:157) — a stance: an attack, craze or defend mode
+    /// status row.</summary>
+    public bool IsPosture()
+    {
+        foreach (var d in Data)
+            if (d.Type == SdtStatus && d.Exec is SdtStatusAtkMode or SdtStatusCrazeMode or SdtStatusDefendMode) return true;
         return false;
     }
 

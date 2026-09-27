@@ -13,7 +13,7 @@ namespace TMap.Server.Map;
 /// maintained-buff delta (<c>CalcAbilityValue</c>, Phase 31 — the third layer of every getter); there is no
 /// per-character stat storage. Deferred (stubbed to 0, their subsystems aren't ported): pet bonuses
 /// (<c>CalcPetATTR</c>/<c>CalcPetBonus</c>), the death-penalty stat reduction (<c>CalcAfterMath</c>), the guild
-/// <c>StatLevel</c> level bonus, and — within the buff layer — the cure/effection/remain-skill terms.</para>
+/// <c>StatLevel</c> level bonus, and — within the buff layer — the cure/effection terms.</para>
 ///
 /// <para><b>Value-exact notes:</b> everything accumulates in <c>float</c>; each <c>DWORD(...)</c> cast is a
 /// toward-zero truncation at the same point the C++ truncates. Min-AP is clamped to max after both are
@@ -50,20 +50,35 @@ public static class StatEngine
     /// <para><b>Deferred (documented — PORT_STATUS.md):</b> the sign-guarded <b>stat-layer</b> cure delta
     /// (<c>CalcCure</c> — it needs the mid-cast <c>m_pInstanceSkill</c> threading the port doesn't model; the
     /// <i>instant</i> cure/dispel is done in Phase 35), the <c>ApplyEffectionBuff</c> percent amplifier
-    /// (<c>SDT_STATUS_MAGIC</c>), and the remain/passive layer (<c>m_vRemainSkill</c>,
-    /// <c>SA_CONTINUE</c>/<c>SA_PASSIVE</c>) — this ports the maintained <c>SA_BUFF</c> term only.</para></summary>
+    /// (<c>SDT_STATUS_MAGIC</c>). The last term is the remain/passive one: every <see cref="Character.RemainSkills"/>
+    /// skill's <c>SA_CONTINUE</c> and <c>SA_PASSIVE</c> ability rows, off the same <paramref name="value"/> (the
+    /// live charts carry no such row, so it is 0 today).</para></summary>
     public static int CalcAbilityValue(Character ch, uint value, byte mtype)
     {
-        int inc = 0;
-        foreach (var m in ch.MaintainSkills)
-            if (m.Template is { } tpl) inc += tpl.CalcAbilityValue(m.Level, SaBuff, mtype, value);
-        return inc;
+        var (buff, remain) = AbilityLayers(ch, value, mtype);
+        return buff + remain;
     }
 
-    /// <summary>Adds the maintained-buff delta for <paramref name="mtype"/> onto a base+item subtotal and clamps
-    /// to ≥ 0 (C++ folds this as the third layer of every stat getter: base → items → buffs).</summary>
+    /// <summary>The two layers of <see cref="CalcAbilityValue"/>: the maintained buffs, then the remain skills.</summary>
+    private static (int Buff, int Remain) AbilityLayers(Character ch, uint value, byte mtype)
+    {
+        int buff = 0, remain = 0;
+        foreach (var m in ch.MaintainSkills)
+            if (m.Template is { } tpl) buff += tpl.CalcAbilityValue(m.Level, SaBuff, mtype, value);
+        foreach (var k in ch.RemainSkills)
+            remain += k.Template!.CalcAbilityValue(k.Level, SkillTemplate.SaContinue, mtype, value)
+                + k.Template.CalcAbilityValue(k.Level, SkillTemplate.SaPassive, mtype, value);
+        return (buff, remain);
+    }
+
+    /// <summary>Adds the buff and remain deltas for <paramref name="mtype"/> onto a base+item subtotal (C++ folds this
+    /// as the third layer of every stat getter: base → items → buffs), each step clamped to ≥ 0 as the C++ does:
+    /// <c>max(0, max(0, sub + buff) + remain)</c>.</summary>
     private static uint Buffed(Character ch, uint sub, byte mtype)
-        => (uint)Math.Max(0, (int)sub + CalcAbilityValue(ch, sub, mtype));
+    {
+        var (buff, remain) = AbilityLayers(ch, sub, mtype);
+        return (uint)Math.Max(0, Math.Max(0, (int)sub + buff) + remain);
+    }
 
     // ---- TATTACK_DELAY (NetCode.h) ----
     public const byte TadPhysical = 1, TadLong = 2, TadMagic = 3;

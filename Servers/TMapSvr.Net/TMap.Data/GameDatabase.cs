@@ -130,7 +130,7 @@ public sealed partial class GameDatabase
                  bLevel, dwClassID, dwSlotID, bPrmSlotID, bSubSlotID, bStack, bKind, wUseValue, dwDelay,
                  fPrice, bCanRepair, wDelayGroupID, bConsumable, bIsSell,
                  bGrade, bCanGrade, bCanMagic, bCanRare, bCanWrap, bCanColor, dwDuraMax, wUseTime, bUseType,
-                 bItemCountry, fPvPrice FROM TITEMCHART";
+                 bItemCountry, fPvPrice, bEquipSkill FROM TITEMCHART";
     // The per-level chart (CTBLLevelChart): the repair-cost coefficient (m_dwRepairCost), dwEXP (the
     // level-up threshold) + bSkillPoint (granted per level), and dwMoney (the base price the item
     // buy/sell math scales by m_fPrice).
@@ -203,7 +203,8 @@ public sealed partial class GameDatabase
         @"SELECT wID, bKind, dwUseMP, bUseMPType, dwUseHP, bUseHPType, bLevel, bMaxLevel, bNextLevel,
                  dwReuseDelay, nReuseDelayInc, dwLoopDelay, dwKindDelay, bSpeedApply, bPositive, wMapID,
                  dwDuration, dwDurationInc, bMaintainType, bPriority, bStatic, dwClassID, bGlobal,
-                 bIsRide, bIsHideSkill, bIsDismount, bEraseAct, bTargetRange, fPrice, wParentSkillID FROM TSKILLCHART";
+                 bIsRide, bIsHideSkill, bIsDismount, bEraseAct, bTargetRange, fPrice, wParentSkillID,
+                 dwWeaponID, wPosture FROM TSKILLCHART";
     // The learning costs per skill level (CTBLSkillPoint → CTSkillTemp::m_mapTSkillPoint).
     private const string SkillPointChartSql =
         @"SELECT wID, bLevel, bSkillPoint, bGroupPoint, bPrevSkillLevel, dwPayback FROM TSKILLPOINTCHART";
@@ -253,7 +254,7 @@ public sealed partial class GameDatabase
                     Grade: r.GetByteSafe(23), CanGrade: r.GetByteSafe(24), CanMagic: r.GetByteSafe(25),
                     CanRare: r.GetByteSafe(26), CanWrap: r.GetByteSafe(27), CanColor: r.GetByteSafe(28),
                     DuraMax: r.GetUIntSafe(29), UseTime: r.GetUShortSafe(30), UseType: r.GetByteSafe(31),
-                    ItemCountry: r.GetByteSafe(32), PvPrice: r.GetFloatSafe(33));
+                    ItemCountry: r.GetByteSafe(32), PvPrice: r.GetFloatSafe(33), EquipSkill: r.GetByteSafe(34));
             }
 
         await using (var cmd = new SqlCommand(MagicChartSql, c))
@@ -380,7 +381,8 @@ public sealed partial class GameDatabase
                     Rate1stX: store.Rate1st, Global: r.GetByteSafe(22) != 0,
                     IsRide: r.GetByteSafe(23) != 0, IsHideSkill: r.GetByteSafe(24) != 0,
                     IsDismount: r.GetByteSafe(25) != 0, EraseAct: r.GetByteSafe(26), TargetRange: r.GetByteSafe(27),
-                    Price: r.IsDBNull(28) ? 0f : Convert.ToSingle(r.GetValue(28)), ParentSkillId: r.GetUShortSafe(29));
+                    Price: r.IsDBNull(28) ? 0f : Convert.ToSingle(r.GetValue(28)), ParentSkillId: r.GetUShortSafe(29),
+                    WeaponId: r.GetUIntSafe(30), Posture: r.GetUShortSafe(31));
             }
 
         await using (var cmd = new SqlCommand(SkillPointChartSql, c))

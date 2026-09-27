@@ -99,6 +99,7 @@ public sealed partial class MapService
 
         PlayerHitsTarget(s, ch, hostId, attackId, attackType, targetId, targetType, actId, aniId, attackerLevel,
             transHp, transMp, canSelect, skillId, skillLevel, atkX, atkY, atkZ, defX, defY, defZ);
+        CheckEquipSkill(s, ch);
     }
 
     /// <summary>C++ <c>OnCS_DEFEND_REQ</c>, monster attacker (CSHandler.cpp:1522-1587). A host client reports the

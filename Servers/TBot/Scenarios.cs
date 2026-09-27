@@ -37,6 +37,7 @@ public static class Scenarios
         CS_SKILLUSE_REQ = M + 0x0034, CS_SKILLUSE_ACK = M + 0x0035, CS_DEFEND_ACK = M + 0x0021, CS_ADDMON_ACK = M + 0x0011,
         CS_FINISHSKILL_ACK = M + 0x0377, CS_DELRECALLMON_REQ = M + 0x00E1, CS_ADDSELFOBJ_ACK = M + 0x00F4,
         CS_DELSELFOBJ_ACK = M + 0x00F5,
+        CS_MOVEITEM_REQ = M + 0x0028, CS_MOVEITEM_ACK = M + 0x0029, CS_SKILLEND_ACK = M + 0x0037,
         CS_SKILLBUY_REQ = M + 0x0032, CS_SKILLBUY_ACK = M + 0x0033, CS_NPCITEMLIST_REQ = M + 0x0082, CS_NPCITEMLIST_ACK = M + 0x0083;
 
     // Test fixtures.
@@ -58,6 +59,12 @@ public static class Scenarios
     // Skill learning: the skill window's trainer (TDEF_SKILL_NPC) and a ranger skill the bot holds at level 0 (learnable at
     // 4, 1 point; level 2 needs character level 4 + 16 = 20, the bot is 19). Price = TLEVELCHART(4).dwMoney 211 × fPrice 1.0275.
     private const ushort SkillNpc = 22047, SandSkill = 209, SandPrice = 216, BotSkillPoints = 200;
+    // Passives: a self-buff that needs a weapon of kind 1, 8 or 9 (dwWeaponID 385) — the bot wields a kind-1 weapon in
+    // equip slot 0 — and a kind-13 item (all classes, equip slot 8) whose mastery a ranger does not have.
+    private const ushort WeaponBuff = 427, MasteryItem = 10158;
+    private const byte WeaponSlot = 0, SpareSlot = 43, MasteryItemSlot = 44, MasteryEquipSlot = 8;
+    private const long MasteryDlId = 900_000_004;
+    private const byte InvenEquip = 0xFE, InvenBackpack = 0xFF;
 
     private static readonly List<(string Name, bool Ok, string Detail)> Results = new();
 
@@ -114,6 +121,7 @@ public static class Scenarios
             Companions(a, b);
             Summons(a, b);
             Skills(a);
+            Passives(a);
             Teleport(a, b);
 
             foreach (var bot in new[] { a, b })
@@ -603,6 +611,54 @@ public static class Scenarios
         return list;
     });
 
+    private static void Passives(Bot a)
+    {
+        // A weapon mastery is missing: the kind-13 item cannot be worn.
+        a.Discard(CS_MOVEITEM_ACK);
+        a.Send(MoveItem(InvenBackpack, MasteryItemSlot, InvenEquip, MasteryEquipSlot));
+        var noSkill = a.TryWait(CS_MOVEITEM_ACK);
+        Check("passives: an item whose weapon mastery is missing cannot be worn (MI_NOSKILL)",
+            noSkill is not null && Read(noSkill, r => r.ReadByte()) == 9, Describe(noSkill));
+
+        // A self-buff that needs the equipped weapon…
+        a.Send(FinishSkill(a, a.CharId, 1, WeaponBuff, a.Spawn.X, a.Spawn.Z, (a.CharId, 1)));
+        var buff = a.TryWait(CS_DEFEND_ACK, r => r.ReadUInt32() == a.CharId && r.ReadUInt32() == a.CharId);
+        Check("passives: the weapon buff lands on its caster", buff is not null && IsMaintain(buff), Describe(buff));
+
+        // … ends when the weapon is taken off.
+        a.Discard(CS_SKILLEND_ACK);
+        a.Send(MoveItem(InvenEquip, WeaponSlot, InvenBackpack, SpareSlot));
+        var end = a.TryWait(CS_SKILLEND_ACK);
+        Check("passives: taking the weapon off ends the buff that needs it", end is not null
+            && Read(end, r => (r.ReadUInt32(), r.ReadByte(), r.ReadUInt16())) == (a.CharId, 1, WeaponBuff), Describe(end));
+
+        // The weapon goes back on, and a buff cast now stays through an unrelated move.
+        a.Discard(CS_MOVEITEM_ACK);
+        a.Send(MoveItem(InvenBackpack, SpareSlot, InvenEquip, WeaponSlot));
+        var back = a.TryWait(CS_MOVEITEM_ACK);
+        Check("passives: the weapon goes back on", back is not null && Read(back, r => r.ReadByte()) == 0, Describe(back));
+        a.Send(FinishSkill(a, a.CharId, 1, WeaponBuff, a.Spawn.X, a.Spawn.Z, (a.CharId, 1)));
+        a.TryWait(CS_DEFEND_ACK, r => r.ReadUInt32() == a.CharId && r.ReadUInt32() == a.CharId);
+        a.Discard(CS_SKILLEND_ACK);
+        a.Send(MoveItem(InvenBackpack, MasteryItemSlot, InvenBackpack, SpareSlot));
+        var kept = a.TryWait(CS_SKILLEND_ACK, timeoutMs: 1500);
+        Check("passives: with the weapon on, the buff stays", kept is null, Describe(kept));
+        a.Discard(CS_MOVEITEM_ACK);
+    }
+
+    private static PacketWriter MoveItem(byte srcInven, byte srcSlot, byte dstInven, byte dstSlot) => Req(CS_MOVEITEM_REQ, w =>
+    {
+        w.WriteByte(srcInven); w.WriteByte(srcSlot); w.WriteByte(dstInven); w.WriteByte(dstSlot); w.WriteByte(1);
+    });
+
+    // CS_DEFEND_ACK up to bIsMaintain: attacker, target, their types, host + type, act, ani.
+    private static bool IsMaintain(PacketReader p)
+    {
+        var r = new PacketReader(Bot.Raw.TryGetValue(p, out var raw) ? raw : throw new InvalidOperationException());
+        r.ReadUInt32(); r.ReadUInt32(); r.ReadByte(); r.ReadByte(); r.ReadUInt32(); r.ReadByte(); r.ReadUInt32(); r.ReadUInt32();
+        return r.ReadByte() == 1;
+    }
+
     private static async Task CheckSaved(GameDb db, uint idA, uint idB)
     {
         var comp = await db.RowAsync("SELECT strName, dwMonID FROM TCOMPANIONTABLE WHERE dwCharID=@p0 AND bSlot=0", (int)idA);
@@ -690,6 +746,14 @@ public static class Scenarios
             bGem, wMoggItemID)
             VALUES (@p0, 0, 255, 0, @p1, @p2, @p3, 0, 1, 0, 0, 0, 0, '1900-01-01', 0, 0,0,0,0,0,0, 0,0,0,0,0,0, 0,0,0,0,0,0, 0, 0)",
             RuneDlId, (int)idA, (int)RuneSlot, (int)RuneItem);   // dwTime5 = 0: no species until the server stamps it
+        await ClearPassives(db, idA);
+        await db.ExecAsync("INSERT INTO TSKILLTABLE (dwCharID, wSkillID, bLevel, dwRemainTick) VALUES (@p0, @p1, 1, 0)", (int)idA, (int)WeaponBuff);
+        await db.ExecAsync(@"INSERT INTO TITEMTABLE (dlID, bStorageType, dwStorageID, bOwnerType, dwOwnerID, bItemID, wItemID, bLevel,
+            bCount, bGLevel, dwDuraMax, dwDuraCur, bRefineCur, dEndTime, bGradeEffect, bMagic1, bMagic2, bMagic3, bMagic4, bMagic5,
+            bMagic6, wValue1, wValue2, wValue3, wValue4, wValue5, wValue6, dwTime1, dwTime2, dwTime3, dwTime4, dwTime5, dwTime6,
+            bGem, wMoggItemID)
+            VALUES (@p0, 0, 255, 0, @p1, @p2, @p3, 0, 1, 0, 0, 0, 0, '1900-01-01', 0, 0,0,0,0,0,0, 0,0,0,0,0,0, 0,0,0,0,0,0, 0, 0)",
+            MasteryDlId, (int)idA, (int)MasteryItemSlot, (int)MasteryItem);
         Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] fixtures: A={idA} has {TestCooper} copper, B={idB} at 20 HP with a bag in slot {BagSlot}");
     }
 
@@ -699,6 +763,15 @@ public static class Scenarios
         await db.ExecAsync("DELETE FROM TSKILLTABLE WHERE dwCharID=@p0 AND wSkillID=@p1", (int)id, (int)SandSkill);
         await db.ExecAsync("INSERT INTO TSKILLTABLE (dwCharID, wSkillID, bLevel, dwRemainTick) VALUES (@p0, @p1, 0, 0)", (int)id, (int)SandSkill);
         await db.ExecAsync("UPDATE TCHARTABLE SET wSkillPoint=@p1 WHERE dwCharID=@p0", (int)id, (int)BotSkillPoints);
+    }
+
+    /// <summary>Takes away the weapon buff (learned and running) and the kind-13 test item.</summary>
+    private static async Task ClearPassives(GameDb db, uint id)
+    {
+        await db.ExecAsync("DELETE FROM TSKILLTABLE WHERE dwCharID=@p0 AND wSkillID=@p1", (int)id, (int)WeaponBuff);
+        await db.ExecAsync("DELETE FROM TSKILLMAINTAINTABLE WHERE dwCharID=@p0 AND wSkillID=@p1", (int)id, (int)WeaponBuff);
+        await db.ExecAsync("DELETE FROM TITEMTABLE WHERE dlID=@p0 OR (dwOwnerID=@p1 AND bOwnerType=0 AND bStorageType=0 AND wItemID=@p2)",
+            MasteryDlId, (int)id, (int)MasteryItem);
     }
 
     private static async Task ClearCompanions(GameDb db, uint id)
@@ -722,6 +795,7 @@ public static class Scenarios
         await ClearCompanions(db, idA);
         await ResetSand(db, idA);
         await db.ExecAsync("DELETE FROM TSKILLTABLE WHERE dwCharID=@p0 AND wSkillID IN (@p1, @p2)", (int)idA, (int)RitualSkill, (int)IceRainSkill);
+        await ClearPassives(db, idA);
         Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] fixtures restored");
     }
 

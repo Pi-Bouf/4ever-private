@@ -181,12 +181,13 @@ public sealed partial class MapService
     }
 
     /// <summary>C++ <c>CTObjBase::CanEquip</c> — wrapped→Wrap, slot-mask→CannotEquip, class-mask→NoMatchClass,
-    /// level→LowLevel. The skill gate (MI_NOSKILL) is deferred (skills unported → treated as satisfied); a
-    /// template-less item (DB-free) is allowed.</summary>
+    /// level→LowLevel, and before the slot the mastery gate: an <c>m_bEquipSkill</c> item needs a learned weapon
+    /// mastery for its kind (MI_NOSKILL). A template-less item (DB-free) is allowed.</summary>
     private static MoveItemResult CanEquip(Character ch, Item item, byte slot)
     {
         if (item.Ext[Item.IevWrap] != 0) return MoveItemResult.Wrap;   // C++ !CanUse() (sealed/wrapped)
         if (item.Template is not { } t) return MoveItemResult.Success;  // DB-free: nothing to validate against
+        if (t.EquipSkill != 0 && !ch.Skills.Any(k => k.Template?.CanEquip(t.Kind) == true)) return MoveItemResult.NoSkill;
         if ((t.SlotId & (1u << slot)) == 0) return MoveItemResult.CannotEquip;
         if ((t.ClassId & (1u << ch.Class)) == 0) return MoveItemResult.NoMatchClass;
         if (ch.Level < item.EquipLevel) return MoveItemResult.LowLevel;
@@ -197,7 +198,8 @@ public sealed partial class MapService
     /// (<c>CS_EQUIP_ACK</c>) to the 3×3 view (incl. self); send the actor its own <c>CS_MOVEITEM_ACK</c>
     /// (MI_SUCCESS) — the outer move handler sends a <b>second</b> one at its tail, so an equip/unequip yields
     /// two, matching the C++; send the recomputed stat sheet; clamp current HP/MP to the (possibly lower) max;
-    /// and send the actor its own <c>CS_HPMP_ACK</c>. (Warrior stance auto-buff / CheckEquipSkill deferred.)</summary>
+    /// and send the actor its own <c>CS_HPMP_ACK</c>; then drop the self-buffs the new gear no longer allows
+    /// (<c>CheckEquipSkill</c>). (Warrior stance auto-buff deferred.)</summary>
     private void ChangeEquipItem(ClientSession s)
     {
         var ch = s.Char!;
@@ -209,6 +211,7 @@ public sealed partial class MapService
         ch.Hp = Math.Min(ch.Hp, maxHp);
         ch.Mp = Math.Min(ch.Mp, maxMp);
         SendSelfHpMp(s, ch.CharId, maxHp, ch.Hp, maxMp, ch.Mp);
+        CheckEquipSkill(s, ch);
     }
 
     /// <summary>C++ <c>CTPlayer::UseItem(WORD wItemID, BYTE bCount)</c> (TPlayer.cpp:5798) — consumes

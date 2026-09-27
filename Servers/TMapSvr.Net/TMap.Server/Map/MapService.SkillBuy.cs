@@ -17,7 +17,7 @@ namespace TMap.Server.Map;
 /// points, and needs the character level, enough points already spent in the skill's tab and the parent skill.</para>
 ///
 /// <para><b>Not ported:</b> the NPC discount (<c>GetDiscountRate</c>: guild / local-hero / castle-hero conditions —
-/// territories are not modelled, so 0), the 5.0 secure-code lock, the passive "remain" registry (<c>RemainSkill</c>)
+/// territories are not modelled, so 0), the 5.0 secure-code lock
 /// and the skill log (<c>SendDM_LOGSKILL_REQ</c>). The C++ reads <c>pNextLevel-&gt;m_dwMoney</c> before checking it for
 /// null; a missing level row is answered <c>SKILL_ALREADY</c> here instead of crashing.</para>
 /// </summary>

@@ -129,6 +129,28 @@ public sealed partial class MapService
         return mon;
     }
 
+    private const byte MtypeRmc = 39, SctIncLifeTime = 11;   // MAGIC_TYPE MTYPE_RMC, SKILL_CURE_TYPE SCT_INCLIFTTIME
+
+    /// <summary>C++ <c>CTPlayer::GetRecallCount(TRECALLTYPE_MAINTAIN)</c> (TPlayer.cpp:4113) — how many maintain objects
+    /// the player may keep: the first remain skill's <c>MTYPE_RMC</c> ability row, else 1.</summary>
+    private static byte GetRecallCount(Character ch)
+    {
+        foreach (var k in ch.RemainSkills)
+            foreach (var d in k.Template!.Data)
+                if (d.Type == SkillTemplate.SdtAbility && d.Exec == MtypeRmc) return (byte)k.Template.GetValue(d, k.Level);
+        return 1;
+    }
+
+    /// <summary>C++ <c>CTPlayer::GetRecallLifeTime</c> (TPlayer.cpp:4124) — the ms a summon lives past its skill's
+    /// duration: the first remain skill's <c>SCT_INCLIFTTIME</c> cure row, else 0.</summary>
+    private static uint GetRecallLifeTime(Character ch)
+    {
+        foreach (var k in ch.RemainSkills)
+            foreach (var d in k.Template!.Data)
+                if (d.Type == SkillTemplate.SdtCure && d.Exec == SctIncLifeTime) return (uint)k.Template.GetValue(d, k.Level);
+        return 0;
+    }
+
     /// <summary>C++ <c>CTPlayer::CheckRecallMon</c> (TPlayer.cpp:3552): a new main / mine / auto summon sends away the
     /// owner's current main or mine summon — one of those at a time.</summary>
     private void CheckRecallMon(ClientSession s, Character ch, MonsterTemplate tpl)
@@ -144,7 +166,7 @@ public sealed partial class MapService
         {
             // Keep at most max(GetRecallCount, 1) - 1 older ones, newest first (C++ reverse walk): with no passive
             // bonus, casting a new one removes every existing one.
-            int cap = 1, current = 0;
+            int cap = Math.Max((int)GetRecallCount(ch), 1), current = 0;
             foreach (var m in ch.SelfObjs.Values.Reverse().ToList())
                 if (m.RecallType == TrecallMaintain && cap <= ++current) DeleteSelfObj(ch, m.Id);
         }

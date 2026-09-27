@@ -17,8 +17,7 @@ namespace TMap.Server.Map;
 /// <c>GetNeedSkillPoint</c>), the <b>level-cost / price tables</b> (<c>FindTLevel(...).m_dwMoney</c> ×
 /// <c>GetPrice</c>), the <b>NPC skill-teaching lists</b> (<c>pNpc-&gt;GetSkill</c>), <b>parent-skill
 /// prerequisites</b> (<c>m_wParentSkillID</c>/<c>CheckParentSkill</c>), and the trade lock. Also deferred:
-/// <c>RemainSkill</c> (the passive/"remain" registry <c>m_vRemainSkill</c> — a no-op for non-remain skills
-/// anyway), <c>AutoEquipSkill</c> (auto-grant class skills on level-up), the skill-reset path
+/// <c>AutoEquipSkill</c> (auto-grant class skills on level-up), the skill-reset path
 /// (<c>CS_SKILLINIT</c>), and the server-push full list (<c>CS_SKILLLIST_ACK</c> — the login list is already
 /// carried inside CHARINFO). The <c>CS_SKILLBUY_ACK</c> emits <c>skillPoint</c> and the four kind-points as
 /// <c>0</c> (the SP currency is unmodelled — CHARINFO also emits <c>0</c> there).</para>
@@ -36,8 +35,7 @@ public sealed partial class MapService
 
         ch.Skills.Add(new Skill { SkillId = temp.Id, Level = level, Template = temp });  // key = pTemp->m_wID
         SendCS_SKILLBUY_ACK(s, ch, SkillUseResult.Success, temp.Id, level);
-        // C++ then calls RemainSkill(pSkill, 0) — the m_vRemainSkill passive registry, a no-op for a
-        // non-remain skill; the remain/passive layer is deferred (PORT_STATUS.md).
+        // C++ then calls RemainSkill(pSkill, 0): a remain-type skill now counts in Character.RemainSkills.
         return true;
     }
 

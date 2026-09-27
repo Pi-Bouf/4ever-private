@@ -40,7 +40,7 @@ namespace TMap.Server.Map;
 /// <c>m_bRunFromServer</c> / <c>m_bCheckAttacker</c> / <c>m_wTargetActiveID</c> checks (columns not loaded),
 /// random-trans / random-buff skills, guild skills, the peace-zone and local-battle gates, the
 /// <c>OT_RECALL</c>/<c>OT_SELF</c> attackers and targets (summons), the <c>SDT_STATUS_LINK</c> self-maintain tail,
-/// the skill-229/128/3604 special cases and <c>CheckEquipSkill</c>.</para>
+/// and the skill-229/128/3604 special cases.</para>
 /// </summary>
 public sealed partial class MapService
 {
@@ -121,6 +121,7 @@ public sealed partial class MapService
                 actId: 0, aniId: 0, attackerLevel: ch.Level, transHp: trans, transMp: trans,
                 canSelect: 1, skillId, skillLevel, posX, posY, posZ, defX, defY, defZ);
         }
+        CheckEquipSkill(s, ch);
     }
 
     /// <summary>C++ <c>CTSkillTemp::GetTransHPMPFromType</c> (TSkillTemp.cpp:387), bug included: the argument is

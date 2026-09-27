@@ -15,8 +15,7 @@ namespace TMap.Server.Map;
 /// revival, …), and DB reload on enter. Expiry is the per-second <see cref="RunMaintainSkills"/> sweep;
 /// removal broadcasts <c>CS_SKILLEND_ACK</c> and re-clamps the vitals.
 ///
-/// <para><b>Deferred (documented — PORT_STATUS.md):</b> the remain/passive layer (<c>m_vRemainSkill</c>,
-/// <c>SA_CONTINUE</c>/<c>SA_PASSIVE</c>), cure/dispel (<c>PerformSkill</c> <c>SDT_CURE</c> +
+/// <para><b>Deferred (documented — PORT_STATUS.md):</b> cure/dispel (<c>PerformSkill</c> <c>SDT_CURE</c> +
 /// <c>DeletePositive</c>/<c>NegativeMaintainSkill</c>), the <c>ApplyEffectionBuff</c> amplifier, the AutoExp
 /// buff, loop/channeled skills (<c>CS_LOOPSKILL</c>), the action-triggered erasers
 /// (<c>EraseBuffByAttack</c>/<c>Defend</c>/<c>Ride</c>), monster self-buff (<c>Transformation</c>), the
@@ -111,6 +110,39 @@ public sealed partial class MapService
                 else ch.MaintainSkills.RemoveAt(i);
             }
     }
+
+    /// <summary>C++ <c>CTPlayer::CheckEquipSkill</c> (TPlayer.cpp:3964), run after an equip change and after each of the
+    /// player's own hits: a buff the player cast on themself falls off when no equipped item is a weapon it needs
+    /// (<see cref="IsEquipSkillItem"/>). If that buff was a stance, the buffs tied to that stance
+    /// (<c>m_wPosture</c>) fall off with it.</summary>
+    private void CheckEquipSkill(ClientSession s, Character ch)
+    {
+        ushort posture = 0;
+        for (int i = 0; i < ch.MaintainSkills.Count;)
+        {
+            var m = ch.MaintainSkills[i];
+            if (m.AttackType == OtPc && m.AttackId == ch.CharId && !IsEquipSkillItem(ch, m.Template))
+            {
+                if (m.Template!.IsPosture()) posture = m.SkillId;
+                EraseMaintainPlayer(s, ch, i);
+            }
+            else i++;
+        }
+        if (posture == 0) return;
+        for (int i = 0; i < ch.MaintainSkills.Count;)
+        {
+            var m = ch.MaintainSkills[i];
+            if (m.AttackType == OtPc && m.AttackId == ch.CharId && m.Template?.Posture == posture) EraseMaintainPlayer(s, ch, i);
+            else i++;
+        }
+    }
+
+    /// <summary>C++ <c>CTObjBase::IsEquipSkillItem</c> (TObjBase.cpp:2778) — the skill needs no weapon
+    /// (<c>m_dwWeapon</c> 0), or an equipped item's kind is one of them (bit <c>kind − 1</c>). A buff with no chart
+    /// template (DB-free) needs nothing.</summary>
+    private static bool IsEquipSkillItem(Character ch, SkillTemplate? tpl)
+        => tpl is not { WeaponId: not 0 } t
+           || ch.Equipped?.Items.Any(it => it.Template is { Kind: > 0 } e && ((1u << (e.Kind - 1)) & t.WeaponId) != 0) == true;
 
     private void ReleaseMaintainMonster(Monster mon, bool notify)
     {

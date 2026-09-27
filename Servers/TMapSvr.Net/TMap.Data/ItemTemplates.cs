@@ -34,7 +34,9 @@ public sealed record ItemTemplate(ushort ItemId, byte RefineMax, float[] Revisio
     ushort UseTime = 0, byte UseType = 0,
     // NPC shop list: the country an item is sold to (m_bItemCountry — TCONTRY_N ⇒ everyone) and the PvP-point price
     // ratio of a PvP shop (m_fPvPrice, against TLEVELCHART.dwPvPMoney).
-    byte ItemCountry = 3, float PvPrice = 0f);
+    byte ItemCountry = 3, float PvPrice = 0f,
+    // m_bEquipSkill: wearing it needs a weapon mastery for its kind (a learned SDT_EQUIP skill) — else MI_NOSKILL.
+    byte EquipSkill = 0);
 
 /// <summary>
 /// An item-attribute row from <c>TITEMATTRCHART</c> (C++ <c>CTBLItemAttrChart</c> → <c>tagITEMATTR</c>,
