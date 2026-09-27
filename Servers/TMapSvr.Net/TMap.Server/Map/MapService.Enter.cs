@@ -199,7 +199,12 @@ public sealed partial class MapService
         ch.PartyId = r.ReadUInt16();
         ch.PartyType = r.ReadByte();      // bPartyType (loot/exp mode; PT_SOLO opts out of party sharing)
         ch.PartyChiefId = r.ReadUInt32();
-        // trailing wTitleID / dwRankPoint / BOWRelease ignored (Phase-1)
+        if (r.Remaining >= 2) ch.TitleId = r.ReadUInt16();   // wTitleID (then dwRankPoint / BOWRelease, unused)
+
+        // C++ OnMW_CHARINFO_REQ, before CHARINFO_ACK: the ladder check, then the titles; gold is re-checked on every change.
+        CheckMonthRank(ch, ch.Country, ch.MonthPvPoint, ch.PvpTotalPoint);
+        LoginTitles(s, ch);
+        ch.MoneyChecked = c => GetTitle(s, c, GoldTitle, c.Gold, start: true);
 
         // The saddle goes first (C++ OnDM_LOADCHAR_ACK sends it before the world's CHARINFO step).
         var saddle = ch.Saddle ?? default;
@@ -393,7 +398,7 @@ public sealed partial class MapService
         w.WriteByte(0);              // secure code created
         w.WriteByte(0);              // secure code currently unlocked
         w.WriteByte(0);              // secure code disabled
-        w.WriteUInt16(0);            // wTitleID
+        w.WriteUInt16(ch.TitleId);
         w.WriteString(ch.Name);
         w.WriteByte(ch.StartAct);
         w.WriteByte(ch.Class);
@@ -485,7 +490,7 @@ public sealed partial class MapService
         w.WriteByte(0);              // item-cooltime count (Phase-2: none)
         w.WriteUInt32(ch.PvpTotalPoint);
         w.WriteUInt32(ch.PvpUseablePoint);
-        w.WriteUInt32(0);            // month PvP point
+        w.WriteUInt32(ch.MonthPvPoint);
         w.WriteString(DateTime.Now.ToString("tt hh : mm")); // strTajm (server clock)
         w.WriteUInt32(ch.Medals);    // medals
         s.Send(w);
@@ -611,7 +616,14 @@ public sealed partial class MapService
         ch.Invens.Clear();
         ch.Invens.AddRange(byId.Values);
 
-        (ch.PvpUseablePoint, ch.PvpTotalPoint) = await _gameDb.LoadPvPointAsync(ch.CharId);   // CSPGetPvPRecord
+        var pvp = await _gameDb.LoadPvpAsync(ch.CharId);                                // CSPGetPvPRecord + CSPGetMonthPvPoint
+        (ch.PvpUseablePoint, ch.PvpTotalPoint, ch.PvpRankOrder, ch.PvpRankPercent) = (pvp.Useable, pvp.Total, pvp.RankOrder, pvp.RankPercent);
+        for (int i = 0; i < 12; i++) ch.PvpRecord[i] = pvp.Record[i];
+        ch.TotalLose = pvp.Record.Where((_, i) => i % 2 == 0).Aggregate(0u, (a, b) => a + b);
+        ch.TotalWin = pvp.Record.Where((_, i) => i % 2 == 1).Aggregate(0u, (a, b) => a + b);
+        (ch.MonthPvPoint, ch.MonthWin, ch.MonthLose, ch.MonthRankOrder, ch.MonthRankPercent)
+            = (pvp.MonthPoint, pvp.MonthWin, pvp.MonthLose, pvp.MonthRankOrder, pvp.MonthRankPercent);
+        foreach (var (id, selected) in await _gameDb.LoadTitlesAsync(ch.CharId)) ch.Titles[id] = selected;   // CTBLTitle
 
         foreach (var sk in await _gameDb.LoadSkillsAsync(ch.CharId))
             ch.Skills.Add(new Skill

@@ -49,7 +49,9 @@ public sealed record SkillTemplate(
     float Price = 0f, ushort ParentSkillId = 0,
     // m_dwWeapon: the weapons a self-buff needs (bit IK-1 of an equipped item's kind); 0 = none. m_wPosture: the
     // stance a buff belongs to — it falls off with that stance (CTPlayer::CheckEquipSkill).
-    uint WeaponId = 0, ushort Posture = 0)
+    uint WeaponId = 0, ushort Posture = 0,
+    // m_bORadius: an area buff; a tie against it keeps it (UpdateBuffSkill).
+    byte ORadius = 0)
 {
     /// <summary>The per-level learning costs (C++ <c>m_mapTSkillPoint</c>, loaded from <c>TSKILLPOINTCHART</c>).</summary>
     public Dictionary<byte, SkillPointRow> Points { get; } = new();

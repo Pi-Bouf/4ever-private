@@ -26,7 +26,22 @@ public readonly record struct CharSaveData(
     ushort MapId, ushort SpawnId, ushort LastSpawnId, ushort TemptedMon, byte Aftermath,
     float PosX, float PosY, float PosZ, ushort Dir, uint PcBangTime, byte PcBangItemCnt,
     uint LastDestination, byte StatLevel, byte StatPoint, uint StatExp,
-    uint PvpUseablePoint = 0, uint PvpTotalPoint = 0);
+    uint PvpUseablePoint = 0, uint PvpTotalPoint = 0,
+    // TSavePvPRecord's per-class record, 6 × (lose, win) in class order; null = all 0.
+    uint[]? PvpRecord = null,
+    // TSaveMonthPvPoint (only written when the month points are not 0, as in the C++).
+    uint MonthPvPoint = 0, ushort MonthWin = 0, ushort MonthLose = 0, string MonthSay = "", byte Country = 0,
+    // TClearCharTitle + TSaveCharTitle: every owned title and whether it is the one shown; null = leave the rows alone.
+    IReadOnlyList<(ushort Id, bool Selected)>? Titles = null);
+
+/// <summary>C++ <c>CSPGetPvPRecord</c> + <c>CSPGetMonthPvPoint</c> at char load: the PvP balances, the all-time rank, the
+/// per-class record (6 × (lose, win)), and this month's points, wins, losses and rank.</summary>
+public sealed record PvpLoadRow(uint Useable, uint Total, uint RankOrder, byte RankPercent, uint[] Record,
+    uint MonthPoint, ushort MonthWin, ushort MonthLose, uint MonthRankOrder, byte MonthRankPercent);
+
+/// <summary>One <c>TTITLECHART</c> row (C++ <c>TTITLETEMP</c>): a title, its window tab, its kind (TITLE_KIND) and what
+/// it takes (points, gold, a quest id, a count…).</summary>
+public sealed record TitleRow(ushort Id, ushort Category, byte Kind, uint Requirement);
 
 /// <summary>One quest's persisted progress (C++ <c>TSaveQuest</c> + its <c>TSaveQuestTerm</c> rows).</summary>
 public readonly record struct QuestSaveRow(
@@ -139,6 +154,7 @@ public sealed partial class GameDatabase
     private const string LevelChartSql = @"SELECT bLevel, dwRepairCost, dwEXP, bSkillPoint, dwMoney, dwRefineCost, dwPvPMoney, wPvPoint FROM TLEVELCHART";
     // The kill-point chart (CTBLPvPointChart): the rows with no local are the open-field kill table (m_mapTPvPointKill).
     private const string PvPointChartSql = @"SELECT wLocalID, bStatus, bEvent, dwIncPoint, dwDecPoint FROM TPVPOINTCHART";
+    private const string TitleChartSql = @"SELECT wTitleID, wCategory, bKind, dwRequirement FROM TTITLECHART";
     // The NPC registry + per-NPC shop stock (CTBLNpc → m_mapTNpc, CTBLNpcItemAll → m_mapItem).
     private const string NpcChartSql =
         @"SELECT wID, bType, bCountryID, wLocalID, bCondition, bDiscountRate, bAddProb, wItemID, wMapID,
@@ -208,7 +224,7 @@ public sealed partial class GameDatabase
                  dwReuseDelay, nReuseDelayInc, dwLoopDelay, dwKindDelay, bSpeedApply, bPositive, wMapID,
                  dwDuration, dwDurationInc, bMaintainType, bPriority, bStatic, dwClassID, bGlobal,
                  bIsRide, bIsHideSkill, bIsDismount, bEraseAct, bTargetRange, fPrice, wParentSkillID,
-                 dwWeaponID, wPosture FROM TSKILLCHART";
+                 dwWeaponID, wPosture, bORadius FROM TSKILLCHART";
     // The learning costs per skill level (CTBLSkillPoint → CTSkillTemp::m_mapTSkillPoint).
     private const string SkillPointChartSql =
         @"SELECT wID, bLevel, bSkillPoint, bGroupPoint, bPrevSkillLevel, dwPayback FROM TSKILLPOINTCHART";
@@ -373,6 +389,14 @@ public sealed partial class GameDatabase
                 if (r.GetUShortSafe(0) == 0)   // a local's own rows belong to its battle zone (unported)
                     store.PvPointKill[(r.GetByteSafe(1), r.GetByteSafe(2))] = (r.GetUIntSafe(3), r.GetUIntSafe(4));
 
+        await using (var cmd = new SqlCommand(TitleChartSql, c))
+        await using (var r = await cmd.ExecuteReaderAsync(ct))
+            while (await r.ReadAsync(ct))
+            {
+                ushort id = r.GetUShortSafe(0);
+                store.Titles[id] = new TitleRow(id, r.GetUShortSafe(1), r.GetByteSafe(2), r.GetUIntSafe(3));
+            }
+
         // Skill templates. Each is stamped with the global f1stRateX (= store.Rate1st, the
         // FTYPE_1ST growth base) exactly as the C++ loader does (pSkill->m_f1stRateX = f1stRateX).
         await using (var cmd = new SqlCommand(SkillChartSql, c))
@@ -393,7 +417,7 @@ public sealed partial class GameDatabase
                     IsRide: r.GetByteSafe(23) != 0, IsHideSkill: r.GetByteSafe(24) != 0,
                     IsDismount: r.GetByteSafe(25) != 0, EraseAct: r.GetByteSafe(26), TargetRange: r.GetByteSafe(27),
                     Price: r.IsDBNull(28) ? 0f : Convert.ToSingle(r.GetValue(28)), ParentSkillId: r.GetUShortSafe(29),
-                    WeaponId: r.GetUIntSafe(30), Posture: r.GetUShortSafe(31));
+                    WeaponId: r.GetUIntSafe(30), Posture: r.GetUShortSafe(31), ORadius: r.GetByteSafe(32));
             }
 
         await using (var cmd = new SqlCommand(SkillPointChartSql, c))
@@ -720,12 +744,14 @@ FROM TCHARTABLE WHERE dwCharID = @dwCharID AND bDelete = 0";
             };
             await SqlProc.ExecAsync(c, "TSaveChar", SqlProc.Ret(), args, ct);
             await SavePvPointAsync(c, d, ct);
+            await SaveTitlesAsync(c, d, ct);
         }
         catch (SqlException ex) when (ex.Number == 2812) { /* proc absent in this baseline — tolerate */ }
     }
 
     /// <summary>C++ <c>CSPSavePvPRecord</c> (DBAccess.h:6796) — <c>TSavePvPRecord(dwCharID, useable, total, 6 × (lose, win))</c>,
-    /// an upsert into <c>TPVPOINTTABLE</c>. The proc ignores the per-class record, which is not kept here: 0s.</summary>
+    /// upserting <c>TPVPOINTTABLE</c> and <c>TPVPRECORDTABLE</c>; then <c>CSPSaveMonthPvPoint</c>
+    /// (<c>TSaveMonthPvPoint(dwCharID, point, win, lose, say, country)</c>) when the month points are not 0.</summary>
     private static async Task SavePvPointAsync(SqlConnection c, CharSaveData d, CancellationToken ct)
     {
         var args = new List<SqlParameter>
@@ -734,20 +760,81 @@ FROM TCHARTABLE WHERE dwCharID = @dwCharID AND bDelete = 0";
             SqlProc.In("@p1", SqlDbType.Int, unchecked((int)d.PvpUseablePoint)),
             SqlProc.In("@p2", SqlDbType.Int, unchecked((int)d.PvpTotalPoint)),
         };
-        for (int i = 3; i < 15; i++) args.Add(SqlProc.In($"@p{i}", SqlDbType.Int, 0));
+        for (int i = 0; i < 12; i++)
+            args.Add(SqlProc.In($"@p{i + 3}", SqlDbType.Int, unchecked((int)(d.PvpRecord is { Length: 12 } rec ? rec[i] : 0u))));
         await SqlProc.ExecAsync(c, "TSavePvPRecord", null, args, ct);
+
+        if (d.MonthPvPoint == 0) return;
+        await SqlProc.ExecAsync(c, "TSaveMonthPvPoint", SqlProc.Ret(), new[]
+        {
+            SqlProc.In("@m0", SqlDbType.Int, unchecked((int)d.CharId)),
+            SqlProc.In("@m1", SqlDbType.Int, unchecked((int)d.MonthPvPoint)),
+            SqlProc.In("@m2", SqlDbType.SmallInt, unchecked((short)d.MonthWin)),
+            SqlProc.In("@m3", SqlDbType.SmallInt, unchecked((short)d.MonthLose)),
+            SqlProc.In("@m4", SqlDbType.VarChar, d.MonthSay, 256),
+            SqlProc.In("@m5", SqlDbType.TinyInt, d.Country),
+        }, ct);
     }
 
-    /// <summary>C++ <c>CSPGetPvPRecord</c> (DBAccess.h:6769) at char load — the useable and total PvP points from
-    /// <c>TPVPOINTTABLE</c> (0, 0 when the character has no row yet). The rank outputs are not used by the map.</summary>
-    public async Task<(uint Useable, uint Total)> LoadPvPointAsync(uint charId, CancellationToken ct = default)
+    /// <summary>C++ <c>DM_CLEARTITLE_REQ</c> + <c>DM_SAVETITLE_REQ</c> (SSSender.cpp:1519): <c>TClearCharTitle(dwCharID)</c>, then
+    /// <c>TSaveCharTitle(dwCharID, wTitleID, bSelected)</c> per owned title.</summary>
+    private static async Task SaveTitlesAsync(SqlConnection c, CharSaveData d, CancellationToken ct)
+    {
+        if (d.Titles is null) return;
+        await SqlProc.ExecAsync(c, "TClearCharTitle", null, new[] { SqlProc.In("@t0", SqlDbType.Int, unchecked((int)d.CharId)) }, ct);
+        foreach (var (id, selected) in d.Titles)
+            await SqlProc.ExecAsync(c, "TSaveCharTitle", null, new[]
+            {
+                SqlProc.In("@t0", SqlDbType.Int, unchecked((int)d.CharId)),
+                SqlProc.In("@t1", SqlDbType.SmallInt, unchecked((short)id)),
+                SqlProc.In("@t2", SqlDbType.TinyInt, (byte)(selected ? 1 : 0)),
+            }, ct);
+    }
+
+    /// <summary>C++ <c>CSPGetPvPRecord</c> (DBAccess.h:6769) and <c>CSPGetMonthPvPoint</c> (DBAccess.h:7090) at char load.</summary>
+    public async Task<PvpLoadRow> LoadPvpAsync(uint charId, CancellationToken ct = default)
     {
         await using var c = await OpenAsync(ct);
-        await using var cmd = new SqlCommand(
-            "SELECT dwUseablePoint, dwTotalPoint FROM TPVPOINTTABLE WHERE dwCharID = @dwCharID", c);
+        var rec = new List<SqlParameter> { SqlProc.In("@r0", SqlDbType.Int, unchecked((int)charId)) };
+        rec.Add(SqlProc.Out("@r1", SqlDbType.Int)); rec.Add(SqlProc.Out("@r2", SqlDbType.Int));
+        rec.Add(SqlProc.Out("@r3", SqlDbType.Int)); rec.Add(SqlProc.Out("@r4", SqlDbType.TinyInt));
+        for (int i = 0; i < 12; i++) rec.Add(SqlProc.Out($"@r{i + 5}", SqlDbType.Int));
+        await SqlProc.ExecAsync(c, "TGetPvPRecord", null, rec, ct);
+
+        var month = new List<SqlParameter>
+        {
+            SqlProc.In("@m0", SqlDbType.Int, unchecked((int)charId)),
+            SqlProc.Out("@m1", SqlDbType.Int), SqlProc.Out("@m2", SqlDbType.SmallInt), SqlProc.Out("@m3", SqlDbType.SmallInt),
+            SqlProc.Out("@m4", SqlDbType.Int), SqlProc.Out("@m5", SqlDbType.TinyInt),
+        };
+        await SqlProc.ExecAsync(c, "TGetMonthPvPoint", SqlProc.Ret(), month, ct);
+
+        static uint U(SqlParameter p) => p.Value is DBNull or null ? 0u : unchecked((uint)Convert.ToInt64(p.Value));
+        return new PvpLoadRow(U(rec[1]), U(rec[2]), U(rec[3]), (byte)U(rec[4]), rec.Skip(5).Select(U).ToArray(),
+            U(month[1]), (ushort)U(month[2]), (ushort)U(month[3]), U(month[4]), (byte)U(month[5]));
+    }
+
+    /// <summary>C++ <c>CTBLTitle</c> (DBAccess.h:1670) at char load — the owned titles and which one is shown.</summary>
+    public async Task<List<(ushort Id, bool Selected)>> LoadTitlesAsync(uint charId, CancellationToken ct = default)
+    {
+        var list = new List<(ushort, bool)>();
+        await using var c = await OpenAsync(ct);
+        await using var cmd = new SqlCommand("SELECT wTitleID, bSelected FROM TTITLETABLE WHERE dwCharID = @dwCharID", c);
         cmd.Parameters.Add(SqlProc.In("@dwCharID", SqlDbType.Int, unchecked((int)charId)));
         await using var r = await cmd.ExecuteReaderAsync(ct);
-        return await r.ReadAsync(ct) ? (r.GetUIntSafe(0), r.GetUIntSafe(1)) : (0u, 0u);
+        while (await r.ReadAsync(ct)) list.Add((r.GetUShortSafe(0), r.GetByteSafe(1) != 0));
+        return list;
+    }
+
+    /// <summary>C++ <c>CTMapSvrModule::SaveCharKill</c> → <c>TSaveCharKill(killer, target)</c>, a row in <c>charkilling_log</c>.</summary>
+    public async Task SaveCharKillAsync(uint killerId, uint targetId, CancellationToken ct = default)
+    {
+        await using var c = await OpenAsync(ct);
+        await SqlProc.ExecAsync(c, "TSaveCharKill", null, new[]
+        {
+            SqlProc.In("@k0", SqlDbType.Int, unchecked((int)killerId)),
+            SqlProc.In("@k1", SqlDbType.Int, unchecked((int)targetId)),
+        }, ct);
     }
 
     /// <summary>C++ <c>TSaveQuest</c> + <c>TSaveQuestTerm</c> (CSPSaveQuest/CSPSaveQuestTerm) — the per-quest

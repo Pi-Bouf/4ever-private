@@ -131,6 +131,9 @@ public sealed class TemplateStore
     /// the victim's loss %, of the victim level's <see cref="LevelPvPoint"/>.</summary>
     public Dictionary<(byte Status, byte Event), (uint Inc, uint Dec)> PvPointKill { get; } = new();
 
+    /// <summary>The title chart (C++ <c>m_mapTTITLE</c>), by id — the order the C++ walks it in.</summary>
+    public SortedDictionary<ushort, TitleRow> Titles { get; } = new();
+
     /// <summary>C++ <c>m_mapTNpc</c> — the NPC registry loaded from <c>TNPCCHART</c> (+ the per-NPC shop stock
     /// from <c>TNPCITEMCHART</c>), keyed by NPC id. The map server builds its runtime NPC objects from these.</summary>
     public Dictionary<ushort, NpcDef> Npcs { get; } = new();

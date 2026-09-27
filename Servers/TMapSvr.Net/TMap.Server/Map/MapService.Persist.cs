@@ -52,7 +52,9 @@ public sealed partial class MapService
         PosX: ch.PosX, PosY: ch.PosY, PosZ: ch.PosZ, Dir: ch.Dir,
         PcBangTime: 0, PcBangItemCnt: 0, LastDestination: ch.Persist.LastDestination,
         StatLevel: ch.Persist.StatLevel, StatPoint: ch.Persist.StatPoint, StatExp: ch.Persist.StatExp,
-        PvpUseablePoint: ch.PvpUseablePoint, PvpTotalPoint: ch.PvpTotalPoint);
+        PvpUseablePoint: ch.PvpUseablePoint, PvpTotalPoint: ch.PvpTotalPoint, PvpRecord: (uint[])ch.PvpRecord.Clone(),
+        MonthPvPoint: ch.MonthPvPoint, MonthWin: ch.MonthWin, MonthLose: ch.MonthLose, MonthSay: ch.MonthSay, Country: ch.Country,
+        Titles: ch.Titles.Select(t => (t.Key, t.Value)).ToList());
 
     /// <summary>Collects the dirty (<c>Save</c>-flagged) quests into save rows and clears their flags (C++ resets
     /// <c>m_bSave</c> after packing). Batch-thread; the returned rows are an immutable snapshot.</summary>

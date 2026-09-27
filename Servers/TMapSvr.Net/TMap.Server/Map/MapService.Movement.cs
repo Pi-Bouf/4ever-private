@@ -225,7 +225,7 @@ public sealed partial class MapService
         var w = new PacketWriter(Msg.CS_ENTER_ACK, capacity: 256);
         w.WriteUInt32(ch.CharId);
         w.WriteString(ch.Name);
-        w.WriteUInt16(0);                 // wTitleID
+        w.WriteUInt16(ch.TitleId);
         w.WriteString("");                // strComment
         w.WriteUInt32(ch.GuildId);
         w.WriteUInt32(ch.Fame);

@@ -152,6 +152,12 @@ public sealed partial class MapService
                 case Msg.CS_DUELINVITE_REQ: OnCS_DUELINVITE_REQ(session, r); break;
                 case Msg.CS_DUELINVITEREPLY_REQ: OnCS_DUELINVITEREPLY_REQ(session, r); break;
                 case Msg.CS_DUELEND_REQ: OnCS_DUELEND_REQ(session, r); break;
+                case Msg.CS_MONTHRANKLIST_REQ: OnCS_MONTHRANKLIST_REQ(session); break;
+                case Msg.CS_FIRSTGRADEGROUP_REQ: OnCS_FIRSTGRADEGROUP_REQ(session); break;
+                case Msg.CS_FAMERANKLIST_REQ: OnCS_FAMERANKLIST_REQ(session, r); break;
+                case Msg.CS_PVPRECORD_REQ: OnCS_PVPRECORD_REQ(session, r); break;
+                case Msg.CS_TITLELIST_REQ: OnCS_TITLELIST_REQ(session); break;
+                case Msg.CS_CHANGETITLE_REQ: OnCS_CHANGETITLE_REQ(session, r); break;
                 case Msg.CS_PARTYJOIN_REQ: OnCS_PARTYJOIN_REQ(session, r); break;
                 case Msg.CS_PARTYDEL_REQ: OnCS_PARTYDEL_REQ(session, r); break;
                 case Msg.CS_CHGPARTYCHIEF_REQ: OnCS_CHGPARTYCHIEF_REQ(session, r); break;
@@ -237,6 +243,14 @@ public sealed partial class MapService
                 case Msg.MW_CHARINFO_REQ: OnMW_CHARINFO_REQ(r); break;
                 case Msg.MW_ROUTE_REQ: OnMW_ROUTE_REQ(r); break;
                 case Msg.MW_ENTERCHAR_REQ: OnMW_ENTERCHAR_REQ(r); break;
+                case Msg.MW_MONTHRANKLIST_REQ: OnMW_MONTHRANKLIST_REQ(r); break;
+                case Msg.MW_MONTHRANKUPDATE_REQ: OnMW_MONTHRANKUPDATE_REQ(r); break;
+                case Msg.MW_MONTHRANKRESET_REQ: OnMW_MONTHRANKRESET_REQ(r); break;
+                case Msg.MW_FIRSTGRADEGROUP_REQ: OnMW_FIRSTGRADEGROUP_REQ(r); break;
+                case Msg.MW_MONTHRANKRESETCHAR_REQ: OnMW_MONTHRANKRESETCHAR_REQ(r); break;
+                case Msg.MW_FAMERANKUPDATE_REQ: OnMW_FAMERANKUPDATE_REQ(r); break;
+                case Msg.MW_WARLORDSAY_REQ: OnMW_WARLORDSAY_REQ(r); break;
+                case Msg.MW_CHANGECHARBASE_REQ: OnMW_CHANGECHARBASE_REQ(r); break;
                 case Msg.MW_CHECKMAIN_REQ: OnMW_CHECKMAIN_REQ(r); break;
                 case Msg.MW_CONRESULT_REQ: OnMW_CONRESULT_REQ(r); break;
                 case Msg.MW_CHAT_REQ: OnMW_CHAT_REQ(r); break;

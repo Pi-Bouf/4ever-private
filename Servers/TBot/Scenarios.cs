@@ -39,6 +39,8 @@ public static class Scenarios
         CS_DELSELFOBJ_ACK = M + 0x00F5,
         CS_DUELINVITE_REQ = M + 0x0147, CS_DUELINVITE_ACK = M + 0x0148, CS_DUELINVITEREPLY_REQ = M + 0x0149,
         CS_DUELSTART_ACK = M + 0x014A, CS_DUELEND_ACK = M + 0x014C, CS_DUELSTANDBY_ACK = M + 0x014D, CS_SYSTEMMSG_ACK = M + 0x01D1,
+        CS_PVPRECORD_REQ = M + 0x01E9, CS_PVPRECORD_ACK = M + 0x01EA, CS_MONTHRANKLIST_REQ = M + 0x021D, CS_MONTHRANKLIST_ACK = M + 0x021E,
+        CS_TITLEGAIN_ACK = M + 0x0277,
         CS_DIE_ACK = M + 0x0025, CS_REVIVAL_REQ = M + 0x0026, CS_REVIVAL_ACK = M + 0x0027, CS_PVPPOINT_ACK = M + 0x01E2,
         CS_MOVEITEM_REQ = M + 0x0028, CS_MOVEITEM_ACK = M + 0x0029, CS_SKILLEND_ACK = M + 0x0037,
         CS_SKILLBUY_REQ = M + 0x0032, CS_SKILLBUY_ACK = M + 0x0033, CS_NPCITEMLIST_REQ = M + 0x0082, CS_NPCITEMLIST_ACK = M + 0x0083;
@@ -71,6 +73,10 @@ public static class Scenarios
     // and costs the victim 20% (2) of its total. B starts with a total of 10.
     private const ushort BasicMelee = 31;
     private const uint VictimTotal = 10, KillGain = 11, KillLoss = 2;
+    // Ranking and titles: 11 total points pass the first honour title (TTITLECHART 56, more than 10). The bots' rank and
+    // title rows are copied aside before the run and put back after (RankTables).
+    private const ushort HonourTitle = 56;
+    private static readonly string[] RankTables = { "TMONTHPVPOINTTABLE", "TPVPRECORDTABLE", "TTITLETABLE" };
     private const byte InvenEquip = 0xFE, InvenBackpack = 0xFF;
 
     private static readonly List<(string Name, bool Ok, string Detail)> Results = new();
@@ -713,10 +719,50 @@ public static class Scenarios
 
         var gain = a.TryWait(CS_PVPPOINT_ACK);
         var loss = b.TryWait(CS_PVPPOINT_ACK);
-        Check("pvp: the killer earns 11 total and useable (an even kill)",
-            gain is not null && ReadPvPoint(gain) == (KillGain, KillGain, 2, 0), Describe(gain));
+        Check("pvp: the killer earns 11 total, useable and this month (an even kill)",
+            gain is not null && ReadPvPoint(gain) == (KillGain, KillGain, 2, KillGain), Describe(gain));
         Check("pvp: the victim loses 2 from its total",
             loss is not null && ReadPvPoint(loss) == (VictimTotal - KillLoss, 0, 2, 0), Describe(loss));
+        var title = a.TryWait(CS_TITLEGAIN_ACK);
+        Check("titles: passing 10 total points earns the first honour title", title is not null && Read(title, r =>
+        {
+            int n = r.ReadByte(); var owned = new List<ushort>();
+            for (int i = 0; i < n; i++) { owned.Add(r.ReadUInt16()); r.ReadByte(); }
+            return (owned.Contains(HonourTitle), r.ReadUInt16(), r.ReadByte());
+        }) == (true, HonourTitle, 1), Describe(title));
+
+        a.Send(Req(CS_PVPRECORD_REQ, w => w.WriteByte(0)));
+        var rec = a.TryWait(CS_PVPRECORD_ACK);
+        Check("ranking: the record window counts the win against a ranger and lists the kill", rec is not null && Read(rec, r =>
+        {
+            r.ReadByte(); r.ReadUInt32(); r.ReadByte();
+            var cls = Enumerable.Range(0, 6).Select(_ => (r.ReadUInt32(), r.ReadUInt32())).ToList();
+            int n = r.ReadByte(); string last = "";
+            for (int i = 0; i < n; i++) { last = r.ReadString(); r.ReadByte(); r.ReadByte(); r.ReadByte(); r.ReadUInt32(); r.ReadInt64(); }
+            r.ReadUInt32(); r.ReadByte(); ushort mw = r.ReadUInt16(); r.ReadUInt16();
+            return (cls[1].Item1, last, mw);
+        }) == (1u, b.Spawn.Name, (ushort)1), Describe(rec));
+
+        Thread.Sleep(1000);                                            // the world's ladder update comes back
+        a.Send(Req(CS_MONTHRANKLIST_REQ, _ => { }));
+        var board = a.TryWait(CS_MONTHRANKLIST_ACK);
+        Check("ranking: the killer is on the month's ladder the world keeps", board is not null && Read(board, r =>
+        {
+            r.ReadByte(); r.ReadByte(); int per = r.ReadByte(); bool found = false;
+            for (int c = 0; c < 3; c++)
+            {
+                r.ReadByte();
+                for (int j = 0; j < per; j++)
+                {
+                    r.ReadUInt32(); r.ReadUInt32(); uint id = r.ReadUInt32(); r.ReadString(); r.ReadUInt32(); uint month = r.ReadUInt32();
+                    r.ReadUInt16(); r.ReadUInt16(); r.ReadUInt32(); r.ReadUInt32();
+                    for (int k = 0; k < 7; k++) r.ReadByte();
+                    r.ReadString(); r.ReadString();
+                    if (id == a.CharId && month == KillGain) found = true;
+                }
+            }
+            return found;
+        }), Describe(board));
 
         // B gets up where it fell (REVIVAL_GHOST).
         b.Send(Req(CS_REVIVAL_REQ, w => { w.WriteFloat(b.Spawn.X); w.WriteFloat(b.Spawn.Y); w.WriteFloat(b.Spawn.Z); w.WriteByte(1); }));
@@ -771,6 +817,15 @@ public static class Scenarios
             && Convert.ToInt64(pa[1]) == KillGain, pa is null ? "no row" : $"useable {pa[0]}, total {pa[1]}");
         Check("saved: the victim's PvP points in TPVPOINTTABLE", pb is not null && Convert.ToInt64(pb[1]) == VictimTotal - KillLoss,
             pb is null ? "no row" : $"useable {pb[0]}, total {pb[1]}");
+        var month = await db.RowAsync("SELECT dwPoint, wWin FROM TMONTHPVPOINTTABLE WHERE dwCharID=@p0", (int)idA);
+        Check("saved: the killer's month in TMONTHPVPOINTTABLE", month is not null && Convert.ToInt64(month[0]) == KillGain
+            && Convert.ToInt32(month[1]) == 1, month is null ? "no row" : $"{month[0]} points, {month[1]} wins");
+        var cls = await db.RowAsync("SELECT dwRanger_win FROM TPVPRECORDTABLE WHERE dwCharID=@p0", (int)idA);
+        Check("saved: the win against a ranger in TPVPRECORDTABLE", cls is not null && Convert.ToInt64(cls[0]) == 1, cls is null ? "no row" : $"{cls[0]}");
+        var ttl = await db.RowAsync("SELECT COUNT(*) FROM TTITLETABLE WHERE dwCharID=@p0 AND wTitleID=@p1", (int)idA, (int)HonourTitle);
+        Check("saved: the honour title in TTITLETABLE", ttl is not null && Convert.ToInt32(ttl[0]) == 1, $"{ttl?[0]} rows");
+        var kill = await db.RowAsync("SELECT COUNT(*) FROM charkilling_log WHERE dwKillerID=@p0 AND dwTargetID=@p1", (int)idA, (int)idB);
+        Check("saved: the kill in charkilling_log", kill is not null && Convert.ToInt32(kill[0]) == 1, $"{kill?[0]} rows");
         var mb = await db.RowAsync("SELECT dwCooper FROM TCHARTABLE WHERE dwCharID=@p0", (int)idB);
         Check("saved: receiver's money", mb is not null && Convert.ToInt64(mb[0]) == MailCooper, $"cooper={mb?[0]}");
 
@@ -846,6 +901,13 @@ public static class Scenarios
             bGem, wMoggItemID)
             VALUES (@p0, 0, 255, 0, @p1, @p2, @p3, 0, 1, 0, 0, 0, 0, '1900-01-01', 0, 0,0,0,0,0,0, 0,0,0,0,0,0, 0,0,0,0,0,0, 0, 0)",
             RuneDlId, (int)idA, (int)RuneSlot, (int)RuneItem);   // dwTime5 = 0: no species until the server stamps it
+        foreach (var t in RankTables)
+        {
+            await db.ExecAsync($"IF OBJECT_ID('TBOT_BAK_{t}') IS NOT NULL DROP TABLE TBOT_BAK_{t}");
+            await db.ExecAsync($"SELECT * INTO TBOT_BAK_{t} FROM {t} WHERE dwCharID IN (@p0, @p1)", (int)idA, (int)idB);
+            await db.ExecAsync($"DELETE FROM {t} WHERE dwCharID IN (@p0, @p1)", (int)idA, (int)idB);
+        }
+        await db.ExecAsync("DELETE FROM charkilling_log WHERE dwKillerID=@p0 AND dwTargetID=@p1", (int)idA, (int)idB);
         await SetPvPoint(db, idA, 0, 0);
         await SetPvPoint(db, idB, 0, VictimTotal);
         await db.ExecAsync("UPDATE TCHARTABLE SET bAftermath=0 WHERE dwCharID IN (@p0, @p1)", (int)idA, (int)idB);
@@ -901,6 +963,12 @@ public static class Scenarios
         await ResetSand(db, idA);
         await db.ExecAsync("DELETE FROM TSKILLTABLE WHERE dwCharID=@p0 AND wSkillID IN (@p1, @p2)", (int)idA, (int)RitualSkill, (int)IceRainSkill);
         await ClearPassives(db, idA);
+        foreach (var t in RankTables)
+        {
+            await db.ExecAsync($"DELETE FROM {t} WHERE dwCharID IN (@p0, @p1)", (int)idA, (int)idB);
+            await db.ExecAsync($"IF OBJECT_ID('TBOT_BAK_{t}') IS NOT NULL BEGIN INSERT INTO {t} SELECT * FROM TBOT_BAK_{t}; DROP TABLE TBOT_BAK_{t} END");
+        }
+        await db.ExecAsync("DELETE FROM charkilling_log WHERE dwKillerID=@p0 AND dwTargetID=@p1", (int)idA, (int)idB);
         Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] fixtures restored");
     }
 

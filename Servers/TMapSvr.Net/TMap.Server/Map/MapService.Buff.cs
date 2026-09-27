@@ -409,13 +409,15 @@ public sealed partial class MapService
     /// <summary>C++ <c>CTObjBase::UpdateBuffSkill</c> (TObjBase.cpp:2953) — stack/collision resolution against
     /// the existing buffs before a new one is pushed. A debuff (<c>IsNegative</c>) silently replaces any same-id
     /// entry and always applies. A buff contends with existing buffs sharing an <c>SA_BUFF</c> <c>SDT_ABILITY</c>
-    /// row: resolve by priority, then by each side's own flat ability value, then by self-cast ownership;
-    /// the loser is erased (broadcasting <c>CS_SKILLEND_ACK</c>). Returns whether the new buff should be pushed
-    /// (<c>!count || erasedAny || !collision</c>).
+    /// row: resolve by priority, then by each side's own flat ability value, then by self-cast ownership, then an
+    /// area buff (<c>m_bORadius</c>) is kept; the loser is erased (broadcasting <c>CS_SKILLEND_ACK</c>). A new
+    /// <b>stance</b> (<c>IsPosture</c>) replaces the current stance and ends the owner's own buffs that belong to
+    /// another stance (<c>m_wPosture</c>); an existing stance is never replaced by an ordinary buff. Returns whether
+    /// the new buff should be pushed (<c>!count || erasedAny || !collision</c>).
     ///
     /// <para><b>Simplified (documented):</b> the value comparison uses each skill's flat SA_BUFF delta (base 0)
     /// — exact for INCREASE/DECREASE buffs (the overwhelming majority); MULTIPLY/DIVIDE/PERCENT compare as 0.
-    /// The Posture / ORadius / Trans / non-ability branches are omitted (their chart fields aren't loaded).</para></summary>
+    /// The Trans and non-ability branches are omitted.</para></summary>
     private bool UpdateBuffSkill(List<MaintainSkill> list, MaintainSkill neu, uint ownerId, byte ownerType,
                                  Action<int> eraseAt)
     {
@@ -434,6 +436,11 @@ public sealed partial class MapService
             var ex = list[i];
             if (ex.IsNegative)
                 erase = false;   // a new buff never strips an existing debuff
+            else if (neu.Template?.IsPosture() == true)
+                erase = ex.Template is { } pt && (pt.IsPosture()
+                    || (pt.Posture != 0 && pt.Posture != neu.SkillId && ex.AttackType == ownerType && ex.AttackId == ownerId));
+            else if (ex.Template?.IsPosture() == true)
+                erase = false;   // an ordinary buff never replaces a stance
             else if (ex.Template is { } et && neu.Template is { } nt && et.SharedBuffAbility(nt, out byte exec))
             {
                 uint v1 = (uint)Math.Max(0, et.CalcAbilityValue(ex.Level, SaBuff, exec, 0));
@@ -447,6 +454,7 @@ public sealed partial class MapService
                 else if (v1 < v2) erase = true;            // new is stronger ⇒ replace
                 else if (exSelf && !nuSelf) collision = true;
                 else if (!exSelf && nuSelf) erase = true;
+                else if (et.ORadius != 0) collision = true;  // an area buff holds its place
                 else erase = true;                         // same skill/caster ⇒ refresh
             }
 

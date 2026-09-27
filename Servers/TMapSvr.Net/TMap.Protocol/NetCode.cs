@@ -319,6 +319,32 @@ public static class Msg
     public const ushort CS_DUELEND_REQ = CS_MAP + 0x014B;           // (give up)
     public const ushort CS_DUELEND_ACK = CS_MAP + 0x014C;           // dwLoser (0 = none)
     public const ushort CS_DUELSTANDBY_ACK = CS_MAP + 0x014D;       // dwInviter · dwTarget · fPosX · fPosZ (the arena centre)
+    // PvP ranking and titles (MapService.Rank.cs / MapService.Title.cs)
+    public const ushort CS_CHANGECHARBASE_ACK = CS_MAP + 0x01CA;    // bResult · dwCharID · bType · bValue · strName · wTitleID · dwSecond
+    public const ushort CS_PVPRECORD_REQ = CS_MAP + 0x01E9;         // bType (0 PvP, else duel)
+    public const ushort CS_PVPRECORD_ACK = CS_MAP + 0x01EA;
+    public const ushort CS_FAMERANKLIST_REQ = CS_MAP + 0x021A;      // bType · bMonth
+    public const ushort CS_FAMERANKLIST_ACK = CS_MAP + 0x021B;
+    public const ushort CS_UPDATEFAMERANKLIST_ACK = CS_MAP + 0x021C;
+    public const ushort CS_MONTHRANKLIST_REQ = CS_MAP + 0x021D;
+    public const ushort CS_MONTHRANKLIST_ACK = CS_MAP + 0x021E;
+    public const ushort CS_FIRSTGRADEGROUP_REQ = CS_MAP + 0x0220;
+    public const ushort CS_FIRSTGRADEGROUP_ACK = CS_MAP + 0x0221;
+    public const ushort CS_TITLELIST_REQ = CS_MAP + 0x0274;
+    public const ushort CS_TITLELIST_ACK = CS_MAP + 0x0275;         // bCount × (wTitleID · bSelected)
+    public const ushort CS_CHANGETITLE_REQ = CS_MAP + 0x0276;       // wTitleID
+    public const ushort CS_TITLEGAIN_ACK = CS_MAP + 0x0277;         // the list, then wTitleID · bStart
+    public const ushort CS_TITLERESET_ACK = CS_MAP + 0x0278;
+    public const ushort MW_CHANGECHARBASE_REQ = MW_BASE + 0x0119;   // dwCharID · dwKey · bType · bValue · wTitleID · strName
+    public const ushort MW_CHANGECHARBASE_ACK = MW_BASE + 0x011A;
+    public const ushort MW_MONTHRANKUPDATE_REQ = MW_BASE + 0x013D;
+    public const ushort MW_MONTHRANKUPDATE_ACK = MW_BASE + 0x013E;  // bMonth · bCountry · RANKER
+    public const ushort MW_MONTHRANKLIST_REQ = MW_BASE + 0x013F;
+    public const ushort MW_MONTHRANKRESET_REQ = MW_BASE + 0x0140;
+    public const ushort MW_WARLORDSAY_REQ = MW_BASE + 0x0141;
+    public const ushort MW_FIRSTGRADEGROUP_REQ = MW_BASE + 0x0143;
+    public const ushort MW_FAMERANKUPDATE_REQ = MW_BASE + 0x0169;
+    public const ushort MW_MONTHRANKRESETCHAR_REQ = MW_BASE + 0x016E;
     public const ushort CS_CREATECOMPANION_REQ = CS_MAP + 0x033E;      // bInven · bItem · strName
     public const ushort CS_DELETECOMPANION_REQ = CS_MAP + 0x033F;      // bSlot
     public const ushort CS_UPDATESPAWNEDCOMPANION_REQ = CS_MAP + 0x0340; // S→C: bSlot (0xFF none)

@@ -14,10 +14,9 @@ namespace TMap.Server.Map;
 /// <para>The hit is the one a monster takes (<see cref="CalcDamage"/>): the defender's defence, its shield roll (a
 /// successful one reports <c>HT_BLOCK</c>), its buffs on the damage and its immunity statuses. A kill costs the victim
 /// total points and pays the killer — or, in a party, pays the killer the same and each partner nearby 12 — see
-/// <see cref="PvPKill"/>. <b>Not ported:</b> debuffs a hit leaves on a player (<c>MaintainSkill</c> for a PC target),
-/// <c>DistributeSkill</c> (a summon sharing its owner's damage), the per-class win/lose record and its
-/// <c>TCHARKILL</c> log (<c>RecordPvP</c> — only the recent-kill list the anti-farm rule reads is kept), the local /
-/// battle-zone tallies (<c>LocalRecord</c>) and the monthly ranking.</para>
+/// <see cref="PvPKill"/>. Each kill and death is recorded (<see cref="RecordPvP"/>). <b>Not ported:</b> debuffs a hit
+/// leaves on a player (<c>MaintainSkill</c> for a PC target), <c>DistributeSkill</c> (a summon sharing its owner's
+/// damage) and the local / battle-zone tallies (<c>LocalRecord</c>).</para>
 /// </summary>
 public sealed partial class MapService
 {
@@ -99,33 +98,48 @@ public sealed partial class MapService
         uint dec = worth * row.Dec / 100, inc = worth * row.Inc / 100;
         inc = inc * (uint)(100 - victim.Persist.Aftermath / 2) / 100;                     // no local battle
 
-        UsePvPoint(vs, victim, dec, evt, PvpTotal, killer.Name);
+        UsePvPoint(vs, victim, dec, evt, PvpTotal, killer);
         if (atkParty.Count == 0)
         {
-            GainPvPoint(ks, killer, inc, evt, PvpTotal | PvpUseable, victim.Name);
+            GainPvPoint(ks, killer, inc, evt, PvpTotal | PvpUseable, victim);
             return;
         }
         for (int i = atkParty.Count - 1; i >= 0; i--)                                    // vParty.back() first
         {
             var x = atkParty[i];
-            if (x.Char!.CharId == killer.CharId) GainPvPoint(x, x.Char, inc, evt, PvpTotal | PvpUseable, victim.Name);
-            else if (x.IsMain) GainPvPoint(x, x.Char, PvpPartnerPoint, evt, PvpTotal | PvpUseable, victim.Name);
+            if (x.Char!.CharId == killer.CharId) GainPvPoint(x, x.Char, inc, evt, PvpTotal | PvpUseable, victim);
+            else if (x.IsMain) GainPvPoint(x, x.Char, PvpPartnerPoint, evt, PvpTotal | PvpUseable, victim);
         }
     }
 
-    /// <summary>The kill record part of C++ <c>GainPvPoint</c> / <c>UsePvPoint</c> (the <c>pRec</c> branch):
-    /// <c>RecordPvP</c> keeps the recent wins and losses. A win on a name already beaten 3 times in the last 600 s pays
-    /// nothing. Returns the points to apply.</summary>
-    private uint RecordPvP(Character ch, string otherName, bool win, uint point)
+    /// <summary>The kill record part of C++ <c>GainPvPoint</c> / <c>UsePvPoint</c> (the <c>pRec</c> branch) and
+    /// <c>CTPlayer::RecordPvP</c> (TPlayer.cpp:5385): a win on a name already beaten 3 times in the last 600 s pays nothing;
+    /// the result joins the recent list, the class record and the month's and all-time tallies (with their titles), and a
+    /// win is logged (<c>TSaveCharKill</c>). Returns the points to apply.</summary>
+    private uint RecordPvP(ClientSession s, Character ch, Character other, bool win, uint point)
     {
         long now = NowMs;
-        if (win && ch.PvpRecent.Count(r => now - r.TimeMs < PvpSameVictimWindowMs && r.Win && r.Name == otherName) >= 3)
+        if (win && ch.PvpRecent.Count(r => now - r.TimeMs < PvpSameVictimWindowMs && r.Win && r.Name == other.Name) >= 3)
             point = 0;
-        ch.PvpRecent.Add(new PvpRecord(otherName, win, point, now));
+        ch.PvpRecent.Add(new PvpRecord(other.Name, win, point, now, other.Class, other.Level, DateTimeOffset.UtcNow.ToUnixTimeSeconds()));
+        if (win && _gameDb is { } db) { uint k = ch.CharId, t = other.CharId; _ = EnqueueDbWrite(() => db.SaveCharKillAsync(k, t)); }
         // Past PVP_RECENTRECORDCOUNT, the records older than PVP_SAVETIME go.
         for (int i = 0; i < ch.PvpRecent.Count && ch.PvpRecent.Count > PvpRecentCount;)
             if (now - ch.PvpRecent[i].TimeMs > PvpSameVictimWindowMs) ch.PvpRecent.RemoveAt(i);
             else i++;
+
+        if (other.Class < 6) ch.PvpRecord[other.Class * 2 + (win ? 1 : 0)]++;
+        if (win)
+        {
+            ch.MonthWin++; ch.TotalWin++;
+            GetTitle(s, ch, DefeatsMonthTitle, ch.MonthWin, start: true);
+        }
+        else
+        {
+            ch.MonthLose++; ch.TotalLose++;
+            GetTitle(s, ch, DeathMonthTitle, ch.MonthLose, start: true);
+        }
+        GetTitle(s, ch, VictoryMonthTitle, ch.MonthRankPercent, start: true);
         return point;
     }
 }

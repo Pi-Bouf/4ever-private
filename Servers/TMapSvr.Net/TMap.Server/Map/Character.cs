@@ -94,8 +94,30 @@ public sealed class Character
     // PvP points
     public uint PvpTotalPoint { get; set; }
     public uint PvpUseablePoint { get; set; }
-    /// <summary>C++ <c>m_vPvPRecent</c> — the recent kills and deaths (name, won, points, map-clock ms).</summary>
+    /// <summary>C++ <c>m_vPvPRecent</c> — the recent kills and deaths.</summary>
     public List<PvpRecord> PvpRecent { get; } = new();
+    /// <summary>C++ <c>m_aPvPRecord[class][win]</c>, flattened as <c>class·2 + (win ? 1 : 0)</c> — the all-time wins and
+    /// losses against each class; <see cref="TotalWin"/> / <see cref="TotalLose"/> are their sums.</summary>
+    public uint[] PvpRecord { get; } = new uint[12];
+    public uint TotalWin { get; set; }
+    public uint TotalLose { get; set; }
+    /// <summary>C++ <c>m_dwPvPRankOrder</c> / <c>m_bPvPRankPercent</c> — the all-time place, as loaded.</summary>
+    public uint PvpRankOrder { get; set; }
+    public byte PvpRankPercent { get; set; }
+    /// <summary>This month (C++ <c>m_dwMonthPvPoint</c>, <c>m_wMonthWin</c>/<c>Lose</c>, <c>m_dwMonthRankOrder</c>,
+    /// <c>m_bMonthRankPercent</c>, <c>m_strMonthSay</c>).</summary>
+    public uint MonthPvPoint { get; set; }
+    public ushort MonthWin { get; set; }
+    public ushort MonthLose { get; set; }
+    public uint MonthRankOrder { get; set; }
+    public byte MonthRankPercent { get; set; }
+    public string MonthSay { get; set; } = "";
+    /// <summary>C++ <c>m_mapTTITLE</c> — the owned titles by id, and whether each is the shown one; <see cref="TitleId"/> is
+    /// the shown one (C++ <c>m_wTitleID</c>, from the world at login).</summary>
+    public SortedDictionary<ushort, bool> Titles { get; } = new();
+    public ushort TitleId { get; set; }
+    /// <summary>Called after every money check or change (the C++ UseMoney/EarnMoney GOLD_TITLE check).</summary>
+    public Action<Character>? MoneyChecked { get; set; }
     /// <summary>C++ <c>m_dwDuelID</c> / <c>m_bDuelType</c> / <c>m_dwDuelTarget</c> — the duel the player is in (0 = none), its
     /// state as the player sees it (only ever 0 or DUEL_END) and the opponent.</summary>
     public uint DuelId { get; set; }
@@ -280,13 +302,14 @@ public sealed class Character
 
     /// <summary>C++ <c>CTPlayer::UseMoney</c> — with <paramref name="commit"/> false it only checks
     /// affordability (returns false if the balance is short); true also deducts. A zero cost always passes.
-    /// (The C++ GOLD_TITLE side effect is deferred — titles unported.)</summary>
+    /// Then the gold titles are checked (<see cref="MoneyChecked"/>).</summary>
     public bool UseMoney(long cost, bool commit)
     {
         if (cost == 0) return true;
         long mine = MoneyTotal;
         if (mine < cost) return false;
         if (commit) SetMoneyTotal(mine - cost);
+        MoneyChecked?.Invoke(this);
         return true;
     }
 
@@ -296,6 +319,7 @@ public sealed class Character
     {
         if (amount == 0) return false;
         SetMoneyTotal(amount + MoneyTotal);
+        MoneyChecked?.Invoke(this);
         return true;
     }
 
@@ -332,4 +356,5 @@ public sealed class CharPersistExtras
 
 /// <summary>One recent PvP result (C++ <c>TRECORDSET</c> in <c>m_vPvPRecent</c>): the other player, whether it was a win, the
 /// points it moved, and when (map-clock ms).</summary>
-public readonly record struct PvpRecord(string Name, bool Win, uint Point, long TimeMs);
+public readonly record struct PvpRecord(string Name, bool Win, uint Point, long TimeMs, byte Class = 0, byte Level = 0,
+    long UnixTime = 0);

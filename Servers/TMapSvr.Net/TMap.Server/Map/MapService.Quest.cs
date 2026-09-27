@@ -846,6 +846,7 @@ public sealed partial class MapService
         }
 
         ConsumeFetchItems(s, ch, q);
+        GetTitle(s, ch, QuestTitle, q.QuestId, start: true);
         return QuestResult.Success;
     }
 
