@@ -162,6 +162,8 @@ public sealed partial class MapService
         // a buff, and/or a cure skill dispels/heals, on self/an ally. C++ Defend runs MaintainSkill + PerformSkill(SDT_CURE) both. ----
         if (targetType == OtPc)
         {
+            // C++ CanDuel: a player in a duel is off limits to its own side except its opponent.
+            if (_state.FindByChar(targetId)?.Char is { } dueller && !CanDuel(dueller, ch)) return;
             if (targetId != ch.CharId && atkSkill?.Template is not { IsNegative: false })
             {
                 if (_state.FindByChar(targetId) is { State: EnterState.InGame, Char: { } target } ts

@@ -37,6 +37,8 @@ public static class Scenarios
         CS_SKILLUSE_REQ = M + 0x0034, CS_SKILLUSE_ACK = M + 0x0035, CS_DEFEND_ACK = M + 0x0021, CS_ADDMON_ACK = M + 0x0011,
         CS_FINISHSKILL_ACK = M + 0x0377, CS_DELRECALLMON_REQ = M + 0x00E1, CS_ADDSELFOBJ_ACK = M + 0x00F4,
         CS_DELSELFOBJ_ACK = M + 0x00F5,
+        CS_DUELINVITE_REQ = M + 0x0147, CS_DUELINVITE_ACK = M + 0x0148, CS_DUELINVITEREPLY_REQ = M + 0x0149,
+        CS_DUELSTART_ACK = M + 0x014A, CS_DUELEND_ACK = M + 0x014C, CS_DUELSTANDBY_ACK = M + 0x014D, CS_SYSTEMMSG_ACK = M + 0x01D1,
         CS_DIE_ACK = M + 0x0025, CS_REVIVAL_REQ = M + 0x0026, CS_REVIVAL_ACK = M + 0x0027, CS_PVPPOINT_ACK = M + 0x01E2,
         CS_MOVEITEM_REQ = M + 0x0028, CS_MOVEITEM_ACK = M + 0x0029, CS_SKILLEND_ACK = M + 0x0037,
         CS_SKILLBUY_REQ = M + 0x0032, CS_SKILLBUY_ACK = M + 0x0033, CS_NPCITEMLIST_REQ = M + 0x0082, CS_NPCITEMLIST_ACK = M + 0x0083;
@@ -127,6 +129,7 @@ public static class Scenarios
             Summons(a, b);
             Skills(a);
             Passives(a);
+            Duel(a, b);
             PvP(a, b);
             Teleport(a, b);
 
@@ -650,6 +653,47 @@ public static class Scenarios
         var kept = a.TryWait(CS_SKILLEND_ACK, timeoutMs: 1500);
         Check("passives: with the weapon on, the buff stays", kept is null, Describe(kept));
         a.Discard(CS_MOVEITEM_ACK);
+    }
+
+    private static void Duel(Bot a, Bot b)
+    {
+        a.Send(Req(CS_DUELINVITE_REQ, w => w.WriteUInt32(b.CharId)));
+        var ask = b.TryWait(CS_DUELINVITE_ACK);
+        Check("duel: the invite reaches the other player", ask is not null && Read(ask, r => r.ReadUInt32()) == a.CharId, Describe(ask));
+        if (ask is null) return;
+
+        b.Send(Req(CS_DUELINVITEREPLY_REQ, w => { w.WriteByte(0); w.WriteUInt32(a.CharId); }));   // ASK_YES
+        var standA = a.TryWait(CS_DUELSTANDBY_ACK);
+        var standB = b.TryWait(CS_DUELSTANDBY_ACK);
+        Check("duel: both get the arena (standby)", standA is not null && standB is not null
+            && Read(standA, r => (r.ReadUInt32(), r.ReadUInt32(), r.ReadFloat(), r.ReadFloat())).Item2 == b.CharId
+            && Read(standB, r => (r.ReadUInt32(), r.ReadUInt32(), r.ReadFloat(), r.ReadFloat())).Item1 == a.CharId,
+            $"{Describe(standA)} / {Describe(standB)}");
+        var go = b.TryWait(CS_DUELSTART_ACK, timeoutMs: 14000);
+        Check("duel: it starts about 10 s later", go is not null && Read(go, r => (r.ReadByte(), r.ReadUInt32(), r.ReadUInt32()))
+            == (0, a.CharId, b.CharId), Describe(go));
+        a.TryWait(CS_DUELSTART_ACK, timeoutMs: 1000);
+        if (go is null) return;
+
+        a.Discard(CS_PVPPOINT_ACK); b.Discard(CS_DIE_ACK); b.Discard(CS_HPMP_ACK);
+        PacketReader? end = null;
+        for (int i = 0; i < 60 && end is null; i++)
+        {
+            a.Send(FinishSkill(a, a.CharId, 1, BasicMelee, a.Spawn.X, a.Spawn.Z, (b.CharId, 1)));
+            b.TryWait(CS_DEFEND_ACK, r => r.ReadUInt32() == a.CharId && r.ReadUInt32() == b.CharId, 3000);
+            end = b.TryWait(CS_DUELEND_ACK, timeoutMs: 300);
+        }
+        Check("duel: the knockout ends it, the loser named", end is not null && Read(end, r => r.ReadUInt32()) == b.CharId, Describe(end));
+        Check("duel: the loser does not die", b.TryWait(CS_DIE_ACK, r => r.ReadUInt32() == b.CharId, 500) is null, "CS_DIE_ACK sent");
+        var hp = b.TryWait(CS_HPMP_ACK, r => r.ReadUInt32() == b.CharId && r.ReadByte() == 1 && r.ReadUInt32() == r.ReadUInt32());
+        Check("duel: the loser is healed to full", hp is not null, Describe(hp));
+        var win = a.TryWait(CS_SYSTEMMSG_ACK, r => r.ReadByte() == 8);
+        Check("duel: the winner's view hears who won (SM_DUAL_WIN)", win is not null
+            && Read(win, r => (r.ReadByte(), r.ReadString(), r.ReadString())) == (8, a.Spawn.Name, b.Spawn.Name), Describe(win));
+        Check("duel: no PvP points for a duel", a.TryWait(CS_PVPPOINT_ACK, timeoutMs: 500) is null, "CS_PVPPOINT_ACK sent");
+        a.TryWait(CS_DUELEND_ACK, timeoutMs: 500);
+        Thread.Sleep(2000);                                            // the duel is cleared the next second
+        a.Discard(CS_HPMP_ACK); b.Discard(CS_HPMP_ACK); a.Discard(CS_DEFEND_ACK); b.Discard(CS_DEFEND_ACK);
     }
 
     private static void PvP(Bot a, Bot b)

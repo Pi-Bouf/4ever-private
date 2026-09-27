@@ -96,6 +96,11 @@ public sealed class Character
     public uint PvpUseablePoint { get; set; }
     /// <summary>C++ <c>m_vPvPRecent</c> — the recent kills and deaths (name, won, points, map-clock ms).</summary>
     public List<PvpRecord> PvpRecent { get; } = new();
+    /// <summary>C++ <c>m_dwDuelID</c> / <c>m_bDuelType</c> / <c>m_dwDuelTarget</c> — the duel the player is in (0 = none), its
+    /// state as the player sees it (only ever 0 or DUEL_END) and the opponent.</summary>
+    public uint DuelId { get; set; }
+    public byte DuelType { get; set; }
+    public uint DuelTarget { get; set; }
 
     /// <summary>Unspent skill points (C++ <c>m_wSkillPoint</c>), granted on level-up. Not yet consumed
     /// (skill-buy is unported) — bookkeeping only.</summary>

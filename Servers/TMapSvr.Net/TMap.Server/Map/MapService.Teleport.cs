@@ -142,6 +142,7 @@ public sealed partial class MapService
             return true;
         }
 
+        LeaveDuel(ch, loses: true);                                                     // teleporting away forfeits
         var w = new PacketWriter(Msg.MW_BEGINTELEPORT_ACK);
         w.WriteUInt32(ch.CharId); w.WriteUInt32(s.Key); w.WriteByte(0 /* bSameChannel */); w.WriteByte(channel);
         w.WriteUInt16(mapId); w.WriteFloat(x); w.WriteFloat(y); w.WriteFloat(z);

@@ -97,7 +97,7 @@ public sealed partial class MapService
             float defX, defY, defZ;
             if (targetType == OtPc)
             {
-                // C++ CanDuel only rejects a target that is mid-duel; duels are unported, so it always passes.
+                // C++ CanDuel (a target in a duel) is checked where the hit lands, PlayerHitsTarget.
                 if (_state.FindByChar(targetId) is not { State: EnterState.InGame, Char: { } tch }) continue;
                 defX = tch.PosX; defY = tch.PosY; defZ = tch.PosZ;
             }

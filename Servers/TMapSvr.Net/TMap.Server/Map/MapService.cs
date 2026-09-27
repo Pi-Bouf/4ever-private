@@ -81,6 +81,7 @@ public sealed partial class MapService
 
         SaveCharData(session);   // flush the char record + dirty quests on logout (C++ SetEventCloseSession)
         if (session.Char is { } looter) ReleaseLootLock(looter);   // C++ SSHandler.cpp:19205 / TMapSvr.cpp:1544
+        if (session.Char is { } dueller) { LeaveDuel(dueller, loses: false); ClearDuel(dueller); }   // CTPlayer release
         if (session.Char is { } leaving) { ClearRecalls(session, leaving); ClearCompanionObjs(leaving); }
         if (session.CharId != 0) EraseBill(session.CharId, 0);   // C++ SM_POSTBILLERASE_REQ(id, 0)
         _state.Remove(session);
@@ -148,6 +149,9 @@ public sealed partial class MapService
                 case Msg.CS_INVENMOVE_REQ: OnCS_INVENMOVE_REQ(session, r); break;
                 case Msg.CS_SETRETURNPOS_REQ: OnCS_SETRETURNPOS_REQ(session, r); break;
                 case Msg.CS_PARTYADD_REQ: OnCS_PARTYADD_REQ(session, r); break;
+                case Msg.CS_DUELINVITE_REQ: OnCS_DUELINVITE_REQ(session, r); break;
+                case Msg.CS_DUELINVITEREPLY_REQ: OnCS_DUELINVITEREPLY_REQ(session, r); break;
+                case Msg.CS_DUELEND_REQ: OnCS_DUELEND_REQ(session, r); break;
                 case Msg.CS_PARTYJOIN_REQ: OnCS_PARTYJOIN_REQ(session, r); break;
                 case Msg.CS_PARTYDEL_REQ: OnCS_PARTYDEL_REQ(session, r); break;
                 case Msg.CS_CHGPARTYCHIEF_REQ: OnCS_CHGPARTYCHIEF_REQ(session, r); break;
@@ -306,6 +310,7 @@ public sealed partial class MapService
         RunPeriodicSaves(NowMs);               // 30-min per-char DB save (no-op DB-free); off-thread write
         FlushItemDirect();                     // incremental item persistence (TSaveItemDirect); off-thread write
         await RunPostBills();                  // unpaid bills past 3 days go back to their sender
+        RunDuels();                            // duel standby → start → timeout → clear (the SM_DUEL* timer)
         // Still deferred here: war timers — see PORT_STATUS.md.
     }
 }

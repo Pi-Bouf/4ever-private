@@ -8,8 +8,9 @@ namespace TMap.Server.Map;
 /// cause (<c>CTPlayer::OnDie</c>) and the kill's PvP points (<c>CTMapSvrModule::PvPEvent</c>, TMapSvr.cpp:10190).
 /// <para>The server does not decide who may be attacked: like the C++, it takes the client's word for the target (the
 /// client only lets a player attack an enemy) and checks only what the C++ checks here — a live target on the same
-/// map, and the attacker is not the target. The C++ peace-zone, battle-zone and duel gates concern systems that are not
-/// ported (territories, the lounge, tournaments, duels), and always pass.</para>
+/// map, the attacker is not the target, and a player in a duel is only open to its opponent (MapService.Duel.cs). The C++
+/// peace-zone and battle-zone gates concern systems that are not ported (territories, the lounge, tournaments), and always
+/// pass.</para>
 /// <para>The hit is the one a monster takes (<see cref="CalcDamage"/>): the defender's defence, its shield roll (a
 /// successful one reports <c>HT_BLOCK</c>), its buffs on the damage and its immunity statuses. A kill costs the victim
 /// total points and pays the killer — or, in a party, pays the killer the same and each partner nearby 12 — see
@@ -60,6 +61,7 @@ public sealed partial class MapService
         }
 
         if (hitType == HtMiss || target.Hp != 0 || hpBefore == 0) return;
+        if (target.DuelId != 0 && DuelLose(ts, target, hostId)) return;              // a duel's loser does not die
         PlayerDied(target, viewers);
         PvPKill(ts, target, s, ch);
     }

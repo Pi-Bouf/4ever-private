@@ -312,6 +312,13 @@ public static class Msg
     public const ushort CS_UPDATECOMPANIONBYITEM_REQ = CS_MAP + 0x033C;   // S→C
     public const ushort CS_UPDATECOMPANIONBYSYSTEM_REQ = CS_MAP + 0x033D; // S→C
     public const ushort CS_PVPPOINT_ACK = CS_MAP + 0x01E2;          // dwTotal · dwUseable · bEvent · dwMonthPvPoint
+    public const ushort CS_DUELINVITE_REQ = CS_MAP + 0x0147;        // dwTarget
+    public const ushort CS_DUELINVITE_ACK = CS_MAP + 0x0148;        // dwInviter (to the invited player)
+    public const ushort CS_DUELINVITEREPLY_REQ = CS_MAP + 0x0149;   // bResult (ASK_TYPE) · dwInviter
+    public const ushort CS_DUELSTART_ACK = CS_MAP + 0x014A;         // bResult (DUEL_RESULT) · dwInviter · dwTarget
+    public const ushort CS_DUELEND_REQ = CS_MAP + 0x014B;           // (give up)
+    public const ushort CS_DUELEND_ACK = CS_MAP + 0x014C;           // dwLoser (0 = none)
+    public const ushort CS_DUELSTANDBY_ACK = CS_MAP + 0x014D;       // dwInviter · dwTarget · fPosX · fPosZ (the arena centre)
     public const ushort CS_CREATECOMPANION_REQ = CS_MAP + 0x033E;      // bInven · bItem · strName
     public const ushort CS_DELETECOMPANION_REQ = CS_MAP + 0x033F;      // bSlot
     public const ushort CS_UPDATESPAWNEDCOMPANION_REQ = CS_MAP + 0x0340; // S→C: bSlot (0xFF none)
