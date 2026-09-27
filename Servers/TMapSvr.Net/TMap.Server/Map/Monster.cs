@@ -167,6 +167,11 @@ public sealed class Monster
 
     /// <summary>True while the corpse still holds loot (money or items) — keeps it around to be looted.</summary>
     public bool HasLoot => CorpseMoney > 0 || CorpseInven.Items.Count > 0;
+    /// <summary>C++ <c>m_dwInvenLock</c> — the character whose loot window is open on this corpse (0 = none): one
+    /// looter at a time.</summary>
+    public uint InvenLock { get; set; }
+    /// <summary>C++ <c>m_bLeaveCount</c> — the corpse's AI already put off leaving once because it was being looted.</summary>
+    public byte LeaveCount { get; set; }
     /// <summary>True once dead (C++ <c>OS_DEAD</c>): a lootable corpse — not attackable, does not regen.</summary>
     public bool Dead { get; set; }
     /// <summary>The map-clock (ms) at which the corpse despawns and its spawn slot re-arms.</summary>

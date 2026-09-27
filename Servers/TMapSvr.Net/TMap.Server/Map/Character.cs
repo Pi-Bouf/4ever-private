@@ -26,6 +26,8 @@ public sealed class Character
     public byte Foot { get; set; }
     public byte HelmetHide { get; set; }
     public byte Level { get; set; } = 1;
+    /// <summary>C++ <c>m_dwLockedMonID</c> — the corpse whose loot window this character has open (0 = none).</summary>
+    public uint LockedMonId { get; set; }
 
     // Party / guild / tactics
     public ushort PartyId { get; set; }

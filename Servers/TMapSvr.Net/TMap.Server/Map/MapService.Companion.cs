@@ -561,7 +561,7 @@ public sealed partial class MapService
     private void CompanionExitMap(Character ch)
     {
         foreach (var obj in ch.CompanionObjs.Values)
-            if (obj.InMap) LeaveRecall(obj, exitMap: true, forever: false);
+            if (obj.InMap) LeaveRecall(obj, exitMap: false, forever: false);   // C++ LeaveAllCompanion: LeaveMAP(mon, FALSE)
     }
 
     /// <summary>The owner died (C++ <c>CTPlayer::OnDie</c>): the creature goes, the summoned slot stays — revival brings

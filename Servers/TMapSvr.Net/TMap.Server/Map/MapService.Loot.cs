@@ -87,6 +87,7 @@ public sealed partial class MapService
 
     // OWNER_TYPE (NetCode.h:1972)
     private const byte OwnerPrivate = 1, OwnerParty = 2;
+    private const byte PtHunter = 2;                                    // PARTY_TYPE PT_HUNTER (NetCode.h:1964)
 
     private void AwardKill(Monster mon)
     {
@@ -231,12 +232,60 @@ public sealed partial class MapService
         return null;
     }
 
+    /// <summary>C++ <c>OnCS_MONITEMLIST_REQ</c> (CSHandler.cpp:6776) — <c>bWant · dwMonID</c>: open a corpse's loot window
+    /// (<c>bWant</c> 1) or close it (0 — no answer: an answer would open it again). Someone else's loot answers
+    /// <c>MIL_CANTACCESS</c>, and so does a party corpse in hunter mode for anyone but the monster's top-hate host.
+    /// One looter at a time: opening locks the corpse (<c>m_dwInvenLock</c>), and a corpse locked by someone else answers
+    /// <c>MIL_CANTACCESS</c>. The lock goes on close, when the corpse leaves the looter's view (moving, teleport), on
+    /// logout (<see cref="ReleaseLootLock"/>) and when the corpse leaves the map.</summary>
     private void OnCS_MONITEMLIST_REQ(ClientSession s, PacketReader r)
     {
-        r.ReadByte();                 // bWant
-        uint monId = r.ReadUInt32();  // dwMonID
-        if (s.Char is { Riding: not 0 }) return;   // no looting from a mount (CSHandler.cpp:6785)
-        if (_state.FindMonster(monId) is { } mon) SendCS_MONITEMLIST_ACK(s, mon, update: 0);
+        bool want = r.ReadByte() != 0;  // bWant
+        uint monId = r.ReadUInt32();    // dwMonID
+        if (s.Char is not { } ch || ch.Riding != 0) return;   // no looting from a mount (CSHandler.cpp:6785)
+        if (_state.FindMonster(monId) is not { } mon) return;
+        if (!CanLootKeeper(mon, ch)) { SendCS_MONITEMLIST_CANTACCESS(s, monId); return; }
+        if (!want && (mon.InvenLock == 0 || mon.InvenLock == ch.CharId))
+        {
+            ch.LockedMonId = 0;                                 // closing the window
+            mon.InvenLock = 0;
+            return;
+        }
+        if (mon.InvenLock != 0) { SendCS_MONITEMLIST_CANTACCESS(s, monId); return; }   // someone else is looting
+        if (mon.KeeperType == OwnerParty && ch.PartyType == PtHunter && ch.CharId != GetHunter(mon))
+        { SendCS_MONITEMLIST_CANTACCESS(s, monId); return; }
+        mon.InvenLock = ch.CharId;
+        ch.LockedMonId = monId;
+        SendCS_MONITEMLIST_ACK(s, mon, update: 0);
+    }
+
+    /// <summary>The C++ lock releases (TCell.cpp:223/320/387 — the corpse leaves the looter's view; SSHandler.cpp:19205 and
+    /// TMapSvr.cpp:1544 — logout): the corpse this character was looting is free again.</summary>
+    private void ReleaseLootLock(Character ch)
+    {
+        if (ch.LockedMonId != 0 && _state.FindMonster(ch.LockedMonId) is { } mon) ReleaseLootLock(ch, mon);
+    }
+
+    /// <summary>The per-monster form (TCell.cpp): <paramref name="mon"/> leaves the view of <paramref name="ch"/>.</summary>
+    private static void ReleaseLootLock(Character ch, Monster mon)
+    {
+        if (mon.InvenLock != ch.CharId) return;
+        ch.LockedMonId = 0;
+        mon.InvenLock = 0;
+    }
+
+    /// <summary>C++ <c>CTMonster::GetHunter</c> (TMonster.cpp:1009) — for a party corpse, the host with the most hate.</summary>
+    private static uint GetHunter(Monster mon)
+        => mon.KeeperType == OwnerParty && mon.AggroTable.Values.Where(a => a.Aggro > 0).MaxBy(a => a.Aggro) is { } top
+            ? top.HostId : 0;
+
+    /// <summary>C++ <c>SendCS_MONITEMLIST_ACK(MIL_CANTACCESS, dwMonID, 0, NULL, FALSE)</c> — no item count follows.</summary>
+    private static void SendCS_MONITEMLIST_CANTACCESS(ClientSession s, uint monId)
+    {
+        var w = new PacketWriter(Msg.CS_MONITEMLIST_ACK, capacity: 20);
+        w.WriteByte(1 /* MIL_CANTACCESS */); w.WriteByte(0); w.WriteUInt32(monId);
+        w.WriteUInt32(0); w.WriteUInt32(0); w.WriteUInt32(0);
+        s.Send(w);
     }
 
     private void OnCS_MONMONEYTAKE_REQ(ClientSession s, PacketReader r)

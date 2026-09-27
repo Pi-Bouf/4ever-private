@@ -398,6 +398,25 @@ public class PetTests
         del.ReadUInt32(); del.ReadUInt32(); Assert.Equal(900u, del.ReadUInt32());
     }
 
+    [Fact]
+    public async Task ATeleport_TakesTheSummonOffQuietly_SoTheClientDoesNotKillIt()
+    {
+        var (h, s, c, ch, _) = await Setup(ch => GivePet(ch));
+        await CallAndSpawn(h, s, ch);
+        c.Clear();
+
+        await h.Service.DispatchWorldAsync(Req(Msg.MW_STARTTELEPORT_REQ, w =>
+        {
+            w.WriteUInt32(1); w.WriteUInt32(Key); w.WriteByte(1); w.WriteUInt16(0); w.WriteFloat(5000); w.WriteFloat(0); w.WriteFloat(5000);
+        }));
+
+        // C++ LeaveAllRecallMon → LeaveMAP(mon, FALSE): bExitMAP 0 — the client deletes it; with 1 it plays its death.
+        var del = new PacketReader(c.Last(Msg.CS_DELRECALLMON_ACK)!);
+        del.ReadUInt32(); Assert.Equal(900u, del.ReadUInt32());
+        Assert.Equal(0, del.ReadByte());
+        Assert.Contains(900u, ch.Recalls.Keys);                             // kept, to come back at the destination
+    }
+
     // ================================ summon core ================================
 
     [Fact]

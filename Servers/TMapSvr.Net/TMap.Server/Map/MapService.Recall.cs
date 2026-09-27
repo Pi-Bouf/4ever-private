@@ -239,7 +239,7 @@ public sealed partial class MapService
         PetRiding(s, ch, 0);
         ClearSelfObjs(ch);                                              // C++ ClearSelfMon(FALSE): placed objects stay behind
         foreach (var m in ch.Recalls.Values)
-            if (m.InMap) LeaveRecall(m, exitMap: true, forever: false);
+            if (m.InMap) LeaveRecall(m, exitMap: false, forever: false);   // C++ LeaveAllRecallMon: LeaveMAP(mon, FALSE)
     }
 
     /// <summary>C++ <c>InitMap</c> (TMapSvr.cpp:8163-8200), on arrival: a mount nobody rides is sent away; every other

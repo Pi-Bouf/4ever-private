@@ -127,16 +127,6 @@ public sealed partial class MapService
 
     // ================================ the trainer's list ================================
 
-    /// <summary>C++ <c>OnCS_NPCITEMLIST_REQ</c> — <c>wNpcID</c>. Only the skill trainers' list is ported here.</summary>
-    private void OnCS_NPCITEMLIST_REQ(ClientSession s, PacketReader r)
-    {
-        ushort npcId = r.ReadUInt16();
-        if (s.State != EnterState.InGame || !s.IsMain || s.Char is not { } ch) return;
-        if (_state.FindNpc(npcId) is not { } npc || !npc.CanTalk(ch.Country, ch.AidCountry, 0)) return;
-        if (npc.Type is not (TnpcSkillMaster or TnpcSkillRent)) return;              // item shops: not ported
-        SendCS_NPCSKILLLIST_ACK(s, ch, npc);
-    }
-
     /// <summary>The skill branch of C++ <c>SendCS_NPCITEMLIST_ACK(CTNpc*)</c> (CSSender.cpp) —
     /// <c>wNpcID · bType · bDiscountRate · bCount · {wSkillID · dwPrice}</c>: what the character can learn right now —
     /// a new skill of its class whose points it has and whose parent it knows, or a held one below its maximum whose

@@ -157,6 +157,8 @@ services:
       Map__Channels__0: "1"
       Map__Db__GameConnectionString: "Server=mssql,1433;Database=TGame_gsp;User ID=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;Encrypt=False"
       Map__Db__GlobalConnectionString: "Server=mssql,1433;Database=TGlobal_gsp;User ID=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;Encrypt=False"
+      # Debug logging: the summon/monster traces and the dispatch `default:` arm's unhandled client packet ids.
+      Serilog__MinimumLevel__Default: "Debug"
     ports:
       - "5816:5816"
 

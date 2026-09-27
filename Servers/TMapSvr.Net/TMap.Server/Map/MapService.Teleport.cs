@@ -240,7 +240,11 @@ public sealed partial class MapService
             other.Send(BuildCS_LEAVE_ACK(s.CharId, exitMap: true));
             s.Send(BuildCS_LEAVE_ACK(other.CharId, exitMap: false));
         }
-        foreach (var m in watching) SendCS_DELMON_ACK(s, m.Id, exitMap: false);
+        foreach (var m in watching)
+        {
+            ReleaseLootLock(ch, m);                                     // TCell.cpp:387
+            SendCS_DELMON_ACK(s, m.Id, exitMap: false);
+        }
 
         _state.LeaveWorld(s);
         s.State = EnterState.Granted;

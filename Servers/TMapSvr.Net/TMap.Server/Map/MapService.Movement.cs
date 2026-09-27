@@ -172,6 +172,7 @@ public sealed partial class MapService
         // CTMap::OnMove runs the same cell diff over m_mapMONSTER via CTCell::EnterPlayer/LeavePlayer.
         foreach (var m in diff.LeftMonsters)
         {
+            if (s.Char is { } looter) ReleaseLootLock(looter, m);   // TCell.cpp:387
             SendCS_DELMON_ACK(s, m.Id, exitMap: false);
             MonsterLostSight(m, s.CharId);
         }

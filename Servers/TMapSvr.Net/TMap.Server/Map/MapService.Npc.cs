@@ -15,15 +15,15 @@ namespace TMap.Server.Map;
 /// <c>CanRunQuest</c>) — talk always returns questId 0, and a client-supplied nonzero <c>dwQuestID</c> resolves
 /// the item from shop stock and skips payment exactly as the C++ does when no quest chart matches (a latent
 /// free-buy that closes once quests gate the item list); the NPC discount (<c>GetDiscountRate</c> — occupation/
-/// guild/hero data unported ⇒ rate 0, full price); <b>TNPC_PVPOINT</b> PvP-point-currency shops
-/// (<c>GetItemPvPrice</c>/<c>UsePvPoint</c>) and <b>BoW-mode</b> pricing (a gold NPC is assumed); the price-up
+/// guild/hero data unported ⇒ rate 0, full price); PvP points (a <b>TNPC_PVPOINT</b> shop prices in them —
+/// <c>GetItemPvPrice</c> — but with no points modelled only its free items can be bought) and <b>BoW-mode</b> pricing (a gold NPC is assumed); the price-up
 /// buff on sell (<c>SDT_STATUS_PRICEUP</c>); the secure-code, player-store, deal (trade) and tournament guards;
 /// the item-count / quest / UDP logging. No DB save (the C++ buy/sell path saves nothing back).</para>
 /// </summary>
 public sealed partial class MapService
 {
     private const byte TnpcItem = 2;        // TNPC_TYPE TNPC_ITEM (gold shop)
-    private const byte TnpcPvPoint = 21;    // TNPC_TYPE TNPC_PVPOINT (PvP-point shop — pricing deferred)
+    private const byte TnpcPvPoint = 21;    // TNPC_TYPE TNPC_PVPOINT (PvP-point shop)
     private const byte TnpcReturn = 14;     // TNPC_TYPE TNPC_RETURN (sets the return point)
     private const byte TnpcPortal = 8;      // TNPC_TYPE TNPC_PORTAL (teleporter)
     private const byte ItemtradeSell = 2;   // ITEMTRADE_SELL bit of m_bIsSell
@@ -101,7 +101,15 @@ public sealed partial class MapService
         if (t.Stack < count) count = t.Stack;
 
         uint buyPrice = 0;
-        if (questId == 0) // C++: !dwQuestID && npc not on the BoW map (BoW/PvP-point pricing deferred ⇒ gold)
+        if (questId == 0 && npc.Type == TnpcPvPoint)
+        {
+            // A PvP shop takes PvP points (GetItemPvPrice vs m_dwPvPUseablePoint). PvP points are not modelled yet, so
+            // the character has none: anything with a price answers ITEMBUY_NEEDMONEY, as the C++ does at 0 points.
+            buyPrice = GetItemPvPrice(t) * count;
+            const uint pvpUseablePoints = 0;
+            if (pvpUseablePoints < buyPrice) { SendCS_ITEMBUY_ACK(s, ch, ItemBuyResult.NeedMoney, itemId); return; }
+        }
+        else if (questId == 0) // C++: !dwQuestID && npc not on the BoW map (BoW pricing deferred ⇒ gold)
         {
             buyPrice = GetItemPrice(t) * count;
             const byte discount = 0; // GetDiscountRate deferred ⇒ 0 (full price)
@@ -135,7 +143,7 @@ public sealed partial class MapService
         }
 
         PushTItem(s, one);
-        if (questId == 0) ch.UseMoney(buyPrice, commit: true); // actual deduction (C++ UseMoney(...,TRUE))
+        if (questId == 0 && npc.Type != TnpcPvPoint) ch.UseMoney(buyPrice, commit: true); // actual deduction (C++ UseMoney(...,TRUE))
         SendCS_ITEMBUY_ACK(s, ch, ItemBuyResult.Success, itemId);
         CheckQuest(s, 0, ch.PosX, ch.PosY, ch.PosZ, itemId, QttGetItem, TtGetItem, count); // advance/trigger get-item quests
     }

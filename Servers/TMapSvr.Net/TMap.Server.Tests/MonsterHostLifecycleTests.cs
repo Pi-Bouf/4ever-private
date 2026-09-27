@@ -255,6 +255,26 @@ public class MonsterHostLifecycleTests
     }
 
     [Fact]
+    public async Task ACorpseBeingLooted_PutsOffLeavingOnce()
+    {
+        // C++ TAICmdLeave: !m_bLeaveCount && m_dwInvenLock ⇒ count it and wait a pass.
+        var h = new MapTestHarness();
+        await h.EnterAsync(1, 1, 1, x: 100, z: 100);
+        var corpse = Mob();
+        h.Service.SpawnMonster(corpse);
+        corpse.Ai = new AiScript(1);
+        corpse.Ai.Bind((byte)AiTrigger.Dead, 0, new AiBinding(new AiCommandTemplate(1, AiCommandKind.Leave), 1000, false));
+        corpse.Status = 3; corpse.Dead = true; corpse.Hp = 0;
+        corpse.InvenLock = 1;                                   // char 1 has the loot window open
+        h.Service.OnAiEvent(corpse, AiTrigger.Dead);
+
+        h.Service.RunScheduledAi(20_000);
+
+        Assert.Equal(1, corpse.LeaveCount);                     // it waited one pass (the retry re-arms at once here)…
+        Assert.Null(h.State.FindMonster(corpse.Id));            // …then left, window open or not
+    }
+
+    [Fact]
     public void RemovingAStaleObject_KeepsTheMonsterNowHoldingItsId()
     {
         var h = new MapTestHarness();

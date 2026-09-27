@@ -129,11 +129,12 @@ public sealed partial class GameDatabase
         @"SELECT wItemID, bRefineMax, fRevision, fMRevision, fAtRate, fMAtRate, bType, wAttrID, dwSpeedInc,
                  bLevel, dwClassID, dwSlotID, bPrmSlotID, bSubSlotID, bStack, bKind, wUseValue, dwDelay,
                  fPrice, bCanRepair, wDelayGroupID, bConsumable, bIsSell,
-                 bGrade, bCanGrade, bCanMagic, bCanRare, bCanWrap, bCanColor, dwDuraMax, wUseTime, bUseType FROM TITEMCHART";
+                 bGrade, bCanGrade, bCanMagic, bCanRare, bCanWrap, bCanColor, dwDuraMax, wUseTime, bUseType,
+                 bItemCountry, fPvPrice FROM TITEMCHART";
     // The per-level chart (CTBLLevelChart): the repair-cost coefficient (m_dwRepairCost), dwEXP (the
     // level-up threshold) + bSkillPoint (granted per level), and dwMoney (the base price the item
     // buy/sell math scales by m_fPrice).
-    private const string LevelChartSql = @"SELECT bLevel, dwRepairCost, dwEXP, bSkillPoint, dwMoney, dwRefineCost FROM TLEVELCHART";
+    private const string LevelChartSql = @"SELECT bLevel, dwRepairCost, dwEXP, bSkillPoint, dwMoney, dwRefineCost, dwPvPMoney FROM TLEVELCHART";
     // The NPC registry + per-NPC shop stock (CTBLNpc → m_mapTNpc, CTBLNpcItemAll → m_mapItem).
     private const string NpcChartSql =
         @"SELECT wID, bType, bCountryID, wLocalID, bCondition, bDiscountRate, bAddProb, wItemID, wMapID,
@@ -251,7 +252,8 @@ public sealed partial class GameDatabase
                     DelayGroup: r.GetUShortSafe(20), Consumable: r.GetByteSafe(21), IsSell: r.GetByteSafe(22),
                     Grade: r.GetByteSafe(23), CanGrade: r.GetByteSafe(24), CanMagic: r.GetByteSafe(25),
                     CanRare: r.GetByteSafe(26), CanWrap: r.GetByteSafe(27), CanColor: r.GetByteSafe(28),
-                    DuraMax: r.GetUIntSafe(29), UseTime: r.GetUShortSafe(30), UseType: r.GetByteSafe(31));
+                    DuraMax: r.GetUIntSafe(29), UseTime: r.GetUShortSafe(30), UseType: r.GetByteSafe(31),
+                    ItemCountry: r.GetByteSafe(32), PvPrice: r.GetFloatSafe(33));
             }
 
         await using (var cmd = new SqlCommand(MagicChartSql, c))
@@ -356,6 +358,7 @@ public sealed partial class GameDatabase
                 store.LevelSkillPoint[level] = r.GetByteSafe(3);
                 store.LevelMoney[level] = r.GetUIntSafe(4);
                 store.RefineCostByLevel[level] = r.GetUIntSafe(5);
+                store.LevelPvPMoney[level] = r.GetUIntSafe(6);
             }
 
         // Skill templates. Each is stamped with the global f1stRateX (= store.Rate1st, the

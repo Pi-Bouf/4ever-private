@@ -31,7 +31,10 @@ public sealed record ItemTemplate(ushort ItemId, byte RefineMax, float[] Revisio
     uint DuraMax = 0,
     // How long what the item grants lasts (m_wUseTime, in hours or days per m_bUseType's DURINGTYPE_TIME 0x01 /
     // DURINGTYPE_DAY 0x02 bit; neither ⇒ permanent) — a mount item's pet duration.
-    ushort UseTime = 0, byte UseType = 0);
+    ushort UseTime = 0, byte UseType = 0,
+    // NPC shop list: the country an item is sold to (m_bItemCountry — TCONTRY_N ⇒ everyone) and the PvP-point price
+    // ratio of a PvP shop (m_fPvPrice, against TLEVELCHART.dwPvPMoney).
+    byte ItemCountry = 3, float PvPrice = 0f);
 
 /// <summary>
 /// An item-attribute row from <c>TITEMATTRCHART</c> (C++ <c>CTBLItemAttrChart</c> → <c>tagITEMATTR</c>,
@@ -113,6 +116,11 @@ public sealed class TemplateStore
     /// <summary>The base money for a level/grade (C++ <c>FindTLevel(grade)-&gt;m_dwMoney</c>), or null when the
     /// chart has no such row (DB-free / unknown grade ⇒ price 0).</summary>
     public uint? LevelMoneyOf(int level) => LevelMoney.TryGetValue(level, out var m) ? m : null;
+
+    // The per-level base PvP-point price (C++ CTBLLevelChart.m_dwPvPMoney): a PvP shop's item costs
+    // m_dwPvPMoney[grade]·m_fPvPrice.
+    public Dictionary<int, uint> LevelPvPMoney { get; } = new();
+    public uint? LevelPvPMoneyOf(int level) => LevelPvPMoney.TryGetValue(level, out var m) ? m : null;
 
     /// <summary>C++ <c>m_mapTNpc</c> — the NPC registry loaded from <c>TNPCCHART</c> (+ the per-NPC shop stock
     /// from <c>TNPCITEMCHART</c>), keyed by NPC id. The map server builds its runtime NPC objects from these.</summary>

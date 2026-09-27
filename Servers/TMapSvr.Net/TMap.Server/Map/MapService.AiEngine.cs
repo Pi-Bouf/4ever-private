@@ -517,6 +517,8 @@ public sealed partial class MapService
     /// leaves the map, and chains to <c>AT_DELETE</c> (respawnable) or <c>AT_TIMEOUT</c> (not).</summary>
     private bool ExecLeave(AiBinding b, Monster mon, uint eventHost, uint rhId, byte rhType)
     {
+        // C++ TAICmdLeave: a corpse someone is looting stays one more pass.
+        if (mon.LeaveCount == 0 && mon.InvenLock != 0) { mon.LeaveCount++; return true; }
         if (mon.HasLoot && !mon.Remove) return true;   // stall: retry on the next scheduled pass
 
         mon.ClearAggro();
@@ -536,6 +538,7 @@ public sealed partial class MapService
         mon.HostId = 0;
         mon.TargetId = 0;
         mon.TargetType = 0;
+        mon.InvenLock = 0;
         return AiComplete(b, mon, eventHost, rhId, rhType);
     }
 
