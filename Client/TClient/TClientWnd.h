@@ -63,6 +63,7 @@ public:
 	DWORD m_dwLoginDelay;
 	BYTE m_bAutoLogin;
 	BYTE m_bRelogin;
+	BYTE m_bLoadCustomUI;		// InitUI() reset the frames to default: re-apply the saved layout on the next world entry
 
 	TFrame *m_pMainFrameBak;
 	BYTE m_bModalFrame;

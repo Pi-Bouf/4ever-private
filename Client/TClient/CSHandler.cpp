@@ -660,6 +660,12 @@ int CTClientGame::OnCS_CHARINFO_ACK(CTachyonSession *pSession, CPacket *pPacket)
 	m_pMainChar->ResetRootID(ID_PIVOT_WAIST);
 	m_pMainWnd->InitCamera();
 
+	if( m_pMainWnd->m_bLoadCustomUI )		// saved interface layout (reset by InitUI on the login screens)
+	{
+		m_pMainWnd->m_bLoadCustomUI = FALSE;
+		m_pMainWnd->LoadCustomCompPos();
+	}
+
 	m_pMainChar->m_fBreathHeight = m_pMainChar->GetAttrFLOAT(ID_BREATH_HEIGHT);
 	m_pMainChar->m_fJumpSpeed = m_pMainChar->GetAttrFLOAT(ID_JUMP_SPEED);
 

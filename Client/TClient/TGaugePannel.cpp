@@ -1475,10 +1475,10 @@ void CTGaugePannel::DefaultPosition( CPoint* vBASIS, BOOL bRestore )
 	{
 		if(m_pRaid)
 		{
-			CPoint cp = vBASIS[TBASISPOINT_RIGHT_MIDDLE];
-			cp.x -= 370;
-			cp.y -= 125;
-			m_pRaid->MoveComponent(cp);
+			// default spot, anchored right-middle; ResetPosition() keeps whatever the player drags
+			m_pRaid->m_bBasisPoint = TBASISPOINT_RIGHT_MIDDLE;
+			m_pRaid->m_vCompOffset = CPoint( -370, -125);
+			m_pRaid->ResetPosition();
 
 			m_pRaid->m_rcDrag.SetRect(
 				0, 0,
@@ -1492,10 +1492,12 @@ void CTGaugePannel::DefaultPosition( CPoint* vBASIS, BOOL bRestore )
 	{
 		if(m_pTRECALLFRM)
 		{
-			CPoint cp = vBASIS[TBASISPOINT_CENTER_BOTTOM];
-			cp.x -= 356;
-			cp.y -= 183;
-			m_pTRECALLFRM->MoveComponent(cp);
+			// default spot = mirror of the always-visible skill bar (CTPremiumSkills, x -343..-121, y -186 from
+			// bottom-center, left of the minimap at -109..+109): same height, 12 px right of the minimap.
+			// The saved [CustomUI] RecallAi / dragged position wins after that.
+			m_pTRECALLFRM->m_bBasisPoint = TBASISPOINT_CENTER_BOTTOM;
+			m_pTRECALLFRM->m_vCompOffset = CPoint( 121, -186);
+			m_pTRECALLFRM->ResetPosition();
 		}
 	}
 #endif
@@ -1868,10 +1870,7 @@ void CTGaugePannel::ResetPosition()
 	{
 		if(m_pRaid)
 		{
-			CPoint cp = CTClientUIBase::m_vBasis[TBASISPOINT_RIGHT_MIDDLE];
-			cp.x -= 370;
-			cp.y -= 125;
-			m_pRaid->MoveComponent(cp);
+			m_pRaid->ResetPosition();		// keep its position (default or dragged), just re-anchor it
 
 			m_pRaid->m_rcDrag.SetRect(
 				0, 0,
@@ -1884,12 +1883,7 @@ void CTGaugePannel::ResetPosition()
 
 	{
 		if(m_pTRECALLFRM)
-		{
-			CPoint cp = CTClientUIBase::m_vBasis[TBASISPOINT_CENTER_BOTTOM];
-			cp.x -= 356;
-			cp.y -= 183;
-			m_pTRECALLFRM->MoveComponent(cp);
-		}
+			m_pTRECALLFRM->ResetPosition();	// keep its position (default, saved or dragged), just re-anchor it
 	}
 #endif
 

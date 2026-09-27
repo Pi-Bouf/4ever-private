@@ -240,6 +240,7 @@ CTClientWnd::CTClientWnd()
 	m_bResetDevice = FALSE;
 	m_bResetTick = TRUE;
 	m_bRelogin = FALSE;
+	m_bLoadCustomUI = FALSE;
 	m_bAutoLogin = FALSE;
 	m_dwLoginDelay = 0;
 	m_bChannel = 1;
@@ -2658,6 +2659,12 @@ void CTClientWnd::InitTexture()
 void CTClientWnd::InitUI( BOOL bResetOnlyPosition)
 {
 	static BOOL bOnce = TRUE;
+
+	// this puts every frame back at its default position (also on the server list / logout), which used to
+	// wipe the saved [CustomUI] layout loaded at startup -- reload it when the character enters the world.
+	// bResetOnlyPosition is the player's own "reset interface": keep the defaults then.
+	if( !bResetOnlyPosition )
+		m_bLoadCustomUI = TRUE;
 
 	static const DWORD dwPosID[][2] = {
 		{ 0, 0 }, // NULL
