@@ -311,6 +311,7 @@ public static class Msg
     public const ushort CS_USEPETITEM_REQ = CS_MAP + 0x033B;           // dwParam(inven | slot<<16) · bSlot
     public const ushort CS_UPDATECOMPANIONBYITEM_REQ = CS_MAP + 0x033C;   // S→C
     public const ushort CS_UPDATECOMPANIONBYSYSTEM_REQ = CS_MAP + 0x033D; // S→C
+    public const ushort CS_PVPPOINT_ACK = CS_MAP + 0x01E2;          // dwTotal · dwUseable · bEvent · dwMonthPvPoint
     public const ushort CS_CREATECOMPANION_REQ = CS_MAP + 0x033E;      // bInven · bItem · strName
     public const ushort CS_DELETECOMPANION_REQ = CS_MAP + 0x033F;      // bSlot
     public const ushort CS_UPDATESPAWNEDCOMPANION_REQ = CS_MAP + 0x0340; // S→C: bSlot (0xFF none)

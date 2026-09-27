@@ -18,13 +18,15 @@ public readonly record struct CharLoadRow(
 
 /// <summary>The full <c>TSaveChar</c> value set (C++ <c>CSPSaveChar</c>, param order preserved). A snapshot
 /// built on the batch thread and handed to <see cref="GameDatabase.SaveCharAsync"/> for the off-thread write.
-/// The two pc-bang columns are 0 (that subsystem is unported and not loaded).</summary>
+/// The two pc-bang columns are 0 (that subsystem is unported and not loaded). The PvP points ride along: the C++
+/// <c>OnDM_SAVECHAR_REQ</c> saves them in the same pass (<c>TSavePvPRecord</c>).</summary>
 public readonly record struct CharSaveData(
     uint CharId, byte StartAct, byte Level, byte HelmetHide, uint Gold, uint Silver, uint Cooper,
     byte GuildLeave, uint GuildLeaveTime, uint Exp, uint Hp, uint Mp, ushort SkillPoint, uint Region,
     ushort MapId, ushort SpawnId, ushort LastSpawnId, ushort TemptedMon, byte Aftermath,
     float PosX, float PosY, float PosZ, ushort Dir, uint PcBangTime, byte PcBangItemCnt,
-    uint LastDestination, byte StatLevel, byte StatPoint, uint StatExp);
+    uint LastDestination, byte StatLevel, byte StatPoint, uint StatExp,
+    uint PvpUseablePoint = 0, uint PvpTotalPoint = 0);
 
 /// <summary>One quest's persisted progress (C++ <c>TSaveQuest</c> + its <c>TSaveQuestTerm</c> rows).</summary>
 public readonly record struct QuestSaveRow(
@@ -134,7 +136,9 @@ public sealed partial class GameDatabase
     // The per-level chart (CTBLLevelChart): the repair-cost coefficient (m_dwRepairCost), dwEXP (the
     // level-up threshold) + bSkillPoint (granted per level), and dwMoney (the base price the item
     // buy/sell math scales by m_fPrice).
-    private const string LevelChartSql = @"SELECT bLevel, dwRepairCost, dwEXP, bSkillPoint, dwMoney, dwRefineCost, dwPvPMoney FROM TLEVELCHART";
+    private const string LevelChartSql = @"SELECT bLevel, dwRepairCost, dwEXP, bSkillPoint, dwMoney, dwRefineCost, dwPvPMoney, wPvPoint FROM TLEVELCHART";
+    // The kill-point chart (CTBLPvPointChart): the rows with no local are the open-field kill table (m_mapTPvPointKill).
+    private const string PvPointChartSql = @"SELECT wLocalID, bStatus, bEvent, dwIncPoint, dwDecPoint FROM TPVPOINTCHART";
     // The NPC registry + per-NPC shop stock (CTBLNpc → m_mapTNpc, CTBLNpcItemAll → m_mapItem).
     private const string NpcChartSql =
         @"SELECT wID, bType, bCountryID, wLocalID, bCondition, bDiscountRate, bAddProb, wItemID, wMapID,
@@ -360,7 +364,14 @@ public sealed partial class GameDatabase
                 store.LevelMoney[level] = r.GetUIntSafe(4);
                 store.RefineCostByLevel[level] = r.GetUIntSafe(5);
                 store.LevelPvPMoney[level] = r.GetUIntSafe(6);
+                store.LevelPvPoint[level] = r.GetUShortSafe(7);
             }
+
+        await using (var cmd = new SqlCommand(PvPointChartSql, c))
+        await using (var r = await cmd.ExecuteReaderAsync(ct))
+            while (await r.ReadAsync(ct))
+                if (r.GetUShortSafe(0) == 0)   // a local's own rows belong to its battle zone (unported)
+                    store.PvPointKill[(r.GetByteSafe(1), r.GetByteSafe(2))] = (r.GetUIntSafe(3), r.GetUIntSafe(4));
 
         // Skill templates. Each is stamped with the global f1stRateX (= store.Rate1st, the
         // FTYPE_1ST growth base) exactly as the C++ loader does (pSkill->m_f1stRateX = f1stRateX).
@@ -708,8 +719,35 @@ FROM TCHARTABLE WHERE dwCharID = @dwCharID AND bDelete = 0";
                 SqlProc.In("@p28", SqlDbType.Int, unchecked((int)d.StatExp)),
             };
             await SqlProc.ExecAsync(c, "TSaveChar", SqlProc.Ret(), args, ct);
+            await SavePvPointAsync(c, d, ct);
         }
         catch (SqlException ex) when (ex.Number == 2812) { /* proc absent in this baseline — tolerate */ }
+    }
+
+    /// <summary>C++ <c>CSPSavePvPRecord</c> (DBAccess.h:6796) — <c>TSavePvPRecord(dwCharID, useable, total, 6 × (lose, win))</c>,
+    /// an upsert into <c>TPVPOINTTABLE</c>. The proc ignores the per-class record, which is not kept here: 0s.</summary>
+    private static async Task SavePvPointAsync(SqlConnection c, CharSaveData d, CancellationToken ct)
+    {
+        var args = new List<SqlParameter>
+        {
+            SqlProc.In("@p0", SqlDbType.Int, unchecked((int)d.CharId)),
+            SqlProc.In("@p1", SqlDbType.Int, unchecked((int)d.PvpUseablePoint)),
+            SqlProc.In("@p2", SqlDbType.Int, unchecked((int)d.PvpTotalPoint)),
+        };
+        for (int i = 3; i < 15; i++) args.Add(SqlProc.In($"@p{i}", SqlDbType.Int, 0));
+        await SqlProc.ExecAsync(c, "TSavePvPRecord", null, args, ct);
+    }
+
+    /// <summary>C++ <c>CSPGetPvPRecord</c> (DBAccess.h:6769) at char load — the useable and total PvP points from
+    /// <c>TPVPOINTTABLE</c> (0, 0 when the character has no row yet). The rank outputs are not used by the map.</summary>
+    public async Task<(uint Useable, uint Total)> LoadPvPointAsync(uint charId, CancellationToken ct = default)
+    {
+        await using var c = await OpenAsync(ct);
+        await using var cmd = new SqlCommand(
+            "SELECT dwUseablePoint, dwTotalPoint FROM TPVPOINTTABLE WHERE dwCharID = @dwCharID", c);
+        cmd.Parameters.Add(SqlProc.In("@dwCharID", SqlDbType.Int, unchecked((int)charId)));
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        return await r.ReadAsync(ct) ? (r.GetUIntSafe(0), r.GetUIntSafe(1)) : (0u, 0u);
     }
 
     /// <summary>C++ <c>TSaveQuest</c> + <c>TSaveQuestTerm</c> (CSPSaveQuest/CSPSaveQuestTerm) — the per-quest

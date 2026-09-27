@@ -94,6 +94,8 @@ public sealed class Character
     // PvP points
     public uint PvpTotalPoint { get; set; }
     public uint PvpUseablePoint { get; set; }
+    /// <summary>C++ <c>m_vPvPRecent</c> — the recent kills and deaths (name, won, points, map-clock ms).</summary>
+    public List<PvpRecord> PvpRecent { get; } = new();
 
     /// <summary>Unspent skill points (C++ <c>m_wSkillPoint</c>), granted on level-up. Not yet consumed
     /// (skill-buy is unported) — bookkeeping only.</summary>
@@ -322,3 +324,7 @@ public sealed class CharPersistExtras
     public byte StatPoint { get; set; }
     public uint StatExp { get; set; }
 }
+
+/// <summary>One recent PvP result (C++ <c>TRECORDSET</c> in <c>m_vPvPRecent</c>): the other player, whether it was a win, the
+/// points it moved, and when (map-clock ms).</summary>
+public readonly record struct PvpRecord(string Name, bool Win, uint Point, long TimeMs);

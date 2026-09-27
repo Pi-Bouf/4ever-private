@@ -24,7 +24,8 @@ namespace TMap.Server.Map;
 /// monster→player PC-defender path (<c>MapService.AI.cs</c>); here the defender is a monster, which has no
 /// equipped-item model, so its shield DP is 0. Still deferred: the skill hit-test / premium / guild /
 /// boss-special early-outs of <c>GetAtkHitType</c> (their skill flags aren't loaded — the level-based accuracy
-/// path is used); PvP; buff/pet damage layers; loot regen.</para>
+/// path is used); a monster defender's buff layer; pet damage layers; loot regen. A player defender (PvP) is
+/// MapService.PvP.cs, through the same <see cref="CalcDamage"/>.</para>
 ///
 /// <para>RNG is .NET <see cref="System.Random"/> (<see cref="CombatRng"/>, seedable) — the hit/crit/roll LOGIC
 /// is exact, the value is not (never wire-comparable to a C++ instance). The hit is broadcast to the monster's
@@ -157,10 +158,18 @@ public sealed partial class MapService
         // Resolve the attacking skill (C++ FindTSkill(m_wTriggerID); for a basic attack triggerID == wSkillID).
         var atkSkill = LearnedSkill(ch, skillId);
 
-        // ---- PC→PC: a positive maintain-type skill applies a buff, and/or a cure skill dispels/heals, on
-        // self/an ally (no PvP damage). C++ Defend runs MaintainSkill + PerformSkill(SDT_CURE) both. ----
+        // ---- PC→PC: an attack on another player (MapService.PvP.cs); otherwise a positive maintain-type skill applies
+        // a buff, and/or a cure skill dispels/heals, on self/an ally. C++ Defend runs MaintainSkill + PerformSkill(SDT_CURE) both. ----
         if (targetType == OtPc)
         {
+            if (targetId != ch.CharId && atkSkill?.Template is not { IsNegative: false })
+            {
+                if (_state.FindByChar(targetId) is { State: EnterState.InGame, Char: { } target } ts
+                    && ts.Channel == s.Channel && target.MapId == ch.MapId)
+                    HitPlayer(s, ch, hostId, attackId, attackType, atkSkill?.Template, atkSkill?.Level ?? skillLevel, skillId,
+                        canSelect, ts, target, actId, aniId, atkX, atkY, atkZ, defX, defY, defZ);
+                return;
+            }
             if (atkSkill?.Template is { } tpl && atkSkill is { Level: var lvl })
             {
                 if (tpl.IsMaintainType() && tpl.IsPositive)
@@ -215,7 +224,7 @@ public sealed partial class MapService
         // ---- CalcDamage — the exec-aware per-data-row dispatch (HP/MP damage + heal/drain), or the basic
         // fallback when the skill has no damage rows (a basic attack / a pure buff / DB-free). ----
         var dmg = corpse ? new DamageResult(0, 0, new())
-            : CalcMonsterDamage(p, mon, atkTpl, ackSkillLevel, hitType, isMagic, isLong, triple);
+            : CalcDamage(p, DamageTarget.Of(mon), atkTpl, ackSkillLevel, hitType, isMagic, isLong, triple);
 
         // Aggro happens on any swing, hit or miss; the monster's mode/target are driven by the hate table (C++ Defend's
         // opening SetAggro, Phase 44): Aggravate accumulates the attacker's hate and, if it wins the 10% sticky-target
@@ -257,7 +266,7 @@ public sealed partial class MapService
         // ---- broadcast the hit (with the full per-exec damage map) + the new HP/MP bar to nearby players ----
         // Byte-audit (Phase 28): bHit carries the attacker's crit prob; bPerform is FALSE on a miss; the damage
         // map is keyed by each component's m_bExec (MTYPE_DAMAGE 30 / MTYPE_MDAMAGE 88 / MTYPE_HP 14 / MTYPE_MP 22).
-        var defendAck = BuildCS_DEFEND_ACK(attackId, hostId, mon, attackType, actId, aniId,
+        var defendAck = BuildCS_DEFEND_ACK(attackId, hostId, mon.Id, Monster.OtMon, attackType, actId, aniId,
             attackLevel, attackerLevel, apMin, apMax, isMagic, critRate, canSelect, p.Country, p.AidCountry,
             skillId, ackSkillLevel, atkHit, hitType != HtMiss && performed, atkX, atkY, atkZ, defX, defY, defZ, dmg.Map,
             isMaintain, maintainTick);
@@ -274,7 +283,53 @@ public sealed partial class MapService
     /// <summary>The net HP/MP change a hit inflicts on the defender plus the per-exec damage map that fills
     /// <c>CS_DEFEND_ACK</c> — the C++ <c>CalcDamage</c> out-params <c>nDamageHP</c>/<c>nDamageMP</c>/<c>mapDamage</c>.
     /// HP/MP are signed (positive = damage, negative = heal); the map value is the C++ <c>(WORD)dwValue</c>.</summary>
-    private readonly record struct DamageResult(int DamageHp, int DamageMp, List<(byte Exec, uint Value)> Map);
+    private readonly record struct DamageResult(int DamageHp, int DamageMp, List<(byte Exec, uint Value)> Map, bool Blocked = false);
+
+    /// <summary>The defender side of C++ <c>CalcDamage</c>: its vitals, its defence per damage row (with a player's
+    /// shield roll, <c>GetShieldDP</c>/<c>GetShieldMDP</c>, which makes the hit <c>HT_BLOCK</c>), the defender's own
+    /// buff and remain layers on each rolled value (the non-instance terms of <c>CalcAbilityValue</c>), and the
+    /// immunity statuses, which do not apply to one's own skills (<see cref="Self"/>). A monster has no shield, and
+    /// its buff layer and immunities are not ported.</summary>
+    private sealed class DamageTarget
+    {
+        public uint Hp, Mp, MaxHp, MaxMp;
+        public bool ExceptPhysic, ExceptMagic, Self, Blocked;
+        private Func<bool, uint> _dp = _ => 0;
+        private Func<uint, byte, int> _layer = (_, _) => 0;
+
+        /// <summary>The defence against a physical or magic row; a successful shield roll marks the hit blocked (the
+        /// C++ keeps the last row's roll).</summary>
+        public uint Defense(bool magic) => _dp(magic);
+        public int Layer(uint value, byte mtype) => _layer(value, mtype);
+
+        public static DamageTarget Of(Monster mon) => new()
+        {
+            Hp = mon.Hp, Mp = mon.Mp, MaxHp = mon.MaxHp, MaxMp = mon.MaxMp,
+            _dp = magic => magic ? mon.MagicDefPower : mon.DefendPower,
+        };
+
+        public static DamageTarget Of(Character ch, bool self, uint maxHp, uint maxMp, Random rng, TemplateStore t)
+        {
+            var d = new DamageTarget
+            {
+                Hp = ch.Hp, Mp = ch.Mp, MaxHp = maxHp, MaxMp = maxMp, Self = self,
+                ExceptPhysic = HasStatus(ch, SdtStatusExceptPhysic), ExceptMagic = HasStatus(ch, SdtStatusExceptMagic),
+            };
+            d._dp = magic =>
+            {
+                uint shield = magic ? StatEngine.ShieldBlockMdp(ch, rng, t) : StatEngine.ShieldBlockDp(ch, rng, t);
+                d.Blocked = shield != 0;
+                return shield + (magic ? StatEngine.MagicDefPower(ch, t) : StatEngine.DefendPower(ch, t));
+            };
+            d._layer = (value, mtype) => StatEngine.CalcAbilityValue(ch, value, mtype);
+            return d;
+        }
+
+        private static bool HasStatus(Character ch, byte status)
+            => ch.MaintainSkills.Any(m => m.Template?.Data.Any(r => r.Type == SkillTemplate.SdtStatus && r.Exec == status) == true);
+    }
+
+    private const byte SdtStatusExceptMagic = 18, SdtStatusExceptPhysic = 39;   // SDT_STATUS_EXCEPTMAGIC / EXCEPTPHYSIC
 
     /// <summary>The MTYPE_* execs <c>CalcDamage</c> resolves (any other exec is handled later by <c>PerformSkill</c>):
     /// <c>MTYPE_DAMAGE</c>/<c>MDAMAGE</c> (HP/MP damage) and <c>MTYPE_HP</c>/<c>MP</c> (direct heal/drain).</summary>
@@ -291,7 +346,7 @@ public sealed partial class MapService
     /// <c>CalcValue</c> term is applied here), <c>DistributeSkill</c> (pet damage share), the AUTOAI-recall ×3
     /// (pets), the shield-block roll (a monster has no equipped-item model → shield DP 0), and the custom
     /// Araz ≥3000 hard-coded skills.</para></summary>
-    private DamageResult CalcMonsterDamage(AttackerPower ch, Monster mon, SkillTemplate? tpl, byte level,
+    private DamageResult CalcDamage(AttackerPower ch, DamageTarget def, SkillTemplate? tpl, byte level,
         byte hitType, bool isMagic, bool isLong, bool triple = false)
     {
         var map = new List<(byte Exec, uint Value)>();
@@ -304,13 +359,13 @@ public sealed partial class MapService
         if (rows is { Count: 0 }) return new DamageResult(0, 0, map);
         if (rows is null)
         {
-            uint dmg = BasicRoll(ch, mon, tpl, level, hitType, isMagic, isLong, triple);
+            uint dmg = BasicRoll(ch, def, tpl, level, hitType, isMagic, isLong, triple);
             if (dmg != 0) map.Add((MtypeDamage, (ushort)dmg));   // (WORD)dwValue
-            return new DamageResult((int)dmg, 0, map);
+            return new DamageResult((int)dmg, 0, map, def.Blocked);
         }
 
         int nDamageHp = 0, nDamageMp = 0;
-        int nHp = (int)mon.Hp, nMp = (int)mon.Mp;   // C++ working copies — only MTYPE_HP/MP read/write these
+        int nHp = (int)def.Hp, nMp = (int)def.Mp;   // C++ working copies — only MTYPE_HP/MP read/write these
         foreach (var d in rows)
         {
             bool magicAttr = d.Attr >= SattMagicNo && d.Attr <= 9;   // SATT_MAGICNO..SATT_MAGICIR ⇒ magic; PHYSIC/LONG ⇒ physical
@@ -318,23 +373,24 @@ public sealed partial class MapService
             {
                 case SattNone: continue;   // C++ switch(m_bAttr) { case SATT_NONE: break; } — no effect
             }
+            if (!def.Self && (magicAttr ? def.ExceptMagic : def.ExceptPhysic)) continue;   // HaveExcptMagic / HaveExcptPhysic
             switch (d.Exec)
             {
                 case MtypeDamage:   // HP damage — crit off the MAX band (physical) / MIN band (magic)
                 {
-                    uint v = RollExec(ch, mon, tpl!, d, level, hitType, magicAttr, mpPool: false, triple);
+                    uint v = RollExec(ch, def, tpl!, d, level, hitType, magicAttr, mpPool: false, triple);
                     if (v != 0) { nDamageHp += (int)v; MapInsert(map, MtypeDamage, v); }
                     break;
                 }
                 case MtypeMdamage:  // MP damage — crit off the MIN band
                 {
-                    uint v = RollExec(ch, mon, tpl!, d, level, hitType, magicAttr, mpPool: true, triple);
+                    uint v = RollExec(ch, def, tpl!, d, level, hitType, magicAttr, mpPool: true, triple);
                     if (v != 0) { nDamageMp += (int)v; MapInsert(map, MtypeMdamage, v); }
                     break;
                 }
                 case MtypeHp:   // direct HP heal/drain: nInc = the skill's MTYPE_HP delta off MaxHP (sign = heal/drain)
                 {
-                    int nInc = tpl!.CalcValue(level, SdtAbility, MtypeHp, mon.MaxHp);
+                    int nInc = tpl!.CalcValue(level, SdtAbility, MtypeHp, def.MaxHp) + def.Layer(def.MaxHp, MtypeHp);
                     if (nInc < 0)   // drain (dwValue clamped to the working HP, then applied + reported)
                     {
                         uint dealt = nHp > -nInc ? (uint)(-nInc) : (uint)nHp;
@@ -342,14 +398,14 @@ public sealed partial class MapService
                     }
                     else            // heal (negative nDamageHP ⇒ OnDamage restores; not shown in the map)
                     {
-                        if (nHp + nInc > (int)mon.MaxHp) { nDamageHp -= (int)mon.MaxHp - nHp; nHp = (int)mon.MaxHp; }
+                        if (nHp + nInc > (int)def.MaxHp) { nDamageHp -= (int)def.MaxHp - nHp; nHp = (int)def.MaxHp; }
                         else { nDamageHp -= nInc; nHp += nInc; }
                     }
                     break;
                 }
                 case MtypeMp:   // direct MP heal/drain
                 {
-                    int nInc = tpl!.CalcValue(level, SdtAbility, MtypeMp, mon.MaxMp);
+                    int nInc = tpl!.CalcValue(level, SdtAbility, MtypeMp, def.MaxMp) + def.Layer(def.MaxMp, MtypeMp);
                     if (nInc < 0)
                     {
                         uint dealt = nMp > -nInc ? (uint)(-nInc) : (uint)nMp;
@@ -357,31 +413,32 @@ public sealed partial class MapService
                     }
                     else
                     {
-                        if (nMp + nInc > (int)mon.MaxMp) { nDamageMp -= (int)mon.MaxMp - nMp; nMp = (int)mon.MaxMp; }
+                        if (nMp + nInc > (int)def.MaxMp) { nDamageMp -= (int)def.MaxMp - nMp; nMp = (int)def.MaxMp; }
                         else { nDamageMp -= nInc; nMp += nInc; }
                     }
                     break;
                 }
             }
         }
-        return new DamageResult(nDamageHp, nDamageMp, map);
+        return new DamageResult(nDamageHp, nDamageMp, map, def.Blocked);
     }
 
     /// <summary>The basic weapon-attack roll (no damage-row skill): the physical-or-magic AP−DP band, crit per
     /// the FTYPE_PCD/MCD formula (physical off max, magic off min), then the instance-skill MTYPE_DAMAGE scaling
     /// (identity when the skill has no such row) — the Phase-13/15 behavior, preserved byte-for-byte.</summary>
-    private uint BasicRoll(AttackerPower ch, Monster mon, SkillTemplate? tpl, byte level, byte hitType, bool isMagic, bool isLong,
+    private uint BasicRoll(AttackerPower ch, DamageTarget def, SkillTemplate? tpl, byte level, byte hitType, bool isMagic, bool isLong,
         bool triple = false)
     {
         uint apMin = ch.ApMin(isMagic, isLong);
         uint apMax = ch.ApMax(isMagic, isLong);
-        uint dp = isMagic ? mon.MagicDefPower : mon.DefendPower;   // + GetShieldDP()/GetShieldMDP() == 0 (a monster has no shield)
+        uint dp = def.Defense(isMagic);                                // + the shield roll (a monster has none)
         int a = Math.Max((int)(apMin - dp), 5), b = Math.Max((int)(apMax - dp), 7);
         uint roll = hitType == HtCritical
             ? CritDamage(CombatRng, _templates.Formula(isMagic ? FtypeMcd : FtypePcd), (uint)(isMagic ? a : b))
             : (uint)(a + CombatRng.Next(Math.Max(b - a, 1)));
         if (triple) roll *= 3;
-        return tpl is { } st ? st.ScaleDamage(level, roll) : roll;
+        uint scaled = tpl is { } st ? st.ScaleDamage(level, roll) : roll;
+        return (uint)Math.Max(0, (int)scaled + def.Layer(roll, MtypeDamage));
     }
 
     /// <summary>One MTYPE_DAMAGE / MTYPE_MDAMAGE component: the AP−DP roll (band by the row's attr — physical
@@ -389,19 +446,19 @@ public sealed partial class MapService
     /// band (HP-damage physical crits off <c>dwB</c>, everything else off <c>dwA</c>) via FTYPE_PCD/MCD, then
     /// the instance-skill scaling <c>CalcValue(SDT_ABILITY, exec, roll)</c> (C++ <c>CalcAbilityValue</c> instance
     /// term), 0-floored. The buff/remain/cure amplification layers are deferred.</summary>
-    private uint RollExec(AttackerPower ch, Monster mon, SkillTemplate tpl, SkillDataRow d, byte level,
+    private uint RollExec(AttackerPower ch, DamageTarget def, SkillTemplate tpl, SkillDataRow d, byte level,
         byte hitType, bool magicAttr, bool mpPool, bool triple = false)
     {
         bool arrow = d.Attr == SattLong || tpl.IsLongAttack();
         uint apMin = ch.ApMin(magicAttr, arrow);
         uint apMax = ch.ApMax(magicAttr, arrow);
-        uint dp = magicAttr ? mon.MagicDefPower : mon.DefendPower;
+        uint dp = def.Defense(magicAttr);
         int a = Math.Max((int)(apMin - dp), 5), b = Math.Max((int)(apMax - dp), 7);
         uint roll = hitType == HtCritical
             ? CritDamage(CombatRng, _templates.Formula(magicAttr ? FtypeMcd : FtypePcd), (uint)(!magicAttr && !mpPool ? b : a))
             : (uint)(a + CombatRng.Next(Math.Max(b - a, 1)));
         if (triple) roll *= 3;                                         // an auto-AI summon's hit (C++ CalcDamage)
-        return (uint)Math.Max(0, (int)roll + tpl.CalcValue(level, SdtAbility, d.Exec, roll));
+        return (uint)Math.Max(0, (int)roll + tpl.CalcValue(level, SdtAbility, d.Exec, roll) + def.Layer(roll, d.Exec));
     }
 
     /// <summary>The C++ <c>mapDamage</c> quirk (TObjBase.cpp:537): find by <c>m_bAttr</c> (never hits an exec
@@ -512,7 +569,7 @@ public sealed partial class MapService
     /// trailing damage map is keyed by each component's <c>m_bExec</c> (<c>MTYPE_DAMAGE</c> 30 / <c>MTYPE_MDAMAGE</c>
     /// 88 / <c>MTYPE_HP</c> 14 / <c>MTYPE_MP</c> 22) and is empty on a miss. The power band goes to the magic or
     /// physical fields per <paramref name="isMagic"/>.</summary>
-    private static byte[] BuildCS_DEFEND_ACK(uint attackId, uint hostId, Monster mon, byte attackType, uint actId, uint aniId,
+    private static byte[] BuildCS_DEFEND_ACK(uint attackId, uint hostId, uint targetId, byte targetType, byte attackType, uint actId, uint aniId,
         ushort attackLevel, byte attackerLevel, uint apMin, uint apMax, bool isMagic, byte critProb, byte canSelect,
         byte attackCountry, byte attackAid, ushort skillId, byte skillLevel, byte atkHit, bool landed,
         float atkX, float atkY, float atkZ, float defX, float defY, float defZ, IReadOnlyList<(byte Exec, uint Value)> map,
@@ -520,9 +577,9 @@ public sealed partial class MapService
     {
         var w = new PacketWriter(Msg.CS_DEFEND_ACK, capacity: 96);
         w.WriteUInt32(attackId);      // dwAttackID
-        w.WriteUInt32(mon.Id);        // dwTargetID
+        w.WriteUInt32(targetId);      // dwTargetID
         w.WriteByte(attackType);      // bAttackType
-        w.WriteByte(Monster.OtMon);   // bTargetType
+        w.WriteByte(targetType);      // bTargetType
         w.WriteUInt32(hostId);        // dwHostID (the client-sent host; not overwritten for a PC attacker)
         w.WriteByte(OtPc);            // bHostType
         w.WriteUInt32(actId);         // dwActID

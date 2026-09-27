@@ -124,6 +124,13 @@ public sealed class TemplateStore
     public Dictionary<int, uint> LevelPvPMoney { get; } = new();
     public uint? LevelPvPMoneyOf(int level) => LevelPvPMoney.TryGetValue(level, out var m) ? m : null;
 
+    /// <summary><c>TLEVELCHART.wPvPoint</c> — what killing a character of that level is worth, before the kill chart's %.</summary>
+    public Dictionary<int, ushort> LevelPvPoint { get; } = new();
+
+    /// <summary>The open-field kill table (C++ <c>m_mapTPvPointKill</c>): (PVP status, kill event) → the killer's gain % and
+    /// the victim's loss %, of the victim level's <see cref="LevelPvPoint"/>.</summary>
+    public Dictionary<(byte Status, byte Event), (uint Inc, uint Dec)> PvPointKill { get; } = new();
+
     /// <summary>C++ <c>m_mapTNpc</c> — the NPC registry loaded from <c>TNPCCHART</c> (+ the per-NPC shop stock
     /// from <c>TNPCITEMCHART</c>), keyed by NPC id. The map server builds its runtime NPC objects from these.</summary>
     public Dictionary<ushort, NpcDef> Npcs { get; } = new();

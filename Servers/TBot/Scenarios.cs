@@ -37,6 +37,7 @@ public static class Scenarios
         CS_SKILLUSE_REQ = M + 0x0034, CS_SKILLUSE_ACK = M + 0x0035, CS_DEFEND_ACK = M + 0x0021, CS_ADDMON_ACK = M + 0x0011,
         CS_FINISHSKILL_ACK = M + 0x0377, CS_DELRECALLMON_REQ = M + 0x00E1, CS_ADDSELFOBJ_ACK = M + 0x00F4,
         CS_DELSELFOBJ_ACK = M + 0x00F5,
+        CS_DIE_ACK = M + 0x0025, CS_REVIVAL_REQ = M + 0x0026, CS_REVIVAL_ACK = M + 0x0027, CS_PVPPOINT_ACK = M + 0x01E2,
         CS_MOVEITEM_REQ = M + 0x0028, CS_MOVEITEM_ACK = M + 0x0029, CS_SKILLEND_ACK = M + 0x0037,
         CS_SKILLBUY_REQ = M + 0x0032, CS_SKILLBUY_ACK = M + 0x0033, CS_NPCITEMLIST_REQ = M + 0x0082, CS_NPCITEMLIST_ACK = M + 0x0083;
 
@@ -64,6 +65,10 @@ public static class Scenarios
     private const ushort WeaponBuff = 427, MasteryItem = 10158;
     private const byte WeaponSlot = 0, SpareSlot = 43, MasteryItemSlot = 44, MasteryEquipSlot = 8;
     private const long MasteryDlId = 900_000_004;
+    // PvP: the bot's basic melee attack; a level-19 victim is worth 14 (TLEVELCHART.wPvPoint) — an even kill pays 80% (11)
+    // and costs the victim 20% (2) of its total. B starts with a total of 10.
+    private const ushort BasicMelee = 31;
+    private const uint VictimTotal = 10, KillGain = 11, KillLoss = 2;
     private const byte InvenEquip = 0xFE, InvenBackpack = 0xFF;
 
     private static readonly List<(string Name, bool Ok, string Detail)> Results = new();
@@ -122,6 +127,7 @@ public static class Scenarios
             Summons(a, b);
             Skills(a);
             Passives(a);
+            PvP(a, b);
             Teleport(a, b);
 
             foreach (var bot in new[] { a, b })
@@ -646,6 +652,39 @@ public static class Scenarios
         a.Discard(CS_MOVEITEM_ACK);
     }
 
+    private static void PvP(Bot a, Bot b)
+    {
+        a.Discard(CS_PVPPOINT_ACK); b.Discard(CS_PVPPOINT_ACK); b.Discard(CS_DIE_ACK);
+        PacketReader? die = null, first = null;
+        for (int i = 0; i < 40 && die is null; i++)
+        {
+            a.Send(FinishSkill(a, a.CharId, 1, BasicMelee, a.Spawn.X, a.Spawn.Z, (b.CharId, 1)));
+            var hit = b.TryWait(CS_DEFEND_ACK, r => r.ReadUInt32() == a.CharId && r.ReadUInt32() == b.CharId, 3000);
+            first ??= hit;
+            die = b.TryWait(CS_DIE_ACK, r => r.ReadUInt32() == b.CharId, 300);
+        }
+        Check("pvp: a hit on the other player reaches it", first is not null, Describe(first));
+        Check("pvp: the other player falls", die is not null && Read(die, r => (r.ReadUInt32(), r.ReadByte())) == (b.CharId, 1), Describe(die));
+        if (die is null) return;
+
+        var gain = a.TryWait(CS_PVPPOINT_ACK);
+        var loss = b.TryWait(CS_PVPPOINT_ACK);
+        Check("pvp: the killer earns 11 total and useable (an even kill)",
+            gain is not null && ReadPvPoint(gain) == (KillGain, KillGain, 2, 0), Describe(gain));
+        Check("pvp: the victim loses 2 from its total",
+            loss is not null && ReadPvPoint(loss) == (VictimTotal - KillLoss, 0, 2, 0), Describe(loss));
+
+        // B gets up where it fell (REVIVAL_GHOST).
+        b.Send(Req(CS_REVIVAL_REQ, w => { w.WriteFloat(b.Spawn.X); w.WriteFloat(b.Spawn.Y); w.WriteFloat(b.Spawn.Z); w.WriteByte(1); }));
+        var up = b.TryWait(CS_REVIVAL_ACK, r => r.ReadUInt32() == b.CharId);
+        Check("pvp: the victim revives", up is not null && Read(up, r => (r.ReadUInt32(), r.ReadFloat(), r.ReadFloat(), r.ReadFloat())).Item1 == b.CharId,
+            Describe(up));
+    }
+
+    // TClient OnCS_PVPPOINT_ACK: dwTotal, dwUseable, bEvent, dwMonthPvPoint.
+    private static (uint Total, uint Useable, byte Event, uint Month) ReadPvPoint(PacketReader p)
+        => Read(p, r => (r.ReadUInt32(), r.ReadUInt32(), r.ReadByte(), r.ReadUInt32()));
+
     private static PacketWriter MoveItem(byte srcInven, byte srcSlot, byte dstInven, byte dstSlot) => Req(CS_MOVEITEM_REQ, w =>
     {
         w.WriteByte(srcInven); w.WriteByte(srcSlot); w.WriteByte(dstInven); w.WriteByte(dstSlot); w.WriteByte(1);
@@ -682,6 +721,12 @@ public static class Scenarios
             (int)idA, (int)SandSkill);
         Check("saved: the learned skill in TSKILLTABLE and the points spent", sk is not null && Convert.ToInt32(sk[0]) == 1
             && Convert.ToInt32(sk[1]) == BotSkillPoints - 1, sk is null ? "no row" : $"level {sk[0]}, {sk[1]} points");
+        var pa = await db.RowAsync("SELECT dwUseablePoint, dwTotalPoint FROM TPVPOINTTABLE WHERE dwCharID=@p0", (int)idA);
+        var pb = await db.RowAsync("SELECT dwUseablePoint, dwTotalPoint FROM TPVPOINTTABLE WHERE dwCharID=@p0", (int)idB);
+        Check("saved: the killer's PvP points in TPVPOINTTABLE", pa is not null && Convert.ToInt64(pa[0]) == KillGain
+            && Convert.ToInt64(pa[1]) == KillGain, pa is null ? "no row" : $"useable {pa[0]}, total {pa[1]}");
+        Check("saved: the victim's PvP points in TPVPOINTTABLE", pb is not null && Convert.ToInt64(pb[1]) == VictimTotal - KillLoss,
+            pb is null ? "no row" : $"useable {pb[0]}, total {pb[1]}");
         var mb = await db.RowAsync("SELECT dwCooper FROM TCHARTABLE WHERE dwCharID=@p0", (int)idB);
         Check("saved: receiver's money", mb is not null && Convert.ToInt64(mb[0]) == MailCooper, $"cooper={mb?[0]}");
 
@@ -694,7 +739,16 @@ public static class Scenarios
 
     // ================================ fixtures ================================
 
-    private sealed record Saved(object[] A, object[] B);
+    private sealed record Saved(object[] A, object[] B, object[]? PvpA, object[]? PvpB);
+
+    /// <summary>Sets a character's TPVPOINTTABLE row, or removes it (<paramref name="keep"/> false: it had none).</summary>
+    private static async Task SetPvPoint(GameDb db, uint id, long useable, long total, bool keep = true)
+    {
+        await db.ExecAsync("DELETE FROM TPVPOINTTABLE WHERE dwCharID=@p0", (int)id);
+        if (keep)
+            await db.ExecAsync("INSERT INTO TPVPOINTTABLE (dwCharID, dwUseablePoint, dwTotalPoint) VALUES (@p0, @p1, @p2)",
+                (int)id, useable, total);
+    }
 
     private static async Task<uint> FirstChar(GameDb db, string account)
     {
@@ -704,11 +758,13 @@ public static class Scenarios
         return row is null ? throw new InvalidOperationException($"account '{account}' has no character") : Convert.ToUInt32(row[0]);
     }
 
-    private const string CharCols = "dwGold, dwSilver, dwCooper, dwHP, wMapID, dwRegion, fPosX, fPosY, fPosZ";
+    private const string CharCols = "dwGold, dwSilver, dwCooper, dwHP, wMapID, dwRegion, fPosX, fPosY, fPosZ, bAftermath";
 
     private static async Task<Saved> Snapshot(GameDb db, uint idA, uint idB)
         => new((await db.RowAsync($"SELECT {CharCols} FROM TCHARTABLE WHERE dwCharID=@p0", (int)idA))!,
-               (await db.RowAsync($"SELECT {CharCols} FROM TCHARTABLE WHERE dwCharID=@p0", (int)idB))!);
+               (await db.RowAsync($"SELECT {CharCols} FROM TCHARTABLE WHERE dwCharID=@p0", (int)idB))!,
+               await db.RowAsync("SELECT dwUseablePoint, dwTotalPoint FROM TPVPOINTTABLE WHERE dwCharID=@p0", (int)idA),
+               await db.RowAsync("SELECT dwUseablePoint, dwTotalPoint FROM TPVPOINTTABLE WHERE dwCharID=@p0", (int)idB));
 
     private static async Task Prepare(GameDb db, uint idA, uint idB)
     {
@@ -746,6 +802,9 @@ public static class Scenarios
             bGem, wMoggItemID)
             VALUES (@p0, 0, 255, 0, @p1, @p2, @p3, 0, 1, 0, 0, 0, 0, '1900-01-01', 0, 0,0,0,0,0,0, 0,0,0,0,0,0, 0,0,0,0,0,0, 0, 0)",
             RuneDlId, (int)idA, (int)RuneSlot, (int)RuneItem);   // dwTime5 = 0: no species until the server stamps it
+        await SetPvPoint(db, idA, 0, 0);
+        await SetPvPoint(db, idB, 0, VictimTotal);
+        await db.ExecAsync("UPDATE TCHARTABLE SET bAftermath=0 WHERE dwCharID IN (@p0, @p1)", (int)idA, (int)idB);
         await ClearPassives(db, idA);
         await db.ExecAsync("INSERT INTO TSKILLTABLE (dwCharID, wSkillID, bLevel, dwRemainTick) VALUES (@p0, @p1, 1, 0)", (int)idA, (int)WeaponBuff);
         await db.ExecAsync(@"INSERT INTO TITEMTABLE (dlID, bStorageType, dwStorageID, bOwnerType, dwOwnerID, bItemID, wItemID, bLevel,
@@ -784,7 +843,9 @@ public static class Scenarios
     {
         foreach (var (id, v) in new[] { (idA, s.A), (idB, s.B) })
             await db.ExecAsync(@"UPDATE TCHARTABLE SET dwGold=@p1, dwSilver=@p2, dwCooper=@p3, dwHP=@p4, wMapID=@p5, dwRegion=@p6,
-                fPosX=@p7, fPosY=@p8, fPosZ=@p9 WHERE dwCharID=@p0", (int)id, v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8]);
+                fPosX=@p7, fPosY=@p8, fPosZ=@p9, bAftermath=@p10 WHERE dwCharID=@p0", (int)id, v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9]);
+        foreach (var (id, row) in new[] { (idA, s.PvpA), (idB, s.PvpB) })
+            await SetPvPoint(db, id, row is null ? 0 : Convert.ToInt64(row[0]), row is null ? 0 : Convert.ToInt64(row[1]), keep: row is not null);
         await db.ExecAsync("DELETE FROM TITEMTABLE WHERE dwOwnerID=@p0 AND bOwnerType=0 AND bStorageType=0 AND wItemID=@p1", (int)idB, (int)BagItem);
         await db.ExecAsync("DELETE FROM TINVENTABLE WHERE dwCharID=@p0 AND bInvenID IN (0,1)", (int)idB);
         await db.ExecAsync("DELETE FROM THOTKEYTABLE WHERE dwCharID=@p0 AND bInvenID=@p1", (int)idA, (int)HotkeyPage);

@@ -21,7 +21,7 @@ namespace TMap.Server.Map;
 /// end is deleted too (the C++ left a copy of the last companion behind, which came back at the next login);
 /// <c>CS_DELETECOMPITEMS_REQ</c> bounds its sub-slot; the transform scroll refuses an unknown species; stamina above 32767
 /// is saved as 32767 (the column is a SMALLINT — the C++ save failed outright). <b>Not ported:</b> the companion item
-/// kinds' effects (auto-loot, the drop bonus, the angel revive), the PvP-point bonus and exp (PvP points are not ported),
+/// kinds' effects (auto-loot, the drop bonus, the angel revive)
 /// and the tournament / BoW gates.</para>
 /// </summary>
 public sealed partial class MapService

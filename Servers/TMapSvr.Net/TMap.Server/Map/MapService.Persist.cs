@@ -51,7 +51,8 @@ public sealed partial class MapService
         TemptedMon: ch.Persist.TemptedMon, Aftermath: ch.Persist.Aftermath,
         PosX: ch.PosX, PosY: ch.PosY, PosZ: ch.PosZ, Dir: ch.Dir,
         PcBangTime: 0, PcBangItemCnt: 0, LastDestination: ch.Persist.LastDestination,
-        StatLevel: ch.Persist.StatLevel, StatPoint: ch.Persist.StatPoint, StatExp: ch.Persist.StatExp);
+        StatLevel: ch.Persist.StatLevel, StatPoint: ch.Persist.StatPoint, StatExp: ch.Persist.StatExp,
+        PvpUseablePoint: ch.PvpUseablePoint, PvpTotalPoint: ch.PvpTotalPoint);
 
     /// <summary>Collects the dirty (<c>Save</c>-flagged) quests into save rows and clears their flags (C++ resets
     /// <c>m_bSave</c> after packing). Batch-thread; the returned rows are an immutable snapshot.</summary>

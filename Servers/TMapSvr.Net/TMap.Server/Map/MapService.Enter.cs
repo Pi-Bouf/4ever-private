@@ -611,6 +611,8 @@ public sealed partial class MapService
         ch.Invens.Clear();
         ch.Invens.AddRange(byId.Values);
 
+        (ch.PvpUseablePoint, ch.PvpTotalPoint) = await _gameDb.LoadPvPointAsync(ch.CharId);   // CSPGetPvPRecord
+
         foreach (var sk in await _gameDb.LoadSkillsAsync(ch.CharId))
             ch.Skills.Add(new Skill
             {

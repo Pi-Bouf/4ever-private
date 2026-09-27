@@ -402,7 +402,7 @@ public sealed partial class MapService
     // ---- CS_ITEMUSE (HP/MP potions) ----
 
     // TITEM_KIND (NetCode.h) — the potion use-effect kinds this phase handles.
-    private const byte IkHp = 26, IkMp = 27, IkMaxHp = 42, IkMaxMp = 43;
+    private const byte IkHp = 26, IkMp = 27, IkMaxHp = 42, IkMaxMp = 43, IkCredits = 87;
     private const byte OtPc = 1; // OBJ_TYPE OT_PC
 
     /// <summary>
@@ -472,6 +472,11 @@ public sealed partial class MapService
             uint maxMp = MaxMpFor(ch);
             used = ch.Mp < maxMp;
             if (used) { ch.Mp = kind == IkMp ? Math.Min(ch.Mp + heal, maxMp) : maxMp; BroadcastHpMp(s, ch); }
+        }
+        else if (kind == IkCredits)
+        {
+            used = true;                                                   // C++ IK_CREDITS: the item's wUseValue in points
+            GainPvPoint(s, ch, heal, PvpeBuyItem, PvpUseable);
         }
         else
         {
