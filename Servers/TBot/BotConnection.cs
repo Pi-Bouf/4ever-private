@@ -60,42 +60,43 @@ public sealed class BotConnection : IDisposable
     }
 
     /// <summary>Like <see cref="Receive"/> but returns null on a read timeout instead of throwing.</summary>
+    /// <remarks>Bytes are accumulated in a buffer, and the wait is a <see cref="Socket.Poll(int, SelectMode)"/> before
+    /// each read rather than a socket receive timeout. With a timeout, one that landed mid-packet (a header read but not
+    /// its body, or half a header — common when polling every 1 ms under load) threw (which looked like a server kick) or
+    /// lost the bytes (which desynced the stream), and on Windows a timed-out blocking read occasionally failed with
+    /// IOPending instead of TimedOut.</remarks>
     public PacketReader? TryReceive(TimeSpan timeout)
     {
-        _tcp.ReceiveTimeout = Math.Max(1, (int)timeout.TotalMilliseconds);
-        byte[]? header;
-        try
+        var deadline = DateTime.UtcNow + timeout;
+        while (true)
         {
-            header = ReadExactly(PacketHeader.Size);
-        }
-        catch (IOException ex) when (ex.InnerException is SocketException { SocketErrorCode: SocketError.TimedOut })
-        {
-            return null;
-        }
+            if (_len >= PacketHeader.Size)
+            {
+                int wSize = PacketHeader.ReadSize(_buf);
+                if (_len >= wSize)
+                {
+                    var packet = _buf.AsSpan(0, wSize).ToArray();
+                    Buffer.BlockCopy(_buf, wSize, _buf, 0, _len - wSize);
+                    _len -= wSize;
+                    if (!_cipher.DecodeFromServer(packet)) BadPackets++;
+                    LastPacket = packet;
+                    return new PacketReader(packet);
+                }
+                if (wSize > _buf.Length) Array.Resize(ref _buf, wSize);
+            }
 
-        int wSize = PacketHeader.ReadSize(header);
-        var packet = new byte[wSize];
-        Array.Copy(header, packet, PacketHeader.Size);
-        if (wSize > PacketHeader.Size)
-            Array.Copy(ReadExactly(wSize - PacketHeader.Size), 0, packet, PacketHeader.Size, wSize - PacketHeader.Size);
-
-        if (!_cipher.DecodeFromServer(packet)) BadPackets++;
-        LastPacket = packet;
-        return new PacketReader(packet);
-    }
-
-    private byte[] ReadExactly(int count)
-    {
-        var buf = new byte[count];
-        int read = 0;
-        while (read < count)
-        {
-            int n = _stream.Read(buf, read, count - read);
+            // Readable = data waiting, or the peer closed (then Read returns 0). Partial data stays buffered on timeout.
+            var remaining = deadline - DateTime.UtcNow;
+            int waitUs = (int)Math.Clamp(remaining.TotalMicroseconds, 0, int.MaxValue);
+            if (!_tcp.Client.Poll(waitUs, SelectMode.SelectRead)) return null;
+            int n = _stream.Read(_buf, _len, _buf.Length - _len);
             if (n == 0) throw new IOException("Connection closed by server.");
-            read += n;
+            _len += n;
         }
-        return buf;
     }
+
+    private byte[] _buf = new byte[16 * 1024];
+    private int _len;
 
     public void Dispose()
     {

@@ -16,6 +16,7 @@ Console.CancelKeyPress += (_, e) => { e.Cancel = true; cts.Cancel(); };
 
 try
 {
+    if (cfg.Scenario == "stress") return await StressTest.RunAsync(cfg, cts.Token);
     if (cfg.Scenario.Length > 0) return await Scenarios.RunAsync(cfg, cts.Token);
     await new BotRunner(cfg).RunAsync(cts.Token);
     return 0;

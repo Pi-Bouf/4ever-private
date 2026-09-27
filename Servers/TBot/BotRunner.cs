@@ -13,8 +13,16 @@ public sealed class BotRunner
 
     private static readonly TimeSpan Step = TimeSpan.FromSeconds(5);
 
+    // Progress, read by the stress scenario from another thread.
+    public volatile string Stage = "pending";
+    public volatile int MovesSent;
+    public volatile bool Kicked;
+    public string? KickReason;
+    public double LoginMs, EnterMs;
+
     public async Task RunAsync(CancellationToken ct)
     {
+        Stage = "account";
         if (_cfg.CreateAccount)
         {
             var prov = new AccountProvisioner(_cfg.GlobalConnectionString);
@@ -28,8 +36,12 @@ public sealed class BotRunner
             return;
         }
 
+        Stage = "login";
+        var sw = System.Diagnostics.Stopwatch.StartNew();
         var login = RunLogin();
+        LoginMs = sw.Elapsed.TotalMilliseconds;
         RunGameAndWalk(login, ct);
+        Stage = "done";
         Log("done.");
     }
 
@@ -191,7 +203,11 @@ public sealed class BotRunner
         Log($"connecting to game server {login.WorldHost}:{login.WorldPort} (crypt={(!_cfg.MapNoCrypt)}) ...");
         using var conn = new BotConnection(login.WorldHost, login.WorldPort, !_cfg.MapNoCrypt);
 
+        Stage = "enter";
+        var sw = System.Diagnostics.Stopwatch.StartNew();
         CharSpawn spawn = ConnectAndEnter(conn, login);
+        EnterMs = sw.Elapsed.TotalMilliseconds;
+        Stage = "walking";
         Walk(conn, spawn, ct);
         // `using` disposes the socket here → clean disconnect from the map server.
         Log("disconnected from game server");
@@ -292,14 +308,18 @@ public sealed class BotRunner
             ushort dir = (ushort)(((int)(MathF.Atan2(dz, dx) * (1800f / MathF.PI)) % 3600 + 3600) % 3600);
             conn.Send(GamePackets.BuildMove(spawn.MapId, x, y, z, 0, dir, 4, 4, 0, 0, speed));
             sent++;
+            MovesSent = sent;
 
             // Drain anything the server pushes back (move acks, nearby entities); detect a kick.
             try
             {
                 while (conn.TryReceive(TimeSpan.FromMilliseconds(1)) is { }) { }
             }
-            catch (IOException)
+            catch (IOException ex)
             {
+                KickReason = ex.InnerException is System.Net.Sockets.SocketException se
+                    ? $"{se.SocketErrorCode}: {ex.Message}" : ex.Message;
+                Kicked = true;
                 Log($"connection closed by server after {sent} moves (kicked?)");
                 return;
             }
@@ -333,5 +353,8 @@ public sealed class BotRunner
 
     private static string UIntToIp(uint v) => $"{v & 0xFF}.{(v >> 8) & 0xFF}.{(v >> 16) & 0xFF}.{(v >> 24) & 0xFF}";
 
-    private void Log(string msg) => Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {(_cfg.LogTag.Length > 0 ? _cfg.LogTag + " " : "")}{msg}");
+    private void Log(string msg)
+    {
+        if (!_cfg.Quiet) Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {(_cfg.LogTag.Length > 0 ? _cfg.LogTag + " " : "")}{msg}");
+    }
 }

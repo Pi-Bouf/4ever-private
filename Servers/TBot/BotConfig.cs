@@ -67,4 +67,24 @@ public sealed class BotConfig
     public float MoveStep { get; set; } = 2.0f;
     public int MoveTickMs { get; set; } = 100;
     public int MoveDurationSec { get; set; } = 30;
+
+    /// <summary>Suppresses the per-bot log lines (the stress scenario prints its own status instead).</summary>
+    public bool Quiet { get; set; }
+
+    // ---- stress scenario (--Bot:Scenario=stress) ----
+
+    /// <summary>How many bots to run at once, each on its own account (<see cref="StressPrefix"/> + number).</summary>
+    public int StressCount { get; set; } = 100;
+    /// <summary>Account prefix; use a fresh one per run (a used account logs in as "Duplicate" until servers restart).</summary>
+    public string StressPrefix { get; set; } = "st";
+    /// <summary>Ramp: how many bots start per second.</summary>
+    public double StressRampPerSec { get; set; } = 10;
+    /// <summary>Each bot walks a square of a different radius (20..this) so the crowd spreads over several cells;
+    /// set to 20 to keep everyone in the same few cells (worst-case broadcast).</summary>
+    public float StressMaxRadius { get; set; } = 300f;
+    /// <summary>Docker container of the map server to sample (RSS + CPU) in the status line; empty = don't sample.</summary>
+    public string StressDockerContainer { get; set; } = "araz-mapsvr";
+
+    /// <summary>A shallow copy (every setting is a value or an immutable string).</summary>
+    public BotConfig Copy() => (BotConfig)MemberwiseClone();
 }

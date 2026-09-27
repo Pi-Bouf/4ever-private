@@ -59,6 +59,26 @@ dotnet run -- --Bot:Scenario=features --Bot:Account=tbot27 --Bot:Account2=tbot28
 
 Exit code 0 when every check passes.
 
+## Scenario: stress (hundreds of bots)
+
+`--Bot:Scenario=stress` runs `StressCount` bots in one process, each on its own thread and account
+(`StressPrefix` + number, created up front), ramped in at `StressRampPerSec`. Each bot does the normal flow
+(login → create char → enter the map → walk `MoveDurationSec`), on a square of a different radius (20..`StressMaxRadius`)
+so the crowd spreads over several cells — set `StressMaxRadius=20` to pack everyone into the same cells.
+
+Every 5 s it prints how many bots are connecting / in world / done / kicked / failed, plus the map server's RSS and CPU
+(read from `/proc/1` inside the `StressDockerContainer`, default `araz-mapsvr`; empty = don't sample). The summary gives
+login and enter latency (p50/p95/max), kicks with the socket error, and failures grouped by message.
+
+```bash
+TBot.exe --Bot:Scenario=stress --Bot:StressPrefix=st --Bot:StressCount=400 --Bot:MoveDurationSec=90 \
+  --Bot:Password=... --Bot:CreateAccount=true --Bot:GlobalConnectionString="...TGlobal_gsp..." \
+  --Bot:Class=3 --Bot:Country=4 --Bot:Hair=4 --Bot:Face=5 --Bot:Channel=1 --Bot:NoCrypt=false --Bot:MapNoCrypt=false
+```
+
+Use a **new prefix every run**: an account that was in the world logs in as "Duplicate" until the servers restart.
+Exit code 0 when every bot completed its walk.
+
 ## Tests
 
 `TBot.Tests` verifies the new wire format **without a live server** by pairing the bot's `ClientCipher`
