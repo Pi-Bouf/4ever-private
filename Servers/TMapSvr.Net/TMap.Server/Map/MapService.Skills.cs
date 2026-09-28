@@ -121,6 +121,8 @@ public sealed partial class MapService
         uint mgMax = StatEngine.MaxMagicAp(ch, _templates);
         byte cp = isMagic ? StatEngine.CriticalMagicProb(ch, _templates) : StatEngine.CriticalPysProb(ch, _templates);
 
+        if (skill.Template is { } used) EraseBuffByAttack(casterSession, ch, used);   // C++ CSHandler.cpp:2971
+
         var ack = BuildCS_SKILLUSE_ACK(SkillUseResult.Success, attackId, attackType, skillId, actionId, actId, aniId,
             skill.Level, backSkill: 0, attackLevel, ch.Level, pysMin, pysMax, mgMin, mgMax,
             transHp: 0, transMp: 0, curseProb: 0, equipSpecial: 0, canSelect: 1,

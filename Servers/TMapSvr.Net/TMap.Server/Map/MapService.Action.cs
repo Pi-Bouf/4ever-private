@@ -95,6 +95,8 @@ public sealed partial class MapService
                     if (d.Type is SdtRecall or SdtTrap && d.Exec != SerMonster
                         && _templates.MonsterTemplates.TryGetValue((ushort)st.GetValue(d, skill.Level), out var mt) && mt.Id != 0)
                         CheckRecallMon(s, ch, mt);   // starting a summon cast sends the old main summon away
+            if (result == SkillUseResult.Success && skill?.Template is { } used)
+                EraseBuffByAttack(s, ch, used);              // C++ CSHandler.cpp:1362, the accepted skill action
         }
 
         // ---- broadcast (C++ GetNeerPlayer when a skill is involved, GetNeighbor otherwise; both keep self) ----

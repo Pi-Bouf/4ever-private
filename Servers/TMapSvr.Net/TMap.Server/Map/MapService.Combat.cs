@@ -187,6 +187,27 @@ public sealed partial class MapService
             return;
         }
 
+        // ---- a buff on one's own summon or placed object (C++ Defend on an OT_RECALL / OT_SELF target: MaintainSkill) —
+        // e.g. the sorcerer's damage-sharing 635. Hostile skills on another player's summons are not ported. ----
+        if (targetType is RecallMon.OtRecall or RecallMon.OtSelf)
+        {
+            IReadOnlyDictionary<uint, RecallMon> mine = targetType == RecallMon.OtSelf ? ch.SelfObjs : ch.Recalls;
+            if (!mine.TryGetValue(targetId, out var pet) || !pet.InMap || pet.Hp == 0) return;
+            if (atkSkill?.Template is { IsPositive: true } bt && bt.IsMaintainType())
+            {
+                var p0 = AttackerPower.Of(ch, _templates, bt);
+                var snap = new MaintainSnapshot(attackId, OtPc, attackId, OtPc, p0.Crit, p0.AttackLevel, ch.Level,
+                    p0.PysMin, p0.PysMax, p0.MgMin, p0.MgMax, 1, ch.Country, atkX, atkY, atkZ);
+                if (ApplyMaintainToSummon(pet, bt, atkSkill.Level, 0, snap) is { } m)
+                {
+                    var ack = BuildDefendAckMaintain(attackId, OtPc, pet.Id, pet.ObjType, bt.Id, m.Level, isMaintain: 1, m.MaintainTick,
+                        atkX, atkY, atkZ);
+                    foreach (var p in _state.PlayersAround(pet)) p.Send(ack);
+                }
+            }
+            return;
+        }
+
         // Otherwise this phase covers only a player attacking a field monster: a live one, or a corpse for the
         // skills that can land on one (C++ OS_DEAD && !CanDefendAtDie — Enslave Monster).
         if (targetType != Monster.OtMon) return;
@@ -239,6 +260,11 @@ public sealed partial class MapService
 
         // bAtkHit carries the hit result (HT_MISS/NORMAL/CRITICAL), overridden to HT_LASTHIT on the killing blow.
         byte atkHit = hitType == HtMiss || corpse ? hitType : (mon.Hp == 0 ? HtLastHit : hitType);
+
+        // C++ Defend: a hostile skill from someone else, hit or miss, ends the monster's buffs that stop on being hit (a
+        // sleep, for one) before any new debuff lands.
+        if (!corpse && atkTpl is { IsNegative: true } hostile)
+            EraseBuffByDefend(mon.MaintainSkills, hostile, i => EraseMaintainMonster(mon, i));
 
         // ---- apply a debuff maintain to the monster (C++ Defend: MaintainSkill + PushMaintainSkill on a landed
         // hit) — a skill can both damage and debuff; the ACK's bIsMaintain/dwMaintainTick announce it (Phase 31). ----
@@ -298,6 +324,10 @@ public sealed partial class MapService
         public bool ExceptPhysic, ExceptMagic, Self, Blocked;
         private Func<bool, uint> _dp = _ => 0;
         private Func<uint, byte, int> _layer = (_, _) => 0;
+        private Func<uint, uint> _distribute = _ => 0;
+
+        /// <summary>C++ <c>DistributeSkill</c>: the share of an HP loss the defender's main summon takes instead.</summary>
+        public uint Distribute(uint damage) => _distribute(damage);
 
         /// <summary>The defence against a physical or magic row; a successful shield roll marks the hit blocked (the
         /// C++ keeps the last row's roll).</summary>
@@ -310,7 +340,8 @@ public sealed partial class MapService
             _dp = magic => magic ? mon.MagicDefPower : mon.DefendPower,
         };
 
-        public static DamageTarget Of(Character ch, bool self, uint maxHp, uint maxMp, Random rng, TemplateStore t)
+        public static DamageTarget Of(Character ch, bool self, uint maxHp, uint maxMp, Random rng, TemplateStore t,
+            Func<uint, uint>? distribute = null)
         {
             var d = new DamageTarget
             {
@@ -324,6 +355,7 @@ public sealed partial class MapService
                 return shield + (magic ? StatEngine.MagicDefPower(ch, t) : StatEngine.DefendPower(ch, t));
             };
             d._layer = (value, mtype) => StatEngine.CalcAbilityValue(ch, value, mtype);
+            if (distribute is not null) d._distribute = distribute;
             return d;
         }
 
@@ -343,11 +375,10 @@ public sealed partial class MapService
     /// has no damage rows (a basic attack / a pure buff / DB-free) the C++ basic weapon-skill roll is used — one
     /// physical-or-magic HP-damage component keyed <c>MTYPE_DAMAGE</c> (the Phase-13 behavior, byte-preserved).
     ///
-    /// <para><b>Deferred (documented — PORT_STATUS.md):</b> the buff-layer amplification of the roll
-    /// (<c>CalcAbilityValue</c> maintain/remain/cure terms + <c>ApplyEffectionBuff</c> — only the instance-skill
-    /// <c>CalcValue</c> term is applied here), <c>DistributeSkill</c> (pet damage share), the AUTOAI-recall ×3
-    /// (pets), the shield-block roll (a monster has no equipped-item model → shield DP 0), and the custom
-    /// Araz ≥3000 hard-coded skills.</para></summary>
+    /// <para>The defender side (<see cref="DamageTarget"/>) brings its defence and shield roll, its own buff and remain
+    /// layers, its immunities and <c>DistributeSkill</c> — a player's main summon taking a share of the HP loss. A monster
+    /// defender has none of those. <b>Deferred (documented — PORT_STATUS.md):</b> the <c>CalcCure</c> counter-term and
+    /// <c>ApplyEffectionBuff</c>, and the custom Araz ≥3000 hard-coded skills.</para></summary>
     private DamageResult CalcDamage(AttackerPower ch, DamageTarget def, SkillTemplate? tpl, byte level,
         byte hitType, bool isMagic, bool isLong, bool triple = false)
     {
@@ -362,6 +393,7 @@ public sealed partial class MapService
         if (rows is null)
         {
             uint dmg = BasicRoll(ch, def, tpl, level, hitType, isMagic, isLong, triple);
+            dmg -= def.Distribute(dmg);
             if (dmg != 0) map.Add((MtypeDamage, (ushort)dmg));   // (WORD)dwValue
             return new DamageResult((int)dmg, 0, map, def.Blocked);
         }
@@ -381,6 +413,7 @@ public sealed partial class MapService
                 case MtypeDamage:   // HP damage — crit off the MAX band (physical) / MIN band (magic)
                 {
                     uint v = RollExec(ch, def, tpl!, d, level, hitType, magicAttr, mpPool: false, triple);
+                    v -= def.Distribute(v);                                  // dwValue -= DistributeSkill(dwValue)
                     if (v != 0) { nDamageHp += (int)v; MapInsert(map, MtypeDamage, v); }
                     break;
                 }
@@ -395,6 +428,7 @@ public sealed partial class MapService
                     int nInc = tpl!.CalcValue(level, SdtAbility, MtypeHp, def.MaxHp) + def.Layer(def.MaxHp, MtypeHp);
                     if (nInc < 0)   // drain (dwValue clamped to the working HP, then applied + reported)
                     {
+                        nInc += (int)def.Distribute((uint)-nInc);              // nInc += DistributeSkill(abs(nInc))
                         uint dealt = nHp > -nInc ? (uint)(-nInc) : (uint)nHp;
                         nHp -= (int)dealt; nDamageHp += (int)dealt; MapInsert(map, MtypeHp, dealt);
                     }

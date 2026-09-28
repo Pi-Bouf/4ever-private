@@ -163,8 +163,13 @@ public sealed partial class MapService
             HtCritical => CritDamage(CombatRng, _templates.Formula(FtypePcd), (uint)b), // physical crit off the max band
             _ => (uint)(a + CombatRng.Next(Math.Max(b - a, 1))),
         };
+        if (hitType != HtMiss && _state.FindByChar(target.CharId) is { } shared)
+            baseDmg -= DistributeSkill(shared, target, baseDmg);   // C++ CalcDamage: dwValue -= DistributeSkill(dwValue)
         uint dmg = (uint)Math.Min((int)baseDmg, (int)target.Hp); // clamp to remaining HP
         if (hitType != HtMiss) target.Hp -= dmg;
+        // C++ Defend: the monster's hostile skill, hit or miss, ends the player's buffs that stop on being hit.
+        if (_templates.Skills.TryGetValue(skillId, out var hostile) && hostile.IsNegative && _state.FindByChar(target.CharId) is { } hit)
+            EraseBuffByDefend(target.MaintainSkills, hostile, i => EraseMaintainPlayer(hit, target, i));
         target.EnterBattle((uint)nowMs, RecoverInit);         // player enters battle ⇒ HP regen suppressed
 
         // The reported hit result: a kill downgrades to HT_LASTHIT (C++ Defend `m_dwHP ? bAtkHit : HT_LASTHIT`);

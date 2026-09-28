@@ -111,9 +111,16 @@ public sealed partial class MapService
                     continue;
                 defX = mon.PosX; defY = mon.PosY; defZ = mon.PosZ;
             }
+            else if (targetType is RecallMon.OtRecall or RecallMon.OtSelf)
+            {
+                // One's own summon or placed object (C++ FindTarget(pPlayer, …)); hostile skills on others' are not ported.
+                IReadOnlyDictionary<uint, RecallMon> mine = targetType == RecallMon.OtSelf ? ch.SelfObjs : ch.Recalls;
+                if (!mine.TryGetValue(targetId, out var own2) || !own2.InMap) continue;
+                defX = own2.PosX; defY = own2.PosY; defZ = own2.PosZ;
+            }
             else
             {
-                continue;   // OT_RECALL / OT_SELF targets — summons unported
+                continue;
             }
 
             // dwActID/dwAniID are 0 here: the C++ passes literal zeros to Defend for this path.
