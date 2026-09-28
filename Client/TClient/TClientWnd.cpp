@@ -3757,7 +3757,6 @@ void CTClientWnd::LoadCustomCompPos()
 	}
 }
 
-#ifdef MODIFY_LOADING
 void CTClientWnd::ReleaseTRESIMG()
 {
 	while(!CTachyonRes::m_vTLOADINGSCENE.empty())
@@ -3769,20 +3768,6 @@ void CTClientWnd::ReleaseTRESIMG()
 	CTachyonRes::m_vTEXT.Release();
 	CTachyonRes::m_vFONT.DeleteObject();
 }
-#else
-void CTClientWnd::ReleaseTRESIMG()
-{
-	while(!CTachyonRes::m_vBACKIMG.empty())
-	{
-		delete CTachyonRes::m_vBACKIMG.back();
-		CTachyonRes::m_vBACKIMG.pop_back();
-	}
-
-	CTachyonRes::m_vGAUGE.Release();
-	CTachyonRes::m_vTEXT.Release();
-	CTachyonRes::m_vFONT.DeleteObject();
-}
-#endif
 
 void CTClientWnd::ReleaseTCUSTOMCLOAKTEX()
 {
@@ -3893,7 +3878,6 @@ TFrame* CTClientWnd::GetMainFrame()
 	return m_pMainFrame;
 }
 
-#ifdef MODIFY_LOADING
 void CTClientWnd::InitTRESIMG()
 {
 	static const CString INTRO_PATH		= ".\\Intro\\";
@@ -4047,95 +4031,6 @@ void CTClientWnd::InitTRESIMG()
 			CTachyonRes::m_vTLOADINGSCENE[ 0 ]->m_nState = 1;
 	}
 }
-#else
-void CTClientWnd::InitTRESIMG()
-{
-	static const CString INTRO_PATH		= ".\\Intro\\";
-	static const CString INTRO_LIST		= "Intro.cfg";
-
-	static const CString SEPARATORS		= "\t:=";
-	
-	static const CString VAR_GAUGE		= "gauge";
-	static const CString VAR_GAUGE_X	= "gauge_x";
-	static const CString VAR_GAUGE_Y	= "gauge_y";
-	static const CString VAR_IMAGE		= "image";
-
-	static const CString VAR_TEXT_X		= "text_x";
-	static const CString VAR_TEXT_Y		= "text_y";
-
-	ReleaseTRESIMG();
-
-	float fScaleX = (float)m_Device.m_option.m_dwScreenX / (float)TBASE_SCREEN_X;
-	float fScaleY = (float)m_Device.m_option.m_dwScreenY / (float)TBASE_SCREEN_Y;
-
-	FILE *fpLIST;
-	char rec[MAX_PATH], *ret;
-	CString optName, optVal;
-	
-	fpLIST = fopen(INTRO_PATH+INTRO_LIST, "r");
-	if( !fpLIST )
-		return;
-
-	ret = fgets(rec, MAX_PATH, fpLIST);
-	while( ret != NULL )
-	{
-		CString tst = rec;
-		tst.Trim();
-		
-		if( tst.GetLength() > 0 && tst.GetAt(0) != ';' && tst.GetAt(0) != '\n')
-		{
-			CString optName(strtok(rec, SEPARATORS));
-			CString optVal(strtok(NULL, "\n"));
-			if( !optName.IsEmpty() && !optVal.IsEmpty() )
-			{
-				optName.Trim();
-				optVal.Trim();
-							
-				if( optName == VAR_GAUGE )
-				{
-					if( LoadImageFile(INTRO_PATH+optVal, &CTachyonRes::m_vGAUGE) )
-					{
-						CTachyonRes::m_vGAUGE.SetScaleX(fScaleX);
-						CTachyonRes::m_vGAUGE.SetScaleY(fScaleY);
-					}
-				}
-				else if( optName == VAR_IMAGE )
-				{
-					CD3DImage *pIMG = new CD3DImage();
-					if( LoadImageFile(INTRO_PATH+optVal, pIMG) )
-					{
-						pIMG->SetScaleX(fScaleX);
-						pIMG->SetScaleY(fScaleY);
-
-						CTachyonRes::m_vBACKIMG.push_back(pIMG);	
-					}
-					else
-						delete pIMG;
-				}
-				else if( optName == VAR_GAUGE_X )
-					CTachyonRes::m_nGaugeX = atoi(optVal);
-				else if( optName == VAR_GAUGE_Y )
-					CTachyonRes::m_nGaugeY = atoi(optVal);
-				else if( optName == VAR_TEXT_X )
-					CTachyonRes::m_nTextX = atoi(optVal);
-				else if( optName == VAR_TEXT_Y )
-					CTachyonRes::m_nTextY = atoi(optVal);
-			}
-		}
-
-		ret = fgets(rec, MAX_PATH, fpLIST);
-	}
-
-	fclose(fpLIST);
-
-	CTachyonRes::m_vTEXT.m_dwLineColor = TTEXTSHADOW_COLOR;
-	CTachyonRes::m_vTEXT.m_dwColor = TLOADING_TEXT_CLR;
-	CTachyonRes::m_vTEXT.m_bOutLine = TRUE;
-	CTachyonRes::m_vTEXT.SetScaleX(fScaleX);
-	CTachyonRes::m_vTEXT.SetScaleY(fScaleY);
-	CTachyonRes::m_vTEXT.SetFont(&m_Font);
-}
-#endif
 
 void CTClientWnd::InitTCUSTOMCLOAKTEX()
 {

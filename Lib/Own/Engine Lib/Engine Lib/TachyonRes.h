@@ -5,17 +5,8 @@ class CTachyonRes
 public:
 	static CTachyonMedia m_MEDIA;
 	static CD3DDevice *m_pDEVICE;
-#ifdef MODIFY_LOADING
 	static VECTORTLOADINGSCENE m_vTLOADINGSCENE;
 	static D3DCOLOR m_dwBackColor;
-#else
-	static VECTORIMAGE m_vBACKIMG;
-	static CD3DImage m_vGAUGE;
-	static int m_nGaugeX;
-	static int m_nGaugeY;
-	static int m_nTextX;
-	static int m_nTextY;
-#endif
 	static CD3DFont m_vTEXT;
 	static CFont m_vFONT;
 

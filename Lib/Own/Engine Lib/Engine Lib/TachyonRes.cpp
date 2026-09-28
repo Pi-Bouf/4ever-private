@@ -8,17 +8,8 @@ CTachyonMedia CTachyonRes::m_MEDIA;
 
 int m_id = 0;
 
-#ifdef MODIFY_LOADING
 VECTORTLOADINGSCENE CTachyonRes::m_vTLOADINGSCENE;
 DWORD CTachyonRes::m_dwBackColor;
-#else
-VECTORIMAGE CTachyonRes::m_vBACKIMG;
-CD3DImage CTachyonRes::m_vGAUGE;
-int CTachyonRes::m_nGaugeX = 0;
-int CTachyonRes::m_nGaugeY = 0;
-int CTachyonRes::m_nTextX = 0;
-int CTachyonRes::m_nTextY = 0;
-#endif
 
 CD3DFont CTachyonRes::m_vTEXT;
 CFont CTachyonRes::m_vFONT;
@@ -104,7 +95,7 @@ CTachyonRes::~CTachyonRes()
 	m_vANIFILE.clear();
 	m_vMAPFILE.clear();
 }
-#ifdef MODIFY_LOADING
+
 void CTachyonRes::RenderBACK( BYTE bSTEP,
 							  BYTE bProgress)
 {
@@ -312,85 +303,6 @@ void CTachyonRes::RenderBACK( BYTE bSTEP,
 		FAILED(m_pDEVICE->m_pDevice->Present( NULL, NULL, NULL, NULL)) )
 		m_pDEVICE->ResetHost();
 }
-#else
-void CTachyonRes::RenderBACK( BYTE bSTEP,
-							  BYTE bProgress)
-{
-	static FLOAT fPrevProgress = 0.0f;
-	static BYTE bSTART[][2] = {
-		{  0, 10},	// T3DRES_TEX
-		{ 10, 10},	// T3DRES_IMGBUF
-		{ 20,  4},	// T3DRES_IMG
-		{ 24,  4},	// T3DRES_MEDIA
-		{ 28, 18},	// T3DRES_ANI
-		{ 46, 18},	// T3DRES_MESH
-		{ 64, 14},	// T3DRES_OBJ
-		{ 78, 18},	// T3DRES_SFX
-		{ 96,  4}};	// T3DRES_MAP
-	static BYTE bIMG = 0xFF;
-	static BYTE bPrvProgress = 0xFF;
-
-	if( m_vBACKIMG.empty() || bPrvProgress == bProgress )
-		return;
-	bPrvProgress = bProgress;
-
-	m_pDEVICE->m_pDevice->BeginScene();
-
-	m_pDEVICE->m_pDevice->Clear(
-		0, NULL,
-		D3DCLEAR_TARGET,
-		D3DCOLOR_ARGB(255,0,0,0),
-		1.0f, 0);
-
-	CString strProgress;
-	CRect rect(
-		0, 0,
-		(int)( (FLOAT)m_vGAUGE.GetWidth() * m_vGAUGE.GetScaleX() ),
-		(int)( (FLOAT)m_vGAUGE.GetHeight() * m_vGAUGE.GetScaleY() ));
-	FLOAT fProgress = FLOAT(bSTART[bSTEP][0]) + FLOAT(bProgress) * FLOAT(bSTART[bSTEP][1]) / 100.0f;
-
-	if( bIMG == 0xFF || fProgress - fPrevProgress > 30.0f )
-	{
-		BYTE bCOUNT = BYTE(m_vBACKIMG.size());
-		BYTE bINDEX = BYTE(rand() % bCOUNT);
-
-		while( bCOUNT > 1 && bINDEX == bIMG )
-			bINDEX = BYTE(rand() % bCOUNT);
-
-		if( bIMG != 0xFF )
-			fPrevProgress += 30.0f;
-		bIMG = bINDEX;
-	}
-	rect.right = INT(rect.right * fProgress / 100.0f);
-
-	m_vBACKIMG[bIMG]->Render(
-		m_pDEVICE->m_pDevice,
-		0xFFFFFFFF,
-		0, 0);
-
-	m_vGAUGE.Render(
-		m_pDEVICE->m_pDevice,
-		0xFFFFFFFF,
-		m_nGaugeX,
-		m_nGaugeY,
-		&rect);
-
-	strProgress.Format( _T("%d%%"), INT(fProgress));
-	rect.right = m_vGAUGE.GetWidth();
-
-	m_vTEXT.TextOut(
-		m_pDEVICE->m_pDevice,
-		strProgress,
-		m_nTextX,
-		m_nTextY);
-
-	m_pDEVICE->m_pDevice->EndScene();
-
-	if( !AfxGetApp()->m_pMainWnd->IsIconic() && !m_pDEVICE->GetResetFlag() &&
-		FAILED(m_pDEVICE->m_pDevice->Present( NULL, NULL, NULL, NULL)) )
-		m_pDEVICE->ResetHost();
-}
-#endif
 
 #define TPREFETCH_BLOCK			(1024 * 1024)
 #define TPREFETCH_THREAD		2
