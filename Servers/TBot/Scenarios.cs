@@ -40,7 +40,7 @@ public static class Scenarios
         CS_DUELINVITE_REQ = M + 0x0147, CS_DUELINVITE_ACK = M + 0x0148, CS_DUELINVITEREPLY_REQ = M + 0x0149,
         CS_DUELSTART_ACK = M + 0x014A, CS_DUELEND_ACK = M + 0x014C, CS_DUELSTANDBY_ACK = M + 0x014D, CS_SYSTEMMSG_ACK = M + 0x01D1,
         CS_PVPRECORD_REQ = M + 0x01E9, CS_PVPRECORD_ACK = M + 0x01EA, CS_MONTHRANKLIST_REQ = M + 0x021D, CS_MONTHRANKLIST_ACK = M + 0x021E,
-        CS_TITLEGAIN_ACK = M + 0x0277,
+        CS_TITLEGAIN_ACK = M + 0x0277, CS_CHARSTATINFO_ACK = M + 0x00A4,
         CS_DIE_ACK = M + 0x0025, CS_REVIVAL_REQ = M + 0x0026, CS_REVIVAL_ACK = M + 0x0027, CS_PVPPOINT_ACK = M + 0x01E2,
         CS_MOVEITEM_REQ = M + 0x0028, CS_MOVEITEM_ACK = M + 0x0029, CS_SKILLEND_ACK = M + 0x0037,
         CS_SKILLBUY_REQ = M + 0x0032, CS_SKILLBUY_ACK = M + 0x0033, CS_NPCITEMLIST_REQ = M + 0x0082, CS_NPCITEMLIST_ACK = M + 0x0083;
@@ -72,6 +72,9 @@ public static class Scenarios
     // PvP: the bot's basic melee attack; a level-19 victim is worth 14 (TLEVELCHART.wPvPoint) — an even kill pays 80% (11)
     // and costs the victim 20% (2) of its total. B starts with a total of 10.
     private const ushort BasicMelee = 31;
+    // A debuff: skill 213 hits and lowers the target's defence for 9 s (level 1). Chan1 is given it for the run.
+    private const ushort DefenceBreak = 213;
+    private const uint DefenceBreakMs = 9000;
     private const uint VictimTotal = 10, KillGain = 11, KillLoss = 2;
     // Ranking and titles: 11 total points pass the first honour title (TTITLECHART 56, more than 10). The bots' rank and
     // title rows are copied aside before the run and put back after (RankTables).
@@ -769,6 +772,24 @@ public static class Scenarios
         var up = b.TryWait(CS_REVIVAL_ACK, r => r.ReadUInt32() == b.CharId);
         Check("pvp: the victim revives", up is not null && Read(up, r => (r.ReadUInt32(), r.ReadFloat(), r.ReadFloat(), r.ReadFloat())).Item1 == b.CharId,
             Describe(up));
+        if (up is null) return;
+
+        // A hostile skill leaves its debuff on the other player: the hit says so and gives its length.
+        Thread.Sleep(500);
+        b.Discard(CS_DEFEND_ACK);
+        a.Send(FinishSkill(a, a.CharId, 1, DefenceBreak, a.Spawn.X, a.Spawn.Z, (b.CharId, 1)));
+        var cursed = b.TryWait(CS_DEFEND_ACK, r => r.ReadUInt32() == a.CharId && r.ReadUInt32() == b.CharId);
+        Check("pvp: a hostile skill leaves its debuff on the player (9 s)", cursed is not null && ReadMaintain(cursed) == (1, DefenceBreakMs),
+            Describe(cursed));
+        Check("pvp: the debuffed player gets its new stat sheet", b.TryWait(CS_CHARSTATINFO_ACK, timeoutMs: 2000) is not null, "no CS_CHARSTATINFO_ACK");
+    }
+
+    // CS_DEFEND_ACK up to dwMaintainTick: attacker, target, their types, host + type, act, ani, bIsMaintain, dwMaintainTick.
+    private static (byte IsMaintain, uint Tick) ReadMaintain(PacketReader p)
+    {
+        var r = new PacketReader(Bot.Raw.TryGetValue(p, out var raw) ? raw : throw new InvalidOperationException());
+        r.ReadUInt32(); r.ReadUInt32(); r.ReadByte(); r.ReadByte(); r.ReadUInt32(); r.ReadByte(); r.ReadUInt32(); r.ReadUInt32();
+        return (r.ReadByte(), r.ReadUInt32());
     }
 
     // TClient OnCS_PVPPOINT_ACK: dwTotal, dwUseable, bEvent, dwMonthPvPoint.
@@ -890,9 +911,11 @@ public static class Scenarios
             HorseDlId, (int)idA, (int)HorseSlot, (int)HorseItem);
         await ClearCompanions(db, idA);
         await ResetSand(db, idA);
-        await db.ExecAsync("DELETE FROM TSKILLTABLE WHERE dwCharID=@p0 AND wSkillID IN (@p1, @p2)", (int)idA, (int)RitualSkill, (int)IceRainSkill);
-        await db.ExecAsync("INSERT INTO TSKILLTABLE (dwCharID, wSkillID, bLevel, dwRemainTick) VALUES (@p0, @p1, 1, 0), (@p0, @p2, 1, 0)",
-            (int)idA, (int)RitualSkill, (int)IceRainSkill);
+        await db.ExecAsync("DELETE FROM TSKILLTABLE WHERE dwCharID=@p0 AND wSkillID IN (@p1, @p2, @p3)", (int)idA, (int)RitualSkill, (int)IceRainSkill,
+            (int)DefenceBreak);
+        await db.ExecAsync("INSERT INTO TSKILLTABLE (dwCharID, wSkillID, bLevel, dwRemainTick) VALUES (@p0, @p1, 1, 0), (@p0, @p2, 1, 0), (@p0, @p3, 1, 0)",
+            (int)idA, (int)RitualSkill, (int)IceRainSkill, (int)DefenceBreak);
+        await db.ExecAsync("DELETE FROM TSKILLMAINTAINTABLE WHERE dwCharID=@p0 AND wSkillID=@p1", (int)idB, (int)DefenceBreak);
         await db.ExecAsync("DELETE FROM TITEMTABLE WHERE dlID=@p0 OR (dwOwnerID=@p1 AND bOwnerType=0 AND bStorageType=0 AND dwStorageID=255 AND bItemID=@p2)",
             RuneDlId, (int)idA, (int)RuneSlot);
         await db.ExecAsync(@"INSERT INTO TITEMTABLE (dlID, bStorageType, dwStorageID, bOwnerType, dwOwnerID, bItemID, wItemID, bLevel,
@@ -961,7 +984,9 @@ public static class Scenarios
         await db.ExecAsync("DELETE FROM TITEMTABLE WHERE dwOwnerID=@p0 AND bOwnerType=0 AND wItemID=@p1", (int)idA, (int)RuneItem);
         await ClearCompanions(db, idA);
         await ResetSand(db, idA);
-        await db.ExecAsync("DELETE FROM TSKILLTABLE WHERE dwCharID=@p0 AND wSkillID IN (@p1, @p2)", (int)idA, (int)RitualSkill, (int)IceRainSkill);
+        await db.ExecAsync("DELETE FROM TSKILLTABLE WHERE dwCharID=@p0 AND wSkillID IN (@p1, @p2, @p3)", (int)idA, (int)RitualSkill, (int)IceRainSkill,
+            (int)DefenceBreak);
+        await db.ExecAsync("DELETE FROM TSKILLMAINTAINTABLE WHERE dwCharID=@p0 AND wSkillID=@p1", (int)idB, (int)DefenceBreak);
         await ClearPassives(db, idA);
         foreach (var t in RankTables)
         {

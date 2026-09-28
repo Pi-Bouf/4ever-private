@@ -147,4 +147,72 @@ public class PvPTests
 
         Assert.Equal(100u, k.Hp);
     }
+
+    // ================================ debuffs ================================
+
+    private const ushort Curse = 950;
+    private const byte MtypeStr = 1;
+
+    /// <summary>A hostile skill (m_bPositive 0) with one damage row and a 10 s −5 STR debuff.</summary>
+    private static SkillTemplate CurseSkill()
+    {
+        var t = new SkillTemplate(Curse, Kind: 0, UseMp: 0, UseMpType: 0, UseHp: 0, UseHpType: 0,
+            StartLevel: 1, MaxLevel: 1, NextLevel: 1, ReuseDelay: 0, ReuseDelayInc: 0, LoopDelay: 0, KindDelay: 0,
+            SpeedApply: 0, Positive: 0, MapId: 0, Duration: 10_000);
+        t.Data.Add(new SkillDataRow(Action: 0, Type: 1, Attr: 1, Exec: 30, Inc: 1, Value: 0, ValueInc: 0, Calc: 0));   // damage
+        t.Data.Add(new SkillDataRow(Action: 3, Type: 1, Attr: 0, Exec: MtypeStr, Inc: 2, Value: 5, ValueInc: 0, Calc: 0));  // SA_BUFF −5 STR
+        return t;
+    }
+
+    private static byte[] Cast(uint targetId)
+        => MapTestHarness.DefendReq(Killer, targetId, attackType: 1, targetType: 1, skillId: Curse);
+
+    private static (byte IsMaintain, uint Tick) Maintain(byte[] ack)
+    {
+        var r = new PacketReader(ack);
+        r.ReadUInt32(); r.ReadUInt32(); r.ReadByte(); r.ReadByte(); r.ReadUInt32(); r.ReadByte(); r.ReadUInt32(); r.ReadUInt32();
+        return (r.ReadByte(), r.ReadUInt32());
+    }
+
+    [Fact]
+    public async Task AHostileSkill_LeavesItsDebuffOnThePlayer()
+    {
+        var (h, sk, ck, k, _, cv, v) = await Duel(victimHp: 80);
+        var curse = CurseSkill();
+        k.Skills.Add(new Skill { SkillId = Curse, Level = 1, Template = curse });
+
+        await h.Service.DispatchClientAsync(sk, Cast(Victim));
+
+        var m = Assert.Single(v.MaintainSkills);
+        Assert.Equal((Curse, Killer), (m.SkillId, m.AttackId));
+        Assert.Equal(((byte)1, 10_000u), Maintain(ck.Last(Msg.CS_DEFEND_ACK)!));
+        Assert.Equal(((byte)1, 10_000u), Maintain(cv.Last(Msg.CS_DEFEND_ACK)!));
+        Assert.True(cv.Has(Msg.CS_CHARSTATINFO_ACK));                         // the victim sees its lowered stats
+        Assert.True(v.Hp < 80);                                              // and the damage still landed
+    }
+
+    [Fact]
+    public async Task AKillingBlow_LeavesNoDebuff()
+    {
+        var (h, sk, ck, k, _, _, v) = await Duel(victimHp: 5);
+        k.Skills.Add(new Skill { SkillId = Curse, Level = 1, Template = CurseSkill() });
+
+        await h.Service.DispatchClientAsync(sk, Cast(Victim));
+
+        Assert.Equal(0u, v.Hp);
+        Assert.Empty(v.MaintainSkills);
+        Assert.Equal((byte)0, Maintain(ck.Last(Msg.CS_DEFEND_ACK)!).IsMaintain);
+    }
+
+    [Fact]
+    public async Task TheSameDebuffAgain_ReplacesTheFirst()
+    {
+        var (h, sk, _, k, _, _, v) = await Duel(victimHp: 90);
+        k.Skills.Add(new Skill { SkillId = Curse, Level = 1, Template = CurseSkill() });
+
+        await h.Service.DispatchClientAsync(sk, Cast(Victim));
+        await h.Service.DispatchClientAsync(sk, Cast(Victim));
+
+        Assert.Single(v.MaintainSkills);                                     // UpdateBuffSkill: a debuff replaces its own id
+    }
 }

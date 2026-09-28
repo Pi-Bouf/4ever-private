@@ -14,9 +14,10 @@ namespace TMap.Server.Map;
 /// <para>The hit is the one a monster takes (<see cref="CalcDamage"/>): the defender's defence, its shield roll (a
 /// successful one reports <c>HT_BLOCK</c>), its buffs on the damage and its immunity statuses. A kill costs the victim
 /// total points and pays the killer — or, in a party, pays the killer the same and each partner nearby 12 — see
-/// <see cref="PvPKill"/>. Each kill and death is recorded (<see cref="RecordPvP"/>). <b>Not ported:</b> debuffs a hit
-/// leaves on a player (<c>MaintainSkill</c> for a PC target), <c>DistributeSkill</c> (a summon sharing its owner's
-/// damage) and the local / battle-zone tallies (<c>LocalRecord</c>).</para>
+/// <see cref="PvPKill"/>. Each kill and death is recorded (<see cref="RecordPvP"/>). A landed skill also leaves its debuff
+/// (a stun, a slow, a curse…) through the buff engine, as it does on a monster. <b>Not ported:</b> <c>DistributeSkill</c>
+/// (a summon sharing its owner's damage), the debuff-removing cures cast at an enemy, the buffs a hit erases
+/// (<c>EraseBuffByDefend</c>) and the local / battle-zone tallies (<c>LocalRecord</c>).</para>
 /// </summary>
 public sealed partial class MapService
 {
@@ -48,9 +49,28 @@ public sealed partial class MapService
         byte atkHit = hitType == HtMiss ? HtMiss : target.Hp == 0 ? HtLastHit : dmg.Blocked ? HtBlock : hitType;
         if (hitType != HtMiss && tpl is { } lt) SendLifeDrain(lt, level, attackId, attackType, hostId, dmg);
 
+        // C++ Defend → MaintainSkill on a landed hit: the skill's debuff stays on the player (it does not take on one who
+        // just died — PushMaintainSkill refuses a dead owner unless the skill is static). The ACK announces it, and the
+        // player gets its new stat sheet (C++ SendCS_CHARSTATINFO_ACK after a maintain).
+        byte isMaintain = 0; uint maintainTick = 0;
+        if (hitType != HtMiss && hpBefore != 0 && tpl is { } dt && dt.IsMaintainType())
+        {
+            uint apMin = p.ApMin(isMagic, isLong), apMax = p.ApMax(isMagic, isLong);
+            var snap = new MaintainSnapshot(attackId, attackType, hostId, OtPc, p.Crit, p.AttackLevel, p.Level,
+                isMagic ? 0 : apMin, isMagic ? 0 : apMax, isMagic ? apMin : 0, isMagic ? apMax : 0,
+                canSelect, p.Country, atkX, atkY, atkZ);
+            if (ApplyMaintainToPlayer(ts, target, dt, level, 0, snap, NowMs) is { } applied)
+            {
+                isMaintain = 1;
+                maintainTick = applied.MaintainTick;
+                SendCS_CHARSTATINFO_ACK(ts, target);
+            }
+        }
+
         var ack = BuildCS_DEFEND_ACK(attackId, hostId, target.CharId, OtPc, attackType, actId, aniId,
             p.AttackLevel, p.Level, p.ApMin(isMagic, isLong), p.ApMax(isMagic, isLong), isMagic, p.Crit, canSelect,
-            p.Country, p.AidCountry, skillId, level, atkHit, hitType != HtMiss, atkX, atkY, atkZ, defX, defY, defZ, dmg.Map);
+            p.Country, p.AidCountry, skillId, level, atkHit, hitType != HtMiss, atkX, atkY, atkZ, defX, defY, defZ, dmg.Map,
+            isMaintain, maintainTick);
         bool hpmp = target.Hp != hpBefore || target.Mp != mpBefore;
         var viewers = _state.InView(ts).ToList();
         foreach (var v in viewers)

@@ -213,8 +213,8 @@ public sealed partial class MapService
 
     /// <summary>A player's buff-type <c>CS_DEFEND</c> cast on self or a visible ally (the positive-maintain
     /// branch of C++ <c>Defend</c>): snapshot the caster's power context, apply the buff to the target, then
-    /// broadcast the maintain <c>CS_DEFEND_ACK</c> to the target's view. PvP debuffs on another PC are deferred
-    /// (only positive buffs on a friendly PC are applied here).</summary>
+    /// broadcast the maintain <c>CS_DEFEND_ACK</c> to the target's view. A debuff on another player comes with its hit
+    /// (MapService.PvP.cs).</summary>
     private void ApplyPlayerMaintain(ClientSession casterSession, Character caster, uint targetId,
                                      SkillTemplate tpl, byte level, uint attackId, float px, float py, float pz)
     {
