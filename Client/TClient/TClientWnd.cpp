@@ -1776,46 +1776,23 @@ void CTClientWnd::InitResource( CString strGroupID,
 		m_MainGame.LoadCustomTextures(i + 1, strTextureName);
 	}
 
-	std::vector<DWORD> vCustomImgId = {
-		1302,
-		25001,
-		25002,
-		25003,
-		25004,
-		25005,
-		25006,
-		25007,
-		25008,
-		60000,
-		60001,
-		60002,
-		60003,
-		60004,
-		60005,
-		60006,
-		60007,
-		60008,
-		60009,
-		60010,
-		60011,
-		60012,
-		60013,
-		60014,
-		60015,
-		60016,
-		61000,
-		61001,
-		61002,
-		61003,
-		61004,
-		61005
-	};
-	
-	CString strCustomImgPath;
-	for (auto dwId : vCustomImgId)
+	// Every Data\Img\Custom\<id>.png is an own image with that id (icon indices >= 60000 resolve to them,
+	// see TImageList::TDelegate::RenderImgList). Names that are not a plain number (e.g. 25006_.png) are skipped.
 	{
-		strCustomImgPath.Format(".\\Data\\Img\\Custom\\%d.png", dwId);
-		TComponent::AddOwnImages(dwId, strCustomImgPath);
+		CFileFind vCustomImg;
+		BOOL bFound = vCustomImg.FindFile(_T(".\\Data\\Img\\Custom\\*.png"));
+		while (bFound)
+		{
+			bFound = vCustomImg.FindNextFile();
+			CString strTitle = vCustomImg.GetFileTitle();
+
+			if (strTitle.IsEmpty() || strTitle.SpanIncluding(_T("0123456789")) != strTitle)
+				continue;
+
+			DWORD dwId = (DWORD) _ttoi(strTitle);
+			TComponent::AddOwnImages(dwId, _T(".\\Data\\Img\\Custom\\") + vCustomImg.GetFileName());
+		}
+		vCustomImg.Close();
 	}
 
 	for(auto i=0; i<TGAUGE_FRAME_COUNT; i++)
