@@ -50,8 +50,8 @@ public sealed partial class MapService
         if (hitType != HtMiss && tpl is { } lt) SendLifeDrain(lt, level, attackId, attackType, hostId, dmg);
 
         // C++ Defend → MaintainSkill on a landed hit: the skill's debuff stays on the player (it does not take on one who
-        // just died — PushMaintainSkill refuses a dead owner unless the skill is static). The ACK announces it, and the
-        // player gets its new stat sheet (C++ SendCS_CHARSTATINFO_ACK after a maintain).
+        // just died — PushMaintainSkill refuses a dead owner unless the skill is static). The ACK announces it (the new stat
+        // sheet goes with ApplyMaintainToPlayer).
         // C++ Defend: a hostile skill from someone else, hit or miss, first ends the target's buffs that stop on being hit.
         if (tpl is { IsNegative: true } hostile) EraseBuffByDefend(target.MaintainSkills, hostile, i => EraseMaintainPlayer(ts, target, i));
 
@@ -73,7 +73,6 @@ public sealed partial class MapService
             {
                 isMaintain = 1;
                 maintainTick = applied.MaintainTick;
-                SendCS_CHARSTATINFO_ACK(ts, target);
             }
         }
 

@@ -133,6 +133,7 @@ public static class Scenarios
             string nameA = a.Spawn.Name, nameB = b.Spawn.Name;
             Thread.Sleep(1000);
 
+            LoginStatSheet(a);
             Party(a, b, nameA, nameB);
             Mail(a, b, nameA, nameB);
             HotkeyAdd(a);
@@ -633,6 +634,24 @@ public static class Scenarios
         for (int i = 0; i < n; i++) list.Add((r.ReadUInt16(), r.ReadString(), r.ReadInt64(), r.ReadByte()));
         return list;
     });
+
+    /// <summary>The stat sheet comes at login: the client's skill cooldowns scale by the attack delay rates it carries.</summary>
+    private static void LoginStatSheet(Bot a)
+    {
+        var sheet = a.TryWait(CS_CHARSTATINFO_ACK, r => r.ReadUInt32() == a.CharId, 3000);
+        Check("login: the stat sheet comes with non-zero attack delay rates (skill cooldowns)", sheet is not null && Read(sheet, r =>
+        {
+            r.ReadUInt32();
+            for (int i = 0; i < 6; i++) r.ReadUInt16();
+            for (int i = 0; i < 8; i++) r.ReadUInt32();
+            bool rates = r.ReadUInt32() != 0 & r.ReadUInt32() != 0 & r.ReadUInt32() != 0;
+            r.ReadUInt16(); r.ReadUInt16(); r.ReadByte();                 // attack / defend level, crit
+            r.ReadUInt32(); r.ReadUInt32(); r.ReadUInt32();               // magic AP / DP
+            r.ReadUInt16(); r.ReadUInt16(); r.ReadByte(); r.ReadByte(); r.ReadByte();
+            r.ReadUInt16(); r.ReadByte();                                 // skill points, aftermath
+            return rates;
+        }), Describe(sheet));
+    }
 
     private static void Passives(Bot a)
     {

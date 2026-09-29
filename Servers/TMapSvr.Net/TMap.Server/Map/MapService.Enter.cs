@@ -217,6 +217,9 @@ public sealed partial class MapService
         // the C++, so it's not ported.
         SendCS_QUESTLIST_ACK(s, ch);
         SendQuestTimers(s, ch);   // C++ SendQuestTimer(m_dwTick) — restores active-timer countdowns on relog
+        // The stat sheet (SSHandler.cpp:2124). The client's skill cooldowns scale by its attack delay rates, which only this
+        // packet fills — without it every cooldown came out 0.
+        SendCS_CHARSTATINFO_ACK(s, ch);
         SendCS_PETLIST_ACK(s, ch);   // C++ sends it after CS_CHARSTATINFO_ACK (SSHandler.cpp:2171)
         SendCS_COMPANIONLIST_ACK(s, ch);
         SummonTamedAtLogin(s, ch);   // C++ InitCharInfo ends with the sorcerer's tamed monster

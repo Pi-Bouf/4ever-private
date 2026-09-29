@@ -86,6 +86,7 @@ public sealed partial class MapService
         if (ch.Hp > newMaxHp) ch.Hp = newMaxHp;
         if (ch.Mp > newMaxMp) ch.Mp = newMaxMp;
         if (newMaxHp != oldMaxHp || newMaxMp != oldMaxMp) BroadcastHpMp(s, ch);
+        SendCS_CHARSTATINFO_ACK(s, ch);                                   // C++ TObjBase.cpp:2750
     }
 
     /// <summary>C++ <c>EraseMaintainSkill</c> for a monster owner: remove the debuff + broadcast
@@ -202,6 +203,7 @@ public sealed partial class MapService
         if (ch.Hp > newMaxHp) ch.Hp = newMaxHp;
         if (ch.Mp > newMaxMp) ch.Mp = newMaxMp;
         if (newMaxHp != oldMaxHp || newMaxMp != oldMaxMp) BroadcastHpMp(s, ch);
+        SendCS_CHARSTATINFO_ACK(s, ch);                                   // C++ Defend, TObjBase.cpp:1255
         return neu;
     }
 
