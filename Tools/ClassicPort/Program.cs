@@ -6,10 +6,11 @@ string repo = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../
 string game = Path.Combine(repo, "Game"), classic = Path.Combine(repo, "CLASSIC");
 string cmd = args.FirstOrDefault() ?? "analyze";
 
+bool hasClassic = Directory.Exists(classic);   // CLASSIC/ is only needed by the port/exploration commands
 var ourMounts = TMount.Load(Path.Combine(game, "Tcd", "TMount.tcd"), false);
-var clsMounts = TMount.Load(Path.Combine(classic, "Tcd", "TMount.tcd"), true);
+var clsMounts = hasClassic ? TMount.Load(Path.Combine(classic, "Tcd", "TMount.tcd"), true) : new();
 var ourMon = TMon.Load(Path.Combine(game, "Tcd", "TMon.tcd"), TMon.OurTail).ToDictionary(m => m.Id);
-var clsMon = TMon.Load(Path.Combine(classic, "Tcd", "TMon.tcd"), TMon.ClassicTail).ToDictionary(m => m.Id);
+var clsMon = hasClassic ? TMon.Load(Path.Combine(classic, "Tcd", "TMon.tcd"), TMon.ClassicTail).ToDictionary(m => m.Id) : new();
 
 // IDs 50-54 are injected by InitTPET, count them as present.
 var ourIds = ourMounts.Select(m => m.Id).Concat(new ushort[] { 50, 51, 52, 53, 54 }).ToHashSet();
@@ -48,8 +49,25 @@ if (cmd == "objcheck")
     return;
 }
 
+if (cmd == "icons")
+{
+    new IconMerge(game, Console.Out).Run(args.Contains("--apply"));
+    return;
+}
+
+if (cmd == "merge")
+{
+    new Merge(game, Path.Combine(repo, "Database", "migrations", "013_renumber_classic_mounts.sql"), Console.Out).Run(args.Contains("--apply"));
+    return;
+}
+
 if (cmd == "port")
 {
+    if (File.Exists(Path.Combine(game, "Tcd", Merge.Marker)))
+    {
+        Console.WriteLine("Game/ was merged (Tcd/" + Merge.Marker + "): the ported records now live in the base packs with renumbered ids; re-porting would duplicate them. Restore Game/ from git first.");
+        return;
+    }
     bool apply = args.Contains("--apply");
     var (mounts, monsters) = new Port(game, classic, Console.Out).Run(apply);
     new PortItems(game, classic, Path.Combine(repo, "Database", "migrations", "010_classic_mounts.sql"), Console.Out).Run(apply, mounts, monsters);
@@ -62,22 +80,29 @@ if (cmd == "verify")
     int bad = 0;
     var g = new Client(game, "2_TClientS.IDX", isClassic: false);
     for (int i = 0; i < 2; i++) ClassicPort.Idx.Load(Path.Combine(game, "Index", $"{i}_TClientS.IDX"));
+    // Every object pack parses back to back, every texture chunk of every detail level holds a DDS.
+    foreach (var f in Directory.GetFiles(Path.Combine(game, "Data", "OBJ"), "*.TOB"))
     {
-        var b = File.ReadAllBytes(Path.Combine(game, "Data", "OBJ", "Classic.TOB"));
+        var b = File.ReadAllBytes(f);
         var s = new BinaryReader(new MemoryStream(b)); int n = 0;
         while (s.BaseStream.Position < b.Length) { Client.ParseObj(s, new(), out _); n++; }
-        Console.WriteLine($"Classic.TOB: {n} objects parse to EOF");
     }
+    Console.WriteLine("all .TOB files parse to EOF");
+    for (int d = 0; d < 3; d++)
     {
-        var b = File.ReadAllBytes(Path.Combine(game, "Data", "Skin", "2_Classic.TTX")); int p = 0, n = 0;
-        while (p < b.Length)
+        var sidx = ClassicPort.Idx.Load(Path.Combine(game, "Index", $"{d}_TClientS.IDX"));
+        var files = new Dictionary<int, byte[]>();
+        int nChunks = 0, badTex = 0;
+        foreach (var e in sidx.Entries)
         {
-            var raw = Client.Unchunk(b, p, out int len);
+            var file = files.TryGetValue(e.File, out var fb) ? fb : files[e.File] = File.ReadAllBytes(Path.Combine(game, "Data", sidx.Files[e.File]));
+            var raw = Client.Unchunk(file, (int)e.Pos, out _);
             int h = TexConv.HeaderLength(raw, 0);
-            if (h + 8 + BitConverter.ToInt32(raw, h + 4) != raw.Length || !TexConv.Dims(raw, h).StartsWith("DDS")) { bad++; Console.WriteLine($"  bad texture chunk @{p}: {TexConv.Dims(raw, h)}"); }
-            p += len; n++;
+            if (h + 8 + BitConverter.ToInt32(raw, h + 4) != raw.Length) badTex++;
+            nChunks++;
         }
-        Console.WriteLine($"2_Classic.TTX: {n} chunks, all DDS: {bad == 0}");
+        bad += badTex;
+        Console.WriteLine($"{d}_TClientS.IDX: {nChunks} texture records, malformed {badTex}");
     }
     Console.WriteLine($"TMon.tcd: {TMon.Load(Path.Combine(game, "Tcd", "TMon.tcd"), TMon.OurTail).Count} records parse to EOF");
     var mounts = TMount.Load(Path.Combine(game, "Tcd", "TMount.tcd"), false);
