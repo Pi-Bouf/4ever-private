@@ -39,7 +39,7 @@ namespace TMap.Server.Map;
 /// ledger (it is populated by <c>CS_SKILLUSE</c>, and for ordinary skills a miss only logs), the charge-time and
 /// <c>m_bRunFromServer</c> / <c>m_bCheckAttacker</c> / <c>m_wTargetActiveID</c> checks (columns not loaded),
 /// random-trans / random-buff skills, guild skills, the peace-zone and local-battle gates, the
-/// <c>OT_RECALL</c>/<c>OT_SELF</c> attackers and targets (summons), the <c>SDT_STATUS_LINK</c> self-maintain tail,
+/// the <c>SDT_STATUS_LINK</c> self-maintain tail,
 /// and the skill-229/128/3604 special cases.</para>
 /// </summary>
 public sealed partial class MapService
@@ -111,9 +111,15 @@ public sealed partial class MapService
                     continue;
                 defX = mon.PosX; defY = mon.PosY; defZ = mon.PosZ;
             }
+            else if (targetType is RecallMon.OtRecall or RecallMon.OtSelf)
+            {
+                // Any summon or placed object in the attacker's cells (CSHandler.cpp:20464), one's own or another's.
+                if (SummonInReach(ch, s, targetType, targetId) is not { } pet) continue;
+                defX = pet.PosX; defY = pet.PosY; defZ = pet.PosZ;
+            }
             else
             {
-                continue;   // OT_RECALL / OT_SELF targets — summons unported
+                continue;
             }
 
             // dwActID/dwAniID are 0 here: the C++ passes literal zeros to Defend for this path.

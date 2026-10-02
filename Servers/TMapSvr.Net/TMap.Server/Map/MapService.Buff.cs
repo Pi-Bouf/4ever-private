@@ -86,6 +86,7 @@ public sealed partial class MapService
         if (ch.Hp > newMaxHp) ch.Hp = newMaxHp;
         if (ch.Mp > newMaxMp) ch.Mp = newMaxMp;
         if (newMaxHp != oldMaxHp || newMaxMp != oldMaxMp) BroadcastHpMp(s, ch);
+        SendCS_CHARSTATINFO_ACK(s, ch);                                   // C++ TObjBase.cpp:2750
     }
 
     /// <summary>C++ <c>EraseMaintainSkill</c> for a monster owner: remove the debuff + broadcast
@@ -109,6 +110,34 @@ public sealed partial class MapService
                 if (notify) EraseMaintainPlayer(s, ch, i);
                 else ch.MaintainSkills.RemoveAt(i);
             }
+    }
+
+    private const byte BeaAttack = 1, BeaDefend = 2;   // BUFFERASEACTION_TYPE (TMapType.h:509) — tested as bits, as in the C++
+
+    /// <summary>C++ <c>CTObjBase::EraseBuffByAttack</c> (TObjBase.cpp:4663) — using a skill ends one's own buffs that end on
+    /// attacking (<c>m_bEraseAct &amp; BEA_ATTACK</c>). A hide buff ends only when the skill used says so
+    /// (<c>m_bEraseHide</c>). Taking a stance or summoning ends nothing.</summary>
+    private void EraseBuffByAttack(ClientSession s, Character ch, SkillTemplate cur)
+    {
+        if (cur.IsPosture() || cur.IsRecall()) return;
+        EraseByAction(ch.MaintainSkills, cur, BeaAttack, i => EraseMaintainPlayer(s, ch, i));
+    }
+
+    /// <summary>C++ <c>CTObjBase::EraseBuffByDefend</c> (TObjBase.cpp:4626) — a hostile skill from someone else, hit or
+    /// miss, ends the target's buffs that end on being attacked (<c>BEA_DEFEND</c>), hide buffs as above. A stance skill ends
+    /// nothing.</summary>
+    private static void EraseBuffByDefend(List<MaintainSkill> list, SkillTemplate cur, Action<int> eraseAt)
+    {
+        if (cur.IsPosture()) return;
+        EraseByAction(list, cur, BeaDefend, eraseAt);
+    }
+
+    private static void EraseByAction(List<MaintainSkill> list, SkillTemplate cur, byte action, Action<int> eraseAt)
+    {
+        for (int i = 0; i < list.Count;)
+            if (list[i].Template is { } t && (t.EraseAct & action) != 0 && (!t.IsHideSkill || (cur.EraseHide & action) != 0))
+                eraseAt(i);
+            else i++;
     }
 
     /// <summary>C++ <c>CTPlayer::CheckEquipSkill</c> (TPlayer.cpp:3964), run after an equip change and after each of the
@@ -174,6 +203,7 @@ public sealed partial class MapService
         if (ch.Hp > newMaxHp) ch.Hp = newMaxHp;
         if (ch.Mp > newMaxMp) ch.Mp = newMaxMp;
         if (newMaxHp != oldMaxHp || newMaxMp != oldMaxMp) BroadcastHpMp(s, ch);
+        SendCS_CHARSTATINFO_ACK(s, ch);                                   // C++ Defend, TObjBase.cpp:1255
         return neu;
     }
 

@@ -12,7 +12,7 @@ namespace TMap.Server.Map;
 /// points (honour), gold, this month's kills, deaths and win rate, a completed quest, a place in the month's heroes or
 /// a tournament. The shown title is chosen from the owned ones (<c>CS_CHANGETITLE_REQ</c>), goes through the world to
 /// every map, and the players around see it (<c>CS_CHANGECHARBASE_ACK</c>).</para>
-/// <para><b>Not ported:</b> play-time titles (<c>TIME_TITLE</c> — play time is not tracked) and custom ones (nothing grants
+/// <para><b>Not ported:</b> play-time titles (<c>TIME_TITLE</c> — the chart has none, so play time is not tracked) and custom ones (nothing grants
 /// them).</para>
 /// </summary>
 public sealed partial class MapService

@@ -51,7 +51,9 @@ public sealed record SkillTemplate(
     // stance a buff belongs to — it falls off with that stance (CTPlayer::CheckEquipSkill).
     uint WeaponId = 0, ushort Posture = 0,
     // m_bORadius: an area buff; a tie against it keeps it (UpdateBuffSkill).
-    byte ORadius = 0)
+    byte ORadius = 0,
+    // m_bEraseHide (BUFFERASEACTION_TYPE bits): which actions of this skill also end a hide buff (EraseBuffByAttack/Defend).
+    byte EraseHide = 0)
 {
     /// <summary>The per-level learning costs (C++ <c>m_mapTSkillPoint</c>, loaded from <c>TSKILLPOINTCHART</c>).</summary>
     public Dictionary<byte, SkillPointRow> Points { get; } = new();
@@ -268,7 +270,16 @@ public sealed record SkillTemplate(
         return false;
     }
 
-    private const byte SdtStatusAtkMode = 7, SdtStatusCrazeMode = 26, SdtStatusDefendMode = 27;
+    private const byte SdtStatusAtkMode = 7, SdtStatusCrazeMode = 26, SdtStatusDefendMode = 27, SerSkill = 12;
+
+    /// <summary>C++ <c>CTSkillTemp::IsRecall</c> (TSkillTemp.cpp:531) — an <c>SDT_RECALL</c> row that summons something
+    /// (anything but <c>SER_SKILL</c>).</summary>
+    public bool IsRecall()
+    {
+        foreach (var d in Data)
+            if (d.Type == SdtRecall && d.Exec != SerSkill) return true;
+        return false;
+    }
 
     /// <summary>C++ <c>CTSkillTemp::IsPosture</c> (TSkillTemp.cpp:157) — a stance: an attack, craze or defend mode
     /// status row.</summary>

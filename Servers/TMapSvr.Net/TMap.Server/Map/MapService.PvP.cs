@@ -15,9 +15,9 @@ namespace TMap.Server.Map;
 /// successful one reports <c>HT_BLOCK</c>), its buffs on the damage and its immunity statuses. A kill costs the victim
 /// total points and pays the killer — or, in a party, pays the killer the same and each partner nearby 12 — see
 /// <see cref="PvPKill"/>. Each kill and death is recorded (<see cref="RecordPvP"/>). A landed skill also leaves its debuff
-/// (a stun, a slow, a curse…) through the buff engine, as it does on a monster. <b>Not ported:</b> <c>DistributeSkill</c>
-/// (a summon sharing its owner's damage), the debuff-removing cures cast at an enemy, the buffs a hit erases
-/// (<c>EraseBuffByDefend</c>) and the local / battle-zone tallies (<c>LocalRecord</c>).</para>
+/// (a stun, a slow, a curse…) through the buff engine, as it does on a monster; a dispel strips the target's buffs; and
+/// a hostile skill, hit or miss, ends the target's buffs that stop on being hit (<c>EraseBuffByDefend</c>). <b>Not
+/// ported:</b> the local / battle-zone tallies (<c>LocalRecord</c>).</para>
 /// </summary>
 public sealed partial class MapService
 {
@@ -27,21 +27,23 @@ public sealed partial class MapService
     private const long PvpSameVictimWindowMs = 600_000;   // 600 s — three wins on one name within it pay nothing
     private const int PvpRecentCount = 10;           // PVP_RECENTRECORDCOUNT
 
-    /// <summary>One negative hit from <paramref name="ch"/> on another player, <paramref name="target"/>.</summary>
+    /// <summary>One negative hit from <paramref name="ch"/> on another player, <paramref name="target"/> — or, with
+    /// <paramref name="power"/>, from one of <paramref name="ch"/>'s summons (its figures; <paramref name="forceMiss"/> is a
+    /// doppelganger's fake hit). Either way <paramref name="ch"/> owns the kill.</summary>
     private void HitPlayer(ClientSession s, Character ch, uint hostId, uint attackId, byte attackType, SkillTemplate? tpl,
         byte level, ushort skillId, byte canSelect, ClientSession ts, Character target, uint actId, uint aniId,
-        float atkX, float atkY, float atkZ, float defX, float defY, float defZ)
+        float atkX, float atkY, float atkZ, float defX, float defY, float defZ, AttackerPower? power = null, bool forceMiss = false)
     {
         if (target.Hp == 0 && tpl?.CanDefendAtDie() != true) return;                     // OS_DEAD && !CanDefendAtDie
 
-        var p = AttackerPower.Of(ch, _templates, tpl) with { Level = ch.Level };
+        var p = power ?? AttackerPower.Of(ch, _templates, tpl) with { Level = ch.Level };
         bool isMagic = p.IsMagic, isLong = p.IsLong;
-        ch.EnterBattle(NowMs, RecoverInit);
+        if (power is null) ch.EnterBattle(NowMs, RecoverInit);
         target.EnterBattle(NowMs, RecoverInit);                                          // CTPlayer::Defend ChgMode(MT_BATTLE)
 
-        byte hitType = HitTypeVsPlayer(CombatRng, p.Crit, p.AttackLevel);
+        byte hitType = forceMiss ? HtMiss : HitTypeVsPlayer(CombatRng, p.Crit, p.AttackLevel);
         uint maxHp = MaxHpFor(target), maxMp = MaxMpFor(target);
-        var def = DamageTarget.Of(target, self: false, maxHp, maxMp, CombatRng, _templates);
+        var def = DamageTarget.Of(target, self: false, maxHp, maxMp, CombatRng, _templates, v => DistributeSkill(ts, target, v));
         var dmg = CalcDamage(p, def, tpl, level, hitType, isMagic, isLong);
         uint hpBefore = target.Hp, mpBefore = target.Mp;
         ApplyPlayerDamage(target, dmg, maxHp, maxMp);
@@ -50,8 +52,18 @@ public sealed partial class MapService
         if (hitType != HtMiss && tpl is { } lt) SendLifeDrain(lt, level, attackId, attackType, hostId, dmg);
 
         // C++ Defend → MaintainSkill on a landed hit: the skill's debuff stays on the player (it does not take on one who
-        // just died — PushMaintainSkill refuses a dead owner unless the skill is static). The ACK announces it, and the
-        // player gets its new stat sheet (C++ SendCS_CHARSTATINFO_ACK after a maintain).
+        // just died — PushMaintainSkill refuses a dead owner unless the skill is static). The ACK announces it (the new stat
+        // sheet goes with ApplyMaintainToPlayer).
+        // C++ Defend: a hostile skill from someone else, hit or miss, first ends the target's buffs that stop on being hit.
+        if (tpl is { IsNegative: true } hostile) EraseBuffByDefend(target.MaintainSkills, hostile, i => EraseMaintainPlayer(ts, target, i));
+
+        // C++ PerformSkill's SDT_CURE on a landed hit: a dispel at an enemy strips its buffs (SCT_POSREMOVE) or its debuffs
+        // (SCT_NEGREMOVE). Done before the skill's own debuff lands — the C++ pushes that one after PerformSkill.
+        if (hitType != HtMiss && hpBefore != 0 && tpl is not null)
+            foreach (var d in tpl.Data)
+                if (d.Type == SkillTemplate.SdtCure && d.Exec is SctPosRemove or SctNegRemove)
+                    StripMaintains(ts, target, positive: d.Exec == SctPosRemove);
+
         byte isMaintain = 0; uint maintainTick = 0;
         if (hitType != HtMiss && hpBefore != 0 && tpl is { } dt && dt.IsMaintainType())
         {
@@ -63,7 +75,6 @@ public sealed partial class MapService
             {
                 isMaintain = 1;
                 maintainTick = applied.MaintainTick;
-                SendCS_CHARSTATINFO_ACK(ts, target);
             }
         }
 
@@ -84,6 +95,29 @@ public sealed partial class MapService
         PlayerDied(target, viewers);
         PvPKill(ts, target, s, ch);
     }
+
+    /// <summary>C++ <c>CTObjBase::DistributeSkill</c> (TObjBase.cpp:4168) — with a damage-sharing buff (the sorcerer's skill
+    /// 635, <c>SDT_STATUS_DISTRIBUTE</c>) on its main summon, the summon takes that % of the player's HP loss: its bar is
+    /// shown around, it is sent away if that kills it, and what it really lost is taken off the player's damage.</summary>
+    private uint DistributeSkill(ClientSession s, Character ch, uint damage)
+    {
+        if (ch.Recalls.Values.FirstOrDefault(m => m.RecallType == TrecallMain) is not { } recall) return 0;
+        MaintainSkill? share = null;
+        foreach (var m in recall.MaintainSkills)
+            if (m.Template?.Data.Any(d => d.Type == SkillTemplate.SdtStatus && d.Exec == SdtStatusDistribute) == true) share = m;
+        if (share?.Template is not { } t || recall.Hp == 0) return 0;
+
+        var row = t.Data.First(d => d.Type == SkillTemplate.SdtStatus && d.Exec == SdtStatusDistribute);
+        uint part = (uint)((ulong)damage * (uint)Math.Max(0, t.GetValue(row, share.Level)) / 100);
+        if (part == 0) return 0;
+        uint before = recall.Hp;
+        recall.Hp = recall.Hp > part ? recall.Hp - part : 0;
+        foreach (var p in _state.InView(s)) SendSummonHpMp(p, recall);
+        if (recall.Hp == 0) SendMW_RECALLMONDEL_ACK(ch.CharId, s.Key, recall.Id);
+        return before - recall.Hp;
+    }
+
+    private const byte SdtStatusDistribute = 20;   // SDT_STATUS_DISTRIBUTE
 
     /// <summary>C++ <c>CTObjBase::OnDamage</c> for a player: damage floors at 0, a heal is capped at the maximum.</summary>
     private static void ApplyPlayerDamage(Character ch, in DamageResult r, uint maxHp, uint maxMp)

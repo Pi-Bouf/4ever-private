@@ -75,6 +75,10 @@ public static class Scenarios
     // A debuff: skill 213 hits and lowers the target's defence for 9 s (level 1). Chan1 is given it for the run.
     private const ushort DefenceBreak = 213;
     private const uint DefenceBreakMs = 9000;
+    // Combat leftovers, all on A (B only strikes — A's HP is refilled by the duel's knockout right after):
+    // a hide (221: ends on attacking and on being hit), a self buff (218), B's dispel (326, strips buffs), and the
+    // sorcerer's damage share (635) on A's Dark Ritual summon.
+    private const ushort Hide = 221, SelfBuff = 218, Dispel = 326, DamageShare = 635;
     private const uint VictimTotal = 10, KillGain = 11, KillLoss = 2;
     // Ranking and titles: 11 total points pass the first honour title (TTITLECHART 56, more than 10). The bots' rank and
     // title rows are copied aside before the run and put back after (RankTables).
@@ -129,6 +133,7 @@ public static class Scenarios
             string nameA = a.Spawn.Name, nameB = b.Spawn.Name;
             Thread.Sleep(1000);
 
+            LoginStatSheet(a);
             Party(a, b, nameA, nameB);
             Mail(a, b, nameA, nameB);
             HotkeyAdd(a);
@@ -138,6 +143,7 @@ public static class Scenarios
             Summons(a, b);
             Skills(a);
             Passives(a);
+            CombatLeftovers(a, b);
             Duel(a, b);
             PvP(a, b);
             Teleport(a, b);
@@ -524,6 +530,24 @@ public static class Scenarios
             }) == (monId, 7, a.CharId), Describe(hit));
         }
 
+        // PvP: the other player strikes the summon, and the summon strikes back.
+        a.Discard(CS_DEFEND_ACK); a.Discard(CS_HPMP_ACK); b.Discard(CS_DEFEND_ACK);
+        b.Send(FinishSkill(b, b.CharId, 1, BasicMelee, b.Spawn.X, b.Spawn.Z, (ritual.MonId, 7)));
+        var struck = a.TryWait(CS_DEFEND_ACK, r => r.ReadUInt32() == b.CharId && r.ReadUInt32() == ritual.MonId);
+        Check("summons: another player's strike lands on the summon", struck is not null, Describe(struck));
+        var bar = a.TryWait(CS_HPMP_ACK, r => r.ReadUInt32() == ritual.MonId && r.ReadByte() == 7);
+        Check("summons: … and takes its HP", bar is not null && Read(bar, r =>
+        {
+            r.ReadUInt32(); r.ReadByte(); uint max = r.ReadUInt32(), hp = r.ReadUInt32(); r.ReadUInt32(); r.ReadUInt32();
+            return hp < max;
+        }), Describe(bar));
+        b.Discard(CS_DEFEND_ACK);
+        a.Send(FinishSkill(a, ritual.MonId, 7, SummonAttack, a.Spawn.X, a.Spawn.Z, (b.CharId, 1)));
+        var back = b.TryWait(CS_DEFEND_ACK, r => r.ReadUInt32() == ritual.MonId && r.ReadUInt32() == b.CharId);
+        Check("summons: the summon's hit lands on a player (PvP)", back is not null, Describe(back));
+        Thread.Sleep(300);
+        a.Discard(CS_DEFEND_ACK); b.Discard(CS_DEFEND_ACK); a.Discard(CS_HPMP_ACK); b.Discard(CS_HPMP_ACK);
+
         a.Send(Req(CS_DELRECALLMON_REQ, w => { w.WriteUInt32(ritual.MonId); w.WriteByte(7); }));
         var gone = b.TryWait(CS_DELRECALLMON_ACK, r => { r.ReadUInt32(); return r.ReadUInt32() == ritual.MonId; }, 8000);
         Check("summons: dismissing it removes it for everyone", gone is not null, Describe(gone));
@@ -629,6 +653,24 @@ public static class Scenarios
         return list;
     });
 
+    /// <summary>The stat sheet comes at login: the client's skill cooldowns scale by the attack delay rates it carries.</summary>
+    private static void LoginStatSheet(Bot a)
+    {
+        var sheet = a.TryWait(CS_CHARSTATINFO_ACK, r => r.ReadUInt32() == a.CharId, 3000);
+        Check("login: the stat sheet comes with non-zero attack delay rates (skill cooldowns)", sheet is not null && Read(sheet, r =>
+        {
+            r.ReadUInt32();
+            for (int i = 0; i < 6; i++) r.ReadUInt16();
+            for (int i = 0; i < 8; i++) r.ReadUInt32();
+            bool rates = r.ReadUInt32() != 0 & r.ReadUInt32() != 0 & r.ReadUInt32() != 0;
+            r.ReadUInt16(); r.ReadUInt16(); r.ReadByte();                 // attack / defend level, crit
+            r.ReadUInt32(); r.ReadUInt32(); r.ReadUInt32();               // magic AP / DP
+            r.ReadUInt16(); r.ReadUInt16(); r.ReadByte(); r.ReadByte(); r.ReadByte();
+            r.ReadUInt16(); r.ReadByte();                                 // skill points, aftermath
+            return rates;
+        }), Describe(sheet));
+    }
+
     private static void Passives(Bot a)
     {
         // A weapon mastery is missing: the kind-13 item cannot be worn.
@@ -662,6 +704,65 @@ public static class Scenarios
         var kept = a.TryWait(CS_SKILLEND_ACK, timeoutMs: 1500);
         Check("passives: with the weapon on, the buff stays", kept is null, Describe(kept));
         a.Discard(CS_MOVEITEM_ACK);
+    }
+
+    private static void CombatLeftovers(Bot a, Bot b)
+    {
+        bool SelfCast(ushort skill)
+        {
+            a.Discard(CS_DEFEND_ACK);
+            a.Send(FinishSkill(a, a.CharId, 1, skill, a.Spawn.X, a.Spawn.Z, (a.CharId, 1)));
+            var ack = a.TryWait(CS_DEFEND_ACK, r => r.ReadUInt32() == a.CharId && r.ReadUInt32() == a.CharId);
+            return ack is not null && ReadMaintain(ack).IsMaintain == 1;
+        }
+        PacketReader? Ended(ushort skill, int ms = 3000)
+            => a.TryWait(CS_SKILLEND_ACK, r => r.ReadUInt32() == a.CharId && r.ReadByte() == 1 && r.ReadUInt16() == skill, ms);
+        void StrikeA(ushort skill) => b.Send(FinishSkill(b, b.CharId, 1, skill, b.Spawn.X, b.Spawn.Z, (a.CharId, 1)));
+
+        // Being hit ends a hide.
+        a.Discard(CS_SKILLEND_ACK);
+        Check("leftovers: the hide is taken", SelfCast(Hide), "no maintain on the self-cast");
+        StrikeA(BasicMelee);
+        Check("leftovers: being hit ends the hide (EraseBuffByDefend)", Ended(Hide) is not null, "no CS_SKILLEND_ACK for the hide");
+
+        // Attacking ends it too.
+        SelfCast(Hide);
+        a.Send(Req(CS_SKILLUSE_REQ, w =>
+        {
+            w.WriteUInt32(a.CharId); w.WriteByte(1); w.WriteByte(1); w.WriteUInt16(0); w.WriteUInt16(BasicMelee); w.WriteByte(0);
+            w.WriteUInt32(0); w.WriteUInt32(0); w.WriteFloat(a.Spawn.X); w.WriteFloat(a.Spawn.Y); w.WriteFloat(a.Spawn.Z);
+            w.WriteByte(1); w.WriteUInt32(b.CharId); w.WriteByte(1); w.WriteByte(1);
+        }));
+        Check("leftovers: attacking ends the hide (EraseBuffByAttack)", Ended(Hide) is not null, "no CS_SKILLEND_ACK for the hide");
+        a.Discard(CS_SKILLUSE_ACK);
+
+        // An enemy's dispel strips a buff.
+        Check("leftovers: the self buff is taken", SelfCast(SelfBuff), "no maintain on the self-cast");
+        StrikeA(Dispel);
+        Check("leftovers: an enemy's dispel strips it (SCT_POSREMOVE)", Ended(SelfBuff) is not null, "no CS_SKILLEND_ACK for the buff");
+
+        // The summon takes a share of its owner's damage.
+        a.Send(FinishSkill(a, a.CharId, 1, RitualSkill, a.Spawn.X, a.Spawn.Z, (a.CharId, 1)));
+        var add = a.TryWait(CS_ADDRECALLMON_ACK, r => { r.ReadUInt32(); r.ReadUInt32(); return r.ReadUInt16() == RitualMon; }, 8000);
+        if (add is null) { Check("leftovers: the Dark Ritual summon comes", false, "no CS_ADDRECALLMON_ACK"); return; }
+        var ritual = ParseAddRecall(add);
+        a.Discard(CS_DEFEND_ACK);
+        a.Send(FinishSkill(a, a.CharId, 1, DamageShare, a.Spawn.X, a.Spawn.Z, (ritual.MonId, 7)));
+        var shared = a.TryWait(CS_DEFEND_ACK, r => r.ReadUInt32() == a.CharId && r.ReadUInt32() == ritual.MonId);
+        Check("leftovers: the damage-share buff lands on one's own summon", shared is not null && ReadMaintain(shared).IsMaintain == 1,
+            Describe(shared));
+        a.Discard(CS_HPMP_ACK);
+        StrikeA(BasicMelee);
+        var bar = a.TryWait(CS_HPMP_ACK, r => r.ReadUInt32() == ritual.MonId && r.ReadByte() == 7);
+        Check("leftovers: the owner is hit, the summon takes part of it (DistributeSkill)", bar is not null && Read(bar, r =>
+        {
+            r.ReadUInt32(); r.ReadByte(); uint max = r.ReadUInt32(), hp = r.ReadUInt32(); r.ReadUInt32(); r.ReadUInt32();
+            return hp < max;
+        }), Describe(bar));
+        a.Send(Req(CS_DELRECALLMON_REQ, w => { w.WriteUInt32(ritual.MonId); w.WriteByte(7); }));
+        a.TryWait(CS_DELRECALLMON_ACK, r => { r.ReadUInt32(); return r.ReadUInt32() == ritual.MonId; }, 8000);
+        Thread.Sleep(500);
+        a.Discard(CS_DEFEND_ACK); b.Discard(CS_DEFEND_ACK); a.Discard(CS_HPMP_ACK); b.Discard(CS_HPMP_ACK); a.Discard(CS_SKILLEND_ACK);
     }
 
     private static void Duel(Bot a, Bot b)
@@ -916,6 +1017,9 @@ public static class Scenarios
         await db.ExecAsync("INSERT INTO TSKILLTABLE (dwCharID, wSkillID, bLevel, dwRemainTick) VALUES (@p0, @p1, 1, 0), (@p0, @p2, 1, 0), (@p0, @p3, 1, 0)",
             (int)idA, (int)RitualSkill, (int)IceRainSkill, (int)DefenceBreak);
         await db.ExecAsync("DELETE FROM TSKILLMAINTAINTABLE WHERE dwCharID=@p0 AND wSkillID=@p1", (int)idB, (int)DefenceBreak);
+        await ClearLeftovers(db, idA, idB);
+        await db.ExecAsync("INSERT INTO TSKILLTABLE (dwCharID, wSkillID, bLevel, dwRemainTick) VALUES (@p0, @p2, 1, 0), (@p0, @p3, 1, 0), (@p0, @p4, 1, 0), (@p1, @p5, 1, 0)",
+            (int)idA, (int)idB, (int)Hide, (int)SelfBuff, (int)DamageShare, (int)Dispel);
         await db.ExecAsync("DELETE FROM TITEMTABLE WHERE dlID=@p0 OR (dwOwnerID=@p1 AND bOwnerType=0 AND bStorageType=0 AND dwStorageID=255 AND bItemID=@p2)",
             RuneDlId, (int)idA, (int)RuneSlot);
         await db.ExecAsync(@"INSERT INTO TITEMTABLE (dlID, bStorageType, dwStorageID, bOwnerType, dwOwnerID, bItemID, wItemID, bLevel,
@@ -953,6 +1057,14 @@ public static class Scenarios
         await db.ExecAsync("UPDATE TCHARTABLE SET wSkillPoint=@p1 WHERE dwCharID=@p0", (int)id, (int)BotSkillPoints);
     }
 
+    /// <summary>Takes away the combat-leftover skills (learned and running): A's hide, self buff and damage share, B's dispel.</summary>
+    private static async Task ClearLeftovers(GameDb db, uint idA, uint idB)
+    {
+        foreach (var t in new[] { "TSKILLTABLE", "TSKILLMAINTAINTABLE" })
+            await db.ExecAsync($"DELETE FROM {t} WHERE (dwCharID=@p0 AND wSkillID IN (@p2, @p3, @p4)) OR (dwCharID=@p1 AND wSkillID=@p5)",
+                (int)idA, (int)idB, (int)Hide, (int)SelfBuff, (int)DamageShare, (int)Dispel);
+    }
+
     /// <summary>Takes away the weapon buff (learned and running) and the kind-13 test item.</summary>
     private static async Task ClearPassives(GameDb db, uint id)
     {
@@ -987,6 +1099,7 @@ public static class Scenarios
         await db.ExecAsync("DELETE FROM TSKILLTABLE WHERE dwCharID=@p0 AND wSkillID IN (@p1, @p2, @p3)", (int)idA, (int)RitualSkill, (int)IceRainSkill,
             (int)DefenceBreak);
         await db.ExecAsync("DELETE FROM TSKILLMAINTAINTABLE WHERE dwCharID=@p0 AND wSkillID=@p1", (int)idB, (int)DefenceBreak);
+        await ClearLeftovers(db, idA, idB);
         await ClearPassives(db, idA);
         foreach (var t in RankTables)
         {

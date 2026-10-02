@@ -760,8 +760,8 @@ BOOL CTachyonSFX::InitSFX( CD3DDevice *pDevice, LPSFX pSFX, DWORD dwID)
 	Release();
 	m_pSFX = pSFX;
 
-
-	if( m_pSFX->m_dwLodLevel < m_dwGlobalLodLevel )
+	// An SFX instance whose resource id did not resolve (e.g. id 0) arrives here as NULL.
+	if( !m_pSFX || m_pSFX->m_dwLodLevel < m_dwGlobalLodLevel )
 		return FALSE;
 
 	if(pSFX)
