@@ -64,7 +64,7 @@ public class Port
     {
         // ---- load -------------------------------------------------------------------------------------
         string ourMountPath = Path.Combine(game, "Tcd", "TMount.tcd"), ourMonPath = Path.Combine(game, "Tcd", "TMon.tcd");
-        string state = Path.Combine(game, "Tcd", "ClassicPort.state");          // ids we added last run
+        string state = StateFiles.Get("ClassicPort.state");          // ids we added last run
         var prevMounts = new HashSet<ushort>(); var prevMons = new HashSet<ushort>();
         var prevMonBackup = new Dictionary<ushort, byte[]>();
         if (File.Exists(state))

@@ -6,6 +6,7 @@ string repo = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../
 string game = Path.Combine(repo, "Game"), classic = Path.Combine(repo, "CLASSIC");
 string cmd = args.FirstOrDefault() ?? "analyze";
 
+StateFiles.Dir = Path.Combine(repo, "Tools", "ClassicPort", "state");   // tool bookkeeping, never in Game/
 bool hasClassic = Directory.Exists(classic);   // CLASSIC/ is only needed by the port/exploration commands
 var ourMounts = TMount.Load(Path.Combine(game, "Tcd", "TMount.tcd"), false);
 var clsMounts = hasClassic ? TMount.Load(Path.Combine(classic, "Tcd", "TMount.tcd"), true) : new();
@@ -63,9 +64,9 @@ if (cmd == "merge")
 
 if (cmd == "port")
 {
-    if (File.Exists(Path.Combine(game, "Tcd", Merge.Marker)))
+    if (File.Exists(StateFiles.Get(Merge.Marker)))
     {
-        Console.WriteLine("Game/ was merged (Tcd/" + Merge.Marker + "): the ported records now live in the base packs with renumbered ids; re-porting would duplicate them. Restore Game/ from git first.");
+        Console.WriteLine("Game/ was merged (" + StateFiles.Get(Merge.Marker) + "): the ported records now live in the base packs with renumbered ids; re-porting would duplicate them. Restore Game/ from git first.");
         return;
     }
     bool apply = args.Contains("--apply");
@@ -517,7 +518,7 @@ if (cmd == "grantsql")
 {
     // INSERTs giving account <userId> every ported mount (permanent), named after its monster.
     uint user = uint.Parse(args[1]);
-    var st = new BinaryReader(File.OpenRead(Path.Combine(game, "Tcd", "ClassicPort.state")));
+    var st = new BinaryReader(File.OpenRead(StateFiles.Get("ClassicPort.state")));
     int n = st.ReadInt32(); var ids = Enumerable.Range(0, n).Select(_ => st.ReadUInt16()).ToList(); st.Dispose();
     var mounts = TMount.Load(Path.Combine(game, "Tcd", "TMount.tcd"), false).ToDictionary(m => m.Id);
     var mons = TMon.Load(Path.Combine(game, "Tcd", "TMon.tcd"), TMon.OurTail).ToDictionary(m => m.Id);

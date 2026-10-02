@@ -116,7 +116,8 @@ public class IconMerge
     public void Run(bool apply)
     {
         string tcd = G("Tcd"), custom = G("Data", "Img", "Custom");
-        string statePath = Path.Combine(tcd, "ClassicPort.items.state");
+        string statePath = StateFiles.Get("ClassicPort.items.state");
+        if (!File.Exists(statePath)) { log.WriteLine("nothing to do: no port bookkeeping (" + statePath + ")"); return; }
         var pngIds = File.ReadAllLines(statePath).Where(l => l.StartsWith("png=")).Select(l => ushort.Parse(Path.GetFileNameWithoutExtension(l[4..]))).OrderBy(x => x).ToList();
         if (pngIds.Count == 0) { log.WriteLine("no ported icons left to merge"); return; }
 

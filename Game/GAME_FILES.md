@@ -224,7 +224,6 @@ Wiring:
 | `4Story.txt` (`Araz4Story`) | `CStoryDlg::ReadTextFile` (`4StoryDlg.cpp:403`) | Product / legacy registry-subkey id (`m_strSubkey`) |
 | `URL.txt` (`New Account` / `araz4story.com`) | Client `CTClientNET::LoadCAURL` (`TClientNET.cpp:1933`); launchers `4StoryDlg.cpp:377`, `LauncherConfig.cs:59` | Create-account / homepage / news links (client falls back to hardcoded per-nation URLs if absent) |
 | `Data/Cache/*` (`0.txt`, numeric) | `CTClientCustomCloak` (`TClientCustomCloak.cpp:177`); dir `CUSTOMTEX_PATH` (`TClientWnd.cpp:4139`) | Client download cache for custom cloak/emblem PNGs (`URLDownloadToFile` from `…/cloaks/%d.png`), keyed by id |
-| `LOL.txt` | **none** | Obfuscated/garbage — no source reference; leftover junk |
 | `4Story.pdb`-adjacent `.dmp` (if present) | `CTMiniDump` output | Leftover crash dump |
 
 ---

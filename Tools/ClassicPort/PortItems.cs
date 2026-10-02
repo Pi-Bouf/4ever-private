@@ -50,7 +50,7 @@ public class PortItems
     public void Run(bool apply, IReadOnlyCollection<Mount> newMounts, IReadOnlyCollection<ushort> newMonsters)
     {
         string itemPath = Path.Combine(game, "Tcd", "TItem.tcd"), visPath = Path.Combine(game, "Tcd", "TItemVisual.tcd");
-        string mountPath = Path.Combine(game, "Tcd", "TMount.tcd"), state = Path.Combine(game, "Tcd", "ClassicPort.items.state");
+        string mountPath = Path.Combine(game, "Tcd", "TMount.tcd"), state = StateFiles.Get("ClassicPort.items.state");
         string customDir = Path.Combine(game, "Data", "Img", "Custom");
 
         // ---- undo a previous run ----------------------------------------------------------------------

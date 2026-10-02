@@ -65,7 +65,8 @@ public class Merge
 
     public void Run(bool apply)
     {
-        if (File.Exists(Path.Combine(game, "Tcd", Marker))) { log.WriteLine("already merged (Game/Tcd/" + Marker + ")"); return; }
+        if (File.Exists(StateFiles.Get(Marker))) { log.WriteLine("already merged (" + StateFiles.Get(Marker) + ")"); return; }
+        if (Packs.All(p => !File.Exists(D(p.from)))) { log.WriteLine("nothing to merge: no Classic.* packs in Game/Data"); return; }
         foreach (var (_, from, _) in Packs) if (!File.Exists(D(from))) throw new FileNotFoundException(D(from));
 
         log.WriteLine("snapshot before...");
@@ -181,19 +182,19 @@ public class Merge
 
         ApplyRenumber(mountMap, monMap, itemMap);
         File.WriteAllText(migration, sql, new UTF8Encoding(false));
-        File.WriteAllText(Path.Combine(game, "Tcd", Marker), $"merged {DateTime.Now:s}; Classic packs folded into base packs, ids renumbered\n");
+        File.WriteAllText(StateFiles.Get(Marker), $"merged {DateTime.Now:s}; Classic packs folded into base packs, ids renumbered\n");
         log.WriteLine($"written: packs, indexes, renumbered tcds, {Path.GetFileName(migration)}");
     }
 
     // ---------------------------------------------------------------------------------------------------
     (Dictionary<ushort, ushort> mount, Dictionary<ushort, ushort> mon, Dictionary<ushort, ushort> item) BuildMaps()
     {
-        var st = new BinaryReader(File.OpenRead(Path.Combine(game, "Tcd", "ClassicPort.state")));
+        var st = new BinaryReader(File.OpenRead(StateFiles.Get("ClassicPort.state")));
         var mounts = Enumerable.Range(0, st.ReadInt32()).Select(_ => st.ReadUInt16()).OrderBy(x => x).ToList();
         var mons = Enumerable.Range(0, st.ReadInt32()).Select(_ => st.ReadUInt16()).ToList();
         var replaced = Enumerable.Range(0, st.ReadInt32()).Select(_ => { ushort id = st.ReadUInt16(); st.ReadBytes(st.ReadInt32()); return id; }).ToHashSet();
         st.Dispose();
-        var items = File.ReadAllLines(Path.Combine(game, "Tcd", "ClassicPort.items.state"))
+        var items = File.ReadAllLines(StateFiles.Get("ClassicPort.items.state"))
             .Where(l => l.StartsWith("item=")).Select(l => ushort.Parse(l[5..])).OrderBy(x => x).ToList();
 
         var mountMap = new Dictionary<ushort, ushort>();
@@ -236,7 +237,7 @@ public class Merge
         TItem.Save(Path.Combine(tcd, "TItem.tcd"), items.OrderBy(i => i.Id));
 
         // Keep the port's state files in line with the new ids.
-        string stPath = Path.Combine(tcd, "ClassicPort.state");
+        string stPath = StateFiles.Get("ClassicPort.state");
         var st = new BinaryReader(File.OpenRead(stPath));
         var sm = Enumerable.Range(0, st.ReadInt32()).Select(_ => st.ReadUInt16()).ToList();
         var so = Enumerable.Range(0, st.ReadInt32()).Select(_ => st.ReadUInt16()).ToList();
@@ -248,7 +249,7 @@ public class Merge
             wr.Write(so.Count); foreach (var m in so) wr.Write(Mn(m));
             wr.Write(sb.Count); foreach (var (id, raw) in sb) { wr.Write(id); wr.Write(raw.Length); wr.Write(raw); }
         }
-        string isPath = Path.Combine(tcd, "ClassicPort.items.state");
+        string isPath = StateFiles.Get("ClassicPort.items.state");
         File.WriteAllLines(isPath, File.ReadAllLines(isPath).Select(l => l.StartsWith("item=") ? "item=" + itemMap[ushort.Parse(l[5..])] : l));
     }
 
