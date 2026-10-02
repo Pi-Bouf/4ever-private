@@ -187,12 +187,20 @@ public sealed partial class MapService
             return;
         }
 
-        // ---- a buff on one's own summon or placed object (C++ Defend on an OT_RECALL / OT_SELF target: MaintainSkill) —
-        // e.g. the sorcerer's damage-sharing 635. Hostile skills on another player's summons are not ported. ----
+        // ---- a summon or placed object (C++ Defend on an OT_RECALL / OT_SELF target): a hostile skill hits someone else's
+        // (MapService.SummonPvP.cs); a buff lands on anyone's — e.g. the sorcerer's damage-sharing 635 on one's own. ----
         if (targetType is RecallMon.OtRecall or RecallMon.OtSelf)
         {
-            IReadOnlyDictionary<uint, RecallMon> mine = targetType == RecallMon.OtSelf ? ch.SelfObjs : ch.Recalls;
-            if (!mine.TryGetValue(targetId, out var pet) || !pet.InMap || pet.Hp == 0) return;
+            if (SummonInReach(ch, s, targetType, targetId) is not { } pet) return;
+            if (atkSkill?.Template is not { IsNegative: false })
+            {
+                var hp = AttackerPower.Of(ch, _templates, atkSkill?.Template) with { Level = attackerLevel };
+                ch.EnterBattle(NowMs, RecoverInit);
+                HitSummon(ch, hp, attackId, attackType, hostId, atkSkill?.Template, atkSkill?.Level ?? skillLevel, skillId,
+                    canSelect, pet, actId, aniId, forceMiss: false, atkX, atkY, atkZ, defX, defY, defZ);
+                return;
+            }
+            if (pet.Hp == 0) return;
             if (atkSkill?.Template is { IsPositive: true } bt && bt.IsMaintainType())
             {
                 var p0 = AttackerPower.Of(ch, _templates, bt);
@@ -339,6 +347,28 @@ public sealed partial class MapService
             Hp = mon.Hp, Mp = mon.Mp, MaxHp = mon.MaxHp, MaxMp = mon.MaxMp,
             _dp = magic => magic ? mon.MagicDefPower : mon.DefendPower,
         };
+
+        /// <summary>A summon (C++ <c>CTRecallMon::GetDefendPower/GetMagicDefPower/GetDefendLevel/GetMagicDefLevel</c>,
+        /// TRecallMon.cpp:271-342): its stats row, plus — while its owner is in — 55% of the better of the owner's gear
+        /// defences, and the owner's gear defend levels in full.</summary>
+        public static DamageTarget Of(RecallMon m, Character? owner, TemplateStore t)
+        {
+            var a = m.Attr ?? new MonAttrRow(0, 0, 0, 0, 0);
+            int G(StatEngine.Ab x) => owner is null ? 0 : StatEngine.SumGetter(owner, x, t);
+            uint gear = (uint)(Math.Max(G(StatEngine.Ab.Pdp), G(StatEngine.Ab.Mdp)) * RecallItemAbilityRate);
+            int lv(byte mtype) => owner is null ? 0 : StatEngine.SumMagic(owner, mtype, t);
+            return new DamageTarget
+            {
+                Hp = m.Hp, Mp = m.Mp, MaxHp = m.MaxHp, MaxMp = m.MaxMp,
+                _dp = magic => (uint)((magic ? a.RawMdp : a.RawDp) + a.Wdp) + gear,
+                _defLevel = magic => (uint)Math.Max(0, (magic ? a.MagicDefLevel + lv(87 /* MTYPE_MDL */) : a.DefendLevel + lv(12 /* MTYPE_DL */))),
+            };
+        }
+
+        private Func<bool, uint> _defLevel = _ => 0;
+
+        /// <summary>The defend level the attacker's hit roll is made against (a summon's; others' are read elsewhere).</summary>
+        public uint DefendLevel(bool magic) => _defLevel(magic);
 
         public static DamageTarget Of(Character ch, bool self, uint maxHp, uint maxMp, Random rng, TemplateStore t,
             Func<uint, uint>? distribute = null)
