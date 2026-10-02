@@ -17,10 +17,9 @@ namespace TMap.Server.Map;
 /// away (InitMap, TMapSvr.cpp:8163).</para>
 ///
 /// <para><b>Faithful, flagged:</b> a new summon always starts at full HP/MP (the C++ tests the fresh object's HP, so
-/// passed values are dropped). <b>Not ported yet:</b> summon combat (attacking, being attacked, owner credit),
-/// self-objects (<c>OT_SELF</c>), the summon skills themselves, saving summons across logout
-/// (<c>TRECALLMONTABLE</c>), the owner's item bonus on a summon's attack power, and multi-server handoff
-/// (<c>MW_RECALLMONDATA</c>). The class/race chart checks <c>CreateRecallMon</c> also makes are skipped.</para>
+/// passed values are dropped). Combat, placed objects and summon skills live in MapService.SummonCombat / SummonDefend /
+/// SummonPvP / Summon. <b>Not ported yet:</b> saving summons across logout (<c>TRECALLMONTABLE</c>) and multi-server
+/// handoff (<c>MW_RECALLMONDATA</c>). The class/race chart checks <c>CreateRecallMon</c> also makes are skipped.</para>
 /// </summary>
 public sealed partial class MapService
 {

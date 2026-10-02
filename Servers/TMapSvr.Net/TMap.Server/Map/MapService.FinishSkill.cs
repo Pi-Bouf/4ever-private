@@ -39,7 +39,7 @@ namespace TMap.Server.Map;
 /// ledger (it is populated by <c>CS_SKILLUSE</c>, and for ordinary skills a miss only logs), the charge-time and
 /// <c>m_bRunFromServer</c> / <c>m_bCheckAttacker</c> / <c>m_wTargetActiveID</c> checks (columns not loaded),
 /// random-trans / random-buff skills, guild skills, the peace-zone and local-battle gates, the
-/// <c>OT_RECALL</c>/<c>OT_SELF</c> attackers and targets (summons), the <c>SDT_STATUS_LINK</c> self-maintain tail,
+/// the <c>SDT_STATUS_LINK</c> self-maintain tail,
 /// and the skill-229/128/3604 special cases.</para>
 /// </summary>
 public sealed partial class MapService
@@ -113,10 +113,9 @@ public sealed partial class MapService
             }
             else if (targetType is RecallMon.OtRecall or RecallMon.OtSelf)
             {
-                // One's own summon or placed object (C++ FindTarget(pPlayer, …)); hostile skills on others' are not ported.
-                IReadOnlyDictionary<uint, RecallMon> mine = targetType == RecallMon.OtSelf ? ch.SelfObjs : ch.Recalls;
-                if (!mine.TryGetValue(targetId, out var own2) || !own2.InMap) continue;
-                defX = own2.PosX; defY = own2.PosY; defZ = own2.PosZ;
+                // Any summon or placed object in the attacker's cells (CSHandler.cpp:20464), one's own or another's.
+                if (SummonInReach(ch, s, targetType, targetId) is not { } pet) continue;
+                defX = pet.PosX; defY = pet.PosY; defZ = pet.PosZ;
             }
             else
             {

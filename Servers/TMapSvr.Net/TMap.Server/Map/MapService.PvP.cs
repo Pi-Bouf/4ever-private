@@ -27,19 +27,21 @@ public sealed partial class MapService
     private const long PvpSameVictimWindowMs = 600_000;   // 600 s — three wins on one name within it pay nothing
     private const int PvpRecentCount = 10;           // PVP_RECENTRECORDCOUNT
 
-    /// <summary>One negative hit from <paramref name="ch"/> on another player, <paramref name="target"/>.</summary>
+    /// <summary>One negative hit from <paramref name="ch"/> on another player, <paramref name="target"/> — or, with
+    /// <paramref name="power"/>, from one of <paramref name="ch"/>'s summons (its figures; <paramref name="forceMiss"/> is a
+    /// doppelganger's fake hit). Either way <paramref name="ch"/> owns the kill.</summary>
     private void HitPlayer(ClientSession s, Character ch, uint hostId, uint attackId, byte attackType, SkillTemplate? tpl,
         byte level, ushort skillId, byte canSelect, ClientSession ts, Character target, uint actId, uint aniId,
-        float atkX, float atkY, float atkZ, float defX, float defY, float defZ)
+        float atkX, float atkY, float atkZ, float defX, float defY, float defZ, AttackerPower? power = null, bool forceMiss = false)
     {
         if (target.Hp == 0 && tpl?.CanDefendAtDie() != true) return;                     // OS_DEAD && !CanDefendAtDie
 
-        var p = AttackerPower.Of(ch, _templates, tpl) with { Level = ch.Level };
+        var p = power ?? AttackerPower.Of(ch, _templates, tpl) with { Level = ch.Level };
         bool isMagic = p.IsMagic, isLong = p.IsLong;
-        ch.EnterBattle(NowMs, RecoverInit);
+        if (power is null) ch.EnterBattle(NowMs, RecoverInit);
         target.EnterBattle(NowMs, RecoverInit);                                          // CTPlayer::Defend ChgMode(MT_BATTLE)
 
-        byte hitType = HitTypeVsPlayer(CombatRng, p.Crit, p.AttackLevel);
+        byte hitType = forceMiss ? HtMiss : HitTypeVsPlayer(CombatRng, p.Crit, p.AttackLevel);
         uint maxHp = MaxHpFor(target), maxMp = MaxMpFor(target);
         var def = DamageTarget.Of(target, self: false, maxHp, maxMp, CombatRng, _templates, v => DistributeSkill(ts, target, v));
         var dmg = CalcDamage(p, def, tpl, level, hitType, isMagic, isLong);

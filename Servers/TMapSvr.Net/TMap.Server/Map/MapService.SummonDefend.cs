@@ -58,14 +58,7 @@ public sealed partial class MapService
         uint hpBefore = target.Hp;
         if (hitType != HtMiss) target.Hp -= dmg;
 
-        if (target.Mode != MtBattle)                                    // CTRecallMon::OnDamage → ChgMode(MT_BATTLE)
-        {
-            target.Mode = MtBattle;
-            var mode = new PacketWriter(Msg.CS_CHGMODE_ACK, capacity: 8);
-            mode.WriteUInt32(target.Id); mode.WriteByte(target.ObjType); mode.WriteByte(MtBattle);
-            var modeAck = mode.ToArray();
-            foreach (var p in _state.PlayersAround(target)) p.Send(modeAck);
-        }
+        SummonEnterBattle(target);                                      // CTRecallMon::OnDamage → ChgMode(MT_BATTLE)
 
         byte atkHit = hitType == HtMiss ? HtMiss : target.Hp == 0 ? HtLastHit : hitType;
         var hitAck = BuildMonsterHitAck(mon, target.Id, target.ObjType, dmg, atkHit, landed: hitType != HtMiss, skillId, 1,
@@ -75,14 +68,6 @@ public sealed partial class MapService
             p.Send(hitAck);
             if (target.Hp != hpBefore) SendSummonHpMp(p, target);
         }
-        if (target.Hp != 0) return;
-
-        foreach (var p in _state.PlayersAround(target)) SendCS_DIE_ACK(p, target.Id, target.ObjType);
-        switch (target.ObjType)
-        {
-            case RecallMon.OtSelf: DeleteSelfObj(owner, target.Id); break;
-            case RecallMon.OtCompanion: SendMW_SPOLECNIKMONDEL_ACK(owner.CharId, reporter.Key, target.Id); break;
-            default: SendMW_RECALLMONDEL_ACK(owner.CharId, reporter.Key, target.Id); break;
-        }
+        if (target.Hp == 0) SummonDied(reporter, owner, target);
     }
 }

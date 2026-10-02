@@ -16,7 +16,7 @@ namespace TMap.Server.Map;
 /// (on the summon itself when its template is selectable, else on the owner).</para>
 ///
 /// <para>Faithful, flagged: a summon's magic crit takes no gear bonus (the C++ reads the summon's own gear, which is
-/// always empty). <b>Not ported:</b> summons hitting players (PvP), summon buffs, the owner's passive skills, and the
+/// always empty). Hits on players and on others' summons: MapService.SummonPvP.cs. <b>Not ported:</b> summon buffs, the owner's passive skills, and the
 /// fireball mine's self-destruct (only on the classic <c>CS_DEFEND_REQ</c> path in the C++, which this client does not
 /// use for summons).</para>
 /// </summary>
@@ -124,7 +124,24 @@ public sealed partial class MapService
 
         foreach (var (targetId, targetType) in targets)
         {
-            if (targetType != Monster.OtMon) continue;                     // summons hitting players / summons: not ported
+            // A player or someone else's summon (MapService.SummonPvP.cs) — the owner's kill. Its own buffs: not ported.
+            if (targetType == OtPc)
+            {
+                if (_state.FindByChar(targetId) is not { State: EnterState.InGame, Char: { } tch } ts
+                    || tch.CharId == ch.CharId || ts.Channel != s.Channel || tch.MapId != ch.MapId || !CanDuel(tch, ch)) continue;
+                if (!tpl.IsNegative) continue;
+                HitPlayer(s, ch, ch.CharId, id, type, tpl, level, tpl.Id, canSelect, ts, tch, 0, 0,
+                    x, y, z, tch.PosX, tch.PosY, tch.PosZ, power, fake);
+                continue;
+            }
+            if (targetType is RecallMon.OtRecall or RecallMon.OtSelf)
+            {
+                if (SummonInReach(ch, s, targetType, targetId) is { } pet && tpl.IsNegative)
+                    HitSummon(ch, power, id, type, ch.CharId, tpl, level, tpl.Id, canSelect, pet, 0, 0, fake,
+                        x, y, z, pet.PosX, pet.PosY, pet.PosZ);
+                continue;
+            }
+            if (targetType != Monster.OtMon) continue;
             if (_state.FindMonster(targetId) is not { Hp: > 0 } mon) continue;
             if (tpl.IsNegative && mon.Country != TcontryN && (attackCountry == TcontryB || attackCountry == mon.Country)) continue;
             HitMonster(ch, power, id, type, ch.CharId, tpl, level, canSelect, mon, 0, 0, tpl.Id,

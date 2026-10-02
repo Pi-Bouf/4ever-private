@@ -530,6 +530,24 @@ public static class Scenarios
             }) == (monId, 7, a.CharId), Describe(hit));
         }
 
+        // PvP: the other player strikes the summon, and the summon strikes back.
+        a.Discard(CS_DEFEND_ACK); a.Discard(CS_HPMP_ACK); b.Discard(CS_DEFEND_ACK);
+        b.Send(FinishSkill(b, b.CharId, 1, BasicMelee, b.Spawn.X, b.Spawn.Z, (ritual.MonId, 7)));
+        var struck = a.TryWait(CS_DEFEND_ACK, r => r.ReadUInt32() == b.CharId && r.ReadUInt32() == ritual.MonId);
+        Check("summons: another player's strike lands on the summon", struck is not null, Describe(struck));
+        var bar = a.TryWait(CS_HPMP_ACK, r => r.ReadUInt32() == ritual.MonId && r.ReadByte() == 7);
+        Check("summons: … and takes its HP", bar is not null && Read(bar, r =>
+        {
+            r.ReadUInt32(); r.ReadByte(); uint max = r.ReadUInt32(), hp = r.ReadUInt32(); r.ReadUInt32(); r.ReadUInt32();
+            return hp < max;
+        }), Describe(bar));
+        b.Discard(CS_DEFEND_ACK);
+        a.Send(FinishSkill(a, ritual.MonId, 7, SummonAttack, a.Spawn.X, a.Spawn.Z, (b.CharId, 1)));
+        var back = b.TryWait(CS_DEFEND_ACK, r => r.ReadUInt32() == ritual.MonId && r.ReadUInt32() == b.CharId);
+        Check("summons: the summon's hit lands on a player (PvP)", back is not null, Describe(back));
+        Thread.Sleep(300);
+        a.Discard(CS_DEFEND_ACK); b.Discard(CS_DEFEND_ACK); a.Discard(CS_HPMP_ACK); b.Discard(CS_HPMP_ACK);
+
         a.Send(Req(CS_DELRECALLMON_REQ, w => { w.WriteUInt32(ritual.MonId); w.WriteByte(7); }));
         var gone = b.TryWait(CS_DELRECALLMON_ACK, r => { r.ReadUInt32(); return r.ReadUInt32() == ritual.MonId; }, 8000);
         Check("summons: dismissing it removes it for everyone", gone is not null, Describe(gone));
