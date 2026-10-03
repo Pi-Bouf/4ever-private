@@ -448,7 +448,8 @@ public sealed partial class MapService
             return;
         }
 
-        if (ch.Hp == 0) // C++ dead (OS_DEAD) can't use a non-revival item → IU_NOTFOUND
+        // C++: a revival item only when dead, anything else only when alive → IU_NOTFOUND
+        if ((ch.Hp == 0) != (kind == IkRevival))
         {
             SendCS_ITEMUSE_ACK(s, ItemUseResult.NotFound, delayGroup, kind, 0);
             return;
@@ -456,6 +457,14 @@ public sealed partial class MapService
         if (item.Template is { } t && t.DefaultLevel > ch.Level)
         {
             SendCS_ITEMUSE_ACK(s, ItemUseResult.NeedLevel, delayGroup, kind, 0);
+            return;
+        }
+
+        // The item delay: a delay group still cooling → IU_NOTFOUND (C++ m_mapItemCoolTime).
+        ushort group = item.Template?.DelayGroup ?? delayGroup;
+        if (delay != 0 && ch.ItemCoolTime.TryGetValue(group, out uint ready) && unchecked((int)(ready - NowMs)) > 0)
+        {
+            SendCS_ITEMUSE_ACK(s, ItemUseResult.NotFound, delayGroup, kind, 0);
             return;
         }
 
@@ -478,6 +487,14 @@ public sealed partial class MapService
             used = true;                                                   // C++ IK_CREDITS: the item's wUseValue in points
             GainPvPoint(s, ch, heal, PvpeBuyItem, PvpUseable);
         }
+        else if (kind is IkSkill or IkRevival && item.Template is { } st)
+        {
+            // MapService.ItemSkill.cs — the C++ answers IU_NOTFOUND when the skill cannot be used.
+            if (!UseSkillItem(s, ch, st)) { SendCS_ITEMUSE_ACK(s, ItemUseResult.NotFound, delayGroup, kind, 0); return; }
+            used = true;
+        }
+        else if (kind == IkReturn && item.Template is { } rt) used = UseReturnItem(s, ch, rt);
+        else if (IsLookKind(kind)) used = ChangeLook(s, ch, kind);
         else
         {
             // non-HP/MP use-effects (buff/box/money/skill/cash/…) are deferred this phase.
@@ -487,9 +504,10 @@ public sealed partial class MapService
 
         if (!used)
         {
-            SendCS_ITEMUSE_ACK(s, ItemUseResult.Full, delayGroup, kind, delay);
+            SendCS_ITEMUSE_ACK(s, ItemUseResult.Full, delayGroup, kind, delay);   // C++: IU_FULL for any item that did not take
             return;
         }
+        if (delay != 0) ch.ItemCoolTime[group] = NowMs + delay;
 
         // Consume one — C++ gates on m_bConsumable (default 1 ⇒ still consumes for DB-free/synth items).
         if ((item.Template?.Consumable ?? 1) != 0)

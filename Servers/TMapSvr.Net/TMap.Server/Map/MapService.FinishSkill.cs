@@ -38,9 +38,8 @@ namespace TMap.Server.Map;
 /// <para><b>Deferred</b> (subsystems or columns this port does not carry): the <c>m_vUsedSkill</c> anti-cheat
 /// ledger (it is populated by <c>CS_SKILLUSE</c>, and for ordinary skills a miss only logs), the charge-time and
 /// <c>m_bRunFromServer</c> / <c>m_bCheckAttacker</c> / <c>m_wTargetActiveID</c> checks (columns not loaded),
-/// random-trans / random-buff skills, guild skills, the peace-zone and local-battle gates, the
-/// the <c>SDT_STATUS_LINK</c> self-maintain tail,
-/// and the skill-229/128/3604 special cases.</para>
+/// guild skills (the guild-skill subsystem is not ported), the peace-zone and local-battle gates, and the
+/// <c>SDT_STATUS_LINK</c> self-maintain tail. Random skills and the 229/128/3604 special cases: see the loop below.</para>
 /// </summary>
 public sealed partial class MapService
 {
@@ -91,6 +90,16 @@ public sealed partial class MapService
         ushort trans = TransHpMp(tpl);
         byte attackCountry = GetAttackCountry(ch.Country, ch.AidCountry);
 
+        // C++ (CSHandler.cpp:20601): Deadly Poison's damage over time (3604) is not learned — it hits at the level of
+        // Deadly Poison itself (3603), and not at all without it.
+        Skill? fixedCast = null;
+        if (skillId == DeadlyPoisonDot)
+        {
+            if (ch.Skills.FirstOrDefault(k => k.SkillId == DeadlyPoison) is not { } poison) return;
+            skillLevel = poison.Level;
+            fixedCast = new Skill { SkillId = skillId, Level = poison.Level, Template = tpl };
+        }
+
         _log.LogDebug("FINISHSKILL from char {Char}: skill {Skill} lvl {Level}, {Count} target(s).", s.CharId, skillId, skillLevel, targets.Length);
         foreach (var (targetId, targetType) in targets)
         {
@@ -122,12 +131,48 @@ public sealed partial class MapService
                 continue;
             }
 
+            // C++ RandTransSkill / RandBuffSkill: a random skill lands as one of its run, picked for each target.
+            var cast = fixedCast;
+            ushort castId = skillId;
+            if (tpl.IsRandomTrans() || tpl.IsRandomBuff())
+            {
+                if (PickRandomSkill(tpl) is not { } picked) continue;
+                castId = picked.Id;
+                cast = new Skill { SkillId = picked.Id, Level = Math.Max(skillLevel, (byte)1), Template = picked };
+            }
+
+            // C++ (CSHandler.cpp:20590): Sixth Sense (128) and Inner Eye (229) first take away their own effect (129 / 230)
+            // from the target, so a new cast starts it over.
+            if (skillId is SixthSense or InnerEye) EraseMaintainOn(targetId, targetType, (ushort)(skillId + 1));
+
             // dwActID/dwAniID are 0 here: the C++ passes literal zeros to Defend for this path.
             PlayerHitsTarget(s, ch, hostId: attackId, attackId, attackType, targetId, targetType,
                 actId: 0, aniId: 0, attackerLevel: ch.Level, transHp: trans, transMp: trans,
-                canSelect: 1, skillId, skillLevel, posX, posY, posZ, defX, defY, defZ);
+                canSelect: 1, castId, skillLevel, posX, posY, posZ, defX, defY, defZ, cast);
         }
         CheckEquipSkill(s, ch);
+    }
+
+    private const ushort SixthSense = 128, InnerEye = 229, DeadlyPoison = 3603, DeadlyPoisonDot = 3604;
+
+    /// <summary>C++ <c>pDEFEND->EraseMaintainSkill(wSkillID)</c> on a player, a monster or a summon.</summary>
+    private void EraseMaintainOn(uint targetId, byte targetType, ushort skillId)
+    {
+        if (targetType == OtPc && _state.FindByChar(targetId) is { Char: { } pc } ps)
+        {
+            int i = pc.MaintainSkills.FindIndex(m => m.SkillId == skillId);
+            if (i >= 0) EraseMaintainPlayer(ps, pc, i);
+        }
+        else if (targetType == Monster.OtMon && _state.FindMonster(targetId) is { } mon)
+        {
+            int i = mon.MaintainSkills.FindIndex(m => m.SkillId == skillId);
+            if (i >= 0) EraseMaintainMonster(mon, i);
+        }
+        else if (_state.FindRecall(targetType, targetId) is { } pet)
+        {
+            int i = pet.MaintainSkills.FindIndex(m => m.SkillId == skillId);
+            if (i >= 0) EraseMaintainSummon(pet, i);
+        }
     }
 
     /// <summary>C++ <c>CTSkillTemp::GetTransHPMPFromType</c> (TSkillTemp.cpp:387), bug included: the argument is

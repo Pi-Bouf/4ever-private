@@ -32,7 +32,21 @@ public readonly record struct CharSaveData(
     // TSaveMonthPvPoint (only written when the month points are not 0, as in the C++).
     uint MonthPvPoint = 0, ushort MonthWin = 0, ushort MonthLose = 0, string MonthSay = "", byte Country = 0,
     // TClearCharTitle + TSaveCharTitle: every owned title and whether it is the one shown; null = leave the rows alone.
-    IReadOnlyList<(ushort Id, bool Selected)>? Titles = null);
+    IReadOnlyList<(ushort Id, bool Selected)>? Titles = null,
+    // TRECALLMONTABLE / TRECALLMAINTAINTABLE: the live summons and their buffs; null = leave the rows alone.
+    IReadOnlyList<RecallSaveRow>? Recalls = null, IReadOnlyList<RecallMaintainRow>? RecallMaintains = null,
+    // TSaveSkillMaintain: the player's own buffs (TSaveChar clears them first); null = none.
+    IReadOnlyList<MaintainLoadRow>? Maintains = null);
+
+/// <summary>One saved summon (<c>TRECALLMONTABLE</c>, C++ <c>CTBLRecallMon</c>): its id when saved, chart, mount, attr
+/// (<c>MAKELONG(attr, level)</c>), level, HP/MP, skill level, position, the life it had left (ms, 0 = for good) and
+/// effect.</summary>
+public sealed record RecallSaveRow(uint Id, ushort MonId, ushort PetId, uint Attr, byte Level, uint Hp, uint Mp, byte SkillLevel,
+    short X, short Y, short Z, uint Time, byte Effect);
+
+/// <summary>One buff of a saved summon (<c>TRECALLMAINTAINTABLE</c>, C++ <c>CTBLRecallMaintain</c>); <c>Remain</c> 0 = for good.</summary>
+public sealed record RecallMaintainRow(uint RecallId, ushort SkillId, byte Level, uint Remain, byte AttackType, uint AttackId,
+    byte HostType, uint HostId, byte AttackCountry);
 
 /// <summary>C++ <c>CSPGetPvPRecord</c> + <c>CSPGetMonthPvPoint</c> at char load: the PvP balances, the all-time rank, the
 /// per-class record (6 × (lose, win)), and this month's points, wins, losses and rank.</summary>
@@ -744,8 +758,10 @@ FROM TCHARTABLE WHERE dwCharID = @dwCharID AND bDelete = 0";
                 SqlProc.In("@p28", SqlDbType.Int, unchecked((int)d.StatExp)),
             };
             await SqlProc.ExecAsync(c, "TSaveChar", SqlProc.Ret(), args, ct);
+            await SaveMaintainsAsync(c, d, ct);
             await SavePvPointAsync(c, d, ct);
             await SaveTitlesAsync(c, d, ct);
+            await SaveRecallsAsync(c, d, ct);
         }
         catch (SqlException ex) when (ex.Number == 2812) { /* proc absent in this baseline — tolerate */ }
     }
@@ -792,6 +808,91 @@ FROM TCHARTABLE WHERE dwCharID = @dwCharID AND bDelete = 0";
             }, ct);
     }
 
+    /// <summary>C++ <c>CSPSaveSkillMaintain</c> (SSHandler.cpp:7131) — this baseline's <c>TSaveChar</c> deletes the character's
+    /// <c>TSKILLMAINTAINTABLE</c> rows, and each buff is written back here.</summary>
+    private static async Task SaveMaintainsAsync(SqlConnection c, CharSaveData d, CancellationToken ct)
+    {
+        foreach (var m in d.Maintains ?? Array.Empty<MaintainLoadRow>())
+            await SqlProc.ExecAsync(c, "TSaveSkillMaintain", SqlProc.Ret(), new[]
+            {
+                SqlProc.In("@s0", SqlDbType.Int, unchecked((int)d.CharId)),
+                SqlProc.In("@s1", SqlDbType.SmallInt, unchecked((short)m.SkillId)),
+                SqlProc.In("@s2", SqlDbType.SmallInt, (short)m.Level),
+                SqlProc.In("@s3", SqlDbType.Int, unchecked((int)m.RemainTick)),
+                SqlProc.In("@s4", SqlDbType.TinyInt, m.AttackType),
+                SqlProc.In("@s5", SqlDbType.Int, unchecked((int)m.AttackId)),
+                SqlProc.In("@s6", SqlDbType.TinyInt, m.HostType),
+                SqlProc.In("@s7", SqlDbType.Int, unchecked((int)m.HostId)),
+                SqlProc.In("@s8", SqlDbType.TinyInt, m.AttackCountry),
+            }, ct);
+    }
+
+    /// <summary>C++ <c>OnDM_SAVECHAR_REQ</c>'s summon part (SSHandler.cpp:7277): the owner's rows are replaced by its live
+    /// summons and their buffs. Plain SQL, not the procs: this baseline's <c>TSaveRecallMon</c> also inserts an all-zero row
+    /// on its "delete" call (an IF/ELSE without BEGIN/END), and its <c>TSaveRecallMaintain</c> clears the player's own buffs
+    /// (<c>TSKILLMAINTAINTABLE</c>) instead of saving the summon's.</summary>
+    private static async Task SaveRecallsAsync(SqlConnection c, CharSaveData d, CancellationToken ct)
+    {
+        if (d.Recalls is null) return;
+        await using var tx = (SqlTransaction)await c.BeginTransactionAsync(ct);
+        async Task Exec(string sql, params SqlParameter[] ps)
+        {
+            await using var cmd = new SqlCommand(sql, c, tx);
+            cmd.Parameters.AddRange(ps);
+            await cmd.ExecuteNonQueryAsync(ct);
+        }
+        var owner = SqlProc.In("@o", SqlDbType.Int, unchecked((int)d.CharId));
+        await Exec("DELETE TRECALLMONTABLE WHERE dwOwnerID = @o; DELETE TRECALLMAINTAINTABLE WHERE dwCharID = @o", owner);
+        foreach (var m in d.Recalls)
+            await Exec(@"INSERT INTO TRECALLMONTABLE (dwOwnerID, dwID, wMonID, wPetID, dwATTR, bLevel, dwHP, dwMP, bSkillLevel,
+                    wPosX, wPosY, wPosZ, dwTime, bEffect) VALUES (@o, @i, @m, @p, @a, @l, @h, @mp, @s, @x, @y, @z, @t, @e)",
+                SqlProc.In("@o", SqlDbType.Int, unchecked((int)d.CharId)), SqlProc.In("@i", SqlDbType.Int, unchecked((int)m.Id)),
+                SqlProc.In("@m", SqlDbType.SmallInt, unchecked((short)m.MonId)), SqlProc.In("@p", SqlDbType.SmallInt, unchecked((short)m.PetId)),
+                SqlProc.In("@a", SqlDbType.Int, unchecked((int)m.Attr)), SqlProc.In("@l", SqlDbType.TinyInt, m.Level),
+                SqlProc.In("@h", SqlDbType.Int, unchecked((int)m.Hp)), SqlProc.In("@mp", SqlDbType.Int, unchecked((int)m.Mp)),
+                SqlProc.In("@s", SqlDbType.TinyInt, m.SkillLevel), SqlProc.In("@x", SqlDbType.SmallInt, m.X),
+                SqlProc.In("@y", SqlDbType.SmallInt, m.Y), SqlProc.In("@z", SqlDbType.SmallInt, m.Z),
+                SqlProc.In("@t", SqlDbType.Int, unchecked((int)m.Time)), SqlProc.In("@e", SqlDbType.TinyInt, m.Effect));
+        foreach (var b in d.RecallMaintains ?? Array.Empty<RecallMaintainRow>())
+            await Exec(@"INSERT INTO TRECALLMAINTAINTABLE (dwCharID, dwRecallID, wSkillID, bLevel, dwRemainTick, bAttackType,
+                    dwAttackID, bHostType, dwHostID, bAttackCountry) VALUES (@o, @r, @k, @l, @t, @at, @ai, CHAR(@ht), @hi, @c)",
+                SqlProc.In("@o", SqlDbType.Int, unchecked((int)d.CharId)), SqlProc.In("@r", SqlDbType.Int, unchecked((int)b.RecallId)),
+                SqlProc.In("@k", SqlDbType.SmallInt, unchecked((short)b.SkillId)), SqlProc.In("@l", SqlDbType.TinyInt, b.Level),
+                SqlProc.In("@t", SqlDbType.Int, unchecked((int)b.Remain)), SqlProc.In("@at", SqlDbType.TinyInt, b.AttackType),
+                SqlProc.In("@ai", SqlDbType.Int, unchecked((int)b.AttackId)), SqlProc.In("@ht", SqlDbType.Int, (int)b.HostType),
+                SqlProc.In("@hi", SqlDbType.Int, unchecked((int)b.HostId)), SqlProc.In("@c", SqlDbType.TinyInt, b.AttackCountry));
+        await tx.CommitAsync(ct);
+    }
+
+    /// <summary>C++ <c>CTBLRecallMon</c> + <c>CTBLRecallMaintain</c> at char load (SSHandler.cpp:3942/3981). The host type is
+    /// a <c>char</c> column holding the byte (the C++ binds a BYTE to it).</summary>
+    public async Task<(List<RecallSaveRow> Recalls, List<RecallMaintainRow> Buffs)> LoadRecallsAsync(uint charId, CancellationToken ct = default)
+    {
+        var recalls = new List<RecallSaveRow>();
+        var buffs = new List<RecallMaintainRow>();
+        await using var c = await OpenAsync(ct);
+        await using (var cmd = new SqlCommand(@"SELECT dwID, wMonID, wPetID, dwATTR, bLevel, dwHP, dwMP, bSkillLevel, wPosX, wPosY, wPosZ,
+                dwTime, bEffect FROM TRECALLMONTABLE WHERE dwOwnerID = @o", c))
+        {
+            cmd.Parameters.Add(SqlProc.In("@o", SqlDbType.Int, unchecked((int)charId)));
+            await using var r = await cmd.ExecuteReaderAsync(ct);
+            while (await r.ReadAsync(ct))
+                recalls.Add(new RecallSaveRow(r.GetUIntSafe(0), r.GetUShortSafe(1), r.GetUShortSafe(2), r.GetUIntSafe(3), r.GetByteSafe(4),
+                    r.GetUIntSafe(5), r.GetUIntSafe(6), r.GetByteSafe(7), (short)r.GetUShortSafe(8), (short)r.GetUShortSafe(9),
+                    (short)r.GetUShortSafe(10), r.GetUIntSafe(11), r.GetByteSafe(12)));
+        }
+        await using (var cmd = new SqlCommand(@"SELECT dwRecallID, wSkillID, bLevel, dwRemainTick, bAttackType, dwAttackID,
+                ISNULL(ASCII(bHostType), 0), dwHostID, bAttackCountry FROM TRECALLMAINTAINTABLE WHERE dwCharID = @o", c))
+        {
+            cmd.Parameters.Add(SqlProc.In("@o", SqlDbType.Int, unchecked((int)charId)));
+            await using var r = await cmd.ExecuteReaderAsync(ct);
+            while (await r.ReadAsync(ct))
+                buffs.Add(new RecallMaintainRow(r.GetUIntSafe(0), r.GetUShortSafe(1), r.GetByteSafe(2), r.GetUIntSafe(3), r.GetByteSafe(4),
+                    r.GetUIntSafe(5), (byte)r.GetUIntSafe(6), r.GetUIntSafe(7), r.GetByteSafe(8)));
+        }
+        return (recalls, buffs);
+    }
+
     /// <summary>C++ <c>CSPGetPvPRecord</c> (DBAccess.h:6769) and <c>CSPGetMonthPvPoint</c> (DBAccess.h:7090) at char load.</summary>
     public async Task<PvpLoadRow> LoadPvpAsync(uint charId, CancellationToken ct = default)
     {
@@ -828,6 +929,20 @@ FROM TCHARTABLE WHERE dwCharID = @dwCharID AND bDelete = 0";
     }
 
     /// <summary>C++ <c>CTMapSvrModule::SaveCharKill</c> → <c>TSaveCharKill(killer, target)</c>, a row in <c>charkilling_log</c>.</summary>
+    /// <summary>C++ <c>TSaveCharBase</c> (CSPSaveCharBase) — a look / name / country change (the item kind) of a
+    /// character, in TGame and, through the proc, TGlobal's character list.</summary>
+    public async Task SaveCharBaseAsync(uint charId, byte kind, byte value, string name, CancellationToken ct = default)
+    {
+        await using var c = await OpenAsync(ct);
+        await SqlProc.ExecAsync(c, "TSaveCharBase", null, new[]
+        {
+            SqlProc.In("@c0", SqlDbType.Int, unchecked((int)charId)),
+            SqlProc.In("@c1", SqlDbType.TinyInt, kind),
+            SqlProc.In("@c2", SqlDbType.TinyInt, value),
+            SqlProc.In("@c3", SqlDbType.VarChar, name, 50),
+        }, ct);
+    }
+
     public async Task SaveCharKillAsync(uint killerId, uint targetId, CancellationToken ct = default)
     {
         await using var c = await OpenAsync(ct);

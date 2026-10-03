@@ -41,6 +41,7 @@ public static class Scenarios
         CS_DUELSTART_ACK = M + 0x014A, CS_DUELEND_ACK = M + 0x014C, CS_DUELSTANDBY_ACK = M + 0x014D, CS_SYSTEMMSG_ACK = M + 0x01D1,
         CS_PVPRECORD_REQ = M + 0x01E9, CS_PVPRECORD_ACK = M + 0x01EA, CS_MONTHRANKLIST_REQ = M + 0x021D, CS_MONTHRANKLIST_ACK = M + 0x021E,
         CS_TITLEGAIN_ACK = M + 0x0277, CS_CHARSTATINFO_ACK = M + 0x00A4,
+        CS_ITEMUSE_REQ = M + 0x004A, CS_ITEMUSE_ACK = M + 0x004B, CS_CHANGECHARBASE_ACK = M + 0x01CA,
         CS_DIE_ACK = M + 0x0025, CS_REVIVAL_REQ = M + 0x0026, CS_REVIVAL_ACK = M + 0x0027, CS_PVPPOINT_ACK = M + 0x01E2,
         CS_MOVEITEM_REQ = M + 0x0028, CS_MOVEITEM_ACK = M + 0x0029, CS_SKILLEND_ACK = M + 0x0037,
         CS_SKILLBUY_REQ = M + 0x0032, CS_SKILLBUY_ACK = M + 0x0033, CS_NPCITEMLIST_REQ = M + 0x0082, CS_NPCITEMLIST_ACK = M + 0x0083;
@@ -74,6 +75,10 @@ public static class Scenarios
     private const ushort BasicMelee = 31;
     // A debuff: skill 213 hits and lowers the target's defence for 9 s (level 1). Chan1 is given it for the run.
     private const ushort DefenceBreak = 213;
+    // Use items: a Chocolate Rudolf (a random buff, one of 1302-1306) and a Potion of Gender Alteration (IK_SEX).
+    private const ushort ChocolateItem = 18007, ChocolateFirst = 1302, ChocolateLast = 1306, GenderItem = 7623;
+    private const byte ChocolateSlot = 45, GenderSlot = 46, IkSex = 49;
+    private const long ChocolateDlId = 900_000_005, GenderDlId = 900_000_006;
     private const uint DefenceBreakMs = 9000;
     // Combat leftovers, all on A (B only strikes — A's HP is refilled by the duel's knockout right after):
     // a hide (221: ends on attacking and on being hit), a self buff (218), B's dispel (326, strips buffs), and the
@@ -83,7 +88,8 @@ public static class Scenarios
     // Ranking and titles: 11 total points pass the first honour title (TTITLECHART 56, more than 10). The bots' rank and
     // title rows are copied aside before the run and put back after (RankTables).
     private const ushort HonourTitle = 56;
-    private static readonly string[] RankTables = { "TMONTHPVPOINTTABLE", "TPVPRECORDTABLE", "TTITLETABLE" };
+    // Backed up before the run and put back after (by dwCharID); TSKILLMAINTAINTABLE because the map saves the bots' buffs.
+    private static readonly string[] RankTables = { "TMONTHPVPOINTTABLE", "TPVPRECORDTABLE", "TTITLETABLE", "TSKILLMAINTAINTABLE" };
     private const byte InvenEquip = 0xFE, InvenBackpack = 0xFF;
 
     private static readonly List<(string Name, bool Ok, string Detail)> Results = new();
@@ -144,9 +150,11 @@ public static class Scenarios
             Skills(a);
             Passives(a);
             CombatLeftovers(a, b);
+            ItemSkills(a, b);
             Duel(a, b);
             PvP(a, b);
             Teleport(a, b);
+            LeaveASummonOut(a);
 
             foreach (var bot in new[] { a, b })
                 Check($"byte check: every packet to {bot.Tag} decodes with a valid checksum", bot.BadPackets == 0,
@@ -163,6 +171,14 @@ public static class Scenarios
         using (var a = new Bot(cfgA))
         {
             a.Enter();
+            var back = a.TryWait(CS_ADDRECALLMON_ACK, r => { r.ReadUInt32(); r.ReadUInt32(); return r.ReadUInt16() == RitualMon; }, 8000);
+            Check("summons: the summon left out at logout comes back at login", back is not null, Describe(back));
+            if (back is not null)
+            {
+                var mon = ParseAddRecall(back);
+                a.Send(Req(CS_DELRECALLMON_REQ, w => { w.WriteUInt32(mon.MonId); w.WriteByte(7); }));
+                a.TryWait(CS_DELRECALLMON_ACK, r => { r.ReadUInt32(); return r.ReadUInt32() == mon.MonId; }, 8000);
+            }
             a.Send(Req(CS_HOTKEYDEL_REQ, w => { w.WriteByte(HotkeyPage); w.WriteByte(0); }));
             var comps = a.TryWait(CS_COMPANIONLIST_ACK);
             Check("companions: the new companion is listed after relog", comps is not null
@@ -175,6 +191,8 @@ public static class Scenarios
                 && h.Slots.Count == 1 && h.Slots[0] == (0, 0, 0), Describe(r));
         }
         await Task.Delay(3000);
+        var gone = await db.RowAsync("SELECT COUNT(*) FROM TRECALLMONTABLE WHERE dwOwnerID=@p0", (int)idA);
+        Check("summons: dismissed, it is no longer saved", gone is not null && Convert.ToInt32(gone[0]) == 0, $"rows={gone?[0]}");
         var row = await db.RowAsync("SELECT COUNT(*) FROM THOTKEYTABLE WHERE dwCharID=@p0 AND bInvenID=@p1", (int)idA, (int)HotkeyPage);
         Check("hotkey: emptied page deleted from THOTKEYTABLE", row is not null && Convert.ToInt32(row[0]) == 0,
             $"rows={row?[0]}");
@@ -765,6 +783,43 @@ public static class Scenarios
         a.Discard(CS_DEFEND_ACK); b.Discard(CS_DEFEND_ACK); a.Discard(CS_HPMP_ACK); b.Discard(CS_HPMP_ACK); a.Discard(CS_SKILLEND_ACK);
     }
 
+    /// <summary>Use items: a random-buff chocolate, then a gender potion that goes round the world.</summary>
+    private static void ItemSkills(Bot a, Bot b)
+    {
+        PacketWriter Use(ushort item, byte slot) => Req(CS_ITEMUSE_REQ, w =>
+        {
+            w.WriteUInt16(item); w.WriteByte(0xFF); w.WriteByte(slot); w.WriteUInt16(0); w.WriteByte(0);
+        });
+        byte? Result() => a.TryWait(CS_ITEMUSE_ACK) is { } ack ? Read(ack, r => { byte res = r.ReadByte(); r.ReadUInt16(); r.ReadByte(); r.ReadUInt32(); return res; }) : null;
+
+        a.Discard(CS_DEFEND_ACK); a.Discard(CS_ITEMUSE_ACK);
+        a.Send(Use(ChocolateItem, ChocolateSlot));
+        Check("items: the chocolate is eaten", Result() == 0, "no IU_SUCCESS");
+        var buff = a.TryWait(CS_DEFEND_ACK, r => r.ReadUInt32() == a.CharId && r.ReadUInt32() == a.CharId);
+        Check("items: one of its random buffs lands on the eater", buff is not null && ReadMaintain(buff).IsMaintain == 1
+            && ReadSkillId(buff) is >= ChocolateFirst and <= ChocolateLast, Describe(buff));
+        ChocolateBuff = buff is null ? (ushort)0 : ReadSkillId(buff);
+
+        a.Discard(CS_CHANGECHARBASE_ACK); b.Discard(CS_CHANGECHARBASE_ACK);
+        a.Send(Use(GenderItem, GenderSlot));
+        Check("items: the gender potion is drunk", Result() == 0, "no IU_SUCCESS");
+        (byte Type, byte Value)? Look(Bot bot) => bot.TryWait(CS_CHANGECHARBASE_ACK, r => { r.ReadByte(); return r.ReadUInt32() == a.CharId; })
+            is { } ack ? Read(ack, r => { r.ReadByte(); r.ReadUInt32(); var tv = (r.ReadByte(), r.ReadByte()); r.ReadString(); r.ReadUInt16(); r.ReadUInt32(); return tv; }) : null;
+        var mine = Look(a);
+        Check("items: through the world, the drinker's sex changes", mine is { Type: IkSex }, mine?.ToString() ?? "no CS_CHANGECHARBASE_ACK");
+        var seen = Look(b);
+        Check("items: … and the player nearby sees it", seen == mine, seen?.ToString() ?? "no CS_CHANGECHARBASE_ACK");
+    }
+
+    /// <summary>A Dark Ritual summon left out: the logout saves it (TRECALLMONTABLE), and the next login brings it back.</summary>
+    private static void LeaveASummonOut(Bot a)
+    {
+        a.Discard(CS_ADDRECALLMON_ACK);
+        a.Send(FinishSkill(a, a.CharId, 1, RitualSkill, a.Spawn.X, a.Spawn.Z, (a.CharId, 1)));
+        var add = a.TryWait(CS_ADDRECALLMON_ACK, r => { r.ReadUInt32(); r.ReadUInt32(); return r.ReadUInt16() == RitualMon; }, 8000);
+        Check("summons: a summon is out at logout", add is not null, Describe(add));
+    }
+
     private static void Duel(Bot a, Bot b)
     {
         a.Send(Req(CS_DUELINVITE_REQ, w => w.WriteUInt32(b.CharId)));
@@ -886,6 +941,15 @@ public static class Scenarios
     }
 
     // CS_DEFEND_ACK up to dwMaintainTick: attacker, target, their types, host + type, act, ani, bIsMaintain, dwMaintainTick.
+    /// <summary>The <c>wSkillID</c> of a <c>CS_DEFEND_ACK</c> (53 bytes in).</summary>
+    private static ushort ReadSkillId(PacketReader p)
+    {
+        var raw = Bot.Raw.TryGetValue(p, out var r) ? r : throw new InvalidOperationException();
+        return BitConverter.ToUInt16(raw, PacketHeader.Size + 53);
+    }
+
+    private static ushort ChocolateBuff;                                                 // which one the chocolate gave
+
     private static (byte IsMaintain, uint Tick) ReadMaintain(PacketReader p)
     {
         var r = new PacketReader(Bot.Raw.TryGetValue(p, out var raw) ? raw : throw new InvalidOperationException());
@@ -912,6 +976,13 @@ public static class Scenarios
 
     private static async Task CheckSaved(GameDb db, uint idA, uint idB)
     {
+        var recall = await db.RowAsync("SELECT COUNT(*) FROM TRECALLMONTABLE WHERE dwOwnerID=@p0 AND wMonID=@p1", (int)idA, (int)RitualMon);
+        Check("saved: the summon out at logout, in TRECALLMONTABLE", recall is not null && Convert.ToInt32(recall[0]) == 1, $"rows={recall?[0]}");
+        // The player's own buffs are kept (TSaveSkillMaintain) — the chocolate's, unless it was the 3-second "Drunk".
+        var choc = await db.RowAsync("SELECT COUNT(*) FROM TSKILLMAINTAINTABLE WHERE dwCharID=@p0 AND wSkillID=@p1", (int)idA, (int)ChocolateBuff);
+        int expect = ChocolateBuff == ChocolateLast ? 0 : 1;
+        Check($"saved: the chocolate's buff ({ChocolateBuff}) in TSKILLMAINTAINTABLE", choc is not null && Convert.ToInt32(choc[0]) == expect,
+            $"rows={choc?[0]}, expected {expect}");
         var comp = await db.RowAsync("SELECT strName, dwMonID FROM TCOMPANIONTABLE WHERE dwCharID=@p0 AND bSlot=0", (int)idA);
         Check("saved: the companion in TCOMPANIONTABLE", comp is not null && (string)comp[0] == PalName && Convert.ToInt32(comp[1]) == RuneSpecies,
             comp is null ? "no row" : $"{comp[0]} / {comp[1]}");
@@ -979,7 +1050,7 @@ public static class Scenarios
         return row is null ? throw new InvalidOperationException($"account '{account}' has no character") : Convert.ToUInt32(row[0]);
     }
 
-    private const string CharCols = "dwGold, dwSilver, dwCooper, dwHP, wMapID, dwRegion, fPosX, fPosY, fPosZ, bAftermath";
+    private const string CharCols = "dwGold, dwSilver, dwCooper, dwHP, wMapID, dwRegion, fPosX, fPosY, fPosZ, bAftermath, bSex";
 
     private static async Task<Saved> Snapshot(GameDb db, uint idA, uint idB)
         => new((await db.RowAsync($"SELECT {CharCols} FROM TCHARTABLE WHERE dwCharID=@p0", (int)idA))!,
@@ -1018,6 +1089,13 @@ public static class Scenarios
             (int)idA, (int)RitualSkill, (int)IceRainSkill, (int)DefenceBreak);
         await db.ExecAsync("DELETE FROM TSKILLMAINTAINTABLE WHERE dwCharID=@p0 AND wSkillID=@p1", (int)idB, (int)DefenceBreak);
         await ClearLeftovers(db, idA, idB);
+        await ClearItemSkills(db, idA);
+        foreach (var (dl, slot, item) in new[] { (ChocolateDlId, ChocolateSlot, ChocolateItem), (GenderDlId, GenderSlot, GenderItem) })
+            await db.ExecAsync(@"INSERT INTO TITEMTABLE (dlID, bStorageType, dwStorageID, bOwnerType, dwOwnerID, bItemID, wItemID, bLevel,
+            bCount, bGLevel, dwDuraMax, dwDuraCur, bRefineCur, dEndTime, bGradeEffect, bMagic1, bMagic2, bMagic3, bMagic4, bMagic5,
+            bMagic6, wValue1, wValue2, wValue3, wValue4, wValue5, wValue6, dwTime1, dwTime2, dwTime3, dwTime4, dwTime5, dwTime6,
+            bGem, wMoggItemID)
+            VALUES (@p0, 0, 255, 0, @p1, @p2, @p3, 0, 1, 0, 0, 0, 0, '1900-01-01', 0, 0,0,0,0,0,0, 0,0,0,0,0,0, 0,0,0,0,0,0, 0, 0)", dl, (int)idA, (int)slot, (int)item);
         await db.ExecAsync("INSERT INTO TSKILLTABLE (dwCharID, wSkillID, bLevel, dwRemainTick) VALUES (@p0, @p2, 1, 0), (@p0, @p3, 1, 0), (@p0, @p4, 1, 0), (@p1, @p5, 1, 0)",
             (int)idA, (int)idB, (int)Hide, (int)SelfBuff, (int)DamageShare, (int)Dispel);
         await db.ExecAsync("DELETE FROM TITEMTABLE WHERE dlID=@p0 OR (dwOwnerID=@p1 AND bOwnerType=0 AND bStorageType=0 AND dwStorageID=255 AND bItemID=@p2)",
@@ -1057,6 +1135,15 @@ public static class Scenarios
         await db.ExecAsync("UPDATE TCHARTABLE SET wSkillPoint=@p1 WHERE dwCharID=@p0", (int)id, (int)BotSkillPoints);
     }
 
+    /// <summary>Takes away the use items (left or used up), the chocolate's buff, and the saved summons.</summary>
+    private static async Task ClearItemSkills(GameDb db, uint idA)
+    {
+        await db.ExecAsync("DELETE FROM TITEMTABLE WHERE dlID IN (@p0, @p1) OR (dwOwnerID=@p2 AND bOwnerType=0 AND bStorageType=0 AND dwStorageID=255 AND bItemID IN (@p3, @p4))",
+            ChocolateDlId, GenderDlId, (int)idA, (int)ChocolateSlot, (int)GenderSlot);
+        await db.ExecAsync("DELETE FROM TSKILLMAINTAINTABLE WHERE dwCharID=@p0 AND wSkillID BETWEEN @p1 AND @p2", (int)idA, (int)ChocolateFirst, (int)ChocolateLast);
+        await db.ExecAsync("DELETE FROM TRECALLMONTABLE WHERE dwOwnerID=@p0; DELETE FROM TRECALLMAINTAINTABLE WHERE dwCharID=@p0", (int)idA);
+    }
+
     /// <summary>Takes away the combat-leftover skills (learned and running): A's hide, self buff and damage share, B's dispel.</summary>
     private static async Task ClearLeftovers(GameDb db, uint idA, uint idB)
     {
@@ -1084,7 +1171,10 @@ public static class Scenarios
     {
         foreach (var (id, v) in new[] { (idA, s.A), (idB, s.B) })
             await db.ExecAsync(@"UPDATE TCHARTABLE SET dwGold=@p1, dwSilver=@p2, dwCooper=@p3, dwHP=@p4, wMapID=@p5, dwRegion=@p6,
-                fPosX=@p7, fPosY=@p8, fPosZ=@p9, bAftermath=@p10 WHERE dwCharID=@p0", (int)id, v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9]);
+                fPosX=@p7, fPosY=@p8, fPosZ=@p9, bAftermath=@p10, bSex=@p11 WHERE dwCharID=@p0", (int)id, v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9], v[10]);
+        // The gender potion also went to TGlobal's character list (TSaveCharBase chains to TGLOBAL_GSP).
+        await db.ExecAsync("UPDATE TGLOBAL_GSP.dbo.TALLCHARTABLE SET bSex=@p1 WHERE szName=(SELECT szName FROM TCHARTABLE WHERE dwCharID=@p0)",
+            (int)idA, s.A[10]);
         foreach (var (id, row) in new[] { (idA, s.PvpA), (idB, s.PvpB) })
             await SetPvPoint(db, id, row is null ? 0 : Convert.ToInt64(row[0]), row is null ? 0 : Convert.ToInt64(row[1]), keep: row is not null);
         await db.ExecAsync("DELETE FROM TITEMTABLE WHERE dwOwnerID=@p0 AND bOwnerType=0 AND bStorageType=0 AND wItemID=@p1", (int)idB, (int)BagItem);
@@ -1100,6 +1190,7 @@ public static class Scenarios
             (int)DefenceBreak);
         await db.ExecAsync("DELETE FROM TSKILLMAINTAINTABLE WHERE dwCharID=@p0 AND wSkillID=@p1", (int)idB, (int)DefenceBreak);
         await ClearLeftovers(db, idA, idB);
+        await ClearItemSkills(db, idA);
         await ClearPassives(db, idA);
         foreach (var t in RankTables)
         {

@@ -222,6 +222,7 @@ public sealed partial class MapService
         SendCS_CHARSTATINFO_ACK(s, ch);
         SendCS_PETLIST_ACK(s, ch);   // C++ sends it after CS_CHARSTATINFO_ACK (SSHandler.cpp:2171)
         SendCS_COMPANIONLIST_ACK(s, ch);
+        RestoreSavedRecalls(s, ch);  // C++ OnDM_LOADCHAR_ACK: the summons saved at logout, before…
         SummonTamedAtLogin(s, ch);   // C++ InitCharInfo ends with the sorcerer's tamed monster
     }
 
@@ -627,6 +628,8 @@ public sealed partial class MapService
         (ch.MonthPvPoint, ch.MonthWin, ch.MonthLose, ch.MonthRankOrder, ch.MonthRankPercent)
             = (pvp.MonthPoint, pvp.MonthWin, pvp.MonthLose, pvp.MonthRankOrder, pvp.MonthRankPercent);
         foreach (var (id, selected) in await _gameDb.LoadTitlesAsync(ch.CharId)) ch.Titles[id] = selected;   // CTBLTitle
+        try { LoadSavedRecalls(ch, await _gameDb.LoadRecallsAsync(ch.CharId)); }                          // CTBLRecallMon / Maintain
+        catch (Exception ex) { _log.LogWarning(ex, "Char {Char} summon load failed; continuing without them.", ch.CharId); }
 
         foreach (var sk in await _gameDb.LoadSkillsAsync(ch.CharId))
             ch.Skills.Add(new Skill

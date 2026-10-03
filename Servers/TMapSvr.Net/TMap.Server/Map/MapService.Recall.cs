@@ -97,6 +97,7 @@ public sealed partial class MapService
         if (rec.RecallAuto == 0) CheckRecallMon(s, ch, tpl);
 
         var mon = CreateRecallMon(s, ch, tpl, rec);
+        if (mon is not null) RestoredRecallArrived(ch, mon);                          // MapService.RecallSave.cs
         if (mon is not null && s.State == EnterState.InGame && !mon.InMap) EnterRecall(mon);
     }
 

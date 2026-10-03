@@ -253,6 +253,53 @@ public sealed record SkillTemplate(
         return false;
     }
 
+    // ---- the item-skill tests (C++ TSkillTemp.cpp) ----
+    /// <summary>SKILL_DATA_TYPE SDT_TRANS, SDT_TRANS_TYPE (RANDOM / the three country disguises), SDT_STATUS RANDOM /
+    /// ITEMUPGRADE / AUTOEXP, SKILL_CURE_TYPE SCT_AFTERMATH (NetCode.h).</summary>
+    public const byte SdtTrans = 3, SdtTransRandom = 3, SdtTransDisguiseD = 4, SdtTransDisguiseC = 5, SdtTransDisguiseB = 6,
+        SdtStatusRandom = 61, SdtStatusItemUpgrade = 42, SdtStatusAutoExp = 67, SctAftermath = 13;
+
+    private bool Has(byte type, byte exec) => Data.Any(d => d.Type == type && d.Exec == exec);
+
+    /// <summary>C++ <c>IsRandomTrans</c> / <c>IsRandomBuff</c> — the skill stands for one of a run of skills, picked at
+    /// random (<see cref="RandomPick"/>).</summary>
+    public bool IsRandomTrans() => Has(SdtTrans, SdtTransRandom);
+    public bool IsRandomBuff() => Has(SdtStatus, SdtStatusRandom);
+
+    /// <summary>C++ <c>RandTransSkill</c> / <c>RandBuffSkill</c> (TMapSvr.cpp:8454): the random row's <c>wValue</c> is the
+    /// first skill of the run, <c>wValueInc</c> how many; null when the row is empty.</summary>
+    public (ushort First, ushort Count)? RandomPick()
+    {
+        foreach (var d in Data)
+            if ((d.Type == SdtTrans && d.Exec == SdtTransRandom) || (d.Type == SdtStatus && d.Exec == SdtStatusRandom))
+                return d.Value == 0 || d.ValueInc == 0 ? null : (d.Value, d.ValueInc);
+        return null;
+    }
+
+    /// <summary>C++ <c>IsTrans</c> (a transformation), <c>IsBuffType</c> (an <c>SA_BUFF</c> row), <c>IsAfterMath</c>.</summary>
+    public bool IsTrans() => Data.Any(d => d.Type == SdtTrans);
+    public bool IsBuffType() => Data.Any(d => d.Action == SaBuff);
+    public bool IsAfterMath() => Has(SdtCure, SctAftermath);
+    public bool IsLuckyPotion() => Has(SdtStatus, SdtStatusItemUpgrade);
+    public bool IsExpPotion() => Has(SdtStatus, SdtStatusAutoExp);
+
+    /// <summary>C++ <c>IsDisguise</c> part of <c>HaveDisguiseBuff</c>: the country-disguise transformation it makes, or 0.</summary>
+    public byte Disguise()
+    {
+        foreach (var d in Data)
+            if (d.Type == SdtTrans && d.Exec is SdtTransDisguiseD or SdtTransDisguiseC or SdtTransDisguiseB) return d.Exec;
+        return 0;
+    }
+
+    /// <summary>C++ <c>CheckCountry</c> (TSkillTemp.cpp:402): one cannot disguise as one's own country.</summary>
+    public bool CheckCountry(byte country) => Disguise() switch
+    {
+        SdtTransDisguiseD => country != 0,                                     // TCONTRY_D
+        SdtTransDisguiseC => country != 1,                                     // TCONTRY_C
+        SdtTransDisguiseB => country != 2,                                     // TCONTRY_B
+        _ => true,
+    };
+
     /// <summary>SKILL_ACTION SA_CONTINUE / SA_PASSIVE, SKILL_DATA_TYPE SDT_EQUIP (NetCode.h:1530/1540).</summary>
     public const byte SaContinue = 1, SaPassive = 4, SdtEquip = 0;
 

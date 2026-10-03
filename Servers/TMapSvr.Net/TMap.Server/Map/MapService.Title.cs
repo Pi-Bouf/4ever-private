@@ -136,18 +136,23 @@ public sealed partial class MapService
         _world.Send(w);
     }
 
-    /// <summary>C++ <c>OnMW_CHANGECHARBASE_REQ</c>, the <c>IK_TITLE</c> case (the other kinds are not ported): the title is
-    /// shown and the players around are told.</summary>
+    /// <summary>C++ <c>OnMW_CHANGECHARBASE_REQ</c>, the <c>IK_TITLE</c> and look cases (MapService.ItemSkill.cs; name and
+    /// country are not ported): the change is the player's, and the players around are told.</summary>
     private void OnMW_CHANGECHARBASE_REQ(PacketReader r)
     {
         uint charId = r.ReadUInt32(), key = r.ReadUInt32();
         byte type = r.ReadByte(), value = r.ReadByte();
         ushort titleId = r.ReadUInt16();
         string name = r.ReadString();
-        if (type != IkTitle || _state.FindByChar(charId) is not { Char: { } ch } s || s.Key != key) return;
+        if (type != IkTitle && !IsLookKind(type)) return;
+        if (_state.FindByChar(charId) is not { Char: { } ch } s || s.Key != key) return;
 
-        ch.TitleId = titleId;
-        foreach (var id in ch.Titles.Keys.ToList()) ch.Titles[id] = id == titleId;
+        if (type == IkTitle)
+        {
+            ch.TitleId = titleId;
+            foreach (var id in ch.Titles.Keys.ToList()) ch.Titles[id] = id == titleId;
+        }
+        else ApplyLook(s, ch, type, value);
         var w = new PacketWriter(Msg.CS_CHANGECHARBASE_ACK);
         w.WriteByte(CcbSuccess); w.WriteUInt32(charId); w.WriteByte(type); w.WriteByte(value); w.WriteString(name);
         w.WriteUInt16(titleId); w.WriteUInt32(0);

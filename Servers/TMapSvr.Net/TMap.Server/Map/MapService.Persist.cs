@@ -299,7 +299,7 @@ public sealed partial class MapService
     {
         if (_gameDb is null || !s.IsMain || s.Char is not { DbLoaded: true } ch) return;
         ch.LastSaveMs = NowMs;
-        var charData = BuildCharSave(ch);
+        var charData = WithRecalls(BuildCharSave(ch), ch, NowMs);
         var quests = BuildQuestSaves(ch, NowMs);
         var inventory = _itemIdReady ? BuildInvenSaves(ch) : ((List<InvenSaveData>, List<ItemSaveData>)?)null;
         var hotkeys = BuildHotkeySaves(ch);
@@ -341,7 +341,7 @@ public sealed partial class MapService
         {
             if (!s.IsMain || s.Char is not { DbLoaded: true } ch) continue;
             ch.LastSaveMs = NowMs;
-            var charData = BuildCharSave(ch);
+            var charData = WithRecalls(BuildCharSave(ch), ch, NowMs);
             var quests = BuildQuestSaves(ch, NowMs);
             var inventory = _itemIdReady ? BuildInvenSaves(ch) : ((List<InvenSaveData>, List<ItemSaveData>)?)null;
             var hotkeys = BuildHotkeySaves(ch);

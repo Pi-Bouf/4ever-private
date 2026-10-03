@@ -217,6 +217,13 @@ public sealed class Character
     /// <summary>C++ <c>m_dwRiding</c> — the recall id of the mount being ridden, 0 when on foot.</summary>
     public uint Riding { get; set; }
 
+    /// <summary>Summons saved at the last logout, waiting to come back (MapService.RecallSave.cs): sent to the world at
+    /// login, each taken off when the world's copy arrives, and saved again if the player leaves first.</summary>
+    public List<(TMap.Data.RecallSaveRow Row, List<TMap.Data.RecallMaintainRow> Buffs)> PendingRecalls { get; } = new();
+
+    /// <summary>C++ <c>m_mapItemCoolTime</c> — per item delay group, the map tick its items can be used again.</summary>
+    public Dictionary<ushort, uint> ItemCoolTime { get; } = new();
+
     /// <summary>The account's pets by pet id (C++ <c>m_mapTPET</c>, account-wide).</summary>
     public Dictionary<ushort, Pet> Pets { get; } = new();
 

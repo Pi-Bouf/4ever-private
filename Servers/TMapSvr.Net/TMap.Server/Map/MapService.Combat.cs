@@ -153,10 +153,11 @@ public sealed partial class MapService
     private void PlayerHitsTarget(ClientSession s, Character ch, uint hostId, uint attackId, byte attackType,
         uint targetId, byte targetType, uint actId, uint aniId, byte attackerLevel, ushort transHp, ushort transMp,
         byte canSelect, ushort skillId, byte skillLevel,
-        float atkX, float atkY, float atkZ, float defX, float defY, float defZ)
+        float atkX, float atkY, float atkZ, float defX, float defY, float defZ, Skill? castSkill = null)
     {
-        // Resolve the attacking skill (C++ FindTSkill(m_wTriggerID); for a basic attack triggerID == wSkillID).
-        var atkSkill = LearnedSkill(ch, skillId);
+        // Resolve the attacking skill (C++ FindTSkill(m_wTriggerID); for a basic attack triggerID == wSkillID) — or the one
+        // FINISHSKILL decided on (a random pick, Deadly Poison's damage over time).
+        var atkSkill = castSkill ?? LearnedSkill(ch, skillId);
 
         // ---- PC→PC: an attack on another player (MapService.PvP.cs); otherwise a positive maintain-type skill applies
         // a buff, and/or a cure skill dispels/heals, on self/an ally. C++ Defend runs MaintainSkill + PerformSkill(SDT_CURE) both. ----
