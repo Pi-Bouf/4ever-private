@@ -42,6 +42,8 @@ public static class Scenarios
         CS_PVPRECORD_REQ = M + 0x01E9, CS_PVPRECORD_ACK = M + 0x01EA, CS_MONTHRANKLIST_REQ = M + 0x021D, CS_MONTHRANKLIST_ACK = M + 0x021E,
         CS_TITLEGAIN_ACK = M + 0x0277, CS_CHARSTATINFO_ACK = M + 0x00A4,
         CS_ITEMUSE_REQ = M + 0x004A, CS_ITEMUSE_ACK = M + 0x004B, CS_CHANGECHARBASE_ACK = M + 0x01CA,
+        CS_OPENMONEY_ACK = M + 0x01D3, CS_RESETPCBANG_ACK = M + 0x01B9, CS_EXP_ACK = M + 0x0024,
+        CS_CHANGENAME_REQ = M + 0x01C9, CS_CHANGECOUNTRY_REQ = M + 0x024B,
         CS_DIE_ACK = M + 0x0025, CS_REVIVAL_REQ = M + 0x0026, CS_REVIVAL_ACK = M + 0x0027, CS_PVPPOINT_ACK = M + 0x01E2,
         CS_MOVEITEM_REQ = M + 0x0028, CS_MOVEITEM_ACK = M + 0x0029, CS_SKILLEND_ACK = M + 0x0037,
         CS_SKILLBUY_REQ = M + 0x0032, CS_SKILLBUY_ACK = M + 0x0033, CS_NPCITEMLIST_REQ = M + 0x0082, CS_NPCITEMLIST_ACK = M + 0x0083;
@@ -79,6 +81,17 @@ public static class Scenarios
     private const ushort ChocolateItem = 18007, ChocolateFirst = 1302, ChocolateLast = 1306, GenderItem = 7623;
     private const byte ChocolateSlot = 45, GenderSlot = 46, IkSex = 49;
     private const long ChocolateDlId = 900_000_005, GenderDlId = 900_000_006;
+    // More use items, in slots 47-52: a pirate box (1 gold), a level-5 reward box, two growth potions, an XP Plus premium and a
+    // book of wisdom (+100 exp).
+    private static readonly (long DlId, byte Slot, ushort Item)[] UseItems =
+    {
+        (900_000_007, 47, 7957), (900_000_008, 48, 18148), (900_000_009, 49, 7631), (900_000_010, 50, 7632),
+        (900_000_011, 51, 7402), (900_000_012, 52, 8701), (900_000_013, 53, NameItem), (900_000_014, 54, NameItem),
+    };
+    private const ushort NameItem = 7624;
+    private const string NewName = "TbotRenamed";
+    private const ushort MoneyBox = 7957, RewardBox = 18148, Growth1h = 7631, Growth3h = 7632, XpPlus = 7402, Wisdom = 8701;
+    private const ushort XpPlusSkill = 901, ExpBuffSkill = 903;
     private const uint DefenceBreakMs = 9000;
     // Combat leftovers, all on A (B only strikes — A's HP is refilled by the duel's knockout right after):
     // a hide (221: ends on attacking and on being hit), a self buff (218), B's dispel (326, strips buffs), and the
@@ -151,6 +164,8 @@ public static class Scenarios
             Passives(a);
             CombatLeftovers(a, b);
             ItemSkills(a, b);
+            MoreUseItems(a, b);
+            await NameAndCountry(a, b, db, idA, nameA, nameB);
             Duel(a, b);
             PvP(a, b);
             Teleport(a, b);
@@ -173,6 +188,9 @@ public static class Scenarios
             a.Enter();
             var back = a.TryWait(CS_ADDRECALLMON_ACK, r => { r.ReadUInt32(); r.ReadUInt32(); return r.ReadUInt16() == RitualMon; }, 8000);
             Check("summons: the summon left out at logout comes back at login", back is not null, Describe(back));
+            var pc = a.TryWait(CS_RESETPCBANG_ACK, r => r.ReadUInt32() == a.CharId, 8000);
+            Check("use items: the premium comes back at login", pc is not null && Read(pc, r => { r.ReadUInt32(); return r.ReadByte(); }) == 2,
+                Describe(pc));
             if (back is not null)
             {
                 var mon = ParseAddRecall(back);
@@ -811,6 +829,93 @@ public static class Scenarios
         Check("items: … and the player nearby sees it", seen == mine, seen?.ToString() ?? "no CS_CHANGECHARBASE_ACK");
     }
 
+    /// <summary>Money pouch, reward box, exp book, exp boost (and a second one, refused) and an XP Plus premium.</summary>
+    private static void MoreUseItems(Bot a, Bot b)
+    {
+        byte Slot(ushort item) => UseItems.First(u => u.Item == item).Slot;
+        byte? Use(ushort item)
+        {
+            a.Discard(CS_ITEMUSE_ACK);
+            a.Send(Req(CS_ITEMUSE_REQ, w => { w.WriteUInt16(item); w.WriteByte(0xFF); w.WriteByte(Slot(item)); w.WriteUInt16(0); w.WriteByte(0); }));
+            return a.TryWait(CS_ITEMUSE_ACK) is { } ack ? Read(ack, r => { byte res = r.ReadByte(); r.ReadUInt16(); r.ReadByte(); r.ReadUInt32(); return res; }) : null;
+        }
+
+        a.Discard(CS_OPENMONEY_ACK); a.Discard(CS_MONEY_ACK);
+        Check("use items: the pirate box is opened", Use(MoneyBox) == 0, "no IU_SUCCESS");
+        var open = a.TryWait(CS_OPENMONEY_ACK);
+        Check("use items: … and it holds at least 1 gold (1 000 000)", open is not null && Read(open, r => r.ReadUInt32()) >= 1_000_000,
+            Describe(open));
+        Check("use items: … which goes to the purse", a.TryWait(CS_MONEY_ACK) is not null, "no CS_MONEY_ACK");
+        a.Discard(CS_TITLEGAIN_ACK);                                              // the gold may earn the gold title
+
+        a.Discard(CS_DELITEM_ACK);
+        Check("use items: the reward box is opened (nothing in it for a mage)", Use(RewardBox) == 0, "no IU_SUCCESS");
+        Check("use items: … and used up", a.TryWait(CS_DELITEM_ACK, r => { r.ReadByte(); return r.ReadByte() == Slot(RewardBox); }) is not null,
+            "no CS_DELITEM_ACK");
+
+        a.Discard(CS_EXP_ACK);
+        Check("use items: the book of wisdom is read", Use(Wisdom) == 0, "no IU_SUCCESS");
+        Check("use items: … and gives exp", a.TryWait(CS_EXP_ACK) is not null, "no CS_EXP_ACK");
+
+        a.Discard(CS_DEFEND_ACK);
+        Check("use items: the growth potion is drunk", Use(Growth1h) == 0, "no IU_SUCCESS");
+        var buff = a.TryWait(CS_DEFEND_ACK, r => r.ReadUInt32() == a.CharId && r.ReadUInt32() == a.CharId);
+        Check("use items: … and shows as the exp buff, for its hour", buff is not null && ReadSkillId(buff) == ExpBuffSkill
+            && ReadMaintain(buff) == (1, 3_600_000), Describe(buff));
+        Check("use items: a second growth potion is refused (IU_OVERLAPEXPBONUS)", Use(Growth3h) == 13, "not refused");
+
+        a.Discard(CS_DEFEND_ACK); b.Discard(CS_RESETPCBANG_ACK);
+        Check("use items: the XP Plus premium is used", Use(XpPlus) == 0, "no IU_SUCCESS");
+        var pc = b.TryWait(CS_RESETPCBANG_ACK, r => r.ReadUInt32() == a.CharId);
+        Check("use items: … the player nearby sees the premium (CS_RESETPCBANG_ACK 2)", pc is not null && Read(pc, r => { r.ReadUInt32(); return r.ReadByte(); }) == 2,
+            Describe(pc));
+        var landed = new List<ushort>();
+        for (int i = 0; i < 4 && !landed.Contains(XpPlusSkill); i++)
+            if (a.TryWait(CS_DEFEND_ACK, r => r.ReadUInt32() == a.CharId && r.ReadUInt32() == a.CharId, 2000) is { } d) landed.Add(ReadSkillId(d));
+        Check("use items: … and its own buff lands, with the exp buff", landed.Contains(XpPlusSkill) && landed.Contains(ExpBuffSkill),
+            string.Join(",", landed));
+    }
+
+    /// <summary>A name change (refused when taken, then to a new name and back) and a country change refused below level 130.</summary>
+    private static async Task NameAndCountry(Bot a, Bot b, GameDb db, uint idA, string nameA, string nameB)
+    {
+        (byte Result, byte Kind, string Name)? Ack(Bot bot, int timeout = 5000) => bot.TryWait(CS_CHANGECHARBASE_ACK, r => { r.ReadByte(); return r.ReadUInt32() == a.CharId; }, timeout)
+            is { } p ? Read(p, r => { byte res = r.ReadByte(); r.ReadUInt32(); byte k = r.ReadByte(); r.ReadByte(); string n = r.ReadString(); r.ReadUInt16(); r.ReadUInt32(); return (res, k, n); }) : null;
+        void Rename(byte slot, string name)
+        {
+            a.Discard(CS_CHANGECHARBASE_ACK); b.Discard(CS_CHANGECHARBASE_ACK);
+            a.Send(Req(CS_CHANGENAME_REQ, w => { w.WriteByte(0xFF); w.WriteByte(slot); w.WriteString(name); }));
+        }
+        byte slot1 = UseItems.First(u => u.DlId == 900_000_013).Slot, slot2 = UseItems.First(u => u.DlId == 900_000_014).Slot;
+
+        Rename(slot1, nameB);
+        Check("name: someone else's name is refused (CCB_DUPLICATE)", Ack(a) is { Result: 1 }, "not refused");
+        Rename(slot1, "Bad.Name");
+        Check("name: a name with a dot is refused (CCB_FAIL)", Ack(a) is { Result: 9 }, "not refused");
+
+        a.Discard(CS_DELITEM_ACK);
+        Rename(slot1, NewName);
+        var mine = Ack(a);
+        Check("name: the new name comes back through the world", mine == (0, 48, NewName), mine?.ToString() ?? "no CS_CHANGECHARBASE_ACK");
+        var seen = Ack(b);
+        Check("name: … and the player nearby sees it", seen == (0, 48, NewName), seen?.ToString() ?? "no CS_CHANGECHARBASE_ACK");
+        Check("name: … and the item is used up", a.TryWait(CS_DELITEM_ACK, r => { r.ReadByte(); return r.ReadByte() == slot1; }) is not null, "no CS_DELITEM_ACK");
+        await Task.Delay(1500);
+        var row = await db.RowAsync(@"SELECT c.szName, (SELECT COUNT(*) FROM TGLOBAL_GSP.dbo.TALLCHARTABLE WHERE szName=@p1) FROM TCHARTABLE c
+            WHERE c.dwCharID=@p0", (int)idA, NewName);
+        Check("name: saved in TCHARTABLE and TGlobal's TALLCHARTABLE", row is not null && (string)row[0] == NewName && Convert.ToInt32(row[1]) == 1,
+            row is null ? "no row" : $"{row[0]} / {row[1]}");
+
+        Rename(slot2, nameA);
+        var back = Ack(a);
+        Check("name: and back to the old one", back == (0, 48, nameA), back?.ToString() ?? "no CS_CHANGECHARBASE_ACK");
+
+        a.Send(Req(CS_CHANGECOUNTRY_REQ, w => { w.WriteByte(96); w.WriteByte(2); w.WriteByte(0xFF); w.WriteByte(0xFF); }));
+        var country = Ack(a);
+        Check("country: going to Broa below level 130 is refused (CCB_LEVEL)", country is { Result: 8, Kind: 96 }, country?.ToString() ?? "no answer");
+        await Task.Delay(1000);
+    }
+
     /// <summary>A Dark Ritual summon left out: the logout saves it (TRECALLMONTABLE), and the next login brings it back.</summary>
     private static void LeaveASummonOut(Bot a)
     {
@@ -976,6 +1081,13 @@ public static class Scenarios
 
     private static async Task CheckSaved(GameDb db, uint idA, uint idB)
     {
+        var exp = await db.RowAsync("SELECT wItemID, bType, dwRemainTime FROM TEXPITEMTABLE WHERE dwCharID=@p0", (int)idA);
+        Check("saved: the growth potion still running, in TEXPITEMTABLE", exp is not null && Convert.ToInt32(exp[0]) == Growth1h
+            && Convert.ToInt32(exp[1]) == 1 && Convert.ToInt32(exp[2]) is > 3000 and <= 3600, exp is null ? "no row" : $"{exp[0]} / {exp[1]} / {exp[2]}");
+        var dur = await db.RowAsync(@"SELECT wItemID, bType, dwRemainTime FROM TGLOBAL_GSP.dbo.TDURINGITEMTABLE
+            WHERE dwUserID=(SELECT dwUserID FROM TCHARTABLE WHERE dwCharID=@p0)", (int)idA);
+        Check("saved: the account's premium, in TGlobal's TDURINGITEMTABLE", dur is not null && Convert.ToInt32(dur[0]) == XpPlus
+            && Convert.ToInt32(dur[1]) == 1 && Convert.ToInt32(dur[2]) is > 35000 and <= 36000, dur is null ? "no row" : $"{dur[0]} / {dur[1]} / {dur[2]}");
         var recall = await db.RowAsync("SELECT COUNT(*) FROM TRECALLMONTABLE WHERE dwOwnerID=@p0 AND wMonID=@p1", (int)idA, (int)RitualMon);
         Check("saved: the summon out at logout, in TRECALLMONTABLE", recall is not null && Convert.ToInt32(recall[0]) == 1, $"rows={recall?[0]}");
         // The player's own buffs are kept (TSaveSkillMaintain) — the chocolate's, unless it was the 3-second "Drunk".
@@ -1050,7 +1162,7 @@ public static class Scenarios
         return row is null ? throw new InvalidOperationException($"account '{account}' has no character") : Convert.ToUInt32(row[0]);
     }
 
-    private const string CharCols = "dwGold, dwSilver, dwCooper, dwHP, wMapID, dwRegion, fPosX, fPosY, fPosZ, bAftermath, bSex";
+    private const string CharCols = "dwGold, dwSilver, dwCooper, dwHP, wMapID, dwRegion, fPosX, fPosY, fPosZ, bAftermath, bSex, dwEXP, bLevel, szName";
 
     private static async Task<Saved> Snapshot(GameDb db, uint idA, uint idB)
         => new((await db.RowAsync($"SELECT {CharCols} FROM TCHARTABLE WHERE dwCharID=@p0", (int)idA))!,
@@ -1090,7 +1202,7 @@ public static class Scenarios
         await db.ExecAsync("DELETE FROM TSKILLMAINTAINTABLE WHERE dwCharID=@p0 AND wSkillID=@p1", (int)idB, (int)DefenceBreak);
         await ClearLeftovers(db, idA, idB);
         await ClearItemSkills(db, idA);
-        foreach (var (dl, slot, item) in new[] { (ChocolateDlId, ChocolateSlot, ChocolateItem), (GenderDlId, GenderSlot, GenderItem) })
+        foreach (var (dl, slot, item) in new[] { (ChocolateDlId, ChocolateSlot, ChocolateItem), (GenderDlId, GenderSlot, GenderItem) }.Concat(UseItems))
             await db.ExecAsync(@"INSERT INTO TITEMTABLE (dlID, bStorageType, dwStorageID, bOwnerType, dwOwnerID, bItemID, wItemID, bLevel,
             bCount, bGLevel, dwDuraMax, dwDuraCur, bRefineCur, dEndTime, bGradeEffect, bMagic1, bMagic2, bMagic3, bMagic4, bMagic5,
             bMagic6, wValue1, wValue2, wValue3, wValue4, wValue5, wValue6, dwTime1, dwTime2, dwTime3, dwTime4, dwTime5, dwTime6,
@@ -1142,6 +1254,13 @@ public static class Scenarios
             ChocolateDlId, GenderDlId, (int)idA, (int)ChocolateSlot, (int)GenderSlot);
         await db.ExecAsync("DELETE FROM TSKILLMAINTAINTABLE WHERE dwCharID=@p0 AND wSkillID BETWEEN @p1 AND @p2", (int)idA, (int)ChocolateFirst, (int)ChocolateLast);
         await db.ExecAsync("DELETE FROM TRECALLMONTABLE WHERE dwOwnerID=@p0; DELETE FROM TRECALLMAINTAINTABLE WHERE dwCharID=@p0", (int)idA);
+        foreach (var (dl, slot, _) in UseItems)
+            await db.ExecAsync("DELETE FROM TITEMTABLE WHERE dlID=@p0 OR (dwOwnerID=@p1 AND bOwnerType=0 AND bStorageType=0 AND dwStorageID=255 AND bItemID=@p2)",
+                dl, (int)idA, (int)slot);
+        await db.ExecAsync(@"DELETE FROM TEXPITEMTABLE WHERE dwCharID=@p0;
+            DELETE FROM TGLOBAL_GSP.dbo.TDURINGITEMTABLE WHERE dwUserID=(SELECT dwUserID FROM TCHARTABLE WHERE dwCharID=@p0);
+            DELETE FROM TGLOBAL_GSP.dbo.TPCBANGPLAYTABLE WHERE dwUserID=(SELECT dwUserID FROM TCHARTABLE WHERE dwCharID=@p0);
+            DELETE FROM TSKILLMAINTAINTABLE WHERE dwCharID=@p0 AND wSkillID IN (@p1, @p2)", (int)idA, (int)XpPlusSkill, (int)ExpBuffSkill);
     }
 
     /// <summary>Takes away the combat-leftover skills (learned and running): A's hide, self buff and damage share, B's dispel.</summary>
@@ -1171,7 +1290,10 @@ public static class Scenarios
     {
         foreach (var (id, v) in new[] { (idA, s.A), (idB, s.B) })
             await db.ExecAsync(@"UPDATE TCHARTABLE SET dwGold=@p1, dwSilver=@p2, dwCooper=@p3, dwHP=@p4, wMapID=@p5, dwRegion=@p6,
-                fPosX=@p7, fPosY=@p8, fPosZ=@p9, bAftermath=@p10, bSex=@p11 WHERE dwCharID=@p0", (int)id, v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9], v[10]);
+                fPosX=@p7, fPosY=@p8, fPosZ=@p9, bAftermath=@p10, bSex=@p11, dwEXP=@p12, bLevel=@p13, szName=@p14 WHERE dwCharID=@p0", (int)id, v[0], v[1], v[2],
+                v[3], v[4], v[5], v[6], v[7], v[8], v[9], v[10], v[11], v[12], v[13]);
+        // A rename left half-way (the name change test) is undone in TGlobal's character list too.
+        await db.ExecAsync("UPDATE TGLOBAL_GSP.dbo.TALLCHARTABLE SET szName=@p0 WHERE szName=@p1", s.A[13], NewName);
         // The gender potion also went to TGlobal's character list (TSaveCharBase chains to TGLOBAL_GSP).
         await db.ExecAsync("UPDATE TGLOBAL_GSP.dbo.TALLCHARTABLE SET bSex=@p1 WHERE szName=(SELECT szName FROM TCHARTABLE WHERE dwCharID=@p0)",
             (int)idA, s.A[10]);

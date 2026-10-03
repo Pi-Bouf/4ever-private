@@ -17,6 +17,10 @@ public sealed class Character
     public byte Race { get; set; }
     public byte Country { get; set; }
     public byte AidCountry { get; set; }
+    /// <summary>C++ <c>m_bOriCountry</c> (the country a Broa player goes back to) and <c>m_dlAidDate</c> (unix seconds of the
+    /// last aid-country change, 0 for none).</summary>
+    public byte OriCountry { get; set; }
+    public long AidDate { get; set; }
     public byte Sex { get; set; }
     public byte Hair { get; set; }
     public byte Face { get; set; }
@@ -220,6 +224,17 @@ public sealed class Character
     /// <summary>Summons saved at the last logout, waiting to come back (MapService.RecallSave.cs): sent to the world at
     /// login, each taken off when the world's copy arrives, and saved again if the player leaves first.</summary>
     public List<(TMap.Data.RecallSaveRow Row, List<TMap.Data.RecallMaintainRow> Buffs)> PendingRecalls { get; } = new();
+
+    /// <summary>C++ <c>m_diPremium</c> / <c>m_diExp</c> — the running premium and exp boost (MapService.DuringItem.cs).</summary>
+    public DuringItem? Premium { get; set; }
+    public DuringItem? ExpItem { get; set; }
+
+    /// <summary>C++ <c>m_bInPcBang</c> (PCBANG_REAL 1 / PREMIUM1 2 / PREMIUM2 4), <c>m_dwPcBangTime</c> (bonus seconds used today)
+    /// and <c>m_bPcBangItemCnt</c>; <c>DuringTick</c> is the unix second of the last countdown step (C++ <c>m_timeEnter</c>).</summary>
+    public byte InPcBang { get; set; }
+    public uint PcBangTime { get; set; }
+    public byte PcBangItemCnt { get; set; }
+    public long DuringTick { get; set; }
 
     /// <summary>C++ <c>m_mapItemCoolTime</c> — per item delay group, the map tick its items can be used again.</summary>
     public Dictionary<ushort, uint> ItemCoolTime { get; } = new();

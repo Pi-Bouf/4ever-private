@@ -36,13 +36,23 @@ public readonly record struct CharSaveData(
     // TRECALLMONTABLE / TRECALLMAINTAINTABLE: the live summons and their buffs; null = leave the rows alone.
     IReadOnlyList<RecallSaveRow>? Recalls = null, IReadOnlyList<RecallMaintainRow>? RecallMaintains = null,
     // TSaveSkillMaintain: the player's own buffs (TSaveChar clears them first); null = none.
-    IReadOnlyList<MaintainLoadRow>? Maintains = null);
+    IReadOnlyList<MaintainLoadRow>? Maintains = null,
+    // The running premium (account-wide, TGLOBAL TDURINGITEMTABLE) and exp item (TEXPITEMTABLE), written when SaveDuring.
+    DuringItemRow? Premium = null, DuringItemRow? ExpItem = null, bool SaveDuring = false);
 
 /// <summary>One saved summon (<c>TRECALLMONTABLE</c>, C++ <c>CTBLRecallMon</c>): its id when saved, chart, mount, attr
 /// (<c>MAKELONG(attr, level)</c>), level, HP/MP, skill level, position, the life it had left (ms, 0 = for good) and
 /// effect.</summary>
 public sealed record RecallSaveRow(uint Id, ushort MonId, ushort PetId, uint Attr, byte Level, uint Hp, uint Mp, byte SkillLevel,
     short X, short Y, short Z, uint Time, byte Effect);
+
+/// <summary>A running premium or exp-boost item (C++ <c>TDURINGITEM</c>): the item, <c>DURINGTYPE_TIME</c> 1 / <c>_DAY</c> 2, the
+/// seconds left and when it ends (unix seconds).</summary>
+public sealed record DuringItemRow(ushort ItemId, byte Type, uint Remain, long EndTime);
+
+/// <summary>What the login reads about premium / exp items: the account's premium (<c>TVIEW_DURINGITEMTABLE</c>), the
+/// character's exp items (<c>TEXPITEMTABLE</c>), and <c>TGetPcBangData</c>'s flags, bonus seconds used today and item count.</summary>
+public sealed record DuringLoad(List<DuringItemRow> Premium, List<DuringItemRow> Exp, byte InPcBang, uint PcBangTime, byte PcBangItemCnt);
 
 /// <summary>One buff of a saved summon (<c>TRECALLMAINTAINTABLE</c>, C++ <c>CTBLRecallMaintain</c>); <c>Remain</c> 0 = for good.</summary>
 public sealed record RecallMaintainRow(uint RecallId, ushort SkillId, byte Level, uint Remain, byte AttackType, uint AttackId,
@@ -231,6 +241,11 @@ public sealed partial class GameDatabase
                  dwDuraMax, dwDuraCur, bRefineCur, bGradeEffect,
                  bMagic1, bMagic2, bMagic3, bMagic4, bMagic5, bMagic6, wValue1, wValue2, wValue3, wValue4, wValue5, wValue6,
                  dwTime1, dwTime2, dwTime3, dwTime4, dwTime5, dwTime6, bGem, wMoggItemID FROM TVIEW_CASHGAMBLECHART";
+    // C++ CTBLSpecialBoxChart (DBAccess.h:4754): the box group is wGroup (the C++ keys its map on it).
+    private const string SpecialBoxChartSql = @"SELECT wGroup, wUseTime, bClass, wItemID, bLevel, bCount, bGLevel,
+                 dwDuraMax, dwDuraCur, bRefineCur, bGradeEffect,
+                 bMagic1, bMagic2, bMagic3, bMagic4, bMagic5, bMagic6, wValue1, wValue2, wValue3, wValue4, wValue5, wValue6,
+                 dwTime1, dwTime2, dwTime3, dwTime4, dwTime5, dwTime6, bGem, wMoggItemID FROM TSPECIALBOXCHART";
     // The skill chart (CTBLSkillChart → CTSkillTemp). Of the 56-column C++ SELECT we read the
     // subset the CS_SKILLUSE caster spine uses. Note bLevel → m_bStartLevel (the C++ remaps it, TMapSvr.cpp:2630).
     private const string SkillChartSql =
@@ -382,6 +397,26 @@ public sealed partial class GameDatabase
                 list.Add(row);
                 store.CashGambleTotal[row.Group] = store.CashGambleTotal.GetValueOrDefault(row.Group) + row.Prob;
             }
+
+        try
+        {
+            await using var cmd = new SqlCommand(SpecialBoxChartSql, c);
+            await using var r = await cmd.ExecuteReaderAsync(ct);
+            while (await r.ReadAsync(ct))
+            {
+                var magic = new byte[6]; var value = new ushort[6]; var ext = new uint[6];
+                for (int i = 0; i < 6; i++) magic[i] = r.GetByteSafe(11 + i);
+                for (int i = 0; i < 6; i++) value[i] = r.GetUShortSafe(17 + i);
+                for (int i = 0; i < 6; i++) ext[i] = r.GetUIntSafe(23 + i);
+                var item = new FullItemRow(0, 0, 0, r.GetUShortSafe(3), r.GetByteSafe(4), r.GetByteSafe(5), r.GetByteSafe(6),
+                    r.GetUIntSafe(7), r.GetUIntSafe(8), r.GetByteSafe(9), 0, r.GetByteSafe(10), magic, value, ext,
+                    r.GetByteSafe(29), r.GetUShortSafe(30), 0);
+                var row = new SpecialBoxRow(r.GetUShortSafe(0), r.GetUShortSafe(1), r.GetByteSafe(2), item);
+                if (!store.SpecialBoxes.TryGetValue(row.Group, out var list)) store.SpecialBoxes[row.Group] = list = new();
+                list.Add(row);
+            }
+        }
+        catch (SqlException ex) when (ex.Number == 208) { /* no special boxes in this baseline */ }
 
         await using (var cmd = new SqlCommand(LevelChartSql, c))
         await using (var r = await cmd.ExecuteReaderAsync(ct))
@@ -762,6 +797,7 @@ FROM TCHARTABLE WHERE dwCharID = @dwCharID AND bDelete = 0";
             await SavePvPointAsync(c, d, ct);
             await SaveTitlesAsync(c, d, ct);
             await SaveRecallsAsync(c, d, ct);
+            await SaveDuringItemsAsync(c, d, ct);
         }
         catch (SqlException ex) when (ex.Number == 2812) { /* proc absent in this baseline — tolerate */ }
     }
@@ -864,6 +900,68 @@ FROM TCHARTABLE WHERE dwCharID = @dwCharID AND bDelete = 0";
         await tx.CommitAsync(ct);
     }
 
+    /// <summary>C++ <c>OnDM_SAVECHAR_REQ</c>'s during items (SSHandler.cpp:7150) and the <c>TSaveCharDataEnd</c> copy: the
+    /// character's exp item replaces its <c>TEXPITEMTABLE</c> rows, the premium the account's <c>TDURINGITEMTABLE</c> rows (what
+    /// <c>TSaveExpItem</c> / <c>TSaveDuringItem</c> stage and the end proc moves). Plain SQL, in one transaction.</summary>
+    private static async Task SaveDuringItemsAsync(SqlConnection c, CharSaveData d, CancellationToken ct)
+    {
+        if (!d.SaveDuring) return;
+        await using var tx = (SqlTransaction)await c.BeginTransactionAsync(ct);
+        async Task Exec(string sql, DuringItemRow? row)
+        {
+            await using var cmd = new SqlCommand(sql, c, tx);
+            cmd.Parameters.Add(SqlProc.In("@c", SqlDbType.Int, unchecked((int)d.CharId)));
+            if (row is not null)
+            {
+                cmd.Parameters.Add(SqlProc.In("@i", SqlDbType.SmallInt, unchecked((short)row.ItemId)));
+                cmd.Parameters.Add(SqlProc.In("@t", SqlDbType.TinyInt, row.Type));
+                cmd.Parameters.Add(SqlProc.In("@r", SqlDbType.Int, unchecked((int)row.Remain)));
+                cmd.Parameters.Add(new SqlParameter("@e", SqlDbType.SmallDateTime) { Value = FromTime64(row.EndTime) });
+            }
+            await cmd.ExecuteNonQueryAsync(ct);
+        }
+        const string user = "(SELECT dwUserID FROM TCHARTABLE WHERE dwCharID = @c)";
+        await Exec("DELETE TEXPITEMTABLE WHERE dwCharID = @c", null);
+        await Exec("DELETE TGLOBAL_GSP.dbo.TDURINGITEMTABLE WHERE dwUserID = " + user, null);
+        if (d.ExpItem is { } e)
+            await Exec("INSERT INTO TEXPITEMTABLE (dwCharID, wItemID, bType, dwRemainTime, dEndTime) VALUES (@c, @i, @t, @r, @e)", e);
+        if (d.Premium is { } p)
+            await Exec("INSERT INTO TGLOBAL_GSP.dbo.TDURINGITEMTABLE (dwUserID, wItemID, bType, dwRemainTime, dEndTime) SELECT "
+                + user + ", @i, @t, @r, @e", p);
+        await tx.CommitAsync(ct);
+    }
+
+    /// <summary>C++ <c>CTBLDuringItem</c> + <c>CTBLExpItem</c> + <c>CSPGetPcBangData</c> at char load (SSHandler.cpp:3497/3893).
+    /// <paramref name="playDate"/> is today as yyyymmdd.</summary>
+    public async Task<DuringLoad> LoadDuringItemsAsync(uint charId, uint userId, int playDate, CancellationToken ct = default)
+    {
+        var premium = new List<DuringItemRow>();
+        var exp = new List<DuringItemRow>();
+        await using var c = await OpenAsync(ct);
+        foreach (var (sql, id, list) in new[]
+        {
+            ("SELECT wItemID, bType, dwRemainTime, dEndTime FROM TVIEW_DURINGITEMTABLE WHERE dwUserID = @k", userId, premium),
+            ("SELECT wItemID, bType, dwRemainTime, dEndTime FROM TEXPITEMTABLE WHERE dwCharID = @k", charId, exp),
+        })
+        {
+            await using var cmd = new SqlCommand(sql, c);
+            cmd.Parameters.Add(SqlProc.In("@k", SqlDbType.Int, unchecked((int)id)));
+            await using var r = await cmd.ExecuteReaderAsync(ct);
+            while (await r.ReadAsync(ct))
+                list.Add(new DuringItemRow(r.GetUShortSafe(0), r.GetByteSafe(1), r.GetUIntSafe(2), ToTime64(r, 3)));
+        }
+        var ps = new[]
+        {
+            SqlProc.In("@u", SqlDbType.Int, unchecked((int)userId)), SqlProc.In("@d", SqlDbType.Int, playDate),
+            SqlProc.Out("@b", SqlDbType.TinyInt), SqlProc.Out("@t", SqlDbType.Int), SqlProc.Out("@n", SqlDbType.TinyInt),
+            SqlProc.Out("@l", SqlDbType.TinyInt),
+        };
+        try { await SqlProc.ExecAsync(c, "TGetPcBangData", SqlProc.Ret(), ps, ct); }
+        catch (SqlException) { return new DuringLoad(premium, exp, 0, 0, 0); }
+        static uint U(SqlParameter p) => p.Value is DBNull or null ? 0u : unchecked((uint)Convert.ToInt64(p.Value));
+        return new DuringLoad(premium, exp, (byte)U(ps[2]), U(ps[3]), (byte)U(ps[4]));
+    }
+
     /// <summary>C++ <c>CTBLRecallMon</c> + <c>CTBLRecallMaintain</c> at char load (SSHandler.cpp:3942/3981). The host type is
     /// a <c>char</c> column holding the byte (the C++ binds a BYTE to it).</summary>
     public async Task<(List<RecallSaveRow> Recalls, List<RecallMaintainRow> Buffs)> LoadRecallsAsync(uint charId, CancellationToken ct = default)
@@ -941,6 +1039,31 @@ FROM TCHARTABLE WHERE dwCharID = @dwCharID AND bDelete = 0";
             SqlProc.In("@c2", SqlDbType.TinyInt, value),
             SqlProc.In("@c3", SqlDbType.VarChar, name, 50),
         }, ct);
+    }
+
+    /// <summary>C++ <c>CSPCheckDuplicateName</c> (DBAccess.h:6647): 0 when the name is free, else a <c>CCB_*</c> code (1 when a
+    /// character, NPC or monster has it).</summary>
+    public async Task<int> CheckDuplicateNameAsync(uint charId, string name, CancellationToken ct = default)
+    {
+        await using var c = await OpenAsync(ct);
+        var ret = SqlProc.Ret();
+        await SqlProc.ExecAsync(c, "TCheckDuplicateName", ret, new[]
+        {
+            SqlProc.In("@n0", SqlDbType.Int, unchecked((int)charId)), SqlProc.In("@n1", SqlDbType.VarChar, name, 50),
+        }, ct);
+        return ret.Value is int v ? v : 9;
+    }
+
+    /// <summary>The C++ char load's <c>bOriCountry</c> (<c>CTBLChar</c>) and aid country (<c>CTBLAidTable</c>, DBAccess.h:4599):
+    /// the original country, and the aid country with when it was chosen (none: <c>TCONTRY_N</c>, 0).</summary>
+    public async Task<(byte OriCountry, byte AidCountry, long AidDate)> LoadAidAsync(uint charId, CancellationToken ct = default)
+    {
+        await using var c = await OpenAsync(ct);
+        await using var cmd = new SqlCommand(@"SELECT bOriCountry, ISNULL(a.bCountry, 3), a.dDate FROM TCHARTABLE c
+            LEFT JOIN TAIDTABLE a ON a.dwCharID = c.dwCharID WHERE c.dwCharID = @c", c);
+        cmd.Parameters.Add(SqlProc.In("@c", SqlDbType.Int, unchecked((int)charId)));
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        return await r.ReadAsync(ct) ? (r.GetByteSafe(0), r.GetByteSafe(1), ToTime64(r, 2)) : ((byte)0, (byte)3, 0L);
     }
 
     public async Task SaveCharKillAsync(uint killerId, uint targetId, CancellationToken ct = default)

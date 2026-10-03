@@ -378,6 +378,7 @@ public sealed partial class MapService
             SendSwitchesAndGatesInView(s); // + the switches/gates already in view (CTCell::EnterPlayer switch/gate loops)
             RecallsEnterMap(s, s.Char);    // summons that followed through a teleport come back (InitMap)
             CompanionEnterMap(s, s.Char);  // and the summoned companion is called out (InitMap)
+            DuringItemsAtLogin(s, s.Char); // the premium / exp boost buffs, the premium shown around (InitMap)
             _log.LogInformation("Char {Char} live on map {Map} ch {Ch}.", s.CharId, s.Char.MapId, s.Channel);
         }
     }
@@ -550,6 +551,10 @@ public sealed partial class MapService
                 }
 
                 await TryLoadInventoryAsync(ch);
+                try { (ch.OriCountry, ch.AidCountry, ch.AidDate) = await _gameDb.LoadAidAsync(ch.CharId); }   // CTBLChar / CTBLAidTable
+                catch (Exception ex) { _log.LogWarning(ex, "Char {Char} aid country load failed.", ch.CharId); }
+                try { LoadDuringItems(ch, await _gameDb.LoadDuringItemsAsync(ch.CharId, s.UserId, LocalDay(UnixNow()))); }
+                catch (Exception ex) { _log.LogWarning(ex, "Char {Char} premium / exp item load failed.", ch.CharId); }
                 await LoadPetsAsync(s, ch);
                 await LoadCompanionsAsync(ch);
 

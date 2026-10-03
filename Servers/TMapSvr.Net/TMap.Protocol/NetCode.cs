@@ -177,6 +177,8 @@ public static class Msg
     public const ushort CS_STOREITEMSELL_ACK = CS_MAP + 0x0121;  // bItem(index), bCount (to seller when sold)
     public const ushort CS_REGION_REQ = CS_MAP + 0x00F1;
     public const ushort CS_SYSTEMMSG_ACK = CS_MAP + 0x01D1;
+    public const ushort CS_RESETPCBANG_ACK = CS_MAP + 0x01B9;    // dwCharID, bInPcBang
+    public const ushort CS_OPENMONEY_ACK = CS_MAP + 0x01D3;      // dwMoney (a money pouch opened)
     public const ushort CS_TERMINATE_REQ = CS_MAP + 0x01D2;
     public const ushort CS_CHECKRELAY_REQ = CS_MAP + 0x01DA;
     public const ushort CS_DISCONNECT_REQ = CS_MAP + 0x013C;
@@ -333,6 +335,8 @@ public static class Msg
     public const ushort CS_TITLELIST_REQ = CS_MAP + 0x0274;
     public const ushort CS_TITLELIST_ACK = CS_MAP + 0x0275;         // bCount × (wTitleID · bSelected)
     public const ushort CS_CHANGETITLE_REQ = CS_MAP + 0x0276;       // wTitleID
+    public const ushort CS_CHANGENAME_REQ = CS_MAP + 0x01C9;        // bInven, bItem, szName
+    public const ushort CS_CHANGECOUNTRY_REQ = CS_MAP + 0x024B;     // bType (IK_COUNTRY / IK_AIDCOUNTRY), bCountry, bInven, bItem
     public const ushort CS_TITLEGAIN_ACK = CS_MAP + 0x0277;         // the list, then wTitleID · bStart
     public const ushort CS_TITLERESET_ACK = CS_MAP + 0x0278;
     public const ushort MW_CHANGECHARBASE_REQ = MW_BASE + 0x0119;   // dwCharID · dwKey · bType · bValue · wTitleID · strName

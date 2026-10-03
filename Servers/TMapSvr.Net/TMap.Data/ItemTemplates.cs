@@ -62,6 +62,11 @@ public sealed record MagicTemplate(byte MagicId, byte RvType, ushort MaxValue,
 /// days the prize lasts (0 = forever) and the prize item itself.</summary>
 public sealed record CashGambleRow(uint Id, uint Prob, ushort Group, ushort UseTime, FullItemRow Item);
 
+/// <summary>One item of a special box (C++ <c>SPECIALBOX</c> from <c>TSPECIALBOXCHART</c>): the box group it belongs to (the
+/// box item's <c>wUseValue</c>), how many days it lasts (0 = forever), the class it is for (<c>TCLASS_COUNT</c> = everyone) and
+/// the item itself.</summary>
+public sealed record SpecialBoxRow(ushort Group, ushort UseTime, byte Class, FullItemRow Item);
+
 /// <summary>One option an accessory scroll can add (C++ <c>ACCESSORYMAGIC</c> from <c>ACCESSORYMAGICTABLE</c>).</summary>
 public sealed record AccessoryMagicRow(uint Id, byte MagicId, ushort MinValue, ushort MaxValue);
 
@@ -226,6 +231,9 @@ public sealed class TemplateStore
 
     /// <summary>C++ <c>m_mapMaxCashGambleProb</c> — each group's total weight.</summary>
     public Dictionary<ushort, uint> CashGambleTotal { get; } = new();
+
+    /// <summary>C++ <c>m_mapSpecialBox</c> — each special-box group's items, in chart order.</summary>
+    public Dictionary<ushort, List<SpecialBoxRow>> SpecialBoxes { get; } = new();
 
     /// <summary>C++ <c>m_vAccessoryMagic</c> (ACCESSORYMAGICTABLE) — empty in the live data.</summary>
     public List<AccessoryMagicRow> AccessoryMagic { get; } = new();

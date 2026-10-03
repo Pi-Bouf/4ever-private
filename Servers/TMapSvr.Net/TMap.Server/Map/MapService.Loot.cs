@@ -100,14 +100,14 @@ public sealed partial class MapService
         if (_state.FindByChar(mon.KeeperId) is not { State: EnterState.InGame, Char: { } killer } ks) return;
         float rate = LevelRate(killer.Level, mon.Level);                 // attacker-level penalty
         uint gain = (uint)((double)((float)getExp * rate) + 0.99);       // ceil (C++ DWORD(... + 0.99))
-        GainExp(ks, killer, gain);
+        GainExp(ks, killer, WithExpBonus(killer, gain));                 // + premium / exp boost / gain-exp buff
         HuntQuest(ks, killer, mon);
     }
 
     /// <summary>C++ <c>CTMonster::OnDie</c> OWNER_PARTY exp path (TMonster.cpp:615-694): the near party members
     /// (the monster's 3×3 neighborhood whose effective party id equals the keeper party) share the exp — the
     /// party-size bonus scales the pool, which is split by member level, then each is level-gap-scaled and
-    /// awarded. The <b>soulmate +10%</b>, the pcbang/scroll/skill <c>wBonus</c>, and cross-map members
+    /// awarded with its <c>wBonus</c> (MapService.DuringItem.cs). The <b>soulmate +10%</b> and cross-map members
     /// (<c>SendMW_MONSTERDIE_ACK</c>) are deferred (documented).</summary>
     private void AwardPartyKill(Monster mon, uint getExp)
     {
@@ -127,7 +127,7 @@ public sealed partial class MapService
             var m = ks.Char!;
             uint shared = totalExp * m.Level / totalLevel;                // integer level-weighted split
             uint gain = (uint)((double)((float)shared * LevelRate(m.Level, mon.Level)) + 0.99);
-            GainExp(ks, m, gain);
+            GainExp(ks, m, WithExpBonus(m, gain));
             HuntQuest(ks, m, mon);                                        // C++ fires the hunt quest per member
         }
     }

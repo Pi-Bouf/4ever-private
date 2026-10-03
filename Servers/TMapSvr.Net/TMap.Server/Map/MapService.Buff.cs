@@ -51,11 +51,13 @@ public sealed partial class MapService
 
     private void CheckMaintainPlayer(ClientSession s, Character ch, uint now)
     {
+        bool expBuff = false;
         for (int i = 0; i < ch.MaintainSkills.Count;)
         {
-            if (ch.MaintainSkills[i].IsEnd(now)) EraseMaintainPlayer(s, ch, i);
+            if (ch.MaintainSkills[i].IsEnd(now)) { expBuff |= ch.MaintainSkills[i].SkillId == TpcbangSkill; EraseMaintainPlayer(s, ch, i); }
             else i++;
         }
+        if (expBuff) HangExpBuff(s, ch);                                  // C++ TObjBase.cpp:2558: whatever benefit is left
     }
 
     private void CheckMaintainMonster(Monster mon, uint now)

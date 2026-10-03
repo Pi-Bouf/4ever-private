@@ -19,9 +19,8 @@ namespace TMap.Server.Map;
 /// transformed or hidden — and goes through the world, which tells every map; the map shows it around and saves it
 /// (<c>TSaveCharBase</c>). A new race drops a mount being ridden and resets the stat sheet.</item>
 /// </list>
-/// <para>The item delay (<c>m_mapItemCoolTime</c>, per delay group) is enforced for every use item. <b>Not ported:</b>
-/// the exp / premium / money / cash / box kinds, the time-limited use items (<c>DURINGTYPE_USE</c>), the tournament
-/// and arena gates, and name / country changes (their own requests).</para>
+/// <para>The item delay (<c>m_mapItemCoolTime</c>, per delay group) is enforced for every use item; the exp / premium / money /
+/// box kinds are in MapService.DuringItem.cs. <b>Not ported:</b> the tournament and arena gates.</para>
 /// </summary>
 public sealed partial class MapService
 {

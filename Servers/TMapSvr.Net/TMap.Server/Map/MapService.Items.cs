@@ -468,6 +468,9 @@ public sealed partial class MapService
             return;
         }
 
+        // C++ IT_ACTITEMS: its skill's action shown around — nothing used up, no answer (MapService.DuringItem.cs).
+        if (item.Template is { Type: ItActItems } act) { PlayActItem(s, ch, act); return; }
+
         uint heal = item.Template?.UseValue ?? 0u;
         bool used;
         if (kind is IkHp or IkMaxHp)
@@ -495,9 +498,23 @@ public sealed partial class MapService
         }
         else if (kind == IkReturn && item.Template is { } rt) used = UseReturnItem(s, ch, rt);
         else if (IsLookKind(kind)) used = ChangeLook(s, ch, kind);
+        else if (kind is IkGoldPremium or IkGoldPremium2)
+        {
+            if (ch.Premium is not null) { SendCS_ITEMUSE_ACK(s, ItemUseResult.OverlapPremium, delayGroup, kind, 0); return; }
+            used = true;
+        }
+        else if (kind == IkExpBonus)
+        {
+            if (IsExpBenefit(ch, out _) != 0) { SendCS_ITEMUSE_ACK(s, ItemUseResult.OverlapExpBonus, delayGroup, kind, 0); return; }
+            used = true;
+        }
+        else if (kind == IkGainExp) { GainExp(s, ch, item.Template?.SpeedInc ?? 0); used = true; }
+        else if (kind == IkMoney && item.Template is { } mt) { OpenMoneyPouch(s, ch, mt); used = true; }
+        else if (kind == IkSpecialBox && item.Template is { } bt) used = OpenSpecialBox(s, ch, bt);
+        else if (kind == IkAp || (item.Template?.Type == ItUse && kind != IkCash)) used = true;   // C++ default: just used up
         else
         {
-            // non-HP/MP use-effects (buff/box/money/skill/cash/…) are deferred this phase.
+            // IK_CASH (a cash DB this setup has no link to) and DB-free items of no known kind.
             SendCS_ITEMUSE_ACK(s, ItemUseResult.NotFound, delayGroup, kind, delay);
             return;
         }
@@ -508,6 +525,7 @@ public sealed partial class MapService
             return;
         }
         if (delay != 0) ch.ItemCoolTime[group] = NowMs + delay;
+        if (item.Template is { } du) StartDuringItem(s, ch, du);                 // premium / exp boost (DURINGTYPE_USE)
 
         // Consume one — C++ gates on m_bConsumable (default 1 ⇒ still consumes for DB-free/synth items).
         if ((item.Template?.Consumable ?? 1) != 0)
@@ -518,6 +536,7 @@ public sealed partial class MapService
         }
 
         SendCS_ITEMUSE_ACK(s, ItemUseResult.Success, delayGroup, kind, delay);
+        CheckQuest(s, 0, ch.PosX, ch.PosY, ch.PosZ, tempId, QttUseItem, TtUseItem, 1);
     }
 
     /// <summary>C++ <c>SendCS_HPMP_ACK</c> broadcast to the 3×3 view (incl. self): the actor's id + type +

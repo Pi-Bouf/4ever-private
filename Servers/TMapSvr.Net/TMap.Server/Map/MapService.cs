@@ -158,6 +158,8 @@ public sealed partial class MapService
                 case Msg.CS_PVPRECORD_REQ: OnCS_PVPRECORD_REQ(session, r); break;
                 case Msg.CS_TITLELIST_REQ: OnCS_TITLELIST_REQ(session); break;
                 case Msg.CS_CHANGETITLE_REQ: OnCS_CHANGETITLE_REQ(session, r); break;
+                case Msg.CS_CHANGENAME_REQ: await OnCS_CHANGENAME_REQ(session, r); break;
+                case Msg.CS_CHANGECOUNTRY_REQ: OnCS_CHANGECOUNTRY_REQ(session, r); break;
                 case Msg.CS_PARTYJOIN_REQ: OnCS_PARTYJOIN_REQ(session, r); break;
                 case Msg.CS_PARTYDEL_REQ: OnCS_PARTYDEL_REQ(session, r); break;
                 case Msg.CS_CHGPARTYCHIEF_REQ: OnCS_CHGPARTYCHIEF_REQ(session, r); break;
@@ -317,6 +319,7 @@ public sealed partial class MapService
         RunRecallTimers();                     // summons whose life ran out are sent away (CheckTimeRecallMon)
         RunSelfObjTimers();                    // and placed objects whose time is up die
         RunCompanionTimers(NowMs);             // companion stamina/exp each minute, expired companion items
+        RunDuringItems();                      // premium / exp boost countdown and the daily bonus time
         RunCorpseExpiry(_tickSeconds * 1000L); // despawn + re-arm lootable corpses past their lifetime
         RunScheduledAi(_tickSeconds * 1000L);  // Due TAICHART commands (the local SM_AICMD stand-in)
         RunPendingResetHome();                 // abandoned monsters back to their spawn (SM_RESETHOST_ACK)
