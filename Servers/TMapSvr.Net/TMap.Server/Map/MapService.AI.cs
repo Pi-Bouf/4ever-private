@@ -151,11 +151,11 @@ public sealed partial class MapService
         // the DEFENDER's shield-block roll (GetShieldDP), and only on a landed hit (a miss short-circuits before
         // CalcDamage, so it can never become a block). A successful roll returns the shield's defence power,
         // which is ADDED to normal defence (additive reduction — the 5/7 floor still holds) and flags HT_BLOCK.
-        byte hitType = HitTypeVsPlayer(CombatRng, mon.CritProb, mon.AttackLevel);
+        byte hitType = HitTypeVsPlayer(CombatRng, mon.GetCritProb(), mon.GetAttackLevel());
         uint shieldDp = hitType == HtMiss ? 0u : StatEngine.ShieldBlockDp(target, CombatRng, _templates); // physical melee
         uint dp = StatEngine.DefendPower(target, _templates) + shieldDp;
-        int a = Math.Max((int)(mon.AtkMin - dp), 5);          // C++ CalcDamage floors (min 5 / max 7)
-        int b = Math.Max((int)(mon.AtkMax - dp), 7);
+        int a = Math.Max((int)(mon.GetMinAp() - dp), 5);          // C++ CalcDamage floors (min 5 / max 7)
+        int b = Math.Max((int)(mon.GetMaxAp() - dp), 7);
 
         uint baseDmg = hitType switch
         {
@@ -261,12 +261,12 @@ public sealed partial class MapService
         w.WriteUInt32(aniId);         // dwAniID
         w.WriteByte(0);               // bIsMaintain
         w.WriteUInt32(0);             // dwMaintainTick
-        w.WriteByte(mon.CritProb);    // bHit == bCP (the monster's crit prob)
+        w.WriteByte(mon.GetCritProb());    // bHit == bCP (the monster's crit prob)
         w.WriteByte(atkHit);          // bAtkHit (HT_MISS/NORMAL/CRITICAL, HT_LASTHIT on the killing blow)
-        w.WriteUInt16(mon.AttackLevel); // wAttackLevel (m_wAL)
+        w.WriteUInt16(mon.GetAttackLevel()); // wAttackLevel (GetAttackLevel)
         w.WriteByte(mon.Level);       // bAttackerLevel
-        w.WriteUInt32(mon.AtkMin);    // dwPysMinPower
-        w.WriteUInt32(mon.AtkMax);    // dwPysMaxPower
+        w.WriteUInt32(mon.GetMinAp());    // dwPysMinPower
+        w.WriteUInt32(mon.GetMaxAp());    // dwPysMaxPower
         w.WriteUInt32(echo.MgMin);    // dwMgMinPower  — the reporter's value, as the C++ echoes it
         w.WriteUInt32(echo.MgMax);    // dwMgMaxPower
         w.WriteByte(echo.CanSelect);  // bCanSelect    — echoed

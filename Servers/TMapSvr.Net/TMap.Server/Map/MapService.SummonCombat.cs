@@ -39,22 +39,52 @@ public sealed partial class MapService
     {
         var a = m.Attr ?? new MonAttrRow(0, 0, 0, 0, 0);
         int G(StatEngine.Ab x) => owner is null ? 0 : StatEngine.SumGetter(owner, x, _templates);
-        uint Share(StatEngine.Ab x, StatEngine.Ab y) => (uint)(Math.Max(G(x), G(y)) * RecallItemAbilityRate);
         int M(byte mtype) => owner is null ? 0 : StatEngine.SumMagic(owner, mtype, _templates);
+        // !HaveDisWeapon: the weapon band and the owner's gear share; then the summon's own buffs on the ability.
+        bool armed = !BuffLayer.HasStatus(m.MaintainSkills, BuffLayer.StatusDisWeapon);
+        uint Ap(uint raw, uint wap, StatEngine.Ab x, StatEngine.Ab y, byte mtype)
+            => BuffLayer.Apply(m.MaintainSkills, raw + (armed ? wap + (uint)(Math.Max(G(x), G(y)) * RecallItemAbilityRate) : 0), mtype);
+        uint B(uint v, byte mtype) => BuffLayer.Apply(m.MaintainSkills, v, mtype);
 
         bool magic = tpl?.GetAttackType() == SkillTemplate.SatMagic;
         bool isLong = tpl?.IsLongAttack() ?? false;
         return new AttackerPower(
-            ShortMin: (uint)(a.Ap + a.MinWap) + Share(StatEngine.Ab.MinAp, StatEngine.Ab.MinMap),
-            ShortMax: (uint)(a.Ap + a.MaxWap) + Share(StatEngine.Ab.MaxAp, StatEngine.Ab.MaxMap),
-            LongMin: (uint)(a.LongAp + a.MinWap) + Share(StatEngine.Ab.MinLap, StatEngine.Ab.MinMap),
-            LongMax: (uint)(a.LongAp + a.MaxWap) + Share(StatEngine.Ab.MaxLap, StatEngine.Ab.MaxMap),
-            MgMin: (uint)(a.MagicAp + a.MinWap) + Share(StatEngine.Ab.MinMap, StatEngine.Ab.MinAp),
-            MgMax: (uint)(a.MagicAp + a.MaxWap) + Share(StatEngine.Ab.MaxMap, StatEngine.Ab.MaxAp),
-            AttackLevel: magic ? (ushort)(a.MagicAtkLevel + M(86)) : (ushort)(a.AttackLevel + M(11)),   // MTYPE_MAL / MTYPE_AL
-            Crit: magic ? a.CritMagicProb : (byte)(a.CritProb + M(13)),                                // MTYPE_CR (magic: none)
+            ShortMin: Ap(a.Ap, a.MinWap, StatEngine.Ab.MinAp, StatEngine.Ab.MinMap, BuffLayer.Pap),
+            ShortMax: Ap(a.Ap, a.MaxWap, StatEngine.Ab.MaxAp, StatEngine.Ab.MaxMap, BuffLayer.Pap),
+            LongMin: Ap(a.LongAp, a.MinWap, StatEngine.Ab.MinLap, StatEngine.Ab.MinMap, BuffLayer.Lap),
+            LongMax: Ap(a.LongAp, a.MaxWap, StatEngine.Ab.MaxLap, StatEngine.Ab.MaxMap, BuffLayer.Lap),
+            MgMin: Ap(a.MagicAp, a.MinWap, StatEngine.Ab.MinMap, StatEngine.Ab.MinAp, BuffLayer.Map),
+            MgMax: Ap(a.MagicAp, a.MaxWap, StatEngine.Ab.MaxMap, StatEngine.Ab.MaxAp, BuffLayer.Map),
+            AttackLevel: magic ? (ushort)B((uint)(a.MagicAtkLevel + M(BuffLayer.Mal)), BuffLayer.Mal)
+                               : (ushort)B((uint)(a.AttackLevel + M(BuffLayer.Al)), BuffLayer.Al),
+            Crit: magic ? (byte)B(a.CritMagicProb, BuffLayer.Mcr) : (byte)B((uint)(a.CritProb + M(BuffLayer.Cr)), BuffLayer.Cr),   // magic: no gear
             IsMagic: magic, IsLong: isLong, Level: m.Level, Country: m.Country, AidCountry: m.AidCountry,
             Class: m.Template?.Class ?? 0);
+    }
+
+    /// <summary>C++ <c>CTRecallMon::GetDefendPower</c> / <c>GetMagicDefPower</c> (TRecallMon.cpp:271): the stats row, plus —
+    /// unless a DISDEFEND debuff is on — its weapon defence and 55% of the better of the owner's gear defences; then its
+    /// own buffs.</summary>
+    private static uint SummonDefendPower(RecallMon m, Character? owner, TemplateStore t, bool magic)
+    {
+        var a = m.Attr ?? new MonAttrRow(0, 0, 0, 0, 0);
+        uint dp = magic ? a.RawMdp : a.RawDp;
+        if (!BuffLayer.HasStatus(m.MaintainSkills, BuffLayer.StatusDisDefend))
+        {
+            int G(StatEngine.Ab x) => owner is null ? 0 : StatEngine.SumGetter(owner, x, t);
+            dp += a.Wdp + (uint)(Math.Max(G(StatEngine.Ab.Pdp), G(StatEngine.Ab.Mdp)) * RecallItemAbilityRate);
+        }
+        return BuffLayer.Apply(m.MaintainSkills, dp, magic ? BuffLayer.Mdp : BuffLayer.Pdp);
+    }
+
+    /// <summary>C++ <c>CTRecallMon::GetDefendLevel</c> / <c>GetMagicDefLevel</c>: the stats row plus the owner's gear, then
+    /// its own buffs.</summary>
+    private static uint SummonDefendLevel(RecallMon m, Character? owner, TemplateStore t, bool magic)
+    {
+        var a = m.Attr ?? new MonAttrRow(0, 0, 0, 0, 0);
+        byte mtype = magic ? BuffLayer.Mdl : BuffLayer.Dl;
+        uint dl = (uint)Math.Max(0, (magic ? a.MagicDefLevel : a.DefendLevel) + (owner is null ? 0 : StatEngine.SumMagic(owner, mtype, t)));
+        return BuffLayer.Apply(m.MaintainSkills, dl, mtype);
     }
 
     /// <summary>The power a summon's hit uses: a "skill" placed object hits with its owner's live figures

@@ -191,4 +191,38 @@ public class SummonPvPTests
         Assert.True(enemy.Hp < 500);
         Assert.Equal(500u, mine.Hp);
     }
+    // ================================ the summon's own buffs ================================
+
+    private static MaintainSkill BuffOf(SkillDataRow row)
+    {
+        var tpl = Skill(990, 1, row);
+        return new MaintainSkill { SkillId = 990, Level = 1, Template = tpl };
+    }
+
+    [Fact]
+    public async Task ASummonsAttackBuff_MakesItHitHarder()
+    {
+        var x = await Setup();
+        var pet = Pet(x.H, x.A, PetA);
+        await x.H.Service.DispatchClientAsync(x.Sa, Finish(A, PetA, OtRecall, Strike, (B, OtPc)));
+        uint plain = 100 - x.B.Hp;
+
+        x.B.Hp = 100;
+        pet.MaintainSkills.Add(BuffOf(new SkillDataRow(SaBuff, SdtAbility, 0, 7 /* MTYPE_PAP */, 1, 40, 0, 0)));
+        await x.H.Service.DispatchClientAsync(x.Sa, Finish(A, PetA, OtRecall, Strike, (B, OtPc)));
+
+        Assert.Equal(plain + 40, 100 - x.B.Hp);
+    }
+
+    [Fact]
+    public async Task APhysicImmuneSummon_TakesNoPhysicalDamage()
+    {
+        var x = await Setup();
+        var pet = Pet(x.H, x.B, PetB);
+        pet.MaintainSkills.Add(BuffOf(new SkillDataRow(SaBuff, 6 /* SDT_STATUS */, 0, BuffLayer.StatusExceptPhysic, 1, 0, 0, 0)));
+
+        await x.H.Service.DispatchClientAsync(x.Sa, Finish(A, A, OtPc, Strike, (PetB, OtRecall)));
+
+        Assert.Equal(500u, pet.Hp);
+    }
 }

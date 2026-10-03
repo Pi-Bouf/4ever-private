@@ -173,6 +173,7 @@ public sealed partial class MapService
             MaxMp = attr.MaxMp, Mp = attr.MaxMp,
             DefendPower = attr.DefendPower,
             AtkMin = attr.AtkMin, AtkMax = attr.AtkMax, AtkSpeed = attr.AtkSpeed,
+            MinWap = attr.MinWap, MaxWap = attr.MaxWap, Wdp = attr.Wdp,
             MagicDefPower = attr.MagicDefPower, DefendLevel = attr.DefendLevel,    // combat quality
             MagicDefLevel = attr.MagicDefLevel, CritProb = attr.CritProb, AttackLevel = attr.AttackLevel,
             Exp = tpl.Exp, MoneyProb = tpl.MoneyProb, MinMoney = tpl.MinMoney, MaxMoney = tpl.MaxMoney,

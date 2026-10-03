@@ -250,7 +250,7 @@ public sealed partial class MapService
         // GetAtkHitType (on the defender = the monster): a level-scaled accuracy roll then a crit roll. Decided
         // ONCE per hit (C++ attacker-side, pre-Defend); every damage component then applies the same result.
         byte hitType = forceMiss ? HtMiss : HitTypeVsMonster(CombatRng, _templates.Formula(isMagic ? FtypeMar : FtypePar),
-            attackerLevel, mon.Level, isMagic ? mon.MagicDefLevel : mon.DefendLevel, critRate, attackLevel);
+            attackerLevel, mon.Level, isMagic ? mon.GetMagicDefLevel() : mon.GetDefendLevel(), critRate, attackLevel);
 
         // ---- CalcDamage — the exec-aware per-data-row dispatch (HP/MP damage + heal/drain), or the basic
         // fallback when the skill has no damage rows (a basic attack / a pure buff / DB-free). ----
@@ -324,8 +324,8 @@ public sealed partial class MapService
     /// <summary>The defender side of C++ <c>CalcDamage</c>: its vitals, its defence per damage row (with a player's
     /// shield roll, <c>GetShieldDP</c>/<c>GetShieldMDP</c>, which makes the hit <c>HT_BLOCK</c>), the defender's own
     /// buff and remain layers on each rolled value (the non-instance terms of <c>CalcAbilityValue</c>), and the
-    /// immunity statuses, which do not apply to one's own skills (<see cref="Self"/>). A monster has no shield, and
-    /// its buff layer and immunities are not ported.</summary>
+    /// immunity statuses, which do not apply to one's own skills (<see cref="Self"/>). A monster or summon has no
+    /// shield; its own buffs and immunities apply as a player's do (<see cref="BuffLayer"/>).</summary>
     private sealed class DamageTarget
     {
         public uint Hp, Mp, MaxHp, MaxMp;
@@ -342,28 +342,29 @@ public sealed partial class MapService
         public uint Defense(bool magic) => _dp(magic);
         public int Layer(uint value, byte mtype) => _layer(value, mtype);
 
+        /// <summary>A monster (C++ <c>CTMonster::GetDefendPower</c>…): its buffed defences, its buffs on each rolled
+        /// value, and its immunities.</summary>
         public static DamageTarget Of(Monster mon) => new()
         {
             Hp = mon.Hp, Mp = mon.Mp, MaxHp = mon.MaxHp, MaxMp = mon.MaxMp,
-            _dp = magic => magic ? mon.MagicDefPower : mon.DefendPower,
+            _dp = magic => magic ? mon.GetMagicDefPower() : mon.GetDefendPower(),
+            _layer = (value, mtype) => BuffLayer.Delta(mon.MaintainSkills, value, mtype),
+            ExceptPhysic = BuffLayer.HasStatus(mon.MaintainSkills, BuffLayer.StatusExceptPhysic),
+            ExceptMagic = BuffLayer.HasStatus(mon.MaintainSkills, BuffLayer.StatusExceptMagic),
         };
 
         /// <summary>A summon (C++ <c>CTRecallMon::GetDefendPower/GetMagicDefPower/GetDefendLevel/GetMagicDefLevel</c>,
         /// TRecallMon.cpp:271-342): its stats row, plus — while its owner is in — 55% of the better of the owner's gear
         /// defences, and the owner's gear defend levels in full.</summary>
-        public static DamageTarget Of(RecallMon m, Character? owner, TemplateStore t)
+        public static DamageTarget Of(RecallMon m, Character? owner, TemplateStore t) => new()
         {
-            var a = m.Attr ?? new MonAttrRow(0, 0, 0, 0, 0);
-            int G(StatEngine.Ab x) => owner is null ? 0 : StatEngine.SumGetter(owner, x, t);
-            uint gear = (uint)(Math.Max(G(StatEngine.Ab.Pdp), G(StatEngine.Ab.Mdp)) * RecallItemAbilityRate);
-            int lv(byte mtype) => owner is null ? 0 : StatEngine.SumMagic(owner, mtype, t);
-            return new DamageTarget
-            {
-                Hp = m.Hp, Mp = m.Mp, MaxHp = m.MaxHp, MaxMp = m.MaxMp,
-                _dp = magic => (uint)((magic ? a.RawMdp : a.RawDp) + a.Wdp) + gear,
-                _defLevel = magic => (uint)Math.Max(0, (magic ? a.MagicDefLevel + lv(87 /* MTYPE_MDL */) : a.DefendLevel + lv(12 /* MTYPE_DL */))),
-            };
-        }
+            Hp = m.Hp, Mp = m.Mp, MaxHp = m.MaxHp, MaxMp = m.MaxMp,
+            _dp = magic => SummonDefendPower(m, owner, t, magic),
+            _defLevel = magic => SummonDefendLevel(m, owner, t, magic),
+            _layer = (value, mtype) => BuffLayer.Delta(m.MaintainSkills, value, mtype),
+            ExceptPhysic = BuffLayer.HasStatus(m.MaintainSkills, BuffLayer.StatusExceptPhysic),
+            ExceptMagic = BuffLayer.HasStatus(m.MaintainSkills, BuffLayer.StatusExceptMagic),
+        };
 
         private Func<bool, uint> _defLevel = _ => 0;
 

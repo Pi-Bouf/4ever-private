@@ -40,14 +40,12 @@ public sealed partial class MapService
     private void MonsterHitsSummon(ClientSession reporter, Character owner, Monster mon, RecallMon target, ushort skillId,
         uint actId, uint aniId, float atkX, float atkY, float atkZ, float defX, float defY, float defZ, MonsterHitEcho echo)
     {
-        var a = target.Attr ?? new MonAttrRow(0, 0, 0, 0, 0);
-        int G(StatEngine.Ab x) => StatEngine.SumGetter(owner, x, _templates);
-        uint dp = (uint)(a.RawDp + a.Wdp) + (uint)(Math.Max(G(StatEngine.Ab.Pdp), G(StatEngine.Ab.Mdp)) * RecallItemAbilityRate);
-        uint defLevel = (uint)(a.DefendLevel + StatEngine.SumMagic(owner, 12, _templates));        // + ABILITY_DL
+        uint dp = SummonDefendPower(target, owner, _templates, magic: false);
+        uint defLevel = SummonDefendLevel(target, owner, _templates, magic: false);
 
         byte hitType = HitTypeVsMonster(CombatRng, _templates.Formula(FtypePar), mon.Level, target.Level, defLevel,
-            mon.CritProb, mon.AttackLevel);
-        int lo = Math.Max((int)(mon.AtkMin - dp), 5), hi = Math.Max((int)(mon.AtkMax - dp), 7);
+            mon.GetCritProb(), mon.GetAttackLevel());
+        int lo = Math.Max((int)(mon.GetMinAp() - dp), 5), hi = Math.Max((int)(mon.GetMaxAp() - dp), 7);
         uint roll = hitType switch
         {
             HtMiss => 0u,

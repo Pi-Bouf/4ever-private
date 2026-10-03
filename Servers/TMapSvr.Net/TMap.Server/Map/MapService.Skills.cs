@@ -167,9 +167,9 @@ public sealed partial class MapService
         }
 
         var ack = BuildCS_SKILLUSE_ACK(SkillUseResult.Success, monId, Monster.OtMon, skillId, actionId, actId, aniId,
-            skillLevel: 1, backSkill: 0, attackLevel: mon.AttackLevel, attackerLevel: mon.Level,
-            pysMin: mon.AtkMin, pysMax: mon.AtkMax, mgMin: 0, mgMax: 0, transHp: 0, transMp: 0, curseProb: 0,
-            equipSpecial: 0, canSelect: 1, mon.Country, mon.AidCountry, mon.CritProb, posX, posY, posZ, targets);
+            skillLevel: 1, backSkill: 0, attackLevel: mon.GetAttackLevel(), attackerLevel: mon.Level,
+            pysMin: mon.GetMinAp(), pysMax: mon.GetMaxAp(), mgMin: 0, mgMax: 0, transHp: 0, transMp: 0, curseProb: 0,
+            equipSpecial: 0, canSelect: 1, mon.Country, mon.AidCountry, mon.GetCritProb(), posX, posY, posZ, targets);
         foreach (var p in _state.PlayersAround(mon)) p.Send(ack);   // C++ GetNeerPlayer around the monster
     }
 

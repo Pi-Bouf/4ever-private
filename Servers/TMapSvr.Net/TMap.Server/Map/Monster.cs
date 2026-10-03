@@ -36,7 +36,7 @@ public sealed class Monster
     public uint Mp { get; set; }
 
     /// <summary>The defence power the attacker's damage is reduced by (C++ <c>GetDefendPower</c> — the attr
-    /// chart <c>m_wDP</c>; shield DP and buff deltas are deferred/0 for a monster).</summary>
+    /// chart <c>m_wDP + m_wWDP</c>; with its buffs: <see cref="GetDefendPower"/>).</summary>
     public uint DefendPower { get; set; }
 
     // ---- Combat quality. As the DEFENDER: magic defence (wMDP) + the defend levels (wDL/wMDL)
@@ -224,6 +224,29 @@ public sealed class Monster
     /// landed by a player's buff-type <c>CS_DEFEND</c>. Serialized into <c>CS_ADDMON_ACK</c> and expired by the
     /// per-tick <c>CheckMaintainSkill</c> sweep.</summary>
     public List<MaintainSkill> MaintainSkills { get; } = new();
+
+    // ---- The stats with the buffs on (C++ CTMonster::GetMinAP… TMonster.cpp:1599-1745). The fields above are the attr
+    // chart's figures; these fold the monster's own buffs and debuffs on them, as every C++ getter does. A
+    // SDT_STATUS_DISWEAPON / DISDEFEND debuff takes away the weapon / armour part of the attack / defence. ----
+
+    /// <summary>The attr chart's weapon band and weapon defence (<c>m_wMinWAP</c>/<c>m_wMaxWAP</c>/<c>m_wWDP</c>), which
+    /// <see cref="AtkMin"/>/<see cref="AtkMax"/> and the defences include.</summary>
+    public uint MinWap { get; set; }
+    public uint MaxWap { get; set; }
+    public uint Wdp { get; set; }
+
+    private bool DisWeapon => BuffLayer.HasStatus(MaintainSkills, BuffLayer.StatusDisWeapon);
+    private bool DisDefend => BuffLayer.HasStatus(MaintainSkills, BuffLayer.StatusDisDefend);
+    private uint Buffed(uint v, byte mtype) => MaintainSkills.Count == 0 ? v : BuffLayer.Apply(MaintainSkills, v, mtype);
+
+    public uint GetMinAp() => Buffed(DisWeapon ? AtkMin - Math.Min(MinWap, AtkMin) : AtkMin, BuffLayer.Pap);
+    public uint GetMaxAp() => Buffed(DisWeapon ? AtkMax - Math.Min(MaxWap, AtkMax) : AtkMax, BuffLayer.Pap);
+    public uint GetDefendPower() => Buffed(DisDefend ? DefendPower - Math.Min(Wdp, DefendPower) : DefendPower, BuffLayer.Pdp);
+    public uint GetMagicDefPower() => Buffed(DisDefend ? MagicDefPower - Math.Min(Wdp, MagicDefPower) : MagicDefPower, BuffLayer.Mdp);
+    public ushort GetAttackLevel() => (ushort)Buffed(AttackLevel, BuffLayer.Al);
+    public ushort GetDefendLevel() => (ushort)Buffed(DefendLevel, BuffLayer.Dl);
+    public ushort GetMagicDefLevel() => (ushort)Buffed(MagicDefLevel, BuffLayer.Mdl);
+    public byte GetCritProb() => (byte)Buffed(CritProb, BuffLayer.Cr);
 
     /// <summary>C++ <c>m_dwID = MAKELONG(MAKEWORD(slot, channel), spawnId)</c> (TMap.cpp:565).</summary>
     public static uint MakeId(ushort spawnId, byte channel, byte slot) =>
