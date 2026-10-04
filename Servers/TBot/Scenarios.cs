@@ -48,6 +48,8 @@ public static class Scenarios
         CS_GETTARGET_REQ = M + 0x014E, CS_GETTARGET_ACK = M + 0x014F, CS_GETTARGETANS_REQ = M + 0x0150, CS_GETTARGETANS_ACK = M + 0x0151,
         CS_HELMETHIDE_REQ = M + 0x018E, CS_HELMETHIDE_ACK = M + 0x018F, CS_COMMENT_REQ = M + 0x01E0, CS_COMMENT_ACK = M + 0x01E1,
         CS_LOOPSKILL_REQ = M + 0x00F2, CS_LOOPSKILL_ACK = M + 0x00F3,
+        CS_CANCELSKILL_REQ = M + 0x0146, CS_QUESTUPDATE_ACK = M + 0x0053, CS_QUESTENDTIMER_REQ = M + 0x0058,
+        CS_QUESTPOSEXEC_REQ = M + 0x0354, CS_MONITEMTAKEALL_REQ = M + 0x0152, CS_MONITEMTAKE_ACK = M + 0x008B,
         CS_DIE_ACK = M + 0x0025, CS_REVIVAL_REQ = M + 0x0026, CS_REVIVAL_ACK = M + 0x0027, CS_PVPPOINT_ACK = M + 0x01E2,
         CS_MOVEITEM_REQ = M + 0x0028, CS_MOVEITEM_ACK = M + 0x0029, CS_SKILLEND_ACK = M + 0x0037,
         CS_SKILLBUY_REQ = M + 0x0032, CS_SKILLBUY_ACK = M + 0x0033, CS_NPCITEMLIST_REQ = M + 0x0082, CS_NPCITEMLIST_ACK = M + 0x0083;
@@ -96,6 +98,9 @@ public static class Scenarios
     private const string NewName = "TbotRenamed";
     private const ushort MoneyBox = 7957, RewardBox = 18148, Growth1h = 7631, Growth3h = 7632, XpPlus = 7402, Wisdom = 8701;
     private const ushort XpPlusSkill = 901, ExpBuffSkill = 903, ShootSkill = 32;
+    // Magic Attack (1407): a 6-missile multi-attack loop skill with no MP cost. Two quests: 5756 has a timer term, 47 a hunt term.
+    private const ushort MissileSkill = 1407;
+    private const uint TimerQuest = 5756, TimerTerm = 300000, HuntQuest = 47, HuntTerm = 1191;
     private const uint DefenceBreakMs = 9000;
     // Combat leftovers, all on A (B only strikes — A's HP is refilled by the duel's knockout right after):
     // a hide (221: ends on attacking and on being hit), a self buff (218), B's dispel (326, strips buffs), and the
@@ -552,6 +557,27 @@ public static class Scenarios
             return (res, type);
         }) == (0, 7), Describe(use));
 
+        // Its repeating attack (a loop skill on a summon), once the attack just announced is ready again (1.5 s).
+        Thread.Sleep(1700);
+        a.Discard(CS_LOOPSKILL_ACK);
+        a.Send(Req(CS_LOOPSKILL_REQ, w =>
+        {
+            w.WriteUInt32(ritual.MonId); w.WriteByte(7); w.WriteByte(1); w.WriteUInt16(0); w.WriteUInt16(SummonAttack);
+            w.WriteFloat(0); w.WriteFloat(0); w.WriteFloat(0); w.WriteByte(0);
+        }));
+        var sloop = a.TryWait(CS_LOOPSKILL_ACK, r => { r.ReadByte(); return r.ReadUInt32() == ritual.MonId; });
+        Check("summons: the summon's loop skill is shown", sloop is not null && Read(sloop, r =>
+        {
+            byte res = r.ReadByte(); r.ReadUInt32(); r.ReadByte(); r.ReadUInt16(); r.ReadByte(); r.ReadUInt16(); r.ReadByte();
+            for (int i = 0; i < 4; i++) r.ReadUInt32();
+            for (int i = 0; i < 4; i++) r.ReadByte();
+            r.ReadFloat(); r.ReadFloat(); r.ReadFloat();
+            int n = r.ReadByte();
+            for (int i = 0; i < n; i++) { r.ReadUInt32(); r.ReadByte(); }
+            return res;
+        }) == 0, Describe(sloop));
+        b.Discard(CS_LOOPSKILL_ACK);
+
         // … and hit a monster nearby (the first one the owner was shown).
         var monRaw = a.Received.FirstOrDefault(pk => PacketHeader.ReadId(pk) == CS_ADDMON_ACK);
         if (monRaw is not null)
@@ -899,6 +925,67 @@ public static class Scenarios
         var again = a.TryWait(CS_LOOPSKILL_ACK);
         Check("small: … and repeats only after its loop delay (SKILL_SPEEDYUSE)", again is not null && Read(again, LoopResult) == 6,
             Describe(again));
+        // A multi-missile loop skill: its missiles all land on the one target.
+        a.Discard(CS_LOOPSKILL_ACK);
+        a.Send(Req(CS_LOOPSKILL_REQ, w =>
+        {
+            w.WriteUInt32(a.CharId); w.WriteByte(1); w.WriteByte(1); w.WriteUInt16(0); w.WriteUInt16(MissileSkill);
+            w.WriteFloat(a.Spawn.X); w.WriteFloat(a.Spawn.Y); w.WriteFloat(a.Spawn.Z);
+            w.WriteByte(1); w.WriteUInt32(b.CharId); w.WriteByte(1); w.WriteByte(1);
+        }));
+        var missiles = a.TryWait(CS_LOOPSKILL_ACK, r => { r.ReadByte(); return r.ReadUInt32() == a.CharId; });
+        var hits = missiles is null ? new List<uint>() : Read(missiles, r =>
+        {
+            r.ReadByte(); r.ReadUInt32(); r.ReadByte(); r.ReadUInt16(); r.ReadByte(); r.ReadUInt16(); r.ReadByte();
+            for (int i = 0; i < 4; i++) r.ReadUInt32();
+            for (int i = 0; i < 4; i++) r.ReadByte();
+            r.ReadFloat(); r.ReadFloat(); r.ReadFloat();
+            var ids = new List<uint>();
+            int n = r.ReadByte();
+            for (int i = 0; i < n; i++) { ids.Add(r.ReadUInt32()); r.ReadByte(); }
+            return ids;
+        });
+        Check("small: a multi-missile loop skill (Magic Attack) fires several missiles at its target", hits.Count > 1 && hits.All(id => id == b.CharId),
+            $"{hits.Count} hit(s)");
+
+        // Cancelling a skill resets its cooldown: Mean Kick twice is too fast, after a cancel it goes.
+        byte? Kick()
+        {
+            a.Discard(CS_SKILLUSE_ACK);
+            a.Send(Req(CS_SKILLUSE_REQ, w =>
+            {
+                w.WriteUInt32(a.CharId); w.WriteByte(1); w.WriteByte(1); w.WriteUInt16(0); w.WriteUInt16(DefenceBreak); w.WriteByte(0);
+                w.WriteUInt32(0); w.WriteUInt32(0); w.WriteFloat(a.Spawn.X); w.WriteFloat(a.Spawn.Y); w.WriteFloat(a.Spawn.Z);
+                w.WriteByte(1); w.WriteUInt32(b.CharId); w.WriteByte(1); w.WriteByte(1);
+            }));
+            return a.TryWait(CS_SKILLUSE_ACK, r => { r.ReadByte(); return r.ReadUInt32() == a.CharId; }) is { } ack
+                ? new PacketReader(Bot.Raw.TryGetValue(ack, out var raw) ? raw : throw new InvalidOperationException()).ReadByte() : null;
+        }
+        Kick();
+        Check("small: a skill used again at once is too fast (SKILL_SPEEDYUSE)", Kick() == 6, "not refused");
+        a.Send(Req(CS_CANCELSKILL_REQ, w => { w.WriteByte(1); w.WriteUInt32(a.CharId); w.WriteUInt16(DefenceBreak); }));
+        Check("small: … after CS_CANCELSKILL_REQ it can be used again", Kick() == 0, "still refused");
+        b.Discard(CS_SKILLUSE_ACK); b.Discard(CS_HPMP_ACK);
+
+        // Quests: the client's timer ran out ⇒ the timed quest fails; a hunt term reached by position is done.
+        a.Discard(CS_QUESTUPDATE_ACK);
+        a.Send(Req(CS_QUESTENDTIMER_REQ, w => w.WriteUInt32(TimerQuest)));
+        (uint, uint, byte, byte, byte)? Upd() => a.TryWait(CS_QUESTUPDATE_ACK) is { } u
+            ? Read(u, r => (r.ReadUInt32(), r.ReadUInt32(), r.ReadByte(), r.ReadByte(), r.ReadByte())) : null;
+        var failed = Upd();
+        Check("quests: the timed quest fails when the client's timer runs out", failed == (TimerQuest, TimerTerm, 6, 0, 2), failed?.ToString() ?? "no update");
+        a.Send(Req(CS_QUESTPOSEXEC_REQ, w => { w.WriteUInt32(HuntQuest); w.WriteUInt32(HuntTerm); }));
+        var done = Upd();
+        Check("quests: a hunt term reached by position is done", done == (HuntQuest, HuntTerm, 3, 1, 1), done?.ToString() ?? "no update");
+
+        // Take-all on a monster nearby (alive, nothing on it): answered, nothing taken.
+        var monRaw = a.Received.FirstOrDefault(pk => PacketHeader.ReadId(pk) == CS_ADDMON_ACK);
+        if (monRaw is not null)
+        {
+            a.Send(Req(CS_MONITEMTAKEALL_REQ, w => w.WriteUInt32(BitConverter.ToUInt32(monRaw, PacketHeader.Size))));
+            var take = a.TryWait(CS_MONITEMTAKE_ACK);
+            Check("loot: take-all is answered", take is not null && Read(take, r => r.ReadByte()) == 0, Describe(take));
+        }
         Thread.Sleep(500);
         b.Discard(CS_LOOPSKILL_ACK);
     }
@@ -1176,6 +1263,10 @@ public static class Scenarios
             (int)idA, (int)HorsePet);
         Check("saved: the new pet in TPETTABLE", pet is not null && (string)pet[0] == HorseName, pet is null ? "no row" : $"name={pet[0]}");
 
+        var term = await db.RowAsync("SELECT bCount FROM TQUESTTERMTABLE WHERE dwCharID=@p0 AND dwQuestID=@p1 AND dwTermID=@p2", (int)idA,
+            (int)HuntQuest, (int)HuntTerm);
+        Check("saved: the hunt term done by position, in TQUESTTERMTABLE", term is not null && Convert.ToInt32(term[0]) == 1,
+            term is null ? "no row" : $"count={term[0]}");
         var hk = await db.RowAsync("SELECT bType1, wID1 FROM THOTKEYTABLE WHERE dwCharID=@p0 AND bInvenID=@p1", (int)idA, (int)HotkeyPage);
         Check("saved: hotkey page in THOTKEYTABLE", hk is not null && Convert.ToInt32(hk[0]) == 1 && Convert.ToInt32(hk[1]) == HotkeySkill,
             hk is null ? "no row" : $"type={hk[0]} id={hk[1]}");
@@ -1303,6 +1394,11 @@ public static class Scenarios
         await SetPvPoint(db, idB, 0, VictimTotal);
         await db.ExecAsync("UPDATE TCHARTABLE SET bAftermath=0 WHERE dwCharID IN (@p0, @p1)", (int)idA, (int)idB);
         await ClearPassives(db, idA);
+        await ClearSmallRequests(db, idA);
+        await db.ExecAsync("INSERT INTO TSKILLTABLE (dwCharID, wSkillID, bLevel, dwRemainTick) VALUES (@p0, @p1, 1, 0)", (int)idA, (int)MissileSkill);
+        await db.ExecAsync(@"INSERT INTO TQUESTTABLE (dwCharID, dwQuestID, dwTick, bCompleteCount, bTriggerCount) VALUES (@p0, @p1, 300000, 0, 1), (@p0, @p2, 0, 0, 1);
+            INSERT INTO TQUESTTERMTABLE (dwCharID, dwQuestID, dwTermID, bTermType, bCount) VALUES (@p0, @p2, @p3, 3, 0)",
+            (int)idA, (int)TimerQuest, (int)HuntQuest, (int)HuntTerm);
         await db.ExecAsync("INSERT INTO TSKILLTABLE (dwCharID, wSkillID, bLevel, dwRemainTick) VALUES (@p0, @p1, 1, 0)", (int)idA, (int)WeaponBuff);
         await db.ExecAsync(@"INSERT INTO TITEMTABLE (dlID, bStorageType, dwStorageID, bOwnerType, dwOwnerID, bItemID, wItemID, bLevel,
             bCount, bGLevel, dwDuraMax, dwDuraCur, bRefineCur, dEndTime, bGradeEffect, bMagic1, bMagic2, bMagic3, bMagic4, bMagic5,
@@ -1319,6 +1415,14 @@ public static class Scenarios
         await db.ExecAsync("DELETE FROM TSKILLTABLE WHERE dwCharID=@p0 AND wSkillID=@p1", (int)id, (int)SandSkill);
         await db.ExecAsync("INSERT INTO TSKILLTABLE (dwCharID, wSkillID, bLevel, dwRemainTick) VALUES (@p0, @p1, 0, 0)", (int)id, (int)SandSkill);
         await db.ExecAsync("UPDATE TCHARTABLE SET wSkillPoint=@p1 WHERE dwCharID=@p0", (int)id, (int)BotSkillPoints);
+    }
+
+    /// <summary>Takes away the small-requests fixtures: the multi-missile skill and the two quests.</summary>
+    private static async Task ClearSmallRequests(GameDb db, uint idA)
+    {
+        await db.ExecAsync("DELETE FROM TSKILLTABLE WHERE dwCharID=@p0 AND wSkillID=@p1", (int)idA, (int)MissileSkill);
+        await db.ExecAsync("DELETE FROM TQUESTTABLE WHERE dwCharID=@p0 AND dwQuestID IN (@p1, @p2); DELETE FROM TQUESTTERMTABLE WHERE dwCharID=@p0 AND dwQuestID IN (@p1, @p2)",
+            (int)idA, (int)TimerQuest, (int)HuntQuest);
     }
 
     /// <summary>Takes away the use items (left or used up), the chocolate's buff, and the saved summons.</summary>
@@ -1388,6 +1492,7 @@ public static class Scenarios
         await ClearLeftovers(db, idA, idB);
         await ClearItemSkills(db, idA);
         await ClearPassives(db, idA);
+        await ClearSmallRequests(db, idA);
         foreach (var t in RankTables)
         {
             await db.ExecAsync($"DELETE FROM {t} WHERE dwCharID IN (@p0, @p1)", (int)idA, (int)idB);
