@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <!-- Resource catalogs / record parsers are shared with ClassicPort (same client lineage, unscrambled here). -->
+  <ItemGroup>
+    <Compile Include="..\ClassicPort\Res.cs" Link="Shared\Res.cs" />
+    <Compile Include="..\ClassicPort\TexConv.cs" Link="Shared\TexConv.cs" />
+  </ItemGroup>
+
+  <!-- Costume icons cut from OFFICIAL's atlas (named by their OFFICIAL icon index); copied to Data\Img\Custom on port. -->
+  <ItemGroup>
+    <None Include="icons\*.png" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

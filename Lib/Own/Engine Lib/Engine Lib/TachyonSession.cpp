@@ -201,19 +201,6 @@ void CTachyonSession::Encrypt( CPacket *pPacket)
 	pPacket->EncryptHeader(key);
 
 	CString strSecretKey = g_strSecretKey;
-	/////////////////
-	CString strFILE;
-	strFILE.Format("LOL.txt");
-
-	CStdioFile file;
-	if (file.Open(strFILE, CStdioFile::typeText | CStdioFile::modeCreate | CStdioFile::modeWrite))
-	{
-		CString strMsg;
-		strMsg.Format(g_strSecretKey);
-		file.WriteString(strMsg);
-		file.Close();
-	}
-	/////////////////
 	LPBYTE lpszSecretKey = (LPBYTE)(LPCTSTR)strSecretKey;
 	DWORD dwSecretKey = (strSecretKey.GetLength() + 1) * sizeof(TCHAR);
 
