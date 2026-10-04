@@ -226,7 +226,7 @@ public sealed partial class MapService
         w.WriteUInt32(ch.CharId);
         w.WriteString(ch.Name);
         w.WriteUInt16(ch.TitleId);
-        w.WriteString("");                // strComment
+        w.WriteString(ch.Comment);        // strComment (C++: to allies; bColor is always TNCOLOR_ALLI here)
         w.WriteUInt32(ch.GuildId);
         w.WriteUInt32(ch.Fame);
         w.WriteUInt32(ch.FameColor);

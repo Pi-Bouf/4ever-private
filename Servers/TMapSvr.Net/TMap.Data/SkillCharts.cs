@@ -53,8 +53,16 @@ public sealed record SkillTemplate(
     // m_bORadius: an area buff; a tie against it keeps it (UpdateBuffSkill).
     byte ORadius = 0,
     // m_bEraseHide (BUFFERASEACTION_TYPE bits): which actions of this skill also end a hide buff (EraseBuffByAttack/Defend).
-    byte EraseHide = 0)
+    byte EraseHide = 0,
+    // m_bTargetHit: the most missiles a multi-attack skill puts on one target.
+    byte TargetHit = 1)
 {
+    /// <summary>MAGIC_TYPE MTYPE_EFC (NetCode.h): how many missiles a skill fires at once.</summary>
+    public const byte MtypeEfc = 36;
+
+    /// <summary>C++ <c>CTSkillTemp::IsMultiAttack</c> (TSkillTemp.cpp:359): an <c>SDT_ABILITY</c> / <c>MTYPE_EFC</c> row.</summary>
+    public bool IsMultiAttack() => Data.Any(d => d.Type == 1 /* SDT_ABILITY */ && d.Exec == MtypeEfc);
+
     /// <summary>The per-level learning costs (C++ <c>m_mapTSkillPoint</c>, loaded from <c>TSKILLPOINTCHART</c>).</summary>
     public Dictionary<byte, SkillPointRow> Points { get; } = new();
 

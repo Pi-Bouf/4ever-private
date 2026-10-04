@@ -253,7 +253,7 @@ public sealed partial class GameDatabase
                  dwReuseDelay, nReuseDelayInc, dwLoopDelay, dwKindDelay, bSpeedApply, bPositive, wMapID,
                  dwDuration, dwDurationInc, bMaintainType, bPriority, bStatic, dwClassID, bGlobal,
                  bIsRide, bIsHideSkill, bIsDismount, bEraseAct, bTargetRange, fPrice, wParentSkillID,
-                 dwWeaponID, wPosture, bORadius, bEraseHide FROM TSKILLCHART";
+                 dwWeaponID, wPosture, bORadius, bEraseHide, bTargetHit FROM TSKILLCHART";
     // The learning costs per skill level (CTBLSkillPoint → CTSkillTemp::m_mapTSkillPoint).
     private const string SkillPointChartSql =
         @"SELECT wID, bLevel, bSkillPoint, bGroupPoint, bPrevSkillLevel, dwPayback FROM TSKILLPOINTCHART";
@@ -467,7 +467,7 @@ public sealed partial class GameDatabase
                     IsDismount: r.GetByteSafe(25) != 0, EraseAct: r.GetByteSafe(26), TargetRange: r.GetByteSafe(27),
                     Price: r.IsDBNull(28) ? 0f : Convert.ToSingle(r.GetValue(28)), ParentSkillId: r.GetUShortSafe(29),
                     WeaponId: r.GetUIntSafe(30), Posture: r.GetUShortSafe(31), ORadius: r.GetByteSafe(32),
-                    EraseHide: r.GetByteSafe(33));
+                    EraseHide: r.GetByteSafe(33), TargetHit: r.GetByteSafe(34));
             }
 
         await using (var cmd = new SqlCommand(SkillPointChartSql, c))

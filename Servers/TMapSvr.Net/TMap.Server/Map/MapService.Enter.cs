@@ -173,7 +173,7 @@ public sealed partial class MapService
         w.WriteByte(ch.Country);
         w.WriteByte(ch.Mode);
         w.WriteByte(0);            // recall-mon count (Phase-1: none)
-        w.WriteString("");         // m_strComment
+        w.WriteString(ch.Comment); // m_strComment
         _world.Send(w);
     }
 

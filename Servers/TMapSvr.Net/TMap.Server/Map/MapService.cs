@@ -170,6 +170,17 @@ public sealed partial class MapService
                 case Msg.CS_JUMP_REQ: OnCS_JUMP_REQ(session, r); break;
                 case Msg.CS_BLOCK_REQ: OnCS_BLOCK_REQ(session, r); break;
                 case Msg.CS_CHGMODE_REQ: OnCS_CHGMODE_REQ(session, r); break;
+                case Msg.CS_CANCELSKILL_REQ: OnCS_CANCELSKILL_REQ(session, r); break;
+                case Msg.CS_LOOPSKILL_REQ: OnCS_LOOPSKILL_REQ(session, r); break;
+                case Msg.CS_CANCELACTION_REQ: OnCS_CANCELACTION_REQ(session, r); break;
+                case Msg.CS_ACTEND_REQ: break;                              // C++ body commented out
+                case Msg.CS_GETTARGET_REQ: OnCS_GETTARGET_REQ(session, r); break;
+                case Msg.CS_GETTARGETANS_REQ: OnCS_GETTARGETANS_REQ(session, r); break;
+                case Msg.CS_MONITEMTAKEALL_REQ: OnCS_MONITEMTAKEALL_REQ(session, r); break;
+                case Msg.CS_QUESTENDTIMER_REQ: OnCS_QUESTENDTIMER_REQ(session, r); break;
+                case Msg.CS_QUESTPOSEXEC_REQ: OnCS_QUESTPOSEXEC_REQ(session, r); break;
+                case Msg.CS_HELMETHIDE_REQ: OnCS_HELMETHIDE_REQ(session, r); break;
+                case Msg.CS_COMMENT_REQ: OnCS_COMMENT_REQ(session, r); break;
                 // The client-reported aggro bounds — one handler, four triggers.
                 case Msg.CS_ENTERLB_REQ: OnAggroBoundReq(session, r, AiTrigger.EnterLb); break;
                 case Msg.CS_LEAVELB_REQ: OnAggroBoundReq(session, r, AiTrigger.LeaveLb); break;
@@ -243,6 +254,11 @@ public sealed partial class MapService
                 case Msg.MW_ENTERSVR_REQ: await OnMW_ENTERSVR_REQ(r); break;
                 case Msg.MW_CHARDATA_REQ: OnMW_CHARDATA_REQ(r); break;
                 case Msg.MW_CHARINFO_REQ: OnMW_CHARINFO_REQ(r); break;
+                case Msg.MW_HELMETHIDE_REQ: OnMW_HELMETHIDE_REQ(r); break;
+                case Msg.MW_WORLDPOSTSEND_REQ: await OnMW_WORLDPOSTSEND_REQ(r); break;
+                case Msg.MW_LEVELUP_REQ: OnMW_LEVELUP_REQ(r); break;
+                case Msg.MW_CHARSTATINFO_REQ: OnMW_CHARSTATINFO_REQ(r); break;
+                case Msg.MW_CHARSTATINFOANS_REQ: OnMW_CHARSTATINFOANS_REQ(r); break;
                 case Msg.MW_ROUTE_REQ: OnMW_ROUTE_REQ(r); break;
                 case Msg.MW_ENTERCHAR_REQ: OnMW_ENTERCHAR_REQ(r); break;
                 case Msg.MW_MONTHRANKLIST_REQ: OnMW_MONTHRANKLIST_REQ(r); break;

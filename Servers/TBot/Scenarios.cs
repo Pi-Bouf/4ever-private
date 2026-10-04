@@ -44,6 +44,10 @@ public static class Scenarios
         CS_ITEMUSE_REQ = M + 0x004A, CS_ITEMUSE_ACK = M + 0x004B, CS_CHANGECHARBASE_ACK = M + 0x01CA,
         CS_OPENMONEY_ACK = M + 0x01D3, CS_RESETPCBANG_ACK = M + 0x01B9, CS_EXP_ACK = M + 0x0024,
         CS_CHANGENAME_REQ = M + 0x01C9, CS_CHANGECOUNTRY_REQ = M + 0x024B,
+        CS_CHGMODE_REQ = M + 0x001C, CS_CHGMODE_ACK = M + 0x001D, CS_CANCELACTION_REQ = M + 0x00A5, CS_CANCELACTION_ACK = M + 0x00A6,
+        CS_GETTARGET_REQ = M + 0x014E, CS_GETTARGET_ACK = M + 0x014F, CS_GETTARGETANS_REQ = M + 0x0150, CS_GETTARGETANS_ACK = M + 0x0151,
+        CS_HELMETHIDE_REQ = M + 0x018E, CS_HELMETHIDE_ACK = M + 0x018F, CS_COMMENT_REQ = M + 0x01E0, CS_COMMENT_ACK = M + 0x01E1,
+        CS_LOOPSKILL_REQ = M + 0x00F2, CS_LOOPSKILL_ACK = M + 0x00F3,
         CS_DIE_ACK = M + 0x0025, CS_REVIVAL_REQ = M + 0x0026, CS_REVIVAL_ACK = M + 0x0027, CS_PVPPOINT_ACK = M + 0x01E2,
         CS_MOVEITEM_REQ = M + 0x0028, CS_MOVEITEM_ACK = M + 0x0029, CS_SKILLEND_ACK = M + 0x0037,
         CS_SKILLBUY_REQ = M + 0x0032, CS_SKILLBUY_ACK = M + 0x0033, CS_NPCITEMLIST_REQ = M + 0x0082, CS_NPCITEMLIST_ACK = M + 0x0083;
@@ -91,7 +95,7 @@ public static class Scenarios
     private const ushort NameItem = 7624;
     private const string NewName = "TbotRenamed";
     private const ushort MoneyBox = 7957, RewardBox = 18148, Growth1h = 7631, Growth3h = 7632, XpPlus = 7402, Wisdom = 8701;
-    private const ushort XpPlusSkill = 901, ExpBuffSkill = 903;
+    private const ushort XpPlusSkill = 901, ExpBuffSkill = 903, ShootSkill = 32;
     private const uint DefenceBreakMs = 9000;
     // Combat leftovers, all on A (B only strikes — A's HP is refilled by the duel's knockout right after):
     // a hide (221: ends on attacking and on being hit), a self buff (218), B's dispel (326, strips buffs), and the
@@ -153,6 +157,7 @@ public static class Scenarios
             Thread.Sleep(1000);
 
             LoginStatSheet(a);
+            SmallRequests(a, b);
             Party(a, b, nameA, nameB);
             Mail(a, b, nameA, nameB);
             HotkeyAdd(a);
@@ -827,6 +832,75 @@ public static class Scenarios
         Check("items: through the world, the drinker's sex changes", mine is { Type: IkSex }, mine?.ToString() ?? "no CS_CHANGECHARBASE_ACK");
         var seen = Look(b);
         Check("items: … and the player nearby sees it", seen == mine, seen?.ToString() ?? "no CS_CHANGECHARBASE_ACK");
+    }
+
+    /// <summary>The small requests: battle mode, a cancelled action, "who is your target", the helmet (through the world), the
+    /// comment, and a loop skill (Shoot) with its repeat delay.</summary>
+    private static void SmallRequests(Bot a, Bot b)
+    {
+        b.Discard(CS_CHGMODE_ACK);
+        a.Send(Req(CS_CHGMODE_REQ, w => w.WriteByte(1)));
+        var mode = b.TryWait(CS_CHGMODE_ACK, r => r.ReadUInt32() == a.CharId);
+        Check("small: the battle mode is shown around", mode is not null && Read(mode, r => { r.ReadUInt32(); r.ReadByte(); return r.ReadByte(); }) == 1,
+            Describe(mode));
+        a.Send(Req(CS_CHGMODE_REQ, w => w.WriteByte(0)));
+        b.TryWait(CS_CHGMODE_ACK, r => r.ReadUInt32() == a.CharId, 2000);
+
+        a.Send(Req(CS_CANCELACTION_REQ, w => { w.WriteUInt32(a.CharId); w.WriteByte(1); }));
+        Check("small: a cancelled action is shown around", b.TryWait(CS_CANCELACTION_ACK, r => r.ReadUInt32() == a.CharId) is not null,
+            "no CS_CANCELACTION_ACK");
+
+        a.Send(Req(CS_GETTARGET_REQ, w => w.WriteUInt32(b.CharId)));
+        var ask = b.TryWait(CS_GETTARGETANS_ACK);
+        Check("small: \"who is your target?\" reaches the other player", ask is not null && Read(ask, r => r.ReadUInt32()) == a.CharId, Describe(ask));
+        b.Send(Req(CS_GETTARGETANS_REQ, w => { w.WriteUInt32(a.CharId); w.WriteUInt32(a.CharId); w.WriteByte(1); }));
+        var answer = a.TryWait(CS_GETTARGET_ACK);
+        Check("small: … and the answer comes back", answer is not null && Read(answer, r => (r.ReadUInt32(), r.ReadByte())) == (a.CharId, 1),
+            Describe(answer));
+
+        foreach (byte hide in new byte[] { 1, 0 })
+        {
+            b.Discard(CS_HELMETHIDE_ACK);
+            a.Send(Req(CS_HELMETHIDE_REQ, w => w.WriteByte(hide)));
+            var helm = b.TryWait(CS_HELMETHIDE_ACK, r => r.ReadUInt32() == a.CharId);
+            Check($"small: the helmet {(hide == 1 ? "hidden" : "shown again")}, through the world", helm is not null
+                && Read(helm, r => { r.ReadUInt32(); return r.ReadByte(); }) == hide, Describe(helm));
+        }
+
+        a.Send(Req(CS_COMMENT_REQ, w => w.WriteString("tbot was here")));
+        var comment = b.TryWait(CS_COMMENT_ACK, r => r.ReadUInt32() == a.CharId);
+        Check("small: the comment reaches the player nearby of the same country", comment is not null
+            && Read(comment, r => { r.ReadUInt32(); return r.ReadString(); }) == "tbot was here", Describe(comment));
+
+        PacketWriter Loop() => Req(CS_LOOPSKILL_REQ, w =>
+        {
+            w.WriteUInt32(a.CharId); w.WriteByte(1); w.WriteByte(1); w.WriteUInt16(0); w.WriteUInt16(ShootSkill);
+            w.WriteFloat(a.Spawn.X); w.WriteFloat(a.Spawn.Y); w.WriteFloat(a.Spawn.Z);
+            w.WriteByte(1); w.WriteUInt32(b.CharId); w.WriteByte(1); w.WriteByte(1);
+        });
+        b.Discard(CS_LOOPSKILL_ACK); a.Discard(CS_LOOPSKILL_ACK);
+        a.Send(Loop());
+        var loop = b.TryWait(CS_LOOPSKILL_ACK, r => { r.ReadByte(); return r.ReadUInt32() == a.CharId; });
+        // CS_LOOPSKILL_ACK: result, attacker, type, skill, then on success the attack figures, ground point and targets.
+        static byte LoopResult(PacketReader r)
+        {
+            byte res = r.ReadByte(); r.ReadUInt32(); r.ReadByte(); r.ReadUInt16();
+            r.ReadByte(); r.ReadUInt16(); r.ReadByte();
+            for (int i = 0; i < 4; i++) r.ReadUInt32();
+            for (int i = 0; i < 4; i++) r.ReadByte();
+            r.ReadFloat(); r.ReadFloat(); r.ReadFloat();
+            int n = r.ReadByte();
+            for (int i = 0; i < n; i++) { r.ReadUInt32(); r.ReadByte(); }
+            return res;
+        }
+        Check("small: a loop skill (Shoot) is shown around", loop is not null && Read(loop, LoopResult) == 0, Describe(loop));
+        a.Discard(CS_LOOPSKILL_ACK);
+        a.Send(Loop());
+        var again = a.TryWait(CS_LOOPSKILL_ACK);
+        Check("small: … and repeats only after its loop delay (SKILL_SPEEDYUSE)", again is not null && Read(again, LoopResult) == 6,
+            Describe(again));
+        Thread.Sleep(500);
+        b.Discard(CS_LOOPSKILL_ACK);
     }
 
     /// <summary>Money pouch, reward box, exp book, exp boost (and a second one, refused) and an XP Plus premium.</summary>

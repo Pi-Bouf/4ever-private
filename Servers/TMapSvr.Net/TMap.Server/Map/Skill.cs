@@ -66,6 +66,9 @@ public sealed class Skill
         return unchecked(_delayTick - (now - _useTick));
     }
 
+    /// <summary>C++ <c>m_dwUseTick = m_dwDelayTick = 0</c> (<c>CTObjBase::CancelSkill</c>): no cooldown left.</summary>
+    public void ResetCooldown() { _useTick = 0; _delayTick = 0; }
+
     /// <summary>C++ <c>CTSkill::CanUse</c> (TSkill.cpp:224-227) — <c>!GetReuseRemainTick</c>.</summary>
     public bool CanUse(uint now) => GetReuseRemainTick(now) == 0;
 
@@ -93,6 +96,9 @@ public sealed class Skill
         uint delay = GetReuseDelay(type, atkSpeed, rate);
         if (GetReuseRemainTick(now) < delay) { _useTick = now; _delayTick = delay; }
     }
+
+    /// <summary>Arm a loop skill's repeat delay (C++ <c>Use(SDELAY_LOOP, …)</c> in <c>OnCS_LOOPSKILL_REQ</c>).</summary>
+    public void UseLoop(uint now, uint atkSpeed, uint rate) => Use(SdelayLoop, now, atkSpeed, rate);
 
     /// <summary>Arm the standard skill cooldown (C++ <c>CTObjBase::SkillUse</c> calls
     /// <c>Use(SDELAY_SKILL, tick, GetAtkSpeed, GetAtkSpeedRate)</c>).</summary>

@@ -21,15 +21,26 @@ public sealed partial class MapService
         if (target is { State: EnterState.InGame, Char: { } ch })
             SendCS_CHARSTATINFO_ACK(s, ch);
         else
-            _log.LogDebug("CS_CHARSTATINFO_REQ for char {Char} not resident here (world forward deferred).", charId);
+        {
+            var w = new PacketWriter(Msg.MW_CHARSTATINFO_ACK);                  // C++: through the world (SmallRequests.cs)
+            w.WriteUInt32(s.CharId); w.WriteUInt32(charId);
+            _world.Send(w);
+        }
     }
 
     /// <summary>Builds the 87-byte stat block for <paramref name="ch"/> and sends it to
     /// <paramref name="to"/> (the requester). Every field is computed via <see cref="StatEngine"/>.</summary>
     private void SendCS_CHARSTATINFO_ACK(ClientSession to, Character ch)
     {
-        var t = _templates;
         var w = new PacketWriter(Msg.CS_CHARSTATINFO_ACK, capacity: 96);
+        WriteStatSheet(w, ch);
+        to.Send(w);
+    }
+
+    /// <summary>The stat sheet body (also what <c>MW_CHARSTATINFOANS_ACK</c> carries after the asker's id).</summary>
+    private void WriteStatSheet(PacketWriter w, Character ch)
+    {
+        var t = _templates;
         w.WriteUInt32(ch.CharId);
         w.WriteUInt16(StatEngine.Ability(ch, StatEngine.MtypeStr, t));
         w.WriteUInt16(StatEngine.Ability(ch, StatEngine.MtypeDex, t));
@@ -61,6 +72,5 @@ public sealed partial class MapService
         w.WriteByte(StatEngine.CriticalMagicProb(ch, t));
         w.WriteUInt16((ushort)ch.SkillPoint); // m_wSkillPoint
         w.WriteByte(ch.Persist.Aftermath);   // m_aftermath.m_bStep (the death-penalty step)
-        to.Send(w);
     }
 }
