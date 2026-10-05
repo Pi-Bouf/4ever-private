@@ -16,8 +16,8 @@ namespace TMap.Server.Map;
 /// the level chart's money for the level it needs (× the skill's <c>fPrice</c>) and <c>TSKILLPOINTCHART</c>'s skill
 /// points, and needs the character level, enough points already spent in the skill's tab and the parent skill.</para>
 ///
-/// <para><b>Not ported:</b> the NPC discount (<c>GetDiscountRate</c>: guild / local-hero / castle-hero conditions —
-/// territories are not modelled, so 0), the 5.0 secure-code lock
+/// <para>The NPC's discount (<c>GetDiscountRate</c>, MapService.Fort.cs) comes off the price. <b>Not ported:</b> the 5.0
+/// secure-code lock
 /// and the skill log (<c>SendDM_LOGSKILL_REQ</c>). The C++ reads <c>pNextLevel-&gt;m_dwMoney</c> before checking it for
 /// null; a missing level row is answered <c>SKILL_ALREADY</c> here instead of crashing.</para>
 /// </summary>
@@ -38,9 +38,9 @@ public sealed partial class MapService
         if (IsTutorial(ch)) return;                                                     // ProtectTutorial
 
         if (s.Deal.Status != (byte)DealStatus.Ready) { SendCS_SKILLBUY_ACK(s, ch, SkillUseResult.ActionLock, skillId, 0); return; }
-        if (_state.FindNpc(npcId) is not { } npc || !npc.CanTalk(ch.Country, ch.AidCountry, 0))
+        if (_state.FindNpc(npcId) is not { } npc || !CanTalk(npc, ch))
         { SendCS_SKILLBUY_ACK(s, ch, SkillUseResult.NotFound, skillId, 0); return; }
-        const byte discount = 0;                                                        // GetDiscountRate — see the class remarks
+        byte discount = DiscountRate(ch, npc);                                          // GetDiscountRate (MapService.Fort.cs)
 
         // A skill the character holds goes up one level.
         if (ch.Skills.FirstOrDefault(k => k.SkillId == skillId) is { Template: { } st } skill)

@@ -26,9 +26,8 @@ namespace TMap.Server.Map;
 /// <item><b>Castle and camp</b> (from the world's character info) in <c>CS_ENTER_ACK</c>, for a player inside a castle or the sky
 /// garden. <b>Fixed C++ bug:</b> the C++ wrote the <i>receiver's</i> castle there; this writes the entering player's.</item>
 /// </list>
-/// <para>The missions' war itself is in MapService.Mission.cs. <b>Not yet (the next batches):</b> what the other wars do on their
-/// map — spawns, gate switches, gatekeepers and bosses, captures (<c>*OCCUPY</c>), rewards, PvP points and records, castle sign-up and entry, god balls and towers, the sky garden's capture
-/// points — and the discounts. Only players' own territory is tracked (not summons' or monsters').</para>
+/// <para>The wars themselves: MapService.Mission.cs, MapService.SkyGarden.cs, MapService.Fort.cs. <b>Not yet:</b> the castles' war
+/// (sign-up and entry, god balls and towers, the capture). Only players' own territory is tracked (not summons' or monsters').</para>
 /// </summary>
 public sealed partial class MapService
 {
@@ -197,12 +196,7 @@ public sealed partial class MapService
             if (!t.Valid) { t.Status = status; continue; }
             if (t.Status == status) continue;
             t.Status = status;
-            switch (status)
-            {
-                case BsNormal: t.CanBattle = true; break;
-                case BsBattle: t.CanBattle = true; t.GateOpened = false; break;
-                case BsPeace: t.Occupied = false; t.CanBattle = false; t.GateOpened = true; break;
-            }
+            FortPhase(t, status);                                               // its gates, spawns and result (MapService.Fort.cs)
         }
         byte msg = status switch
         {
@@ -211,6 +205,7 @@ public sealed partial class MapService
             BsPeace => _localPhase == BsBattle ? SmBattlePeace : (byte)0,
             _ => 0,
         };
+        if (msg == SmBattlePeace) LocalReward();                                // the forts' reward items (MapService.Fort.cs)
         NotifyLocalInfo(msg, 0, second);
         _localPhase = status;
         if (castleDay != 0) SendCastleWarInfo();
@@ -323,9 +318,9 @@ public sealed partial class MapService
         _skyPhase = status;
     }
 
-    /// <summary>C++ <c>NotifyLocalInfo</c> → <c>SendCS_SYSTEMMSG_ACK</c> (CSSender.cpp:5056): the war news to every player in the game.
-    /// SM_NONE sends nothing.</summary>
-    private void NotifyLocalInfo(byte type, ushort localId, uint second, string name = "")
+    /// <summary>C++ <c>NotifyLocalInfo</c> → <c>SendCS_SYSTEMMSG_ACK</c> (CSSender.cpp:5056): the war news to every player in the game
+    /// (a fort's open gate only to those in it). SM_NONE sends nothing.</summary>
+    private void NotifyLocalInfo(byte type, ushort localId, uint second, string name = "", string name2 = "")
     {
         if (type == 0) return;
         var w = new PacketWriter(Msg.CS_SYSTEMMSG_ACK, capacity: 12);
@@ -334,6 +329,8 @@ public sealed partial class MapService
         {
             case SmBattleNormal or SmBattleStart or SmCastleNormal or SmCastleStart or SmSkyGardenNormal or SmSkyGardenStart: break;
             case SmMissionStart: w.WriteUInt16(localId); break;
+            case SmBattleBossDie: w.WriteString(name); w.WriteString(name2); w.WriteUInt16(localId); break;
+            case SmBattleOpenGate: w.WriteString(name); break;
             case SmMissionBossDie or SmMissionTimeout: w.WriteString(name); w.WriteUInt16(localId); w.WriteUInt32(second); break;
             // sic: the C++ case falls through into SM_CASTLE_END's two strings (the guild name is empty here).
             case SmSkyGardenEnd: w.WriteString(name); w.WriteUInt16(localId); w.WriteUInt32(second); w.WriteString(name); w.WriteString(""); break;
@@ -342,7 +339,7 @@ public sealed partial class MapService
         }
         var msg = w.ToArray();
         foreach (var s in _state.AllInGame())
-            if (s.IsMain) s.Send(msg);
+            if (s.IsMain && (type != SmBattleOpenGate || (s.Char is { } ch && LocalOf(ch)?.Id == localId))) s.Send(msg);
     }
 
     /// <summary>C++ <c>SendMW_CASTLEWARINFO_ACK</c> for every valid castle (or a bare 0 when none): its owner and, for each of its
@@ -352,15 +349,7 @@ public sealed partial class MapService
         bool sent = false;
         foreach (var c in _castles.Where(c => c.Valid && c.Day != 0))
         {
-            var w = new PacketWriter(Msg.MW_CASTLEWARINFO_ACK);
-            w.WriteUInt16(c.Id); w.WriteUInt32(c.Guild); w.WriteByte((byte)c.Locals.Count);
-            foreach (var l in c.Locals)
-            {
-                w.WriteUInt16(l.Id);
-                for (int i = 0; i < 7; i++)
-                    if (i + 1 != c.Day) { w.WriteUInt32(l.OccupyGuild[i]); w.WriteByte(l.OccupyType[i]); }
-            }
-            _world.Send(w);
+            SendCastleWarInfo(c);
             sent = true;
         }
         if (!sent)
@@ -370,6 +359,20 @@ public sealed partial class MapService
             _world.Send(w);
         }
         _castleWarInfoSent = true;
+    }
+
+    /// <summary>C++ <c>SendMW_CASTLEWARINFO_ACK(pCastle)</c> for one castle.</summary>
+    private void SendCastleWarInfo(Territory c)
+    {
+        var w = new PacketWriter(Msg.MW_CASTLEWARINFO_ACK);
+        w.WriteUInt16(c.Id); w.WriteUInt32(c.Guild); w.WriteByte((byte)c.Locals.Count);
+        foreach (var l in c.Locals)
+        {
+            w.WriteUInt16(l.Id);
+            for (int i = 0; i < 7; i++)
+                if (i + 1 != c.Day) { w.WriteUInt32(l.OccupyGuild[i]); w.WriteByte(l.OccupyType[i]); }
+        }
+        _world.Send(w);
     }
 
     // ================================ the world's castle news ================================
@@ -536,6 +539,12 @@ public sealed class Territory
     /// <summary>C++ <c>m_bOccupied</c> — taken in this war already.</summary>
     public bool Occupied { get; set; }
     public bool GateOpened { get; set; }
+    /// <summary>C++ <c>m_bLastOccType</c> — how its last war ended (OCCUPY_DEFEND / OCCUPY_ACCEPT).</summary>
+    public byte LastOccType { get; set; }
+    /// <summary>C++ <c>m_mapKills</c> — the kills each player made there since its last result.</summary>
+    public Dictionary<uint, int> Kills { get; } = new();
+    /// <summary>C++ <c>m_mapTRecord</c> — the war's records, by guild then character (std::map order).</summary>
+    public SortedDictionary<uint, SortedDictionary<uint, EntryRecord>> Records { get; } = new();
     /// <summary>A fort's week (C++ <c>m_occupyGuild</c> / <c>m_occupyType</c>, by weekday − 1).</summary>
     public uint[] OccupyGuild { get; } = new uint[7];
     public byte[] OccupyType { get; } = new byte[7];

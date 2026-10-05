@@ -197,6 +197,8 @@ public static class Msg
     public const ushort CS_GUILDLOCALLIST_REQ = CS_MAP + 0x0155;    // (the war-info window)
     public const ushort CS_GUILDLOCALLIST_ACK = CS_MAP + 0x0156;    // castles {…, forts}, missions, sky gardens, BoW / BR
     public const ushort CS_ITEMLEVELREVISION_ACK = CS_MAP + 0x0245; // bLevel (the territory's item cap, 0 = none)
+    public const ushort CS_LOCALOCCUPY_ACK = CS_MAP + 0x00A8;       // bType wLocalID bCountry dwGuildID
+    public const ushort CS_CHANGECOLOR_ACK = CS_MAP + 0x00DF;       // bType dwID bColor bCountry
     public const ushort CS_ENTERSKYGARDEN_ACK = CS_MAP + 0x0254;    // wID bCamp bDefCountry bLeft bCenter bRight bAtkCountry
     public const ushort CS_LEAVESKYGARDEN_ACK = CS_MAP + 0x0269;    // (empty)
     public const ushort CS_SKYGARDEN_OCCUPY_LEFT_ACK = CS_MAP + 0x0271;   // bCamp now holding the left point
@@ -394,6 +396,11 @@ public static class Msg
     public const ushort MW_SKYGARDENENABLE_REQ = MW_BASE + 0x0181;  // bStatus dwSecond bDay dwStart
     public const ushort MW_SKYGARDENOCCUPY_REQ = MW_BASE + 0x0183;  // bType wID bCountry (world -> every map)
     public const ushort MW_SKYGARDENOCCUPY_ACK = MW_BASE + 0x0184;  // bType wID bCountry (the win, to the world)
+    public const ushort MW_LOCALOCCUPY_REQ = MW_BASE + 0x0069;      // bType wLocalID bCountry dwGuildID strGuild (world -> every map)
+    public const ushort MW_LOCALOCCUPY_ACK = MW_BASE + 0x006A;      // bType wLocalID bCountry dwGuildID bCurCountry (to the world)
+    public const ushort MW_GAINPVPPOINT_REQ = MW_BASE + 0x0120;     // dwCharID dwPoint bEvent bType bGain strName bClass bLevel
+    public const ushort MW_GAINPVPPOINT_ACK = MW_BASE + 0x0121;     // bOwnerType dwOwnerID dwPoint bEvent bType bGain strName bClass bLevel
+    public const ushort MW_LOCALRECORD_ACK = MW_BASE + 0x0122;      // dwGuild dwGuildPoint wCount {dwGuildID wCount {dwCharID wKill wDie dwPoint[8]}}
     public const ushort MW_BATTLEMODESTATUS_REQ = MW_BASE + 0x0220; // dwCharID dwKey
     public const ushort MW_BATTLEMODESTATUS_ACK = MW_BASE + 0x0221; // dwCharID dwKey BoW (status next winner) BR (status next type)
     public const ushort MW_FIRSTGRADEGROUP_REQ = MW_BASE + 0x0143;

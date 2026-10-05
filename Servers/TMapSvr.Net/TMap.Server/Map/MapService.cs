@@ -266,6 +266,8 @@ public sealed partial class MapService
                 case Msg.MW_HEROSELECT_REQ: OnMW_HEROSELECT_REQ(r); break;
                 case Msg.MW_MISSIONOCCUPY_REQ: OnMW_MISSIONOCCUPY_REQ(r); break;
                 case Msg.MW_SKYGARDENOCCUPY_REQ: OnMW_SKYGARDENOCCUPY_REQ(r); break;
+                case Msg.MW_LOCALOCCUPY_REQ: OnMW_LOCALOCCUPY_REQ(r); break;
+                case Msg.MW_GAINPVPPOINT_REQ: OnMW_GAINPVPPOINT_REQ(r); break;
                 case Msg.MW_BATTLEMODESTATUS_ACK: OnMW_BATTLEMODESTATUS_ACK(r); break;
                 case Msg.MW_WORLDPOSTSEND_REQ: await OnMW_WORLDPOSTSEND_REQ(r); break;
                 case Msg.MW_LEVELUP_REQ: OnMW_LEVELUP_REQ(r); break;
@@ -339,6 +341,7 @@ public sealed partial class MapService
     {
         _tickSeconds++;
         NowMs = unchecked((uint)(_tickSeconds * 1000L)); // advance the map ms clock (skill cooldowns)
+        RunDbResults();                        // the database's answers, applied here (MapService.Fort.cs)
         RunMonsterRegen(_tickSeconds * 1000L); // monster spawn/respawn regen (map clock in ms)
         RunMaintainSkills(NowMs);              // expire ended buffs/debuffs (C++ CheckMaintainSkill, before Recover)
         RunSwitchReverts(NowMs);               // auto-revert duration-limited switches (C++ m_vTSWITCHOBJ sweep)

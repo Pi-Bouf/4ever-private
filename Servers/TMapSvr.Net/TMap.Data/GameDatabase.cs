@@ -479,8 +479,10 @@ SELECT wLocalID, bDay, dwGuildID, bType FROM TLOCALOCCUPYTABLE";
         await using (var cmd = new SqlCommand(PvPointChartSql, c))
         await using (var r = await cmd.ExecuteReaderAsync(ct))
             while (await r.ReadAsync(ct))
-                if (r.GetUShortSafe(0) == 0)   // a local's own rows belong to its battle zone (unported)
+                if (r.GetUShortSafe(0) == 0)
                     store.PvPointKill[(r.GetByteSafe(1), r.GetByteSafe(2))] = (r.GetUIntSafe(3), r.GetUIntSafe(4));
+                else                           // a local's own rows: its battle zone's m_mapTPvPoint
+                    store.LocalPvPoints[(r.GetUShortSafe(0), r.GetByteSafe(1), r.GetByteSafe(2))] = (r.GetUIntSafe(3), r.GetUIntSafe(4));
 
         await using (var cmd = new SqlCommand(TitleChartSql, c))
         await using (var r = await cmd.ExecuteReaderAsync(ct))
@@ -1132,6 +1134,25 @@ FROM TCHARTABLE WHERE dwCharID = @dwCharID AND bDelete = 0";
             SqlProc.In("@g0", SqlDbType.TinyInt, country), SqlProc.In("@g1", SqlDbType.SmallInt, unchecked((short)id)),
             SqlProc.In("@g2", SqlDbType.TinyInt, type),
         }, ct);
+    }
+
+    /// <summary>C++ <c>CSPSaveLocalOccupy</c> (DBAccess.h:5863) — <c>TSaveLocalOccupy(wLocalID, bType, dwGuildID, dwCharID,
+    /// OUT bCountry, OUT dwGuild)</c>: the fort's new owner (the proc decides the country from the guild's chief or the killer)
+    /// and its week. Returns the proc's result (0 = done), the owner country and the owner guild.</summary>
+    public async Task<(int Ret, byte Country, uint Guild)> SaveLocalOccupyAsync(ushort localId, byte type, uint guildId, uint charId,
+        CancellationToken ct = default)
+    {
+        await using var c = await OpenAsync(ct);
+        var ret = SqlProc.Ret();
+        var ps = new[]
+        {
+            SqlProc.In("@l0", SqlDbType.SmallInt, unchecked((short)localId)), SqlProc.In("@l1", SqlDbType.TinyInt, type),
+            SqlProc.In("@l2", SqlDbType.Int, unchecked((int)guildId)), SqlProc.In("@l3", SqlDbType.Int, unchecked((int)charId)),
+            SqlProc.Out("@l4", SqlDbType.TinyInt), SqlProc.Out("@l5", SqlDbType.Int),
+        };
+        await SqlProc.ExecAsync(c, "TSaveLocalOccupy", ret, ps, ct);
+        static uint U(SqlParameter p) => p.Value is DBNull or null ? 0u : unchecked((uint)Convert.ToInt64(p.Value));
+        return (ret.AsInt(), (byte)U(ps[4]), U(ps[5]));
     }
 
     public async Task SaveCharKillAsync(uint killerId, uint targetId, CancellationToken ct = default)

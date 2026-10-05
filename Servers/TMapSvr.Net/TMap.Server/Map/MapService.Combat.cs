@@ -272,6 +272,7 @@ public sealed partial class MapService
         ApplyMonsterDamage(mon, dmg);   // C++ OnDamage: HP/MP damage floors at 0, heal clamps to max
         // Loot/exp owner = the HP actually removed this swing (party bucket if partied — Phase 17/38; 0 on a miss/heal).
         mon.AddDamage(owner.CharId, owner.GetPartyId(), hpBefore - mon.Hp);
+        AddGuildDamage(mon, owner, hpBefore - mon.Hp);   // MapService.Fort.cs
 
         // bAtkHit carries the hit result (HT_MISS/NORMAL/CRITICAL), overridden to HT_LASTHIT on the killing blow.
         byte atkHit = hitType == HtMiss || corpse ? hitType : (mon.Hp == 0 ? HtLastHit : hitType);
@@ -320,7 +321,7 @@ public sealed partial class MapService
         }
 
         // ---- death → despawn → respawn re-arm ----
-        if (hitType != HtMiss && !corpse && mon.Hp == 0) OnMonsterDeath(mon);
+        if (hitType != HtMiss && !corpse && mon.Hp == 0) OnMonsterDeath(mon, owner.CharId);
     }
 
     /// <summary>The net HP/MP change a hit inflicts on the defender plus the per-exec damage map that fills

@@ -51,6 +51,7 @@ public static class Scenarios
         CS_CANCELSKILL_REQ = M + 0x0146, CS_QUESTUPDATE_ACK = M + 0x0053, CS_QUESTENDTIMER_REQ = M + 0x0058,
         CS_QUESTPOSEXEC_REQ = M + 0x0354, CS_MONITEMTAKEALL_REQ = M + 0x0152, CS_MONITEMTAKE_ACK = M + 0x008B,
         CS_GUILDLOCALLIST_REQ = M + 0x0155, CS_GUILDLOCALLIST_ACK = M + 0x0156, CS_REGION_REQ = M + 0x00F1,
+        CS_LOCALOCCUPY_ACK = M + 0x00A8, CS_DELMON_ACK = M + 0x0012,
         CS_ITEMLEVELREVISION_ACK = M + 0x0245, CS_ENTERSKYGARDEN_ACK = M + 0x0254, CS_LEAVESKYGARDEN_ACK = M + 0x0269,
         CS_DIE_ACK = M + 0x0025, CS_REVIVAL_REQ = M + 0x0026, CS_REVIVAL_ACK = M + 0x0027, CS_PVPPOINT_ACK = M + 0x01E2,
         CS_MOVEITEM_REQ = M + 0x0028, CS_MOVEITEM_ACK = M + 0x0029, CS_SKILLEND_ACK = M + 0x0037,
@@ -114,6 +115,8 @@ public static class Scenarios
     private const ushort HonourTitle = 56;
     // Backed up before the run and put back after (by dwCharID); TSKILLMAINTAINTABLE because the map saves the bots' buffs.
     private static readonly string[] RankTables = { "TMONTHPVPOINTTABLE", "TPVPRECORDTABLE", "TTITLETABLE", "TSKILLMAINTAINTABLE" };
+    // The forts' wars write every fort's next war and week (TSaveLocalOccupy): those two tables are copied aside whole.
+    private static readonly string[] WarTables = { "TLOCALTABLE", "TLOCALOCCUPYTABLE" };
     private const byte InvenEquip = 0xFE, InvenBackpack = 0xFF;
 
     private static readonly List<(string Name, bool Ok, string Detail)> Results = new();
@@ -230,6 +233,50 @@ public static class Scenarios
 
         await MissionWar(cfgA, db, idA);
         await SkyGardenWar(cfgA, db, idA);
+        await FortWar(cfgA, db, idA);
+    }
+
+    // The first fort (Moswood Research Camp, map 0), Defugel's, held by guild 2609: its left gatekeeper is spawn 25003 at
+    // (3842, 98.97, 5264).
+    private const ushort FirstFort = 1, FortGateKeeperL = 25003;
+
+    /// <summary>Territory battles, batch D: A stands by the first fort when the forts' war is forced on. Its gatekeepers (100k HP)
+    /// are out of a level-19 bot's reach, so the war runs out: nobody took the fort, it is held (OCCUPY_DEFEND) — everyone is told,
+    /// the fort's week records it — and at normal the gatekeepers go.</summary>
+    private static async Task FortWar(BotConfig cfgA, GameDb db, uint idA)
+    {
+        await db.ExecAsync("UPDATE TCHARTABLE SET wMapID=0, fPosX=3835.0, fPosY=99.0, fPosZ=5264.0 WHERE dwCharID=@p0", (int)idA);
+        WorldTool.BattleStatus(WorldTool.BtLocal, WorldTool.BsBattle, 0, 1800);
+        try
+        {
+            using var a = new Bot(cfgA);
+            a.Enter();
+            Thread.Sleep(1500);
+            uint gate = ((uint)FortGateKeeperL << 16) | (1u << 8);
+            Check("fort: at war, the fort's gatekeeper is out", a.Received.Any(p => PacketHeader.ReadId(p) == CS_ADDMON_ACK
+                && BitConverter.ToUInt32(p, PacketHeader.Size) == gate), "no CS_ADDMON_ACK for the gatekeeper");
+
+            a.Discard(CS_LOCALOCCUPY_ACK);
+            WorldTool.BattleStatus(WorldTool.BtLocal, WorldTool.BsPeace, 0, 180);
+            var held = a.TryWait(CS_LOCALOCCUPY_ACK, r => { r.ReadByte(); return r.ReadUInt16() == FirstFort; }, 8000);
+            Check("fort: the war runs out, nobody took it: everyone is told it is held (CS_LOCALOCCUPY_ACK, OCCUPY_DEFEND, Defugel)",
+                held is not null && Read(held, r => (r.ReadByte(), r.ReadUInt16(), r.ReadByte(), r.ReadUInt32())) == (0, FirstFort, 0, 2609u),
+                Describe(held));
+
+            a.Discard(CS_DELMON_ACK);
+            WorldTool.BattleStatus(WorldTool.BtLocal, WorldTool.BsNormal, 0, 0);
+            Check("fort: back to normal, the gatekeeper goes", a.TryWait(CS_DELMON_ACK, r => r.ReadUInt32() == gate, 5000) is not null,
+                "no CS_DELMON_ACK");
+        }
+        finally
+        {
+            WorldTool.BattleStatus(WorldTool.BtLocal, WorldTool.BsNormal, 0, 0);
+        }
+        await Task.Delay(1500);
+        var week = await db.RowAsync("SELECT dwGuildID, bType FROM TLOCALOCCUPYTABLE WHERE wLocalID=@p0 AND bDay=DATEPART(weekday, GETDATE())",
+            (int)FirstFort);
+        Check("saved: today in the fort's week, held by its guild (TLOCALOCCUPYTABLE)", week is not null && Convert.ToInt32(week[0]) == 2609
+            && Convert.ToInt32(week[1]) == 0, week is null ? "no row" : $"guild={week[0]} type={week[1]}");
     }
 
     // The sky garden (Avalon, map 2100), Defugel's: its middle guardian is spawn 32388 at (508.45, 0, 572.32).
@@ -1605,6 +1652,8 @@ public static class Scenarios
             bGem, wMoggItemID)
             VALUES (@p0, 0, 255, 0, @p1, @p2, @p3, 0, 1, 0, 0, 0, 0, '1900-01-01', 0, 0,0,0,0,0,0, 0,0,0,0,0,0, 0,0,0,0,0,0, 0, 0)",
             RuneDlId, (int)idA, (int)RuneSlot, (int)RuneItem);   // dwTime5 = 0: no species until the server stamps it
+        foreach (var t in WarTables)                                   // kept if a crashed run left one: it holds the original
+            await db.ExecAsync($"IF OBJECT_ID('TBOT_BAK_{t}') IS NULL SELECT * INTO TBOT_BAK_{t} FROM {t}");
         foreach (var t in RankTables)
         {
             await db.ExecAsync($"IF OBJECT_ID('TBOT_BAK_{t}') IS NOT NULL DROP TABLE TBOT_BAK_{t}");
@@ -1718,6 +1767,8 @@ public static class Scenarios
         await db.ExecAsync("UPDATE TMISSIONTABLE SET bCountry=@p1 WHERE wMissionID=@p0", (int)FirstMission, (int)MissionCountryBefore);
         await db.ExecAsync("UPDATE TSKYGARDENTABLE SET bCountry=@p1 WHERE wID=@p0", (int)SkyGarden, (int)SkyCountryBefore);
         await db.ExecAsync("UPDATE TCHARTABLE SET wLastSpawnID=@p1 WHERE dwCharID=@p0", (int)idA, LastSpawnBefore);
+        foreach (var t in WarTables)
+            await db.ExecAsync($"IF OBJECT_ID('TBOT_BAK_{t}') IS NOT NULL BEGIN DELETE FROM {t}; INSERT INTO {t} SELECT * FROM TBOT_BAK_{t}; DROP TABLE TBOT_BAK_{t} END");
         foreach (var t in RankTables)
         {
             await db.ExecAsync($"DELETE FROM {t} WHERE dwCharID IN (@p0, @p1)", (int)idA, (int)idB);

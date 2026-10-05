@@ -13,22 +13,20 @@ namespace TMap.Server.Map;
 /// country, at the gold price (<c>GetItemPrice</c>) or the PvP-point price (<c>GetItemPvPrice</c>);</item>
 /// <item>a teleporter (<c>TNPC_PORTAL</c>) — the destinations whose conditions the character meets, with their price.</item>
 /// </list>
-/// Prices are before discount: the client applies <c>bDiscountRate</c>. <b>Not ported:</b> the discount itself
-/// (<c>GetDiscountRate</c> — guild occupation and local/castle heroes are unported, so it is 0, as the buy and teleport
-/// handlers already assume); the monster shop (<c>TNPC_MONSTER</c>, castle guards) and the magic-item shop
-/// (<c>TNPC_MAGICITEM</c>), whose stock is not loaded — they get no answer. Portal conditions tied to unported
-/// systems (guild occupation, castles, tournaments, the sky garden) never pass.
+/// Prices are before discount: the client applies <c>bDiscountRate</c> (<c>GetDiscountRate</c>, MapService.Fort.cs). <b>Not
+/// ported:</b> the monster shop (<c>TNPC_MONSTER</c>, castle guards) and the magic-item shop (<c>TNPC_MAGICITEM</c>), whose
+/// stock is not loaded — they get no answer. Portal conditions tied to unported systems (castles, tournaments) never pass.
 /// </summary>
 public sealed partial class MapService
 {
     private const byte DccAllCountry = 4;     // DISCOUNT_CONDITION DCC_ALLCOUNTRY — the shop sells every country's stock
-    private const byte PctNone = 0, PctCountry = 1, PctDownLevel = 5, PctUpLevel = 6, PctUpDownLevel = 7;   // PORTALCONDITION_TYPE
+    private const byte PctNone = 0, PctCountry = 1, PctDownLevel = 5, PctUpLevel = 6, PctUpDownLevel = 7, PctGuild = 8;   // PORTALCONDITION_TYPE
 
     private void OnCS_NPCITEMLIST_REQ(ClientSession s, PacketReader r)
     {
         ushort npcId = r.ReadUInt16();
         if (s.State != EnterState.InGame || !s.IsMain || s.Char is not { } ch) return;
-        if (_state.FindNpc(npcId) is not { } npc || !npc.CanTalk(ch.Country, ch.AidCountry, 0)) return;
+        if (_state.FindNpc(npcId) is not { } npc || !CanTalk(npc, ch)) return;
         switch (npc.Type)
         {
             case TnpcSkillMaster or TnpcSkillRent: SendCS_NPCSKILLLIST_ACK(s, ch, npc); break;
@@ -46,7 +44,7 @@ public sealed partial class MapService
             if ((t.ClassId & (1u << ch.Class)) != 0
                 && (t.ItemCountry == TcontryN || npc.DiscountCondition == DccAllCountry || t.ItemCountry == ch.Country))
                 list[id] = npc.Type == TnpcPvPoint ? GetItemPvPrice(t) : GetItemPrice(t);
-        SendNpcList(s, npc, list);
+        SendNpcList(s, ch, npc, list);
     }
 
     /// <summary>The <c>TNPC_PORTAL</c> branch: when the NPC's portal lets the character in, every destination whose three
@@ -60,13 +58,13 @@ public sealed partial class MapService
                 if (_templates.Portals.TryGetValue(destId, out var target)
                     && dest.Conditions.All(c => CheckPortalCondition(ch, target, c.Type, c.Id)))
                     list[destId] = dest.Price;
-        SendNpcList(s, npc, list);
+        SendNpcList(s, ch, npc, list);
     }
 
-    private static void SendNpcList(ClientSession s, Npc npc, SortedDictionary<ushort, uint> list)
+    private void SendNpcList(ClientSession s, Character ch, Npc npc, SortedDictionary<ushort, uint> list)
     {
         var w = new PacketWriter(Msg.CS_NPCITEMLIST_ACK, capacity: 8 + list.Count * 6);
-        w.WriteUInt16(npc.Id); w.WriteByte(npc.Type); w.WriteByte(0);                 // bDiscountRate — see the class remarks
+        w.WriteUInt16(npc.Id); w.WriteByte(npc.Type); w.WriteByte(DiscountRate(ch, npc));
         w.WriteByte((byte)list.Count);
         foreach (var (id, price) in list) { w.WriteUInt16(id); w.WriteUInt32(price); }
         s.Send(w);
@@ -80,16 +78,20 @@ public sealed partial class MapService
         return _templates.LevelPvPMoneyOf(grade) is { } money ? (uint)(money * t.PvPrice + 0.99) : 0u;
     }
 
-    /// <summary>C++ <c>CTPlayer::CheckPortalCondition</c> (TPlayer.cpp:3220). Guild occupation, castle camps and
-    /// tournaments are unported: those conditions fail (their C++ lookups find nothing). The sky garden's are in MapService.SkyGarden.cs.</summary>
+    /// <summary>C++ <c>CTPlayer::CheckPortalCondition</c> (TPlayer.cpp:3220). Castle camps and tournaments are unported: those
+    /// conditions fail (their C++ lookups find nothing). The sky garden's are in MapService.SkyGarden.cs.</summary>
     private bool CheckPortalCondition(Character ch, PortalRow portal, byte condition, uint conditionId)
     {
         switch (condition)
         {
             case PctNone: return true;
             case PctCountry:
-                // The portal's own country (occupation override unported); disguise unported ⇒ 0.
-                return portal.Country == TcontryN || ch.Country == portal.Country || ch.AidCountry == portal.Country;
+                // The portal's own country, or its territory's for a neutral one (C++ m_pLocal: any territory); disguise unported ⇒ 0.
+                if (portal.Country != TcontryN) return ch.Country == portal.Country || ch.AidCountry == portal.Country;
+                byte pc = _territories.TryGetValue(portal.LocalId, out var pt) ? pt.Country : portal.Country;
+                return pc == TcontryN || ch.Country == pc || ch.AidCountry == pc;
+            case PctGuild:                                                       // the portal's territory's guild
+                return _territories.TryGetValue(portal.LocalId, out var f) && f.Guild != 0 && ch.GuildId == f.Guild;
             case PctHaveItem: return ch.Invens.Any(i => i.Items.Any(it => it.TemplateId == (ushort)conditionId));
             case PctDownLevel: return ch.Level >= conditionId;
             case PctUpLevel: return ch.Level <= conditionId;

@@ -81,18 +81,19 @@ public sealed partial class MapService
     }
 
     /// <summary>C++ <c>CTMonster::OnBattleZoneEvent</c> (TMonster.cpp:2041), called when a monster of a suspended spawn dies: a
-    /// mission's gatekeeper takes the mission for the other country. (Forts', castles' and the sky garden's come with them.)</summary>
+    /// mission's gatekeeper takes the mission for the other country. (A fort's and the sky garden's: their own files.)</summary>
     private void OnBattleZoneEvent(Monster mon, uint attackerId)
     {
         ushort spawnId = (ushort)(mon.Id >> 16);
         if (SpawnById(spawnId)?.Spawn is not { LocalId: not 0 } spawn || !_territories.TryGetValue(spawn.LocalId, out var t)) return;
         var z = t.Zone;
         bool gate = spawnId == z.LGateKeeperSpawnId || spawnId == z.RGateKeeperSpawnId || spawnId == z.CGateKeeperSpawnId;
-        // A gatekeeper opens its gate (C++ ChangeSwitch SWC_OPEN). (A fort's boss coming out with it is with the forts.)
+        // A gatekeeper opens its gate (C++ ChangeSwitch SWC_OPEN) — for a fort, the first one brings its boss out.
         uint gateSwitch = spawnId == z.LGateKeeperSpawnId ? z.LSwitchId : spawnId == z.RGateKeeperSpawnId ? z.RSwitchId
             : spawnId == z.CGateKeeperSpawnId ? z.CSwitchId : 0;
-        if (gateSwitch != 0) ChangeSwitchModule(DefaultChannel, z.MapId, gateSwitch, SwcOpen);
-        if (t.Type == LocalType.SkyGarden && t.Valid) SkyGardenZoneEvent(t, mon, spawnId);
+        bool opened = gateSwitch != 0 && ChangeSwitchModule(DefaultChannel, z.MapId, gateSwitch, SwcOpen);
+        if (t.Type == LocalType.Occupation && t.Valid) FortZoneEvent(t, mon, spawnId, opened, attackerId);   // MapService.Fort.cs
+        if (t.Type == LocalType.SkyGarden && t.Valid) SkyGardenZoneEvent(t, mon, spawnId, attackerId);
         if (t.Type == LocalType.Mission && t.Valid && gate && !t.Occupied)
         {
             t.Occupied = true;

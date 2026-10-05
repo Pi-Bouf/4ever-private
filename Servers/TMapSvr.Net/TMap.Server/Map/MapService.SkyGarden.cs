@@ -90,12 +90,13 @@ public sealed partial class MapService
 
     /// <summary>The sky-garden part of C++ <c>CTMonster::OnBattleZoneEvent</c> (TMonster.cpp:2139): a guardian turns its point over;
     /// a country's boss falling wins the garden for the other country.</summary>
-    private void SkyGardenZoneEvent(Territory g, Monster mon, ushort spawnId)
+    private void SkyGardenZoneEvent(Territory g, Monster mon, ushort spawnId, uint attackerId)
     {
         var z = g.Zone;
         void Point(ushort guardian, Func<byte> flip, ushort ack)
         {
             if (spawnId != guardian) return;
+            PvPGodMonKill(attackerId);                                          // MapService.Fort.cs
             mon.Country = mon.Country == TcontryD ? TcontryC : TcontryD;
             var w = new PacketWriter(ack, capacity: 4);
             w.WriteByte(flip());
@@ -112,6 +113,7 @@ public sealed partial class MapService
         {
             g.Occupied = true;
             g.Status = BsPeace;
+            PvPGodMonKill(attackerId);
             SkyGardenOccupy(g, OccupyAccept, country);
         }
     }

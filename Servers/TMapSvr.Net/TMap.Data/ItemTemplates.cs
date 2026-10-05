@@ -136,6 +136,10 @@ public sealed class TemplateStore
     /// the victim's loss %, of the victim level's <see cref="LevelPvPoint"/>.</summary>
     public Dictionary<(byte Status, byte Event), (uint Inc, uint Dec)> PvPointKill { get; } = new();
 
+    /// <summary>The territories' own point rows (C++ <c>TBATTLEZONE::m_mapTPvPoint</c>): (local, PVP status, event) → the gain and
+    /// the loss — the boss kill, taking part, winning and holding a fort.</summary>
+    public Dictionary<(ushort Local, byte Status, byte Event), (uint Inc, uint Dec)> LocalPvPoints { get; } = new();
+
     /// <summary>The title chart (C++ <c>m_mapTTITLE</c>), by id — the order the C++ walks it in.</summary>
     public SortedDictionary<ushort, TitleRow> Titles { get; } = new();
 
