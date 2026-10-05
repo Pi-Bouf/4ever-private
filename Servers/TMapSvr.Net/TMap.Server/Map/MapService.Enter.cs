@@ -379,6 +379,7 @@ public sealed partial class MapService
             RecallsEnterMap(s, s.Char);    // summons that followed through a teleport come back (InitMap)
             CompanionEnterMap(s, s.Char);  // and the summoned companion is called out (InitMap)
             DuringItemsAtLogin(s, s.Char); // the premium / exp boost buffs, the premium shown around (InitMap)
+            SkyGardenEnterMap(s, s.Char);  // on the sky garden's map: one's camp and the garden's state (InitMap)
             _log.LogInformation("Char {Char} live on map {Map} ch {Ch}.", s.CharId, s.Char.MapId, s.Channel);
         }
     }

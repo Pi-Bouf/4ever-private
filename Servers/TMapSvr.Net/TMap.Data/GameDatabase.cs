@@ -1123,6 +1123,17 @@ FROM TCHARTABLE WHERE dwCharID = @dwCharID AND bDelete = 0";
         }, ct);
     }
 
+    /// <summary>C++ <c>CSPSaveSkyGardenOccupy</c> (DBAccess.h:5847) — <c>TSaveSkyGardenOccupy(bCountry, wID, bType)</c>.</summary>
+    public async Task SaveSkyGardenOccupyAsync(byte country, ushort id, byte type, CancellationToken ct = default)
+    {
+        await using var c = await OpenAsync(ct);
+        await SqlProc.ExecAsync(c, "TSaveSkyGardenOccupy", null, new[]
+        {
+            SqlProc.In("@g0", SqlDbType.TinyInt, country), SqlProc.In("@g1", SqlDbType.SmallInt, unchecked((short)id)),
+            SqlProc.In("@g2", SqlDbType.TinyInt, type),
+        }, ct);
+    }
+
     public async Task SaveCharKillAsync(uint killerId, uint targetId, CancellationToken ct = default)
     {
         await using var c = await OpenAsync(ct);

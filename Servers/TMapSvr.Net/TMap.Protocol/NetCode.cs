@@ -197,6 +197,11 @@ public static class Msg
     public const ushort CS_GUILDLOCALLIST_REQ = CS_MAP + 0x0155;    // (the war-info window)
     public const ushort CS_GUILDLOCALLIST_ACK = CS_MAP + 0x0156;    // castles {…, forts}, missions, sky gardens, BoW / BR
     public const ushort CS_ITEMLEVELREVISION_ACK = CS_MAP + 0x0245; // bLevel (the territory's item cap, 0 = none)
+    public const ushort CS_ENTERSKYGARDEN_ACK = CS_MAP + 0x0254;    // wID bCamp bDefCountry bLeft bCenter bRight bAtkCountry
+    public const ushort CS_LEAVESKYGARDEN_ACK = CS_MAP + 0x0269;    // (empty)
+    public const ushort CS_SKYGARDEN_OCCUPY_LEFT_ACK = CS_MAP + 0x0271;   // bCamp now holding the left point
+    public const ushort CS_SKYGARDEN_OCCUPY_CENTER_ACK = CS_MAP + 0x0272; // … the centre point
+    public const ushort CS_SKYGARDEN_OCCUPY_RIGHT_ACK = CS_MAP + 0x0273;  // … the right point
     public const ushort CS_RESETPCBANG_ACK = CS_MAP + 0x01B9;    // dwCharID, bInPcBang
     public const ushort CS_OPENMONEY_ACK = CS_MAP + 0x01D3;      // dwMoney (a money pouch opened)
     public const ushort CS_TERMINATE_REQ = CS_MAP + 0x01D2;
@@ -387,6 +392,8 @@ public static class Msg
     public const ushort MW_MISSIONOCCUPY_REQ = MW_BASE + 0x0166;    // bType wLocalID bCountry (world -> every map)
     public const ushort MW_MISSIONOCCUPY_ACK = MW_BASE + 0x0167;    // bType wLocalID bCountry (the capture, to the world)
     public const ushort MW_SKYGARDENENABLE_REQ = MW_BASE + 0x0181;  // bStatus dwSecond bDay dwStart
+    public const ushort MW_SKYGARDENOCCUPY_REQ = MW_BASE + 0x0183;  // bType wID bCountry (world -> every map)
+    public const ushort MW_SKYGARDENOCCUPY_ACK = MW_BASE + 0x0184;  // bType wID bCountry (the win, to the world)
     public const ushort MW_BATTLEMODESTATUS_REQ = MW_BASE + 0x0220; // dwCharID dwKey
     public const ushort MW_BATTLEMODESTATUS_ACK = MW_BASE + 0x0221; // dwCharID dwKey BoW (status next winner) BR (status next type)
     public const ushort MW_FIRSTGRADEGROUP_REQ = MW_BASE + 0x0143;

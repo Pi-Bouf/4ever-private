@@ -34,10 +34,16 @@ public sealed partial class MapService
         => _templates.MonsterSpawns.Where(d => d.Spawn.LocalId == t.Id).Select(d => d.Spawn.Id);
 
     /// <summary>C++ <c>AddMonSpawn(pMap, wSpawnID, MONSPAWN_SUSPEND)</c>: the spawn comes out on the default channel, suspended.</summary>
-    private void AddWarSpawn(ushort spawnId, bool suspend)
+    private void AddWarSpawn(ushort spawnId, bool suspend, byte? country = null)
     {
+        if (spawnId == 0) return;
         AddTimelimitedMon(spawnId, DefaultChannel, 0, _tickSeconds * 1000L);
-        foreach (var sp in _spawns.Where(p => p.Def.Spawn.Id == spawnId && p.Channel == DefaultChannel)) sp.Suspended = suspend;
+        foreach (var sp in _spawns.Where(p => p.Def.Spawn.Id == spawnId && p.Channel == DefaultChannel))
+        {
+            sp.Suspended = suspend;
+            if (country is { } c)                                               // C++ AddMonSpawn(pSpawn, channel, bCountry)
+                foreach (var slot in sp.Slots) if (slot.Live is { } m) m.Country = c;
+        }
     }
 
     /// <summary>C++ <c>m_bStatus = MONSPAWN_READY</c> + <c>OnEvent(AT_DEAD)</c> on its monsters: the spawn is released and its live
@@ -82,6 +88,11 @@ public sealed partial class MapService
         if (SpawnById(spawnId)?.Spawn is not { LocalId: not 0 } spawn || !_territories.TryGetValue(spawn.LocalId, out var t)) return;
         var z = t.Zone;
         bool gate = spawnId == z.LGateKeeperSpawnId || spawnId == z.RGateKeeperSpawnId || spawnId == z.CGateKeeperSpawnId;
+        // A gatekeeper opens its gate (C++ ChangeSwitch SWC_OPEN). (A fort's boss coming out with it is with the forts.)
+        uint gateSwitch = spawnId == z.LGateKeeperSpawnId ? z.LSwitchId : spawnId == z.RGateKeeperSpawnId ? z.RSwitchId
+            : spawnId == z.CGateKeeperSpawnId ? z.CSwitchId : 0;
+        if (gateSwitch != 0) ChangeSwitchModule(DefaultChannel, z.MapId, gateSwitch, SwcOpen);
+        if (t.Type == LocalType.SkyGarden && t.Valid) SkyGardenZoneEvent(t, mon, spawnId);
         if (t.Type == LocalType.Mission && t.Valid && gate && !t.Occupied)
         {
             t.Occupied = true;

@@ -436,7 +436,7 @@ internal sealed class MapTestHarness
         w.WriteByte(level);
         w.WriteByte(0);              // helmetHide
         w.WriteByte(country);
-        w.WriteByte(0);              // aidCountry
+        w.WriteByte(3);              // aidCountry: TCONTRY_N (none), as for any non-Broa character
         w.WriteByte(0);              // mode
         return w.ToArray();
     }

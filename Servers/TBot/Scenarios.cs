@@ -51,7 +51,7 @@ public static class Scenarios
         CS_CANCELSKILL_REQ = M + 0x0146, CS_QUESTUPDATE_ACK = M + 0x0053, CS_QUESTENDTIMER_REQ = M + 0x0058,
         CS_QUESTPOSEXEC_REQ = M + 0x0354, CS_MONITEMTAKEALL_REQ = M + 0x0152, CS_MONITEMTAKE_ACK = M + 0x008B,
         CS_GUILDLOCALLIST_REQ = M + 0x0155, CS_GUILDLOCALLIST_ACK = M + 0x0156, CS_REGION_REQ = M + 0x00F1,
-        CS_ITEMLEVELREVISION_ACK = M + 0x0245,
+        CS_ITEMLEVELREVISION_ACK = M + 0x0245, CS_ENTERSKYGARDEN_ACK = M + 0x0254, CS_LEAVESKYGARDEN_ACK = M + 0x0269,
         CS_DIE_ACK = M + 0x0025, CS_REVIVAL_REQ = M + 0x0026, CS_REVIVAL_ACK = M + 0x0027, CS_PVPPOINT_ACK = M + 0x01E2,
         CS_MOVEITEM_REQ = M + 0x0028, CS_MOVEITEM_ACK = M + 0x0029, CS_SKILLEND_ACK = M + 0x0037,
         CS_SKILLBUY_REQ = M + 0x0032, CS_SKILLBUY_ACK = M + 0x0033, CS_NPCITEMLIST_REQ = M + 0x0082, CS_NPCITEMLIST_ACK = M + 0x0083;
@@ -229,6 +229,63 @@ public static class Scenarios
             $"rows={row?[0]}");
 
         await MissionWar(cfgA, db, idA);
+        await SkyGardenWar(cfgA, db, idA);
+    }
+
+    // The sky garden (Avalon, map 2100), Defugel's: its middle guardian is spawn 32388 at (508.45, 0, 572.32).
+    // Sent out at the end, A goes to its last spawn: 4505 is by the usual spot on map 0 (the bot chars have none).
+    private const ushort SkyGarden = 200, SkyMap = 2100, SkyMiddleGuardian = 32388, BindSpawn = 4505;
+    private static byte SkyCountryBefore;
+    private static int LastSpawnBefore;
+
+    /// <summary>Territory battles, batch C: A (Craxion, the attacker) stands in the sky garden when its war is forced on. The guardians
+    /// (341k HP, level 90) are out of a level-19 bot's reach, so the war is let run out: Defugel holds its three points and keeps the
+    /// garden — the news, 360 PvP points (DEFEND) for A, the save, and everyone sent out at the end.</summary>
+    private static async Task SkyGardenWar(BotConfig cfgA, GameDb db, uint idA)
+    {
+        var before = await db.RowAsync("SELECT bCountry FROM TSKYGARDENTABLE WHERE wID=@p0", (int)SkyGarden);
+        SkyCountryBefore = before is null ? (byte)0 : Convert.ToByte(before[0]);
+        await db.ExecAsync("UPDATE TSKYGARDENTABLE SET bCountry=3 WHERE wID=@p0", (int)SkyGarden);   // so the save shows (the map keeps its own)
+        var spawn = await db.RowAsync("SELECT wLastSpawnID FROM TCHARTABLE WHERE dwCharID=@p0", (int)idA);
+        LastSpawnBefore = spawn is null ? 0 : Convert.ToInt32(spawn[0]);
+        await db.ExecAsync("UPDATE TCHARTABLE SET wLastSpawnID=@p1 WHERE dwCharID=@p0", (int)idA, (int)BindSpawn);
+        await db.ExecAsync("UPDATE TCHARTABLE SET wMapID=@p1, fPosX=508.0, fPosY=0.0, fPosZ=590.0 WHERE dwCharID=@p0", (int)idA, (int)SkyMap);
+        WorldTool.BattleStatus(WorldTool.BtSkyGarden, WorldTool.BsBattle, 21 * 3600, 1800);
+        try
+        {
+            using var a = new Bot(cfgA);
+            a.Enter();
+            var enter = a.TryWait(CS_ENTERSKYGARDEN_ACK, timeoutMs: 8000);
+            Check("sky garden: coming in, A is in the attackers' camp of Defugel's garden, all three points Defugel's", enter is not null
+                && Read(enter, r => (r.ReadUInt16(), r.ReadByte(), r.ReadByte(), r.ReadByte(), r.ReadByte(), r.ReadByte(), r.ReadByte()))
+                   == (SkyGarden, 2, 0, 1, 1, 1, 1), Describe(enter));
+            Thread.Sleep(1500);
+            uint guardian = ((uint)SkyMiddleGuardian << 16) | (1u << 8);
+            Check("sky garden: at war, the middle guardian is out", a.Received.Any(p => PacketHeader.ReadId(p) == CS_ADDMON_ACK
+                && BitConverter.ToUInt32(p, PacketHeader.Size) == guardian), "no CS_ADDMON_ACK for the guardian");
+
+            a.Discard(CS_PVPPOINT_ACK); a.Discard(CS_SYSTEMMSG_ACK);
+            WorldTool.BattleStatus(WorldTool.BtSkyGarden, WorldTool.BsPeace, 21 * 3600, 0);
+            var news = a.TryWait(CS_SYSTEMMSG_ACK, r => r.ReadByte() == 34, 8000);
+            Check("sky garden: the war runs out, Defugel held its points: everyone hears it (SM_SKYGARDEN_END, Defugel)", news is not null
+                && Read(news, r => { r.ReadByte(); string name = r.ReadString(); ushort country = r.ReadUInt16(); uint map = r.ReadUInt32(); r.ReadString(); r.ReadString(); return (name.Length > 0, country, map); })
+                   == (true, 0, SkyMap), Describe(news));
+            var points = a.TryWait(CS_PVPPOINT_ACK, timeoutMs: 5000);
+            Check("sky garden: … and the attacker on the map gets PvP points for it (PVPE_DEFEND)", points is not null
+                && Read(points, r => { r.ReadUInt32(); r.ReadUInt32(); byte ev = r.ReadByte(); r.ReadUInt32(); return ev; }) == 7, Describe(points));
+
+            WorldTool.BattleStatus(WorldTool.BtSkyGarden, WorldTool.BsNormal, 21 * 3600, 0);
+            var leave = a.TryWait(CS_LEAVESKYGARDEN_ACK, timeoutMs: 8000);
+            Check("sky garden: back to normal, everyone is sent out of the garden", leave is not null, "no CS_LEAVESKYGARDEN_ACK");
+        }
+        finally
+        {
+            WorldTool.BattleStatus(WorldTool.BtSkyGarden, WorldTool.BsNormal, 21 * 3600, 0);
+        }
+        await Task.Delay(1500);
+        var saved = await db.RowAsync("SELECT bCountry FROM TSKYGARDENTABLE WHERE wID=@p0", (int)SkyGarden);
+        Check("saved: the sky garden is Defugel's, written to TSKYGARDENTABLE", saved is not null && Convert.ToInt32(saved[0]) == 0,
+            saved is null ? "no row" : $"country={saved[0]}");
     }
 
     // The first mission area (Yesod, map 700): Defugel's gatekeeper is spawn 30123 at (624.66, 121.59, 644.25).
@@ -1659,6 +1716,8 @@ public static class Scenarios
         await ClearPassives(db, idA);
         await ClearSmallRequests(db, idA);
         await db.ExecAsync("UPDATE TMISSIONTABLE SET bCountry=@p1 WHERE wMissionID=@p0", (int)FirstMission, (int)MissionCountryBefore);
+        await db.ExecAsync("UPDATE TSKYGARDENTABLE SET bCountry=@p1 WHERE wID=@p0", (int)SkyGarden, (int)SkyCountryBefore);
+        await db.ExecAsync("UPDATE TCHARTABLE SET wLastSpawnID=@p1 WHERE dwCharID=@p0", (int)idA, LastSpawnBefore);
         foreach (var t in RankTables)
         {
             await db.ExecAsync($"DELETE FROM {t} WHERE dwCharID IN (@p0, @p1)", (int)idA, (int)idB);

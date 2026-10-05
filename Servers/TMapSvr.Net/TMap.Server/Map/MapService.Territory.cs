@@ -309,6 +309,7 @@ public sealed partial class MapService
                 case BsBattle: g.CanBattle = true; g.LeftOwner = g.MiddleOwner = g.RightOwner = CampDefend; break;
                 case BsPeace: g.CanBattle = false; break;
             }
+            SkyGardenPhase(g, status, reopen);                                  // its gates, spawns and result (MapService.SkyGarden.cs)
         }
         byte msg = status switch
         {
@@ -334,6 +335,8 @@ public sealed partial class MapService
             case SmBattleNormal or SmBattleStart or SmCastleNormal or SmCastleStart or SmSkyGardenNormal or SmSkyGardenStart: break;
             case SmMissionStart: w.WriteUInt16(localId); break;
             case SmMissionBossDie or SmMissionTimeout: w.WriteString(name); w.WriteUInt16(localId); w.WriteUInt32(second); break;
+            // sic: the C++ case falls through into SM_CASTLE_END's two strings (the guild name is empty here).
+            case SmSkyGardenEnd: w.WriteString(name); w.WriteUInt16(localId); w.WriteUInt32(second); w.WriteString(name); w.WriteString(""); break;
             case SmMissionStartAlarm or SmMissionEndAlarm or SmMissionPeace: w.WriteUInt16(localId); w.WriteUInt32(second); break;
             default: w.WriteUInt32(second); break;                     // the *_ALARM and *_PEACE news
         }

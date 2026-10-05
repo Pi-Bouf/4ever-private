@@ -80,9 +80,9 @@ public sealed partial class MapService
         return _templates.LevelPvPMoneyOf(grade) is { } money ? (uint)(money * t.PvPrice + 0.99) : 0u;
     }
 
-    /// <summary>C++ <c>CTPlayer::CheckPortalCondition</c> (TPlayer.cpp:3220). Guild occupation, castle camps,
-    /// tournaments and the sky garden are unported: those conditions fail (their C++ lookups find nothing).</summary>
-    private static bool CheckPortalCondition(Character ch, PortalRow portal, byte condition, uint conditionId)
+    /// <summary>C++ <c>CTPlayer::CheckPortalCondition</c> (TPlayer.cpp:3220). Guild occupation, castle camps and
+    /// tournaments are unported: those conditions fail (their C++ lookups find nothing). The sky garden's are in MapService.SkyGarden.cs.</summary>
+    private bool CheckPortalCondition(Character ch, PortalRow portal, byte condition, uint conditionId)
     {
         switch (condition)
         {
@@ -95,8 +95,9 @@ public sealed partial class MapService
             case PctUpLevel: return ch.Level <= conditionId;
             case PctUpDownLevel: return ch.Level >= (conditionId & 0xFFFF) && ch.Level <= (conditionId >> 16);
             case PctMeeting: return conditionId == 0;
+            case >= PctSkyAttackPos and <= PctSkyAttackPos + 10: return CheckSkyGardenPortal(ch, portal, condition);   // MapService.SkyGarden.cs
             case > PctMeeting + 11: return true;                                 // past the enum: C++ default
-            default: return false;                                               // guild, castle, tournament, sky garden
+            default: return false;                                               // guild, castle, tournament
         }
     }
 }
