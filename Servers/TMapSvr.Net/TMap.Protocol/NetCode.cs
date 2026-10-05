@@ -194,6 +194,28 @@ public static class Msg
     public const ushort CS_COMMENT_REQ = CS_MAP + 0x01E0;           // strComment
     public const ushort CS_COMMENT_ACK = CS_MAP + 0x01E1;           // dwCharID, strComment
     public const ushort CS_QUESTPOSEXEC_REQ = CS_MAP + 0x0354;      // dwQuestID, dwTermID
+    // The guild relay, batch G1 (CSProtocol.h; MapService.Guild.cs).
+    public const ushort CS_GUILDESTABLISH_REQ = CS_MAP + 0x0060;
+    public const ushort CS_GUILDESTABLISH_ACK = CS_MAP + 0x0061;
+    public const ushort CS_GUILDDISORGANIZATION_REQ = CS_MAP + 0x0062;
+    public const ushort CS_GUILDDISORGANIZATION_ACK = CS_MAP + 0x0063;
+    public const ushort CS_GUILDINVITE_REQ = CS_MAP + 0x0064;
+    public const ushort CS_GUILDINVITE_ACK = CS_MAP + 0x0065;
+    public const ushort CS_GUILDINVITEANSWER_REQ = CS_MAP + 0x0066;
+    public const ushort CS_GUILDJOIN_ACK = CS_MAP + 0x0067;
+    public const ushort CS_GUILDLEAVE_REQ = CS_MAP + 0x0068;
+    public const ushort CS_GUILDKICKOUT_REQ = CS_MAP + 0x0069;
+    public const ushort CS_GUILDLEAVE_ACK = CS_MAP + 0x006A;
+    public const ushort CS_GUILDDUTY_REQ = CS_MAP + 0x006B;
+    public const ushort CS_GUILDDUTY_ACK = CS_MAP + 0x006C;
+    public const ushort CS_GUILDMEMBERLIST_REQ = CS_MAP + 0x006D;
+    public const ushort CS_GUILDMEMBERLIST_ACK = CS_MAP + 0x006E;
+    public const ushort CS_GUILDATTR_ACK = CS_MAP + 0x006F;
+    public const ushort CS_GUILDPEER_REQ = CS_MAP + 0x0070;
+    public const ushort CS_GUILDPEER_ACK = CS_MAP + 0x0071;
+    public const ushort CS_GUILDINFO_REQ = CS_MAP + 0x0072;
+    public const ushort CS_GUILDINFO_ACK = CS_MAP + 0x0073;
+    public const ushort CS_GUILDSKILLUPDATE_ACK = CS_MAP + 0x039C;
     public const ushort CS_GUILDLOCALLIST_REQ = CS_MAP + 0x0155;    // (the war-info window)
     public const ushort CS_GUILDLOCALLIST_ACK = CS_MAP + 0x0156;    // castles {…, forts}, missions, sky gardens, BoW / BR
     public const ushort CS_ITEMLEVELREVISION_ACK = CS_MAP + 0x0245; // bLevel (the territory's item cap, 0 = none)
@@ -404,6 +426,26 @@ public static class Msg
     public const ushort MW_CASTLEWARINFO_REQ = MW_BASE + 0x010F;    // the castle scoreboard
     public const ushort MW_CASTLEWARINFO_ACK = MW_BASE + 0x0110;    // wCastle dwGuild bLocals {wLocal 6×{dwGuild bType}}
     public const ushort MW_HEROSELECT_REQ = MW_BASE + 0x011B;       // wZone strHero tHero
+    // The guild relay, batch G1 (MWProtocol.h): *_ACK map -> world, *_REQ world -> map.
+    public const ushort MW_GUILDESTABLISH_REQ = MW_BASE + 0x002A;
+    public const ushort MW_GUILDESTABLISH_ACK = MW_BASE + 0x002B;
+    public const ushort MW_GUILDDISORGANIZATION_REQ = MW_BASE + 0x002C;
+    public const ushort MW_GUILDDISORGANIZATION_ACK = MW_BASE + 0x002D;
+    public const ushort MW_GUILDINVITE_REQ = MW_BASE + 0x002E;
+    public const ushort MW_GUILDINVITE_ACK = MW_BASE + 0x002F;
+    public const ushort MW_GUILDINVITEANSWER_ACK = MW_BASE + 0x0030;
+    public const ushort MW_GUILDJOIN_REQ = MW_BASE + 0x0031;
+    public const ushort MW_GUILDLEAVE_REQ = MW_BASE + 0x0032;
+    public const ushort MW_GUILDLEAVE_ACK = MW_BASE + 0x0033;
+    public const ushort MW_GUILDDUTY_REQ = MW_BASE + 0x0034;
+    public const ushort MW_GUILDDUTY_ACK = MW_BASE + 0x0035;
+    public const ushort MW_GUILDPEER_REQ = MW_BASE + 0x0036;
+    public const ushort MW_GUILDPEER_ACK = MW_BASE + 0x0037;
+    public const ushort MW_GUILDINFO_REQ = MW_BASE + 0x0038;
+    public const ushort MW_GUILDINFO_ACK = MW_BASE + 0x0039;
+    public const ushort MW_GUILDKICKOUT_ACK = MW_BASE + 0x003A;
+    public const ushort MW_GUILDMEMBERLIST_REQ = MW_BASE + 0x003B;
+    public const ushort MW_GUILDMEMBERLIST_ACK = MW_BASE + 0x003C;
     public const ushort MW_CASTLEGUILDCHG_REQ = MW_BASE + 0x012D;   // wCastle dwDef strDef dwAtk strAtk tNext
     public const ushort MW_CASTLEAPPLICANTCOUNT_REQ = MW_BASE + 0x013C; // wCastle dwGuild bCamp bCount
     public const ushort MW_MISSIONENABLE_REQ = MW_BASE + 0x0165;    // bStatus dwStart dwSecond

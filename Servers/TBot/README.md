@@ -68,6 +68,13 @@ chiefs sign up, and the bots come in, carry, mount and knock off god balls, and 
 save, reward mail, everyone sent out. Everything is put back after, and the world and map containers are restarted.
 Needs the docker stack, and no fort war due in the next 3 minutes (castle sign-up closes once a fort's war comes first).
 
+## Scenario: guild (a guild's life)
+
+`--Bot:Scenario=guild` (same arguments) drives the map's guild relay against the live world: A (set to level 20)
+founds "TbotGuild", invites B who accepts, opens the guild window, makes B vice-chief, gives a peerage, puts B out
+and disbands. A disbanded guild stays 7 days in the world, so the scenario deletes the guild rows and **restarts the
+world container** at the end; the bots' level and guild-leave marks are put back.
+
 ## Scenario: stress (hundreds of bots)
 
 `--Bot:Scenario=stress` runs `StressCount` bots in one process, each on its own thread and account
