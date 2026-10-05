@@ -26,5 +26,11 @@ public static class LocalType
 public sealed record TerritoryRow(byte Type, ushort Id, byte Country, uint Guild, string GuildName, long Occupied, long NextDefend,
     string Hero, long HeroTime);
 
+/// <summary>A god ball's starting spot in a castle (C++ <c>CTBLGodBall</c> → <c>m_mapTTEMPGODBALL</c>): its camp and place.</summary>
+public sealed record GodBallSpotRow(ushort Id, byte Camp, ushort MapId, float PosX, float PosY, float PosZ);
+
+/// <summary>A god tower of a castle (C++ <c>CTBLGodTower</c>): where a carried god ball is mounted.</summary>
+public sealed record GodTowerRow(ushort Id, ushort MapId, float PosX, float PosY, float PosZ);
+
 /// <summary>One day of a fort's week (C++ <c>CTBLLocalOccupy</c>): who held it that weekday (1 = Sunday) and how.</summary>
 public sealed record LocalOccupyRow(ushort LocalId, byte Day, uint Guild, byte Type);

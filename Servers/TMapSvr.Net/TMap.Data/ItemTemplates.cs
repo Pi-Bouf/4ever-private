@@ -244,6 +244,10 @@ public sealed class TemplateStore
     public List<TerritoryRow> Territories { get; } = new();
     public List<LocalOccupyRow> LocalOccupy { get; } = new();
 
+    /// <summary>The castles' god ball spots and god towers (TGODBALLCHART / TGODTOWERCHART), in id order.</summary>
+    public List<GodBallSpotRow> GodBallSpots { get; } = new();
+    public List<GodTowerRow> GodTowers { get; } = new();
+
     /// <summary>C++ <c>m_mapSpecialBox</c> — each special-box group's items, in chart order.</summary>
     public Dictionary<ushort, List<SpecialBoxRow>> SpecialBoxes { get; } = new();
 

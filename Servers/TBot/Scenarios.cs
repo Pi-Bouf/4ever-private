@@ -8,7 +8,7 @@ namespace TBot;
 /// client reads (TClient CSHandler.cpp) — every reply must be consumed to its last byte — and, after logout,
 /// what the map server saved. The characters' money, HP, position and test items are put back at the end.
 /// </summary>
-public static class Scenarios
+public static partial class Scenarios
 {
     // CS_MAP offsets (CSProtocol.h), mirrored from TMap.Protocol/NetCode.cs.
     private const ushort M = Msg.CS_MAP;
@@ -51,7 +51,7 @@ public static class Scenarios
         CS_CANCELSKILL_REQ = M + 0x0146, CS_QUESTUPDATE_ACK = M + 0x0053, CS_QUESTENDTIMER_REQ = M + 0x0058,
         CS_QUESTPOSEXEC_REQ = M + 0x0354, CS_MONITEMTAKEALL_REQ = M + 0x0152, CS_MONITEMTAKE_ACK = M + 0x008B,
         CS_GUILDLOCALLIST_REQ = M + 0x0155, CS_GUILDLOCALLIST_ACK = M + 0x0156, CS_REGION_REQ = M + 0x00F1,
-        CS_LOCALOCCUPY_ACK = M + 0x00A8, CS_DELMON_ACK = M + 0x0012,
+        CS_LOCALOCCUPY_ACK = M + 0x00A8, CS_DELMON_ACK = M + 0x0012, CS_ENTERCASTLE_ACK = M + 0x01EF, CS_LEAVECASTLE_ACK = M + 0x01F0,
         CS_ITEMLEVELREVISION_ACK = M + 0x0245, CS_ENTERSKYGARDEN_ACK = M + 0x0254, CS_LEAVESKYGARDEN_ACK = M + 0x0269,
         CS_DIE_ACK = M + 0x0025, CS_REVIVAL_REQ = M + 0x0026, CS_REVIVAL_ACK = M + 0x0027, CS_PVPPOINT_ACK = M + 0x01E2,
         CS_MOVEITEM_REQ = M + 0x0028, CS_MOVEITEM_ACK = M + 0x0029, CS_SKILLEND_ACK = M + 0x0037,
@@ -123,12 +123,13 @@ public static class Scenarios
 
     public static async Task<int> RunAsync(BotConfig cfg, CancellationToken ct)
     {
-        if (cfg.Scenario != "features") { Console.Error.WriteLine($"unknown scenario '{cfg.Scenario}'"); return 2; }
+        if (cfg.Scenario is not ("features" or "castle")) { Console.Error.WriteLine($"unknown scenario '{cfg.Scenario}'"); return 2; }
         if (cfg.Account2.Length == 0 || cfg.GameConnectionString.Length == 0)
         {
-            Console.Error.WriteLine("the features scenario needs --Bot:Account2 and --Bot:GameConnectionString");
+            Console.Error.WriteLine($"the {cfg.Scenario} scenario needs --Bot:Account2 and --Bot:GameConnectionString");
             return 2;
         }
+        if (cfg.Scenario == "castle") return await RunCastleAsync(cfg);     // CastleScenario.cs
         var db = new GameDb(cfg.GameConnectionString);
         var cfgA = Clone(cfg, cfg.Account, "[A]");
         var cfgB = Clone(cfg, cfg.Account2, "[B]");
@@ -234,6 +235,25 @@ public static class Scenarios
         await MissionWar(cfgA, db, idA);
         await SkyGardenWar(cfgA, db, idA);
         await FortWar(cfgA, db, idA);
+        await CastleOutsider(cfgA, db, idA);
+    }
+
+    private const ushort ChesedMap = 801;
+
+    /// <summary>Territory batch E: a castle lets in only the signed-up members of its two guilds. A — no guild, no camp — logs in
+    /// on Chesed's map and is sent out at once (to its last spawn, 4505 by the usual spot).</summary>
+    private static async Task CastleOutsider(BotConfig cfgA, GameDb db, uint idA)
+    {
+        await db.ExecAsync("UPDATE TCHARTABLE SET wMapID=@p1, fPosX=426.0, fPosY=161.0, fPosZ=290.0, wLastSpawnID=@p2 WHERE dwCharID=@p0",
+            (int)idA, (int)ChesedMap, (int)BindSpawn);
+        using (var a = new Bot(cfgA))
+        {
+            a.Enter();
+            var left = a.TryWait(CS_LEAVECASTLE_ACK, timeoutMs: 8000);
+            Check("castle: an outsider on the castle's map is sent out (CS_LEAVECASTLE_ACK), never let in", left is not null
+                && !a.Received.Any(p => PacketHeader.ReadId(p) == CS_ENTERCASTLE_ACK), left is null ? "not sent out" : "CS_ENTERCASTLE_ACK came");
+        }
+        await Task.Delay(2500);                                     // the logout save lands before the fixtures are put back
     }
 
     // The first fort (Moswood Research Camp, map 0), Defugel's, held by guild 2609: its left gatekeeper is spawn 25003 at

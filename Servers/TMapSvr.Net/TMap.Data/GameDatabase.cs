@@ -257,6 +257,9 @@ SELECT 4, wID, bCountry, 0, NULL, NULL, dateWarTime, '', NULL FROM TSKYGARDENTAB
 SELECT 1, l.wLocalID, l.bCountry, l.dwGuild, g.szName, l.dateOccupy, l.dateDefend, l.szHero, l.dateHero
   FROM TLOCALTABLE l LEFT JOIN TGUILDTABLE g ON g.dwID = l.dwGuild;
 SELECT wLocalID, bDay, dwGuildID, bType FROM TLOCALOCCUPYTABLE";
+    // C++ CTBLGodBall / CTBLGodTower (the castles' god ball spots and towers).
+    private const string GodSql = @"SELECT wID, bCamp, wMapID, fPosX, fPosY, fPosZ FROM TGODBALLCHART ORDER BY wID;
+SELECT wID, wMapID, fPosX, fPosY, fPosZ FROM TGODTOWERCHART ORDER BY wID";
     // C++ CTBLSpecialBoxChart (DBAccess.h:4754): the box group is wGroup (the C++ keys its map on it).
     private const string SpecialBoxChartSql = @"SELECT wGroup, wUseTime, bClass, wItemID, bLevel, bCount, bGLevel,
                  dwDuraMax, dwDuraCur, bRefineCur, bGradeEffect,
@@ -458,6 +461,16 @@ SELECT wLocalID, bDay, dwGuildID, bType FROM TLOCALOCCUPYTABLE";
                             ToTime64(r, 5), ToTime64(r, 6), r.IsDBNull(7) ? "" : r.GetString(7), ToTime64(r, 8)));
                 while (await r.ReadAsync(ct))
                     store.LocalOccupy.Add(new LocalOccupyRow(r.GetUShortSafe(0), r.GetByteSafe(1), r.GetUIntSafe(2), r.GetByteSafe(3)));
+            }
+            await using (var cmd = new SqlCommand(GodSql, c))
+            await using (var r = await cmd.ExecuteReaderAsync(ct))
+            {
+                static float F(SqlDataReader r, int i) => r.IsDBNull(i) ? 0f : Convert.ToSingle(r.GetValue(i));
+                while (await r.ReadAsync(ct))
+                    store.GodBallSpots.Add(new GodBallSpotRow(r.GetUShortSafe(0), r.GetByteSafe(1), r.GetUShortSafe(2), F(r, 3), F(r, 4), F(r, 5)));
+                await r.NextResultAsync(ct);
+                while (await r.ReadAsync(ct))
+                    store.GodTowers.Add(new GodTowerRow(r.GetUShortSafe(0), r.GetUShortSafe(1), F(r, 2), F(r, 3), F(r, 4)));
             }
         }
         catch (SqlException ex) when (ex.Number == 208) { /* no territory tables in this baseline */ }
@@ -1153,6 +1166,22 @@ FROM TCHARTABLE WHERE dwCharID = @dwCharID AND bDelete = 0";
         await SqlProc.ExecAsync(c, "TSaveLocalOccupy", ret, ps, ct);
         static uint U(SqlParameter p) => p.Value is DBNull or null ? 0u : unchecked((uint)Convert.ToInt64(p.Value));
         return (ret.AsInt(), (byte)U(ps[4]), U(ps[5]));
+    }
+
+    /// <summary>C++ <c>CSPSaveCastleOccupy</c> — <c>TSaveCastleOccupy(OUT bCountry, dwGuild, wCastle, bType)</c>: held, the next
+    /// war a week on; taken, the new owner guild and its chief's country. Either way the castle's forts' week and its applicants
+    /// are wiped. Returns the proc's result (0 = done; 1 = taken by no guild) and the owner country.</summary>
+    public async Task<(int Ret, byte Country)> SaveCastleOccupyAsync(ushort castle, byte type, uint guildId, CancellationToken ct = default)
+    {
+        await using var c = await OpenAsync(ct);
+        var ret = SqlProc.Ret();
+        var ps = new[]
+        {
+            SqlProc.Out("@c0", SqlDbType.TinyInt), SqlProc.In("@c1", SqlDbType.Int, unchecked((int)guildId)),
+            SqlProc.In("@c2", SqlDbType.SmallInt, unchecked((short)castle)), SqlProc.In("@c3", SqlDbType.TinyInt, type),
+        };
+        await SqlProc.ExecAsync(c, "TSaveCastleOccupy", ret, ps, ct);
+        return (ret.AsInt(), ps[0].Value is DBNull or null ? (byte)3 : Convert.ToByte(ps[0].Value));
     }
 
     public async Task SaveCharKillAsync(uint killerId, uint targetId, CancellationToken ct = default)

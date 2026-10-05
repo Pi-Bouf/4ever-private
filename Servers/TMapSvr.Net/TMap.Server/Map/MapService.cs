@@ -80,6 +80,7 @@ public sealed partial class MapService
             SendMW_CLOSECHAR_ACK(session.CharId, session.Key);
 
         SaveCharData(session);   // flush the char record + dirty quests on logout (C++ SetEventCloseSession)
+        if (session.State == EnterState.InGame && session.Char is { } carrier) DropGodBall(carrier);   // C++ ExitMAP (MapService.Castle.cs)
         if (session.Char is { } looter) ReleaseLootLock(looter);   // C++ SSHandler.cpp:19205 / TMapSvr.cpp:1544
         if (session.Char is { } dueller) { LeaveDuel(dueller, loses: false); ClearDuel(dueller); }   // CTPlayer release
         if (session.Char is { } leaving) { ClearRecalls(session, leaving); ClearCompanionObjs(leaving); }
@@ -227,6 +228,10 @@ public sealed partial class MapService
                 case Msg.CS_QUESTLIST_POSSIBLE_REQ: OnCS_QUESTLIST_POSSIBLE_REQ(session, r); break;
                 case Msg.CS_CHAT_REQ: OnCS_CHAT_REQ(session, r); break;
                 case Msg.CS_REGION_REQ: OnCS_REGION_REQ(session, r); break;
+                case Msg.CS_CASTLEAPPLY_REQ: OnCS_CASTLEAPPLY_REQ(session, r); break;
+                case Msg.CS_TAKEGODBALL_REQ: OnCS_TAKEGODBALL_REQ(session, r); break;
+                case Msg.CS_MOUNTGODBALL_REQ: OnCS_MOUNTGODBALL_REQ(session, r); break;
+                case Msg.CS_DEMOUNTGODBALL_REQ: OnCS_DEMOUNTGODBALL_REQ(session, r); break;
                 case Msg.CS_PINGMEASUREMENT_REQ: OnCS_PINGMEASUREMENT_REQ(session, r); break;
                 case Msg.CS_COUNTDOWN_REQ: OnCS_COUNTDOWN_REQ(session, r); break;
                 case Msg.CS_DISCONNECT_REQ: OnCS_DISCONNECT_REQ(session, r); break;
@@ -258,6 +263,9 @@ public sealed partial class MapService
                 case Msg.MW_HELMETHIDE_REQ: OnMW_HELMETHIDE_REQ(r); break;
                 case Msg.MW_LOCALENABLE_REQ: OnMW_LOCALENABLE_REQ(r); break;
                 case Msg.MW_CASTLEENABLE_REQ: OnMW_CASTLEENABLE_REQ(r); break;
+                case Msg.MW_CASTLEAPPLY_REQ: OnMW_CASTLEAPPLY_REQ(r); break;
+                case Msg.MW_CASTLEOCCUPY_REQ: OnMW_CASTLEOCCUPY_REQ(r); break;
+                case Msg.MW_ENDWAR_REQ: OnMW_ENDWAR_REQ(r); break;
                 case Msg.MW_MISSIONENABLE_REQ: OnMW_MISSIONENABLE_REQ(r); break;
                 case Msg.MW_SKYGARDENENABLE_REQ: OnMW_SKYGARDENENABLE_REQ(r); break;
                 case Msg.MW_CASTLEWARINFO_REQ: OnMW_CASTLEWARINFO_REQ(r); break;
@@ -342,6 +350,7 @@ public sealed partial class MapService
         _tickSeconds++;
         NowMs = unchecked((uint)(_tickSeconds * 1000L)); // advance the map ms clock (skill cooldowns)
         RunDbResults();                        // the database's answers, applied here (MapService.Fort.cs)
+        RunGodBallCmds();                      // the castle wars' god ball commands and power race (MapService.Castle.cs)
         RunMonsterRegen(_tickSeconds * 1000L); // monster spawn/respawn regen (map clock in ms)
         RunMaintainSkills(NowMs);              // expire ended buffs/debuffs (C++ CheckMaintainSkill, before Recover)
         RunSwitchReverts(NowMs);               // auto-revert duration-limited switches (C++ m_vTSWITCHOBJ sweep)

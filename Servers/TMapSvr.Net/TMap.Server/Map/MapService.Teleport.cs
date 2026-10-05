@@ -236,6 +236,7 @@ public sealed partial class MapService
 
         EraseZoneEffects(s, ch);               // C++ ExitMAP → EraseMissionSkill (MapService.Mission.cs)
         SkyGardenExitMap(s, ch);               // and CS_LEAVESKYGARDEN_ACK (MapService.SkyGarden.cs)
+        CastleExitMap(s, ch);                  // a carried god ball falls, CS_LEAVECASTLE_ACK (MapService.Castle.cs)
         RecallsExitMap(s, ch);
         CompanionExitMap(ch);
         var watching = _state.MonstersInView(s).ToList();

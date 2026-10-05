@@ -84,6 +84,8 @@ public sealed class Character
     /// CAMP_ATTACK 2), from the world.</summary>
     public ushort Castle { get; set; }
     public byte Camp { get; set; }
+    /// <summary>C++ <c>m_wGodBall</c> — the god ball carried in a castle war, 0 = none (MapService.Castle.cs).</summary>
+    public ushort GodBall { get; set; }
     public ushort MapId { get; set; }
     public float PosX { get; set; }
     public float PosY { get; set; }

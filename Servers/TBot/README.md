@@ -59,6 +59,15 @@ dotnet run -- --Bot:Scenario=features --Bot:Account=tbot27 --Bot:Account2=tbot28
 
 Exit code 0 when every check passes.
 
+## Scenario: castle (a real castle war)
+
+`--Bot:Scenario=castle` (same arguments as `features`) plays a castle war on Chesed end to end. The database has no
+guilds, so it inserts two (A chief of the defenders, B chief of the attackers) and **restarts the world container**
+(`docker compose restart worldsvr`) so it loads them; it names them Chesed's sides (`CT_CASTLEGUILDCHG_REQ`), the
+chiefs sign up, and the bots come in, carry, mount and knock off god balls, and the war ends on time — result, news,
+save, reward mail, everyone sent out. Everything is put back after, and the world and map containers are restarted.
+Needs the docker stack, and no fort war due in the next 3 minutes (castle sign-up closes once a fort's war comes first).
+
 ## Scenario: stress (hundreds of bots)
 
 `--Bot:Scenario=stress` runs `StressCount` bots in one process, each on its own thread and account

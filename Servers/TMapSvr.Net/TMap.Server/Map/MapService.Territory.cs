@@ -26,8 +26,8 @@ namespace TMap.Server.Map;
 /// <item><b>Castle and camp</b> (from the world's character info) in <c>CS_ENTER_ACK</c>, for a player inside a castle or the sky
 /// garden. <b>Fixed C++ bug:</b> the C++ wrote the <i>receiver's</i> castle there; this writes the entering player's.</item>
 /// </list>
-/// <para>The wars themselves: MapService.Mission.cs, MapService.SkyGarden.cs, MapService.Fort.cs. <b>Not yet:</b> the castles' war
-/// (sign-up and entry, god balls and towers, the capture). Only players' own territory is tracked (not summons' or monsters').</para>
+/// <para>The wars themselves: MapService.Mission.cs, MapService.SkyGarden.cs, MapService.Fort.cs, MapService.Castle.cs. Only
+/// players' own territory is tracked (not summons' or monsters').</para>
 /// </summary>
 public sealed partial class MapService
 {
@@ -77,6 +77,7 @@ public sealed partial class MapService
                 castle.Locals.Add(t);
         }
         foreach (var castle in _castles) castle.Locals.Sort((a, b) => a.Id.CompareTo(b.Id));   // C++ std::map order
+        InitCastleWars();                                                       // the god towers and ball spots (MapService.Castle.cs)
         foreach (var o in _templates.LocalOccupy)
             if (o.Day > 0 && o.Day <= 7 && _territories.TryGetValue(o.LocalId, out var t))
             {
@@ -222,12 +223,7 @@ public sealed partial class MapService
             byte prev = c.Status;
             c.Status = status;
             if (!c.Valid || prev == status) continue;
-            if (status == BsBattle)
-            {
-                c.CanBattle = true;
-                if (c.DefGuildId == 0 || c.AtkGuildId == 0) EndWar(c);         // C++ EndWar(WIN_NOWAR): no war without both sides
-            }
-            else if (status == BsPeace) EndWar(c);                            // C++ EndWar(WIN_TIME)
+            CastlePhase(c, status, second);                                     // its gates, war and result (MapService.Castle.cs)
         }
         byte msg = status switch
         {
@@ -238,14 +234,6 @@ public sealed partial class MapService
         };
         NotifyLocalInfo(msg, 0, second);
         _castlePhase = status;
-    }
-
-    /// <summary>C++ <c>EndWar</c> (TMapSvr.cpp:10652), its state part: the castle cannot battle any more and is in peace. (The
-    /// winner, <c>CS_ENDWAR_ACK</c>, the capture and the rewards come with the castle war itself.)</summary>
-    private static void EndWar(Territory castle)
-    {
-        castle.CanBattle = false;
-        castle.Status = BsPeace;
     }
 
     /// <summary>C++ <c>OnMW_MISSIONENABLE_REQ</c> (SSHandler.cpp:18596): the missions' next war (today at the start), status; news
@@ -331,6 +319,7 @@ public sealed partial class MapService
             case SmMissionStart: w.WriteUInt16(localId); break;
             case SmBattleBossDie: w.WriteString(name); w.WriteString(name2); w.WriteUInt16(localId); break;
             case SmBattleOpenGate: w.WriteString(name); break;
+            case SmCastleEnd: w.WriteString(name); w.WriteString(name2); break;
             case SmMissionBossDie or SmMissionTimeout: w.WriteString(name); w.WriteUInt16(localId); w.WriteUInt32(second); break;
             // sic: the C++ case falls through into SM_CASTLE_END's two strings (the guild name is empty here).
             case SmSkyGardenEnd: w.WriteString(name); w.WriteUInt16(localId); w.WriteUInt32(second); w.WriteString(name); w.WriteString(""); break;
@@ -508,9 +497,9 @@ public sealed partial class MapService
     private bool IsInSkyGarden(Character ch) => _skyGardens.Any(g => g.Valid && g.Zone.MapId == ch.MapId);
 
     /// <summary>The <c>CS_ENTER_ACK</c> castle fields (CSSender.cpp:471): castle and camp inside a castle or the sky garden, the
-    /// carried god ball inside a castle (god balls are not ported yet: 0).</summary>
+    /// carried god ball inside a castle.</summary>
     private (ushort Castle, byte Camp, ushort GodBall) EnterCastleFields(Character ch)
-        => IsInCastle(ch) || IsInSkyGarden(ch) ? (ch.Castle, ch.Camp, (ushort)0) : ((ushort)0, (byte)0, (ushort)0);
+        => IsInCastle(ch) || IsInSkyGarden(ch) ? (ch.Castle, ch.Camp, IsInCastle(ch) ? ch.GodBall : (ushort)0) : ((ushort)0, (byte)0, (ushort)0);
 
     // ================================ clock ================================
 
@@ -566,4 +555,6 @@ public sealed class Territory
     public byte LeftOwner { get; set; }
     public byte MiddleOwner { get; set; }
     public byte RightOwner { get; set; }
+    /// <summary>A castle's war (MapService.Castle.cs).</summary>
+    public CastleWar? War { get; set; }
 }

@@ -198,6 +198,22 @@ public static class Msg
     public const ushort CS_GUILDLOCALLIST_ACK = CS_MAP + 0x0156;    // castles {…, forts}, missions, sky gardens, BoW / BR
     public const ushort CS_ITEMLEVELREVISION_ACK = CS_MAP + 0x0245; // bLevel (the territory's item cap, 0 = none)
     public const ushort CS_LOCALOCCUPY_ACK = CS_MAP + 0x00A8;       // bType wLocalID bCountry dwGuildID
+    public const ushort CS_CASTLEAPPLY_REQ = CS_MAP + 0x00D3;       // wCastle dwTarget
+    public const ushort CS_CASTLEAPPLY_ACK = CS_MAP + 0x00D4;       // bResult wCastle dwTarget bCamp
+    public const ushort CS_ADDGODTOWER_ACK = CS_MAP + 0x01A8;       // wID fX fY fZ wBall bCamp
+    public const ushort CS_ADDGODBALL_ACK = CS_MAP + 0x01AA;        // wID bCamp bGround fX fY fZ
+    public const ushort CS_DELGODBALL_ACK = CS_MAP + 0x01AB;        // wID
+    public const ushort CS_TAKEGODBALL_REQ = CS_MAP + 0x01AC;       // wBall
+    public const ushort CS_TAKEGODBALL_ACK = CS_MAP + 0x01AD;       // dwCharID wBall
+    public const ushort CS_REMOVEGODBALL_ACK = CS_MAP + 0x01AE;     // dwCharID
+    public const ushort CS_MOUNTGODBALL_REQ = CS_MAP + 0x01B0;      // wTower
+    public const ushort CS_MOUNTGODBALL_ACK = CS_MAP + 0x01B1;      // wTower wBall bCamp dwCharID
+    public const ushort CS_DEMOUNTGODBALL_REQ = CS_MAP + 0x01B2;    // wTower
+    public const ushort CS_DEMOUNTGODBALL_ACK = CS_MAP + 0x01B3;    // wTower dwCharID
+    public const ushort CS_BALANCEOFPOWER_ACK = CS_MAP + 0x01B4;     // fDefPower dwLeft wKillAtk wKillDef 4×strOwner 4×wKeep
+    public const ushort CS_ENDWAR_ACK = CS_MAP + 0x01EB;            // bType dwWinGuild dwDefTotal dwAtkTotal strDef dwDefPower wDefPoint wDefKill strAtk dwAtkPower wAtkPoint wAtkKill
+    public const ushort CS_ENTERCASTLE_ACK = CS_MAP + 0x01EF;       // wCastle bCamp strAtk strDef
+    public const ushort CS_LEAVECASTLE_ACK = CS_MAP + 0x01F0;       // (empty)
     public const ushort CS_CHANGECOLOR_ACK = CS_MAP + 0x00DF;       // bType dwID bColor bCountry
     public const ushort CS_ENTERSKYGARDEN_ACK = CS_MAP + 0x0254;    // wID bCamp bDefCountry bLeft bCenter bRight bAtkCountry
     public const ushort CS_LEAVESKYGARDEN_ACK = CS_MAP + 0x0269;    // (empty)
@@ -396,6 +412,11 @@ public static class Msg
     public const ushort MW_SKYGARDENENABLE_REQ = MW_BASE + 0x0181;  // bStatus dwSecond bDay dwStart
     public const ushort MW_SKYGARDENOCCUPY_REQ = MW_BASE + 0x0183;  // bType wID bCountry (world -> every map)
     public const ushort MW_SKYGARDENOCCUPY_ACK = MW_BASE + 0x0184;  // bType wID bCountry (the win, to the world)
+    public const ushort MW_CASTLEAPPLY_REQ = MW_BASE + 0x0080;      // dwCharID dwKey bResult wCastle dwTarget bCamp (world -> map)
+    public const ushort MW_CASTLEAPPLY_ACK = MW_BASE + 0x0081;      // dwCharID dwKey wCastle dwTarget bCamp (to the world)
+    public const ushort MW_CASTLEOCCUPY_REQ = MW_BASE + 0x0085;     // bType wCastle dwGuild bCountry strGuild (world -> every map)
+    public const ushort MW_CASTLEOCCUPY_ACK = MW_BASE + 0x0086;     // bType wCastle dwGuild bCountry dwLoseGuild (to the world)
+    public const ushort MW_ENDWAR_REQ = MW_BASE + 0x0111;           // wCastle
     public const ushort MW_LOCALOCCUPY_REQ = MW_BASE + 0x0069;      // bType wLocalID bCountry dwGuildID strGuild (world -> every map)
     public const ushort MW_LOCALOCCUPY_ACK = MW_BASE + 0x006A;      // bType wLocalID bCountry dwGuildID bCurCountry (to the world)
     public const ushort MW_GAINPVPPOINT_REQ = MW_BASE + 0x0120;     // dwCharID dwPoint bEvent bType bGain strName bClass bLevel

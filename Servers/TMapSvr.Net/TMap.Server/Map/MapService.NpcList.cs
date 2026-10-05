@@ -15,7 +15,7 @@ namespace TMap.Server.Map;
 /// </list>
 /// Prices are before discount: the client applies <c>bDiscountRate</c> (<c>GetDiscountRate</c>, MapService.Fort.cs). <b>Not
 /// ported:</b> the monster shop (<c>TNPC_MONSTER</c>, castle guards) and the magic-item shop (<c>TNPC_MAGICITEM</c>), whose
-/// stock is not loaded — they get no answer. Portal conditions tied to unported systems (castles, tournaments) never pass.
+/// stock is not loaded — they get no answer. Portal conditions tied to tournaments (unported) never pass.
 /// </summary>
 public sealed partial class MapService
 {
@@ -78,8 +78,8 @@ public sealed partial class MapService
         return _templates.LevelPvPMoneyOf(grade) is { } money ? (uint)(money * t.PvPrice + 0.99) : 0u;
     }
 
-    /// <summary>C++ <c>CTPlayer::CheckPortalCondition</c> (TPlayer.cpp:3220). Castle camps and tournaments are unported: those
-    /// conditions fail (their C++ lookups find nothing). The sky garden's are in MapService.SkyGarden.cs.</summary>
+    /// <summary>C++ <c>CTPlayer::CheckPortalCondition</c> (TPlayer.cpp:3220). Tournaments are unported: those conditions fail
+    /// (their C++ lookups find nothing). The castles' are in MapService.Castle.cs, the sky garden's in MapService.SkyGarden.cs.</summary>
     private bool CheckPortalCondition(Character ch, PortalRow portal, byte condition, uint conditionId)
     {
         switch (condition)
@@ -97,9 +97,10 @@ public sealed partial class MapService
             case PctUpLevel: return ch.Level <= conditionId;
             case PctUpDownLevel: return ch.Level >= (conditionId & 0xFFFF) && ch.Level <= (conditionId >> 16);
             case PctMeeting: return conditionId == 0;
+            case PctAttackPos or PctDefendPos: return CheckCastlePortal(ch, portal, condition);   // MapService.Castle.cs
             case >= PctSkyAttackPos and <= PctSkyAttackPos + 10: return CheckSkyGardenPortal(ch, portal, condition);   // MapService.SkyGarden.cs
             case > PctMeeting + 11: return true;                                 // past the enum: C++ default
-            default: return false;                                               // guild, castle, tournament
+            default: return false;                                               // tournaments
         }
     }
 }

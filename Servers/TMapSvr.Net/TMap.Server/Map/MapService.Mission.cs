@@ -131,14 +131,15 @@ public sealed partial class MapService
     }
 
     /// <summary>A package from the operator with an item (C++ <c>SendDM_POSTRECV_REQ(0, …, POST_PACKATE, …, pItem)</c>).</summary>
-    private async Task MailOperatorItem(uint recvId, string recver, string title, string message, ItemTemplate tpl, byte count)
+    private async Task MailOperatorItem(uint recvId, string recver, string title, string message, ItemTemplate tpl, byte count,
+        uint silver = 0)
     {
         if (PostStore is not { } db) return;
         var item = new Item { TemplateId = tpl.ItemId, Count = count, Template = tpl, DuraMax = tpl.DuraMax, DuraCur = tpl.DuraMax };
         LinkItemAttr(item);
         long now = UnixNow();
         (int saved, uint postId, uint recv) = await Safe(() => db.SavePostAsync(0, recvId, recver, "Operator", title, message,
-            0, PostPackage, 0, 0, 0, now), (PostInternal, 0u, 0u));
+            0, PostPackage, 0, silver, 0, now), (PostInternal, 0u, 0u));
         if (saved != 0 || postId == 0) return;
         var row = BuildItemSave(0, item) with { DlId = _itemIdReady ? GenItemId() : 0, StorageType = StoragePost, StorageId = postId };
         await Safe(async () => { await db.SavePostItemAsync(recv, row); return 0; }, 0);

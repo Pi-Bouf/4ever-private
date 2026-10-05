@@ -380,6 +380,7 @@ public sealed partial class MapService
             CompanionEnterMap(s, s.Char);  // and the summoned companion is called out (InitMap)
             DuringItemsAtLogin(s, s.Char); // the premium / exp boost buffs, the premium shown around (InitMap)
             SkyGardenEnterMap(s, s.Char);  // on the sky garden's map: one's camp and the garden's state (InitMap)
+            CastleEnterMap(s, s.Char);     // on a castle's map: signed up, or sent out (InitMap, MapService.Castle.cs)
             _log.LogInformation("Char {Char} live on map {Map} ch {Ch}.", s.CharId, s.Char.MapId, s.Channel);
         }
     }

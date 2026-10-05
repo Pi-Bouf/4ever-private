@@ -17,6 +17,20 @@ internal static class WorldTool
     public static string Host { get; set; } = "127.0.0.1";
     public static int Port { get; set; } = 3816;
 
+    public const ushort CT_CASTLEGUILDCHG_REQ = 0x9301 + 0x005B;
+
+    /// <summary>C++ <c>CT_CASTLEGUILDCHG_REQ</c> (the operator's tool): a castle's defending and attacking guilds and its next war
+    /// (unix seconds) — the world tells every map.</summary>
+    public static void CastleGuildChg(ushort castle, uint defGuild, uint atkGuild, long nextWar)
+    {
+        using var tcp = new TcpClient(Host, Port);
+        var w = new PacketWriter(CT_CASTLEGUILDCHG_REQ);
+        w.WriteUInt16(castle); w.WriteUInt32(defGuild); w.WriteUInt32(atkGuild); w.WriteUInt32(0); w.WriteInt64(nextWar);
+        tcp.GetStream().Write(w.ToArray());
+        tcp.GetStream().Flush();
+        Thread.Sleep(300);
+    }
+
     public static void BattleStatus(byte type, byte status, uint start, uint second)
     {
         using var tcp = new TcpClient(Host, Port);

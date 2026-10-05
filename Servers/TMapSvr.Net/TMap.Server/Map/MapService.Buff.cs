@@ -200,6 +200,7 @@ public sealed partial class MapService
         if (!UpdateBuffSkill(ch.MaintainSkills, neu, ch.CharId, OtPc, i => EraseMaintainPlayer(s, ch, i)))
             return null;
         if (!PushMaintain(ch.MaintainSkills, ch.Hp == 0, neu)) return null;
+        if (tpl.IsTrans()) DropGodBall(ch);                               // C++ SDT_TRANS: a transformed carrier drops its god ball
 
         uint newMaxHp = MaxHpFor(ch), newMaxMp = MaxMpFor(ch);
         if (ch.Hp > newMaxHp) ch.Hp = newMaxHp;
