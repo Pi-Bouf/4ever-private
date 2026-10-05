@@ -226,7 +226,7 @@ public sealed partial class MapService
         // Otherwise this phase covers only a player attacking a field monster: a live one, or a corpse for the
         // skills that can land on one (C++ OS_DEAD && !CanDefendAtDie — Enslave Monster).
         if (targetType != Monster.OtMon) return;
-        if (_state.FindMonster(targetId) is not { } mon) return;
+        if (_state.FindMonster(targetId) is not { } mon || mon.MapId != ch.MapId || mon.Channel != s.Channel) return;   // C++: the attacker's own map
         var atkTpl = atkSkill?.Template;
         if (mon.Hp == 0 && atkTpl?.CanDefendAtDie() != true) return;
 

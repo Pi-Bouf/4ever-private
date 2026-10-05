@@ -32,6 +32,7 @@ public sealed partial class MapService
     {
         long nowMs = _tickSeconds * 1000L;
         AwardKill(mon);   // exp (solo or party split) + the per-recipient hunt-quest advance
+        if (SpawnOf(mon.Id) is { Suspended: true }) OnBattleZoneEvent(mon, mon.KeeperId);   // C++ TMonster.cpp:785
         RollLoot(mon);
         foreach (var p in _state.PlayersAround(mon)) SendCS_DIE_ACK(p, mon.Id, Monster.OtMon);
         ReleaseMaintainMonster(mon, notify: false);   // C++ OnDie → ReleaseMaintain: drop the monster's debuffs

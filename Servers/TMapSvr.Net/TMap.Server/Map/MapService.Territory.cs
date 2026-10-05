@@ -26,8 +26,8 @@ namespace TMap.Server.Map;
 /// <item><b>Castle and camp</b> (from the world's character info) in <c>CS_ENTER_ACK</c>, for a player inside a castle or the sky
 /// garden. <b>Fixed C++ bug:</b> the C++ wrote the <i>receiver's</i> castle there; this writes the entering player's.</item>
 /// </list>
-/// <para><b>Not yet (the next batches):</b> what a war does on its map — spawns, gate switches, gatekeepers and bosses, captures
-/// (<c>*OCCUPY</c>), rewards, PvP points and records, castle sign-up and entry, god balls and towers, the sky garden's capture
+/// <para>The missions' war itself is in MapService.Mission.cs. <b>Not yet (the next batches):</b> what the other wars do on their
+/// map — spawns, gate switches, gatekeepers and bosses, captures (<c>*OCCUPY</c>), rewards, PvP points and records, castle sign-up and entry, god balls and towers, the sky garden's capture
 /// points — and the discounts. Only players' own territory is tracked (not summons' or monsters').</para>
 /// </summary>
 public sealed partial class MapService
@@ -267,7 +267,9 @@ public sealed partial class MapService
             if (m.Status == BsPeace && status != BsNormal) continue;
             if (m.Status == status) continue;
             m.Status = status;
-            if (m.Valid && status is BsNormal or BsPeace) m.Occupied = false;
+            if (!m.Valid) continue;
+            MissionPhase(m, status);                                            // its spawns and capture (MapService.Mission.cs)
+            if (status is BsNormal or BsPeace) m.Occupied = false;
         }
         byte msg = status switch
         {
@@ -322,7 +324,7 @@ public sealed partial class MapService
 
     /// <summary>C++ <c>NotifyLocalInfo</c> → <c>SendCS_SYSTEMMSG_ACK</c> (CSSender.cpp:5056): the war news to every player in the game.
     /// SM_NONE sends nothing.</summary>
-    private void NotifyLocalInfo(byte type, ushort localId, uint second)
+    private void NotifyLocalInfo(byte type, ushort localId, uint second, string name = "")
     {
         if (type == 0) return;
         var w = new PacketWriter(Msg.CS_SYSTEMMSG_ACK, capacity: 12);
@@ -331,6 +333,7 @@ public sealed partial class MapService
         {
             case SmBattleNormal or SmBattleStart or SmCastleNormal or SmCastleStart or SmSkyGardenNormal or SmSkyGardenStart: break;
             case SmMissionStart: w.WriteUInt16(localId); break;
+            case SmMissionBossDie or SmMissionTimeout: w.WriteString(name); w.WriteUInt16(localId); w.WriteUInt32(second); break;
             case SmMissionStartAlarm or SmMissionEndAlarm or SmMissionPeace: w.WriteUInt16(localId); w.WriteUInt32(second); break;
             default: w.WriteUInt32(second); break;                     // the *_ALARM and *_PEACE news
         }

@@ -264,6 +264,7 @@ public sealed partial class MapService
                 case Msg.MW_CASTLEGUILDCHG_REQ: OnMW_CASTLEGUILDCHG_REQ(r); break;
                 case Msg.MW_CASTLEAPPLICANTCOUNT_REQ: OnMW_CASTLEAPPLICANTCOUNT_REQ(r); break;
                 case Msg.MW_HEROSELECT_REQ: OnMW_HEROSELECT_REQ(r); break;
+                case Msg.MW_MISSIONOCCUPY_REQ: OnMW_MISSIONOCCUPY_REQ(r); break;
                 case Msg.MW_BATTLEMODESTATUS_ACK: OnMW_BATTLEMODESTATUS_ACK(r); break;
                 case Msg.MW_WORLDPOSTSEND_REQ: await OnMW_WORLDPOSTSEND_REQ(r); break;
                 case Msg.MW_LEVELUP_REQ: OnMW_LEVELUP_REQ(r); break;

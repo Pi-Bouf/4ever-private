@@ -14,7 +14,9 @@ public readonly record struct CharLoadRow(
     byte Body, byte Pants, byte Hand, byte Foot, byte Level, uint Region, byte HelmetHide, uint Hp, uint Mp,
     uint Gold, uint Silver, uint Cooper,
     uint Exp, ushort SkillPoint, byte GuildLeave, uint GuildLeaveTime, ushort SpawnId, ushort LastSpawnId,
-    uint LastDestination, ushort TemptedMon, byte Aftermath, byte StatLevel, byte StatPoint, uint StatExp);
+    uint LastDestination, ushort TemptedMon, byte Aftermath, byte StatLevel, byte StatPoint, uint StatExp,
+    // Where the character was saved (C++ CTBLChar wMapID / fPosX / fPosY / fPosZ / wDIR).
+    ushort MapId = 0, float PosX = 0, float PosY = 0, float PosZ = 0, ushort Dir = 0);
 
 /// <summary>The full <c>TSaveChar</c> value set (C++ <c>CSPSaveChar</c>, param order preserved). A snapshot
 /// built on the batch thread and handed to <see cref="GameDatabase.SaveCharAsync"/> for the off-thread write.
@@ -223,7 +225,7 @@ public sealed partial class GameDatabase
         @"SELECT wID, bLevel, dwMaxHP, dwMaxMP, wDP, wAP, wMinWAP, wMaxWAP, dwAtkSpeed, wMDP, wDL, wMDL, bCriticalPP, wAL, wWDP,
                  wLAP, wMAP, wMAL, bCriticalMP FROM TMONATTRCHART";
     private const string MonSpawnChartSql =
-        @"SELECT wID, wMapID, fPosX, fPosY, fPosZ, wDir, bCountry, bCount, bRange, bProb, dwRegion, dwDelay, bEvent, bArea FROM TMONSPAWNCHART";
+        @"SELECT wID, wMapID, fPosX, fPosY, fPosZ, wDir, bCountry, bCount, bRange, bProb, dwRegion, dwDelay, bEvent, bArea, wLocalID FROM TMONSPAWNCHART";
     private const string MapMonChartSql = @"SELECT wSpawnID, wMonID, bLeader, bEssential, bProb FROM TMAPMONCHART ORDER BY wSpawnID";
     private const string MagicChartSql =
         @"SELECT bMagic, bRvType, wMaxValue, dwKind, bIsMagic, bIsRare, bExclIndex, bOptionKind, wRareBound FROM TITEMMAGICCHART";
@@ -642,7 +644,7 @@ SELECT wLocalID, bDay, dwGuildID, bType FROM TLOCALOCCUPYTABLE";
                 spawnRows[id] = new MonSpawnRow(id, r.GetUShortSafe(1),
                     r.GetFloatSafe(2), r.GetFloatSafe(3), r.GetFloatSafe(4), r.GetUShortSafe(5), r.GetByteSafe(6),
                     r.GetByteSafe(7), r.GetByteSafe(8), r.GetByteSafe(9), r.GetUIntSafe(10), r.GetUIntSafe(11),
-                    r.GetByteSafe(12), Area: r.GetByteSafe(13));
+                    r.GetByteSafe(12), Area: r.GetByteSafe(13), LocalId: r.GetUShortSafe(14));
             }
 
         var typesBySpawn = new Dictionary<ushort, List<MapMonRow>>();
@@ -771,7 +773,7 @@ SELECT wLocalID, bDay, dwGuildID, bType FROM TLOCALOCCUPYTABLE";
 SELECT szNAME, bStartAct, bClass, bRace, bCountry, bSex, bHair, bFace, bBody, bPants, bHand, bFoot,
        bLevel, dwRegion, bHelmetHide, dwHP, dwMP, dwGold, dwSilver, dwCooper,
        dwEXP, wSkillPoint, bGuildLeave, dwGuildLeaveTime, wSpawnID, wLastSpawnID, dwLastDestination,
-       wTemptedMon, bAftermath, bStatLevel, bStatPoint, dwStatExp
+       wTemptedMon, bAftermath, bStatLevel, bStatPoint, dwStatExp, wMapID, fPosX, fPosY, fPosZ, wDir
 FROM TCHARTABLE WHERE dwCharID = @dwCharID AND bDelete = 0";
 
     /// <summary>Loads a character's persistent row, or null if absent. CTBLChar.</summary>
@@ -789,7 +791,8 @@ FROM TCHARTABLE WHERE dwCharID = @dwCharID AND bDelete = 0";
             r.GetUIntSafe(15), r.GetUIntSafe(16), r.GetUIntSafe(17), r.GetUIntSafe(18), r.GetUIntSafe(19),
             r.GetUIntSafe(20), r.GetUShortSafe(21), r.GetByteSafe(22), r.GetUIntSafe(23), r.GetUShortSafe(24),
             r.GetUShortSafe(25), r.GetUIntSafe(26), r.GetUShortSafe(27), r.GetByteSafe(28), r.GetByteSafe(29),
-            r.GetByteSafe(30), r.GetUIntSafe(31));
+            r.GetByteSafe(30), r.GetUIntSafe(31),
+            r.GetUShortSafe(32), r.GetFloatSafe(33), r.GetFloatSafe(34), r.GetFloatSafe(35), r.GetUShortSafe(36));
     }
 
     // ================= Character + quest SAVE (proc calls; bodies live in the .bak baseline) =================
@@ -1106,6 +1109,18 @@ FROM TCHARTABLE WHERE dwCharID = @dwCharID AND bDelete = 0";
         cmd.Parameters.Add(SqlProc.In("@c", SqlDbType.Int, unchecked((int)charId)));
         await using var r = await cmd.ExecuteReaderAsync(ct);
         return await r.ReadAsync(ct) ? (r.GetByteSafe(0), r.GetByteSafe(1), ToTime64(r, 2)) : ((byte)0, (byte)3, 0L);
+    }
+
+    /// <summary>C++ <c>CSPSaveMissionOccupy</c> (DBAccess.h:7369) — <c>TSaveMissionOccupy(wLocalID, bType, dwCharID, bCountry)</c>: the
+    /// mission's new owner country.</summary>
+    public async Task SaveMissionOccupyAsync(ushort localId, byte type, uint charId, byte country, CancellationToken ct = default)
+    {
+        await using var c = await OpenAsync(ct);
+        await SqlProc.ExecAsync(c, "TSaveMissionOccupy", null, new[]
+        {
+            SqlProc.In("@m0", SqlDbType.SmallInt, unchecked((short)localId)), SqlProc.In("@m1", SqlDbType.TinyInt, type),
+            SqlProc.In("@m2", SqlDbType.Int, unchecked((int)charId)), SqlProc.In("@m3", SqlDbType.TinyInt, country),
+        }, ct);
     }
 
     public async Task SaveCharKillAsync(uint killerId, uint targetId, CancellationToken ct = default)

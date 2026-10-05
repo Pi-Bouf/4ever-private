@@ -384,6 +384,8 @@ public static class Msg
     public const ushort MW_CASTLEGUILDCHG_REQ = MW_BASE + 0x012D;   // wCastle dwDef strDef dwAtk strAtk tNext
     public const ushort MW_CASTLEAPPLICANTCOUNT_REQ = MW_BASE + 0x013C; // wCastle dwGuild bCamp bCount
     public const ushort MW_MISSIONENABLE_REQ = MW_BASE + 0x0165;    // bStatus dwStart dwSecond
+    public const ushort MW_MISSIONOCCUPY_REQ = MW_BASE + 0x0166;    // bType wLocalID bCountry (world -> every map)
+    public const ushort MW_MISSIONOCCUPY_ACK = MW_BASE + 0x0167;    // bType wLocalID bCountry (the capture, to the world)
     public const ushort MW_SKYGARDENENABLE_REQ = MW_BASE + 0x0181;  // bStatus dwSecond bDay dwStart
     public const ushort MW_BATTLEMODESTATUS_REQ = MW_BASE + 0x0220; // dwCharID dwKey
     public const ushort MW_BATTLEMODESTATUS_ACK = MW_BASE + 0x0221; // dwCharID dwKey BoW (status next winner) BR (status next type)

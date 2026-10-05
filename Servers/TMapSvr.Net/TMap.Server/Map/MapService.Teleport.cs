@@ -233,6 +233,7 @@ public sealed partial class MapService
 
         if (s.State != EnterState.InGame) return;
 
+        EraseZoneEffects(s, ch);               // C++ ExitMAP → EraseMissionSkill (MapService.Mission.cs)
         RecallsExitMap(s, ch);
         CompanionExitMap(ch);
         var watching = _state.MonstersInView(s).ToList();

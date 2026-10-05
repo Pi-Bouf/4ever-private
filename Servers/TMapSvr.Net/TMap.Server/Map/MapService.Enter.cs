@@ -531,6 +531,9 @@ public sealed partial class MapService
                     ch.Hair = c.Hair; ch.Face = c.Face; ch.Body = c.Body; ch.Pants = c.Pants;
                     ch.Hand = c.Hand; ch.Foot = c.Foot; ch.Level = c.Level == 0 ? (byte)1 : c.Level;
                     ch.RegionId = c.Region; ch.HelmetHide = c.HelmetHide;
+                    // Where it was saved (C++ CTBLChar): the map and the spot — a never-placed row (all 0) keeps the default.
+                    if (c.MapId != 0 || c.PosX != 0 || c.PosZ != 0)
+                    { ch.MapId = c.MapId; ch.PosX = c.PosX; ch.PosY = c.PosY; ch.PosZ = c.PosZ; ch.Dir = c.Dir; }
                     ch.Hp = c.Hp; ch.Mp = c.Mp; // persisted CURRENT hp/mp; max is computed + clamped at serialize
                     ch.Gold = c.Gold; ch.Silver = c.Silver; ch.Cooper = c.Cooper;
                     ch.Exp = c.Exp; ch.SkillPoint = c.SkillPoint;

@@ -84,6 +84,9 @@ public sealed partial class MapService
         public required byte Channel;
         public required SpawnSlot[] Slots;
         public bool Removed;   // set by DelMonSpawn so a regen sweep already in flight skips it
+        /// <summary>C++ <c>MONSPAWN_SUSPEND</c> (a territory at war): a dead monster does not come back, and its death is a
+        /// battle-zone event (MapService.Mission.cs).</summary>
+        public bool Suspended;
     }
 
     private sealed class SpawnSlot
@@ -330,7 +333,7 @@ public sealed partial class MapService
         if (sp.Def.Spawn.Event == SeDynamic) { DelMonSpawn(spawnId, channel); return; }
 
         sp.Slots[slotIdx].Live = null;
-        sp.Slots[slotIdx].NextRegenMs = nowMs + sp.Def.Spawn.Delay;
+        sp.Slots[slotIdx].NextRegenMs = sp.Suspended ? long.MaxValue : nowMs + sp.Def.Spawn.Delay;   // suspended: until released
     }
 
     /// <summary>C++ weighted pick over the non-essential types by <c>m_bProb</c> (TAICmdRegen.cpp:51-101):

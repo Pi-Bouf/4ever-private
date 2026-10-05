@@ -227,6 +227,55 @@ public static class Scenarios
         var row = await db.RowAsync("SELECT COUNT(*) FROM THOTKEYTABLE WHERE dwCharID=@p0 AND bInvenID=@p1", (int)idA, (int)HotkeyPage);
         Check("hotkey: emptied page deleted from THOTKEYTABLE", row is not null && Convert.ToInt32(row[0]) == 0,
             $"rows={row?[0]}");
+
+        await MissionWar(cfgA, db, idA);
+    }
+
+    // The first mission area (Yesod, map 700): Defugel's gatekeeper is spawn 30123 at (624.66, 121.59, 644.25).
+    private const ushort MissionMap = 700, GateKeeperD = 30123;
+    private static byte MissionCountryBefore = 3;
+
+    /// <summary>Territory battles, batch B: A (Craxion) stands in the first mission area when its war is forced on; its monsters come
+    /// out, A brings Defugel's gatekeeper down, and the area falls to Craxion — 200 PvP points, the news, and the save.</summary>
+    private static async Task MissionWar(BotConfig cfgA, GameDb db, uint idA)
+    {
+        var before = await db.RowAsync("SELECT bCountry FROM TMISSIONTABLE WHERE wMissionID=@p0", (int)FirstMission);
+        MissionCountryBefore = before is null ? (byte)3 : Convert.ToByte(before[0]);
+        await db.ExecAsync("UPDATE TCHARTABLE SET wMapID=@p1, fPosX=624.66, fPosY=121.59, fPosZ=640.0 WHERE dwCharID=@p0", (int)idA, (int)MissionMap);
+        WorldTool.BattleStatus(WorldTool.BtMission, WorldTool.BsBattle, 20 * 3600, 1800);
+        try
+        {
+            using var a = new Bot(cfgA);
+            a.Enter();
+            Thread.Sleep(1500);
+            uint gate = ((uint)GateKeeperD << 16) | (1u << 8);
+            Check("mission: at war, the area's gatekeeper is out", a.Received.Any(p => PacketHeader.ReadId(p) == CS_ADDMON_ACK
+                && BitConverter.ToUInt32(p, PacketHeader.Size) == gate), "no CS_ADDMON_ACK for the gatekeeper");
+
+            a.Discard(CS_PVPPOINT_ACK); a.Discard(CS_SYSTEMMSG_ACK);
+            PacketReader? died = null;
+            for (int i = 0; i < 600 && died is null; i++)
+            {
+                a.Send(FinishSkill(a, a.CharId, 1, BasicMelee, a.Spawn.X, a.Spawn.Z, (gate, 2)));
+                died = a.TryWait(CS_DIE_ACK, r => r.ReadUInt32() == gate, 60);
+            }
+            Check("mission: the bot brings Defugel's gatekeeper down", died is not null, "it still stands");
+            var points = a.TryWait(CS_PVPPOINT_ACK, timeoutMs: 3000);
+            Check("mission: … the area falls to Craxion: the Craxion player on its map gets 200 useable PvP points", points is not null
+                && Read(points, r => { r.ReadUInt32(); r.ReadUInt32(); byte ev = r.ReadByte(); r.ReadUInt32(); return ev; }) == 0, Describe(points));
+            var news = a.TryWait(CS_SYSTEMMSG_ACK, r => r.ReadByte() == 22, 5000);
+            Check("mission: … and everyone hears it (SM_MISSION_BOSSDIE: Craxion took the 1st mission area)", news is not null
+                && Read(news, r => { r.ReadByte(); string name = r.ReadString(); ushort country = r.ReadUInt16(); uint map = r.ReadUInt32(); return (name.Length > 0, country, map); })
+                   == (true, 1, MissionMap), Describe(news));
+        }
+        finally
+        {
+            WorldTool.BattleStatus(WorldTool.BtMission, WorldTool.BsNormal, 20 * 3600, 0);
+        }
+        await Task.Delay(1500);
+        var saved = await db.RowAsync("SELECT bCountry FROM TMISSIONTABLE WHERE wMissionID=@p0", (int)FirstMission);
+        Check("saved: the 1st mission area belongs to Craxion now, in TMISSIONTABLE", saved is not null && Convert.ToInt32(saved[0]) == 1,
+            saved is null ? "no row" : $"country={saved[0]}");
     }
 
     private static void Party(Bot a, Bot b, string nameA, string nameB)
@@ -1609,6 +1658,7 @@ public static class Scenarios
         await ClearItemSkills(db, idA);
         await ClearPassives(db, idA);
         await ClearSmallRequests(db, idA);
+        await db.ExecAsync("UPDATE TMISSIONTABLE SET bCountry=@p1 WHERE wMissionID=@p0", (int)FirstMission, (int)MissionCountryBefore);
         foreach (var t in RankTables)
         {
             await db.ExecAsync($"DELETE FROM {t} WHERE dwCharID IN (@p0, @p1)", (int)idA, (int)idB);
