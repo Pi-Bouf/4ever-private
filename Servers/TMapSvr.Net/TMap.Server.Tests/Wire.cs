@@ -123,10 +123,31 @@ internal static class Wire
         return new ParsedCharInfo(charId, name, invens, skills, hotkeys, maxHp, hp, maxMp, mp);
     }
 
+    /// <summary>CS_ENTER_ACK's castle and camp.</summary>
+    public static (ushort Castle, byte Camp) ParseEnterCastle(byte[] p)
+    {
+        var r = new PacketReader(p);
+        WalkEnterToCastle(r);
+        return (r.ReadUInt16(), r.ReadByte());
+    }
+
     /// <summary>Walks CS_ENTER_ACK to its equipped-item sub-loop and returns those items.</summary>
     public static List<ParsedItem> ParseEnterEquip(byte[] p)
     {
         var r = new PacketReader(p);
+        WalkEnterToCastle(r);
+        r.ReadUInt16();       // castle
+        r.ReadByte();         // camp
+        r.ReadUInt16();       // godBall
+        SkipMaintain(r);
+        int equipCount = r.ReadByte();
+        var items = new List<ParsedItem>();
+        for (int i = 0; i < equipCount; i++) items.Add(ParseItem(r));
+        return items;
+    }
+
+    private static void WalkEnterToCastle(PacketReader r)
+    {
         r.ReadUInt32();       // charId
         r.ReadString();       // name
         r.ReadUInt16();       // titleId
@@ -153,13 +174,5 @@ internal static class Wire
         r.ReadByte();         // inPcBang
         r.ReadByte();         // aftermath step
         r.ReadUInt32();       // rankPoint
-        r.ReadUInt16();       // castle
-        r.ReadByte();         // camp
-        r.ReadUInt16();       // godBall
-        SkipMaintain(r);
-        int equipCount = r.ReadByte();
-        var items = new List<ParsedItem>();
-        for (int i = 0; i < equipCount; i++) items.Add(ParseItem(r));
-        return items;
     }
 }

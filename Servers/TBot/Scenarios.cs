@@ -50,6 +50,8 @@ public static class Scenarios
         CS_LOOPSKILL_REQ = M + 0x00F2, CS_LOOPSKILL_ACK = M + 0x00F3,
         CS_CANCELSKILL_REQ = M + 0x0146, CS_QUESTUPDATE_ACK = M + 0x0053, CS_QUESTENDTIMER_REQ = M + 0x0058,
         CS_QUESTPOSEXEC_REQ = M + 0x0354, CS_MONITEMTAKEALL_REQ = M + 0x0152, CS_MONITEMTAKE_ACK = M + 0x008B,
+        CS_GUILDLOCALLIST_REQ = M + 0x0155, CS_GUILDLOCALLIST_ACK = M + 0x0156, CS_REGION_REQ = M + 0x00F1,
+        CS_ITEMLEVELREVISION_ACK = M + 0x0245,
         CS_DIE_ACK = M + 0x0025, CS_REVIVAL_REQ = M + 0x0026, CS_REVIVAL_ACK = M + 0x0027, CS_PVPPOINT_ACK = M + 0x01E2,
         CS_MOVEITEM_REQ = M + 0x0028, CS_MOVEITEM_ACK = M + 0x0029, CS_SKILLEND_ACK = M + 0x0037,
         CS_SKILLBUY_REQ = M + 0x0032, CS_SKILLBUY_ACK = M + 0x0033, CS_NPCITEMLIST_REQ = M + 0x0082, CS_NPCITEMLIST_ACK = M + 0x0083;
@@ -163,6 +165,7 @@ public static class Scenarios
 
             LoginStatSheet(a);
             SmallRequests(a, b);
+            Territory(a, b);
             Party(a, b, nameA, nameB);
             Mail(a, b, nameA, nameB);
             HotkeyAdd(a);
@@ -988,6 +991,119 @@ public static class Scenarios
         }
         Thread.Sleep(500);
         b.Discard(CS_LOOPSKILL_ACK);
+    }
+
+    // Territories (TBATTLEZONECHART): castle Chesed (4) and the first mission area (101, item cap 15).
+    private const ushort ChesedCastle = 4, FirstMission = 101;
+    private const byte SkillPeaceZone = 25;
+
+    /// <summary>Territory battles, batch A: the war-info window, entering a territory (its item cap), a castle out of its war is a
+    /// peace zone (for the caster and for a player standing in it), and the war phases forced on the world, with their news.</summary>
+    private static void Territory(Bot a, Bot b)
+    {
+        // The war-info window: 4 castles (Chesed with 3 forts), then 8 missions and the sky garden.
+        a.Send(Req(CS_GUILDLOCALLIST_REQ, _ => { }));
+        var list = a.TryWait(CS_GUILDLOCALLIST_ACK);
+        var shape = list is null ? default : Read(list, r =>
+        {
+            int castles = r.ReadUInt16(); int firstForts = -1;
+            for (int c = 0; c < castles; c++)
+            {
+                r.ReadUInt16(); r.ReadString(); r.ReadByte(); r.ReadUInt32(); r.ReadString(); r.ReadByte(); r.ReadInt64();
+                r.ReadString(); r.ReadString(); r.ReadString();
+                r.ReadUInt16(); r.ReadUInt16(); r.ReadByte(); r.ReadUInt16(); r.ReadUInt16(); r.ReadByte(); r.ReadUInt16(); r.ReadByte();
+                for (int side = 0; side < 2; side++) { int n = r.ReadByte(); for (int i = 0; i < n; i++) { r.ReadString(); r.ReadUInt16(); } }
+                int forts = r.ReadUInt16();
+                if (c == 0) firstForts = forts;
+                for (int f = 0; f < forts; f++) { r.ReadUInt16(); r.ReadString(); r.ReadUInt32(); r.ReadString(); r.ReadByte(); r.ReadInt64(); r.ReadString(); r.ReadByte(); }
+            }
+            int missions = r.ReadByte();
+            for (int m = 0; m < missions; m++) { r.ReadUInt16(); r.ReadString(); r.ReadByte(); r.ReadByte(); r.ReadInt64(); }
+            int sky = r.ReadByte();
+            for (int g = 0; g < sky; g++) { r.ReadUInt16(); r.ReadString(); r.ReadByte(); r.ReadByte(); r.ReadInt64(); }
+            r.ReadByte(); r.ReadUInt32(); r.ReadByte(); r.ReadByte(); r.ReadUInt32(); r.ReadByte();
+            return (castles, firstForts, missions, sky);
+        });
+        Check("territory: the war-info window lists 4 castles (Chesed with 3 forts), 8 missions and the sky garden",
+            shape == (4, 3, 8, 1), list is null ? "no CS_GUILDLOCALLIST_ACK" : shape.ToString());
+
+        PacketWriter Region(Bot bot, ushort local) => Req(CS_REGION_REQ, w =>
+        {
+            w.WriteUInt32(bot.CharId); w.WriteByte(1); w.WriteByte(1); w.WriteUInt16(0); w.WriteUInt32(0); w.WriteUInt16(local);
+        });
+
+        // A territory's item cap: in the first mission area, equipment counts as level 15 at most; out of it, as itself.
+        a.Discard(CS_ITEMLEVELREVISION_ACK);
+        a.Send(Region(a, FirstMission));
+        var cap = a.TryWait(CS_ITEMLEVELREVISION_ACK);
+        Check("territory: entering a mission area caps the equipment at its level (15)", cap is not null && Read(cap, r => r.ReadByte()) == 15, Describe(cap));
+        a.Send(Region(a, 0));
+        var uncap = a.TryWait(CS_ITEMLEVELREVISION_ACK);
+        Check("territory: … and leaving it lifts the cap", uncap is not null && Read(uncap, r => r.ReadByte()) == 0, Describe(uncap));
+
+        byte? Kick()
+        {
+            a.Discard(CS_SKILLUSE_ACK);
+            a.Send(Req(CS_SKILLUSE_REQ, w =>
+            {
+                w.WriteUInt32(a.CharId); w.WriteByte(1); w.WriteByte(1); w.WriteUInt16(0); w.WriteUInt16(DefenceBreak); w.WriteByte(0);
+                w.WriteUInt32(0); w.WriteUInt32(0); w.WriteFloat(a.Spawn.X); w.WriteFloat(a.Spawn.Y); w.WriteFloat(a.Spawn.Z);
+                w.WriteByte(1); w.WriteUInt32(b.CharId); w.WriteByte(1); w.WriteByte(1);
+            }));
+            return a.TryWait(CS_SKILLUSE_ACK, r => { r.ReadByte(); return r.ReadUInt32() == a.CharId; }) is { } ack
+                ? new PacketReader(Bot.Raw.TryGetValue(ack, out var raw) ? raw : throw new InvalidOperationException()).ReadByte() : null;
+        }
+
+        // A castle out of its war is a peace zone: no hostile skill from it…
+        a.Send(Region(a, ChesedCastle));
+        Thread.Sleep(300);
+        Check("territory: in a castle out of its war, a hostile skill is refused (SKILL_PEACEZONE)", Kick() == SkillPeaceZone, "not refused");
+        a.Send(Region(a, 0));
+
+        // … nor on a player standing in it.
+        b.Send(Region(b, ChesedCastle));
+        Thread.Sleep(300);
+        b.Discard(CS_DEFEND_ACK);
+        a.Send(FinishSkill(a, a.CharId, 1, DefenceBreak, a.Spawn.X, a.Spawn.Z, (b.CharId, 1)));
+        Check("territory: … nor does one land on a player standing in it", b.TryWait(CS_DEFEND_ACK, r => r.ReadUInt32() == a.CharId, 1500) is null,
+            "a CS_DEFEND_ACK came");
+        b.Send(Region(b, 0));
+
+        // The war phases, forced on the world: the news reach the players.
+        (byte Type, uint Second)? News(Bot bot, byte type) => bot.TryWait(CS_SYSTEMMSG_ACK, r => r.ReadByte() == type, 5000) is { } m
+            ? Read(m, r => { byte t = r.ReadByte(); return (t, r.Remaining >= 4 ? r.ReadUInt32() : 0u); }) : null;
+        a.Discard(CS_SYSTEMMSG_ACK); b.Discard(CS_SYSTEMMSG_ACK);
+        WorldTool.BattleStatus(WorldTool.BtLocal, WorldTool.BsBattle, 0, 1800);
+        Check("territory: the forts' war starts (SM_BATTLE_START), for both players", News(a, 2) is not null && News(b, 2) is not null, "no news");
+        WorldTool.BattleStatus(WorldTool.BtLocal, WorldTool.BsPeace, 0, 180);
+        var peace = News(a, 5);
+        Check("territory: … and ends in 3 minutes of peace (SM_BATTLE_PEACE 180)", peace == (5, 180), peace?.ToString() ?? "no news");
+        WorldTool.BattleStatus(WorldTool.BtLocal, WorldTool.BsNormal, 0, 0);
+        Check("territory: … then back to normal (SM_BATTLE_NORMAL)", News(a, 1) is not null, "no news");
+
+        // A castle war: no castle has both a defender and an attacker in this database, so (C++ EndWar(WIN_NOWAR)) it ends at
+        // once and the castle stays a peace zone.
+        Thread.Sleep(3200);                                                      // Mean Kick's cooldown
+        WorldTool.BattleStatus(WorldTool.BtCastle, WorldTool.BsBattle, 0, 2700);
+        Check("territory: the castle war starts (SM_CASTLE_START)", News(a, 12) is not null, "no news");
+        a.Send(Region(a, ChesedCastle));
+        Thread.Sleep(300);
+        Check("territory: … with no defender and attacker it ends at once: still no hostile skill there", Kick() == SkillPeaceZone, "allowed");
+        a.Send(Region(a, 0));
+        WorldTool.BattleStatus(WorldTool.BtCastle, WorldTool.BsPeace, 0, 0);
+        Check("territory: … the castle war ends (SM_CASTLE_PEACE)", News(a, 15) is not null, "no news");
+        WorldTool.BattleStatus(WorldTool.BtCastle, WorldTool.BsNormal, 0, 0);
+        Check("territory: … then back to normal (SM_CASTLE_NORMAL)", News(a, 11) is not null, "no news");
+
+        // The mission news carry the start hour the map knew before (C++ static dwCurStart): the second alarm shows 20 h.
+        WorldTool.BattleStatus(WorldTool.BtMission, WorldTool.BsNormal, 20 * 3600, 600);
+        a.TryWait(CS_SYSTEMMSG_ACK, r => r.ReadByte() == 23, 5000);
+        WorldTool.BattleStatus(WorldTool.BtMission, WorldTool.BsNormal, 20 * 3600, 300);
+        var mission = a.TryWait(CS_SYSTEMMSG_ACK, r => r.ReadByte() == 23, 5000);
+        Check("territory: the mission alarm carries its start hour (SM_MISSION_START_ALARM, 20 h, 300 s)", mission is not null
+            && Read(mission, r => { r.ReadByte(); return (r.ReadUInt16(), r.ReadUInt32()); }) == (20, 300), Describe(mission));
+        Thread.Sleep(300);
+        a.Discard(CS_SYSTEMMSG_ACK); b.Discard(CS_SYSTEMMSG_ACK); b.Discard(CS_SKILLUSE_ACK); b.Discard(CS_HPMP_ACK);
     }
 
     /// <summary>Money pouch, reward box, exp book, exp boost (and a second one, refused) and an XP Plus premium.</summary>

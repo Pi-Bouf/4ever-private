@@ -194,6 +194,9 @@ public static class Msg
     public const ushort CS_COMMENT_REQ = CS_MAP + 0x01E0;           // strComment
     public const ushort CS_COMMENT_ACK = CS_MAP + 0x01E1;           // dwCharID, strComment
     public const ushort CS_QUESTPOSEXEC_REQ = CS_MAP + 0x0354;      // dwQuestID, dwTermID
+    public const ushort CS_GUILDLOCALLIST_REQ = CS_MAP + 0x0155;    // (the war-info window)
+    public const ushort CS_GUILDLOCALLIST_ACK = CS_MAP + 0x0156;    // castles {…, forts}, missions, sky gardens, BoW / BR
+    public const ushort CS_ITEMLEVELREVISION_ACK = CS_MAP + 0x0245; // bLevel (the territory's item cap, 0 = none)
     public const ushort CS_RESETPCBANG_ACK = CS_MAP + 0x01B9;    // dwCharID, bInPcBang
     public const ushort CS_OPENMONEY_ACK = CS_MAP + 0x01D3;      // dwMoney (a money pouch opened)
     public const ushort CS_TERMINATE_REQ = CS_MAP + 0x01D2;
@@ -371,6 +374,19 @@ public static class Msg
     public const ushort MW_HELMETHIDE_REQ = MW_BASE + 0x0101;       // dwCharID, dwKey, bHide
     public const ushort MW_HELMETHIDE_ACK = MW_BASE + 0x0102;       // dwCharID, dwKey, bHide
     public const ushort MW_WORLDPOSTSEND_REQ = MW_BASE + 0x013B;    // bType (WPT_*), … (MapService.SmallRequests.cs)
+    // Territory battles (MapService.Territory.cs)
+    public const ushort MW_LOCALENABLE_REQ = MW_BASE + 0x0067;      // bStatus dwSecond dwLocalStart bCastleDay dwCastleStart
+    public const ushort MW_CASTLEENABLE_REQ = MW_BASE + 0x007E;     // bStatus dwSecond
+    public const ushort MW_REGION_ACK = MW_BASE + 0x00BC;           // dwCharID dwKey dwRegion
+    public const ushort MW_CASTLEWARINFO_REQ = MW_BASE + 0x010F;    // the castle scoreboard
+    public const ushort MW_CASTLEWARINFO_ACK = MW_BASE + 0x0110;    // wCastle dwGuild bLocals {wLocal 6×{dwGuild bType}}
+    public const ushort MW_HEROSELECT_REQ = MW_BASE + 0x011B;       // wZone strHero tHero
+    public const ushort MW_CASTLEGUILDCHG_REQ = MW_BASE + 0x012D;   // wCastle dwDef strDef dwAtk strAtk tNext
+    public const ushort MW_CASTLEAPPLICANTCOUNT_REQ = MW_BASE + 0x013C; // wCastle dwGuild bCamp bCount
+    public const ushort MW_MISSIONENABLE_REQ = MW_BASE + 0x0165;    // bStatus dwStart dwSecond
+    public const ushort MW_SKYGARDENENABLE_REQ = MW_BASE + 0x0181;  // bStatus dwSecond bDay dwStart
+    public const ushort MW_BATTLEMODESTATUS_REQ = MW_BASE + 0x0220; // dwCharID dwKey
+    public const ushort MW_BATTLEMODESTATUS_ACK = MW_BASE + 0x0221; // dwCharID dwKey BoW (status next winner) BR (status next type)
     public const ushort MW_FIRSTGRADEGROUP_REQ = MW_BASE + 0x0143;
     public const ushort MW_FAMERANKUPDATE_REQ = MW_BASE + 0x0169;
     public const ushort MW_MONTHRANKRESETCHAR_REQ = MW_BASE + 0x016E;

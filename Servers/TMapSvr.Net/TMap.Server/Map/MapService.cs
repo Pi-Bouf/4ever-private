@@ -170,6 +170,7 @@ public sealed partial class MapService
                 case Msg.CS_JUMP_REQ: OnCS_JUMP_REQ(session, r); break;
                 case Msg.CS_BLOCK_REQ: OnCS_BLOCK_REQ(session, r); break;
                 case Msg.CS_CHGMODE_REQ: OnCS_CHGMODE_REQ(session, r); break;
+                case Msg.CS_GUILDLOCALLIST_REQ: OnCS_GUILDLOCALLIST_REQ(session, r); break;
                 case Msg.CS_CANCELSKILL_REQ: OnCS_CANCELSKILL_REQ(session, r); break;
                 case Msg.CS_LOOPSKILL_REQ: OnCS_LOOPSKILL_REQ(session, r); break;
                 case Msg.CS_CANCELACTION_REQ: OnCS_CANCELACTION_REQ(session, r); break;
@@ -255,6 +256,15 @@ public sealed partial class MapService
                 case Msg.MW_CHARDATA_REQ: OnMW_CHARDATA_REQ(r); break;
                 case Msg.MW_CHARINFO_REQ: OnMW_CHARINFO_REQ(r); break;
                 case Msg.MW_HELMETHIDE_REQ: OnMW_HELMETHIDE_REQ(r); break;
+                case Msg.MW_LOCALENABLE_REQ: OnMW_LOCALENABLE_REQ(r); break;
+                case Msg.MW_CASTLEENABLE_REQ: OnMW_CASTLEENABLE_REQ(r); break;
+                case Msg.MW_MISSIONENABLE_REQ: OnMW_MISSIONENABLE_REQ(r); break;
+                case Msg.MW_SKYGARDENENABLE_REQ: OnMW_SKYGARDENENABLE_REQ(r); break;
+                case Msg.MW_CASTLEWARINFO_REQ: OnMW_CASTLEWARINFO_REQ(r); break;
+                case Msg.MW_CASTLEGUILDCHG_REQ: OnMW_CASTLEGUILDCHG_REQ(r); break;
+                case Msg.MW_CASTLEAPPLICANTCOUNT_REQ: OnMW_CASTLEAPPLICANTCOUNT_REQ(r); break;
+                case Msg.MW_HEROSELECT_REQ: OnMW_HEROSELECT_REQ(r); break;
+                case Msg.MW_BATTLEMODESTATUS_ACK: OnMW_BATTLEMODESTATUS_ACK(r); break;
                 case Msg.MW_WORLDPOSTSEND_REQ: await OnMW_WORLDPOSTSEND_REQ(r); break;
                 case Msg.MW_LEVELUP_REQ: OnMW_LEVELUP_REQ(r); break;
                 case Msg.MW_CHARSTATINFO_REQ: OnMW_CHARSTATINFO_REQ(r); break;

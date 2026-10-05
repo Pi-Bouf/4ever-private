@@ -232,6 +232,14 @@ public sealed class TemplateStore
     /// <summary>C++ <c>m_mapMaxCashGambleProb</c> — each group's total weight.</summary>
     public Dictionary<ushort, uint> CashGambleTotal { get; } = new();
 
+    /// <summary>C++ <c>m_mapTBATTLEZONE</c> — the war zones by id (TBATTLEZONECHART).</summary>
+    public Dictionary<ushort, BattleZone> BattleZones { get; } = new();
+
+    /// <summary>The territories' saved state, in the C++ load order (missions, castles, sky gardens, forts — each in table
+    /// order), and the forts' week of owners (TLOCALOCCUPYTABLE).</summary>
+    public List<TerritoryRow> Territories { get; } = new();
+    public List<LocalOccupyRow> LocalOccupy { get; } = new();
+
     /// <summary>C++ <c>m_mapSpecialBox</c> — each special-box group's items, in chart order.</summary>
     public Dictionary<ushort, List<SpecialBoxRow>> SpecialBoxes { get; } = new();
 

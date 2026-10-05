@@ -97,6 +97,8 @@ public sealed partial class MapService
             return;
         }
         if (attackType != OtPc) return;
+        // C++ (CSHandler.cpp:1653): no hostile skill out of a peace zone, on anything.
+        if ((_templates.Skill(skillId)?.IsNegative ?? true) && CheckPeaceZone(ch)) return;
 
         PlayerHitsTarget(s, ch, hostId, attackId, attackType, targetId, targetType, actId, aniId, attackerLevel,
             transHp, transMp, canSelect, skillId, skillLevel, atkX, atkY, atkZ, defX, defY, defZ);
@@ -165,6 +167,10 @@ public sealed partial class MapService
         {
             // C++ CanDuel: a player in a duel is off limits to its own side except its opponent.
             if (_state.FindByChar(targetId)?.Char is { } dueller && !CanDuel(dueller, ch)) return;
+            // Peace zones (C++ CSHandler.cpp:20520 / 20552): no hostile skill on a player from one, nor on one standing in one.
+            if (atkSkill?.Template is not { IsNegative: false } && (CheckPeaceZone(ch)
+                || (targetId != ch.CharId && _state.FindByChar(targetId)?.Char is { } inPeace && InPeaceTerritory(inPeace))))
+                return;
             if (targetId != ch.CharId && atkSkill?.Template is not { IsNegative: false })
             {
                 if (_state.FindByChar(targetId) is { State: EnterState.InGame, Char: { } target } ts

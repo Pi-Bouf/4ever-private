@@ -241,6 +241,20 @@ public sealed partial class GameDatabase
                  dwDuraMax, dwDuraCur, bRefineCur, bGradeEffect,
                  bMagic1, bMagic2, bMagic3, bMagic4, bMagic5, bMagic6, wValue1, wValue2, wValue3, wValue4, wValue5, wValue6,
                  dwTime1, dwTime2, dwTime3, dwTime4, dwTime5, dwTime6, bGem, wMoggItemID FROM TVIEW_CASHGAMBLECHART";
+    // C++ CTBLBattleZoneChart (DBAccess.h:797) and the territory tables (CTBLMissionTable / CTBLCastleTable /
+    // CTBLSkygardenTable / CTBLLocalTable / CTBLLocalOccupy). The guild name comes from TGUILDTABLE (NULL when gone).
+    private const string BattleZoneChartSql = @"SELECT wID, szName, wMapID, wCastle, wBossSpawnID, wLGateKeeperSpawnID,
+                 wRGateKeeperSpawnID, wCGateKeeperSpawnID, dwLSwitchID, dwRSwitchID, dwCSwitchID, wNormalItem, wChiefItem, bLine,
+                 wSkill1, wSkill2, bItemLevel, wValorianBossDefend, wValorianBossAttack, wDerionBossDefend, wDerionBossAttack,
+                 wMiddleSpawnID, wRightSpawnID, wLeftSpawnID FROM TBATTLEZONECHART";
+    private const string TerritorySql = @"
+SELECT 3, wMissionID, bCountry, 0, NULL, NULL, NULL, '', NULL FROM TMISSIONTABLE;
+SELECT 2, c.wCastle, c.bCountry, c.dwGuildID, g.szName, NULL, c.dateWarTime, c.szHero, c.dateHero
+  FROM TCASTLETABLE c LEFT JOIN TGUILDTABLE g ON g.dwID = c.dwGuildID;
+SELECT 4, wID, bCountry, 0, NULL, NULL, dateWarTime, '', NULL FROM TSKYGARDENTABLE;
+SELECT 1, l.wLocalID, l.bCountry, l.dwGuild, g.szName, l.dateOccupy, l.dateDefend, l.szHero, l.dateHero
+  FROM TLOCALTABLE l LEFT JOIN TGUILDTABLE g ON g.dwID = l.dwGuild;
+SELECT wLocalID, bDay, dwGuildID, bType FROM TLOCALOCCUPYTABLE";
     // C++ CTBLSpecialBoxChart (DBAccess.h:4754): the box group is wGroup (the C++ keys its map on it).
     private const string SpecialBoxChartSql = @"SELECT wGroup, wUseTime, bClass, wItemID, bLevel, bCount, bGLevel,
                  dwDuraMax, dwDuraCur, bRefineCur, bGradeEffect,
@@ -417,6 +431,34 @@ public sealed partial class GameDatabase
             }
         }
         catch (SqlException ex) when (ex.Number == 208) { /* no special boxes in this baseline */ }
+
+        try
+        {
+            await using (var cmd = new SqlCommand(BattleZoneChartSql, c))
+            await using (var r = await cmd.ExecuteReaderAsync(ct))
+                while (await r.ReadAsync(ct))
+                {
+                    var z = new BattleZone(r.GetUShortSafe(0), r.GetStringSafe(1), r.GetUShortSafe(2), r.GetUShortSafe(3),
+                        r.GetUShortSafe(4), r.GetUShortSafe(5), r.GetUShortSafe(6), r.GetUShortSafe(7),
+                        r.GetUIntSafe(8), r.GetUIntSafe(9), r.GetUIntSafe(10), r.GetUShortSafe(11), r.GetUShortSafe(12), r.GetByteSafe(13),
+                        r.GetUShortSafe(14), r.GetUShortSafe(15), r.GetByteSafe(16),
+                        r.GetUShortSafe(17), r.GetUShortSafe(18), r.GetUShortSafe(19), r.GetUShortSafe(20),
+                        r.GetUShortSafe(21), r.GetUShortSafe(22), r.GetUShortSafe(23));
+                    store.BattleZones[z.Id] = z;
+                }
+            await using (var cmd = new SqlCommand(TerritorySql, c))
+            await using (var r = await cmd.ExecuteReaderAsync(ct))
+            {
+                for (int set = 0; set < 4; set++, await r.NextResultAsync(ct))
+                    while (await r.ReadAsync(ct))
+                        store.Territories.Add(new TerritoryRow(Convert.ToByte(r.GetValue(0)), r.GetUShortSafe(1), r.GetByteSafe(2),
+                            r.IsDBNull(3) ? 0 : Convert.ToUInt32(r.GetValue(3)), r.IsDBNull(4) ? "" : r.GetString(4),
+                            ToTime64(r, 5), ToTime64(r, 6), r.IsDBNull(7) ? "" : r.GetString(7), ToTime64(r, 8)));
+                while (await r.ReadAsync(ct))
+                    store.LocalOccupy.Add(new LocalOccupyRow(r.GetUShortSafe(0), r.GetByteSafe(1), r.GetUIntSafe(2), r.GetByteSafe(3)));
+            }
+        }
+        catch (SqlException ex) when (ex.Number == 208) { /* no territory tables in this baseline */ }
 
         await using (var cmd = new SqlCommand(LevelChartSql, c))
         await using (var r = await cmd.ExecuteReaderAsync(ct))

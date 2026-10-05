@@ -194,8 +194,8 @@ public sealed partial class MapService
         ch.TacticsName = r.ReadString();
         ch.GuildDuty = r.ReadByte();
         ch.GuildPeer = r.ReadByte();
-        r.ReadUInt16();                   // wCastle
-        r.ReadByte();                     // bCamp
+        ch.Castle = r.ReadUInt16();       // wCastle (SSHandler.cpp:2085)
+        ch.Camp = r.ReadByte();           // bCamp
         ch.PartyId = r.ReadUInt16();
         ch.PartyType = r.ReadByte();      // bPartyType (loot/exp mode; PT_SOLO opts out of party sharing)
         ch.PartyChiefId = r.ReadUInt32();
@@ -263,8 +263,8 @@ public sealed partial class MapService
         ch.GuildName = r.ReadString();
         ch.GuildDuty = r.ReadByte();
         ch.GuildPeer = r.ReadByte();
-        r.ReadUInt16();                   // wCastle
-        r.ReadByte();                     // bCamp
+        ch.Castle = r.ReadUInt16();       // wCastle (SSHandler.cpp:1477)
+        ch.Camp = r.ReadByte();           // bCamp
         ch.TacticsId = r.ReadUInt32();
         ch.TacticsName = r.ReadString();
         ch.PartyId = r.ReadUInt16();
@@ -726,8 +726,14 @@ public sealed partial class MapService
     private void LinkItemAttr(Item item)
     {
         StampCompanionRune(item);
+        LinkItemAttrAt(item, item.Level);
+    }
+
+    /// <summary>C++ <c>SetItemAttr(pItem, bLevel)</c>: the attributes of the item at a given level (a territory's item cap).</summary>
+    private void LinkItemAttrAt(Item item, byte level)
+    {
         if (item.Template is null || !_templates.HasItemAttrs) return;
-        ushort key = (ushort)(item.Template.AttrId + _templates.GradeForLevel(item.Level) + item.Gem);
+        ushort key = (ushort)(item.Template.AttrId + _templates.GradeForLevel(level) + item.Gem);
         item.Attr = _templates.Attr(key) ?? _templates.DefaultAttr;
     }
 

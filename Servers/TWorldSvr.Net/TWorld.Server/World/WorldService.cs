@@ -174,6 +174,9 @@ public sealed partial class WorldService
 
         // Phase 4d: hand the newly-connected map the current tournament bracket config (TournamentInfo).
         if (_state.Tournament is not null) TournamentInfoBroadcast(session);
+
+        // Where every war stands, and the castle applicant counts (C++ OnMW_CONNECT_ACK, WorldService.Battle.cs).
+        SendBattleStateTo(session);
     }
 
     private void OnMW_ADDCHAR_ACK(ServerSession session, PacketReader r)

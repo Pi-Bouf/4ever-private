@@ -29,6 +29,7 @@ public sealed partial class WorldService
             case Msg.SM_EVENTQUARTERNOTIFY_REQ: OnSM_EVENTQUARTERNOTIFY_REQ(r); return true;
             case Msg.SM_EVENTEXPIRED_REQ: OnSM_EVENTEXPIRED_REQ(r); return true;
             case Msg.SM_EVENTEXPIRED_ACK: OnSM_EVENTEXPIRED_ACK(r); return true;
+            case Msg.SM_BATTLESTATUS_REQ: OnSM_BATTLESTATUS_REQ(r); return true;
         }
         return false;
     }

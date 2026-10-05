@@ -92,6 +92,9 @@ public sealed partial class MapService
         // ---- skill known? (pATTACK->FindTSkill(wSkillID)) ----
         var skill = LearnedSkill(ch, skillId);
         if (skill is null) { SendSkillUseFail(s, SkillUseResult.NotFound, attackId, attackType, skillId, actionId, actId, aniId); return; }
+        // ---- no hostile skill in a peace zone (C++ CheckPeaceZone, CSHandler.cpp:2584) ----
+        if ((skill.Template?.IsNegative ?? true) && CheckPeaceZone(s.Char!))
+        { SendSkillUseFail(s, SkillUseResult.PeaceZone, attackId, attackType, skillId, actionId, actId, aniId); return; }
 
         // ---- MP cost (GetRequiredMP vs GetPureMaxMP; strict <) ----
         uint needMp = skill.GetRequiredMp(StatEngine.PureMaxMp(ch, _templates));
