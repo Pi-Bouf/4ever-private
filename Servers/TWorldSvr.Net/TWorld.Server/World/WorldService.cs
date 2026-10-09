@@ -349,6 +349,7 @@ public sealed partial class WorldService
                 if (!string.IsNullOrEmpty(mem.Name)) ch.Name = mem.Name; // world learns the name from the roster
             }
         }
+        if (_state.FindTacticsGuild(charId)?.FindTactics(charId) is { } tm) { tm.OnlineChar = ch; tm.Level = level; }
 
         var main = _state.FindMapSvr(ch.MainId);
         if (main is null) { session.Send(BuildInvalidChar(charId, key, false)); return; }
@@ -943,6 +944,7 @@ public sealed partial class WorldService
             if (mem is not null) mem.OnlineChar = null; // keep roster, drop online link
             ch.Guild = null;
         }
+        if (_state.FindTacticsGuild(ch.CharId)?.FindTactics(ch.CharId) is { } tm) tm.OnlineChar = null;
         if (ch.Party is not null) LeaveParty(ch, 0);   // C++ CloseChar → LeaveParty(pTCHAR, 0)
         WarCountryLeave(ch);
         if (ch.TmsIds.Count > 0) TmsLeaveAll(ch);

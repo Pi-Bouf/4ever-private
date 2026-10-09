@@ -605,6 +605,12 @@ public enum GuildResult : byte
     MemberFull,
     MismatchLevel,
     SameGuildTactics,
+    NoMoney,
+    NoPoint,
+    MaxWanted,
+    WantedEnd,
+    AlreadyApply,
+    Same,
 }
 
 /// <summary>enum FRIEND_RESULT (NetCode.h).</summary>

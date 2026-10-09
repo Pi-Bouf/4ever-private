@@ -51,6 +51,7 @@ public sealed partial class MapService
             if (def.Type == TnpcPortal)
                 foreach (var portal in def.ItemIds)
                     if (_templates.Portals.ContainsKey(portal)) npc.PortalId = portal;
+            if (def.Type == TnpcMonster) InitMonsterShop(npc);
             npc.RequiredItemId = def.ItemId;
             _state.AddNpc(npc);
         }

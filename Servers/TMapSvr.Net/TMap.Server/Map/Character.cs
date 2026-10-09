@@ -86,6 +86,8 @@ public sealed class Character
     public byte Camp { get; set; }
     /// <summary>C++ <c>m_wGodBall</c> — the god ball carried in a castle war, 0 = none (MapService.Castle.cs).</summary>
     public ushort GodBall { get; set; }
+    /// <summary>C++ <c>m_guildItem</c> — the item on its way into the guild cabinet, until the database answers (MapService.GuildBoard.cs).</summary>
+    public Item? GuildItem { get; set; }
     public ushort MapId { get; set; }
     public float PosX { get; set; }
     public float PosY { get; set; }

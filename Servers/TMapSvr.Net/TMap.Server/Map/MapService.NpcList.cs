@@ -11,11 +11,11 @@ namespace TMap.Server.Map;
 /// <item>a skill trainer — what the character can learn (MapService.SkillBuy.cs);</item>
 /// <item>a merchant (<c>TNPC_ITEM</c>) or a PvP shop (<c>TNPC_PVPOINT</c>) — the stock for the character's class and
 /// country, at the gold price (<c>GetItemPrice</c>) or the PvP-point price (<c>GetItemPvPrice</c>);</item>
-/// <item>a teleporter (<c>TNPC_PORTAL</c>) — the destinations whose conditions the character meets, with their price.</item>
+/// <item>a teleporter (<c>TNPC_PORTAL</c>) — the destinations whose conditions the character meets, with their price;</item>
+/// <item>a castle guards' shop (<c>TNPC_MONSTER</c>) — its guard posts and their price (MapService.GuildTactics.cs).</item>
 /// </list>
 /// Prices are before discount: the client applies <c>bDiscountRate</c> (<c>GetDiscountRate</c>, MapService.Fort.cs). <b>Not
-/// ported:</b> the monster shop (<c>TNPC_MONSTER</c>, castle guards) and the magic-item shop (<c>TNPC_MAGICITEM</c>), whose
-/// stock is not loaded — they get no answer. Portal conditions tied to tournaments (unported) never pass.
+/// ported:</b> the magic-item shop (<c>TNPC_MAGICITEM</c>), whose stock is not loaded — it gets no answer. Portal conditions tied to tournaments (unported) never pass.
 /// </summary>
 public sealed partial class MapService
 {
@@ -32,6 +32,7 @@ public sealed partial class MapService
             case TnpcSkillMaster or TnpcSkillRent: SendCS_NPCSKILLLIST_ACK(s, ch, npc); break;
             case TnpcItem or TnpcPvPoint: SendCS_NPCITEMLIST_ACK(s, ch, npc); break;
             case TnpcPortal: SendCS_NPCPORTALLIST_ACK(s, ch, npc); break;
+            case TnpcMonster: SendCS_NPCMONSTERLIST_ACK(s, ch, npc); break;   // MapService.GuildTactics.cs
         }
     }
 

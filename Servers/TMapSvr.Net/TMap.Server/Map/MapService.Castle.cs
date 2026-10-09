@@ -31,8 +31,7 @@ namespace TMap.Server.Map;
 /// (<c>TSaveCastleOccupy</c>), and the world tells every map (<c>MW_CASTLEOCCUPY_REQ</c>): the owner, the forts' week wiped,
 /// the news (<c>SM_CASTLE_END</c>) and the points (<c>PVPE_ENTRY</c> / <c>WIN</c> / <c>DEFEND</c>, MapService.Fort.cs).</item>
 /// </list>
-/// <para><b>Not ported:</b> the castle guards' shop (<c>TNPC_MONSTER</c>, <c>CS_MONSTERBUY_REQ</c> — paid from guild money in
-/// the world) and the tower guards it spawns; the GM's free pass into a castle (<c>IsOperator</c>); sending a player out of a
+/// <para>The castle guards' shop is in MapService.GuildTactics.cs. <b>Not ported:</b> the GM's free pass into a castle (<c>IsOperator</c>); sending a player out of a
 /// guild-only destination after a capture (<c>CheckMapGuild</c> — the last destination is not tracked). The proc's answer comes
 /// back on the next timer tick. The ball commands run on the 1-second timer.</para>
 /// </summary>
@@ -475,7 +474,8 @@ public sealed partial class MapService
         if (!s.IsMain || s.Char is not { } ch || CastleOfMap(ch.MapId) is not { War: { } war } c) return;
         if (!war.Towers.TryGetValue(towerId, out var tower) || tower.Ball is not { } mounted || ch.GodBall == 0) return;
         if (!war.Balls.ContainsKey(ch.GodBall) || mounted.Guild == GuildOf(ch)) return;
-        war.Balls[mounted.Id] = mounted;                                          // (the tower guards are not ported)
+        DelTowerGuards(c, towerId, s.Channel);                                     // the guards bought for this tower go
+        war.Balls[mounted.Id] = mounted;
         DoGodBallCmd(c, GbDemountBall, mounted);
         tower.Ball = null;
         var w = new PacketWriter(Msg.CS_DEMOUNTGODBALL_ACK, capacity: 6);

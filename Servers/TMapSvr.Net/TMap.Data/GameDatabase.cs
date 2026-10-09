@@ -475,6 +475,18 @@ SELECT wID, wMapID, fPosX, fPosY, fPosZ FROM TGODTOWERCHART ORDER BY wID";
         }
         catch (SqlException ex) when (ex.Number == 208) { /* no territory tables in this baseline */ }
 
+        try
+        {
+            await using var cmd = new SqlCommand("SELECT wID, wNpcID, wSpawnID, dwPrice, wTowerID FROM TMONSTERSHOPCHART; SELECT dwID, szMessage FROM TSVRMSGCHART", c);
+            await using var r = await cmd.ExecuteReaderAsync(ct);
+            while (await r.ReadAsync(ct))
+                store.MonsterShops.Add(new MonsterShopRow(r.GetUShortSafe(0), r.GetUShortSafe(1), r.GetUShortSafe(2), r.GetUIntSafe(3), r.GetUShortSafe(4)));
+            await r.NextResultAsync(ct);
+            while (await r.ReadAsync(ct))
+                if (!r.IsDBNull(1)) store.SvrMsgs[r.GetUIntSafe(0)] = r.GetString(1);
+        }
+        catch (SqlException ex) when (ex.Number == 208) { /* no guard shop / server messages in this baseline */ }
+
         await using (var cmd = new SqlCommand(LevelChartSql, c))
         await using (var r = await cmd.ExecuteReaderAsync(ct))
             while (await r.ReadAsync(ct))
@@ -1182,6 +1194,91 @@ FROM TCHARTABLE WHERE dwCharID = @dwCharID AND bDelete = 0";
         };
         await SqlProc.ExecAsync(c, "TSaveCastleOccupy", ret, ps, ct);
         return (ret.AsInt(), ps[0].Value is DBNull or null ? (byte)3 : Convert.ToByte(ps[0].Value));
+    }
+
+    // ---- the guild cabinet (C++ CSPGuildItemPutIn / CSPGuildItemTakeOut / CSPGuildItemRollback, DBAccess.h) ----
+
+    /// <summary>The item columns the guild cabinet procs share, from <paramref name="it"/> (dwTime1..6 = the ext values).</summary>
+    private static List<SqlParameter> GuildItemArgs(in ItemSaveData it, bool withCount = true)
+    {
+        var p = new List<SqlParameter>
+        {
+            SqlProc.In("@i0", SqlDbType.SmallInt, unchecked((short)it.TemplateId)), SqlProc.In("@i1", SqlDbType.TinyInt, it.Level),
+            SqlProc.In("@i2", SqlDbType.TinyInt, it.Gem), SqlProc.In("@i3", SqlDbType.SmallInt, unchecked((short)it.MoggItemId)),
+        };
+        if (withCount) p.Add(SqlProc.In("@i4", SqlDbType.TinyInt, it.Count));
+        p.AddRange(new[]
+        {
+            SqlProc.In("@i5", SqlDbType.TinyInt, it.GLevel), SqlProc.In("@i6", SqlDbType.Int, unchecked((int)it.DuraMax)),
+            SqlProc.In("@i7", SqlDbType.Int, unchecked((int)it.DuraCur)), SqlProc.In("@i8", SqlDbType.TinyInt, it.RefineCur),
+            SqlProc.In("@i9", SqlDbType.DateTime, FromTime64(it.EndTime)), SqlProc.In("@i10", SqlDbType.TinyInt, it.GradeEffect),
+        });
+        for (int i = 0; i < 6; i++) p.Add(SqlProc.In($"@m{i}", SqlDbType.TinyInt, it.Magic[i]));
+        for (int i = 0; i < 6; i++) p.Add(SqlProc.In($"@v{i}", SqlDbType.SmallInt, unchecked((short)it.Value[i])));
+        for (int i = 0; i < 6; i++) p.Add(SqlProc.In($"@t{i}", SqlDbType.Int, unchecked((int)it.Ext[i])));
+        return p;
+    }
+
+    /// <summary><c>TGuildItemPutIn</c>: the item into the guild's cabinet (stacked on a like item when it fits). Returns the proc's
+    /// result (0 done, 2 full, 5 no cabinet) and the cabinet slot.</summary>
+    public async Task<(int Ret, uint ItemId)> GuildItemPutInAsync(uint guildId, ItemSaveData item, CancellationToken ct = default)
+    {
+        await using var c = await OpenAsync(ct);
+        var ret = SqlProc.Ret();
+        var slot = SqlProc.Out("@g2", SqlDbType.Int);
+        var ps = new List<SqlParameter> { SqlProc.In("@g0", SqlDbType.BigInt, item.DlId), SqlProc.In("@g1", SqlDbType.Int, unchecked((int)guildId)), slot };
+        ps.AddRange(GuildItemArgs(item));
+        await SqlProc.ExecAsync(c, "TGuildItemPutIn", ret, ps, ct);
+        return (ret.AsInt(), slot.Value is DBNull or null ? 0u : unchecked((uint)Convert.ToInt32(slot.Value)));
+    }
+
+    /// <summary><c>TGuildItemTakeOut</c>: <paramref name="count"/> of the cabinet slot out (the row lessened or gone). Returns the
+    /// proc's result (0 done, 3 not there) and the item taken.</summary>
+    public async Task<(int Ret, ItemSaveData Item)> GuildItemTakeOutAsync(uint guildId, uint itemId, byte count, CancellationToken ct = default)
+    {
+        await using var c = await OpenAsync(ct);
+        var ret = SqlProc.Ret();
+        SqlParameter O(string n, SqlDbType t) => SqlProc.Out(n, t);
+        var dl = O("@g0", SqlDbType.BigInt);
+        var outs = new List<SqlParameter>
+        {
+            O("@i0", SqlDbType.SmallInt), O("@i1", SqlDbType.TinyInt), O("@i2", SqlDbType.TinyInt), O("@i3", SqlDbType.SmallInt),
+        };
+        var after = new List<SqlParameter>
+        {
+            O("@i5", SqlDbType.TinyInt), O("@i6", SqlDbType.Int), O("@i7", SqlDbType.Int), O("@i8", SqlDbType.TinyInt),
+            O("@i9", SqlDbType.DateTime), O("@i10", SqlDbType.TinyInt),
+        };
+        for (int i = 0; i < 6; i++) after.Add(O($"@m{i}", SqlDbType.TinyInt));
+        for (int i = 0; i < 6; i++) after.Add(O($"@v{i}", SqlDbType.SmallInt));
+        for (int i = 0; i < 6; i++) after.Add(O($"@t{i}", SqlDbType.Int));
+        var ps = new List<SqlParameter> { dl, SqlProc.In("@g1", SqlDbType.Int, unchecked((int)guildId)), SqlProc.In("@g2", SqlDbType.Int, unchecked((int)itemId)) };
+        ps.AddRange(outs);
+        ps.Add(SqlProc.In("@i4", SqlDbType.TinyInt, count));
+        ps.AddRange(after);
+        await SqlProc.ExecAsync(c, "TGuildItemTakeOut", ret, ps, ct);
+        static long L(SqlParameter p) => p.Value is DBNull or null ? 0 : Convert.ToInt64(p.Value);
+        long end = after[4].Value is DateTime d && d.Year >= 2000 ? new DateTimeOffset(DateTime.SpecifyKind(d, DateTimeKind.Utc)).ToUnixTimeSeconds() : 0;
+        var item = new ItemSaveData(L(dl), 0, 0, 0, (ushort)L(outs[0]), (byte)L(outs[1]), count, (byte)L(after[0]), (uint)L(after[1]),
+            (uint)L(after[2]), (byte)L(after[3]), end, (byte)L(after[5]),
+            Enumerable.Range(6, 6).Select(i => (byte)L(after[i])).ToArray(),
+            Enumerable.Range(12, 6).Select(i => unchecked((ushort)L(after[i]))).ToArray(),
+            Enumerable.Range(18, 6).Select(i => unchecked((uint)L(after[i]))).ToArray(),
+            (byte)L(outs[2]), unchecked((ushort)L(outs[3])));
+        return (ret.AsInt(), item);
+    }
+
+    /// <summary><c>TGuildItemRollback</c>: a taken item that found no room goes back to its cabinet slot.</summary>
+    public async Task GuildItemRollbackAsync(uint guildId, uint itemId, ItemSaveData item, CancellationToken ct = default)
+    {
+        await using var c = await OpenAsync(ct);
+        var ps = new List<SqlParameter>
+        {
+            SqlProc.In("@g0", SqlDbType.BigInt, item.DlId), SqlProc.In("@g1", SqlDbType.Int, unchecked((int)guildId)),
+            SqlProc.In("@g2", SqlDbType.Int, unchecked((int)itemId)),
+        };
+        ps.AddRange(GuildItemArgs(item));
+        await SqlProc.ExecAsync(c, "TGuildItemRollback", null, ps, ct);
     }
 
     public async Task SaveCharKillAsync(uint killerId, uint targetId, CancellationToken ct = default)

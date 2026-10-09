@@ -248,6 +248,12 @@ public sealed class TemplateStore
     public List<GodBallSpotRow> GodBallSpots { get; } = new();
     public List<GodTowerRow> GodTowers { get; } = new();
 
+    /// <summary>The castle guards' shops (TMONSTERSHOPCHART), in chart order.</summary>
+    public List<MonsterShopRow> MonsterShops { get; } = new();
+
+    /// <summary>C++ <c>m_mapTSvrMsg</c> — the server's own texts (TSVRMSGCHART: mail titles, …) by <c>SERVER_MESSAGE</c> id.</summary>
+    public Dictionary<uint, string> SvrMsgs { get; } = new();
+
     /// <summary>C++ <c>m_mapSpecialBox</c> — each special-box group's items, in chart order.</summary>
     public Dictionary<ushort, List<SpecialBoxRow>> SpecialBoxes { get; } = new();
 

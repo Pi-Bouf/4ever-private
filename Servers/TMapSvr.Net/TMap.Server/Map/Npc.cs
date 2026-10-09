@@ -36,6 +36,10 @@ public sealed class Npc
     /// it teaches: its <c>TNPCITEMCHART</c> ids resolved against the skill chart.</summary>
     public Dictionary<ushort, SkillTemplate> Skills { get; } = new();
 
+    /// <summary>C++ <c>m_mapMon</c> — for a castle guards' shop (<c>TNPC_MONSTER</c>), its guard posts by id
+    /// (<c>TMONSTERSHOPCHART</c>).</summary>
+    public Dictionary<ushort, MonsterShopRow> Monsters { get; } = new();
+
     /// <summary>C++ <c>m_wSpawnPosID</c> — for a <c>TNPC_RETURN</c> NPC, the spawn point it sets as the player's
     /// return point (its <c>TNPCITEMCHART</c> id; the last row wins, as in the C++ load loop, TMapSvr.cpp:3869).</summary>
     public ushort SpawnPosId { get; set; }

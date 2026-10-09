@@ -27,7 +27,7 @@ public sealed record GuildRelationRow(byte Type, uint GuildOne, uint GuildTwo);
 public sealed record GuildPointRewardRow(uint GuildId, string Name, uint Point, long Date);
 public sealed record GuildPvpRecordRow(uint GuildId, uint CharId, uint Date, ushort KillCount, ushort DieCount, uint[] Point);
 public sealed record GuildStatsRow(uint GuildId, byte SkillPoint, byte Level, uint Exp);
-public sealed record GuildCabinetRow(uint OwnerId, long ItemDbId, uint StorageId, ushort ItemId, byte Level, byte Count, byte GLevel, uint DuraMax, uint DuraCur, byte RefineCur, long EndTime, byte GradeEffect, byte[] Magic, ushort[] Value, uint[] ExtValue);
+public sealed record GuildCabinetRow(uint OwnerId, long ItemDbId, uint StorageId, ushort ItemId, byte Level, byte Count, byte GLevel, uint DuraMax, uint DuraCur, byte RefineCur, long EndTime, byte GradeEffect, byte[] Magic, ushort[] Value, uint[] ExtValue, byte Gem = 0, ushort MoggItemId = 0, byte ItemSlot = 0);
 public sealed record GuildWantedRow(uint GuildId, byte MinLevel, byte MaxLevel, long EndTime, string Title, string Text);
 public sealed record GuildTacticsWantedRow(uint Id, uint GuildId, byte MinLevel, byte MaxLevel, long EndTime, string Title, string Text, byte Day, uint Gold, uint Silver, uint Cooper, uint PvPoint);
 public sealed record GuildVolunteerRow(byte Type, uint Id, uint CharId, string Name, byte Level, byte Class);

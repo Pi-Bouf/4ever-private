@@ -292,8 +292,15 @@ public sealed partial class WorldService
     private void OnSM_EVENTEXPIRED_REQ(PacketReader r)
     {
         bool insert = r.ReadByte() != 0;
-        var buf = new ExpiredBuf(r.ReadByte(), r.ReadInt64(), r.ReadUInt32(), r.ReadUInt32());
+        EventExpired(insert, new ExpiredBuf(r.ReadByte(), r.ReadInt64(), r.ReadUInt32(), r.ReadUInt32()));
+    }
 
+    /// <summary>C++ <c>OnEventExpired</c> from inside the world (a tactics contract taken or ended).</summary>
+    private void AddExpired(ExpiredType type, long time, uint value1, uint value2) => EventExpired(true, new ExpiredBuf((byte)type, time, value1, value2));
+    private void DelExpired(ExpiredType type, long time, uint value1, uint value2) => EventExpired(false, new ExpiredBuf((byte)type, time, value1, value2));
+
+    private void EventExpired(bool insert, ExpiredBuf buf)
+    {
         for (int i = 0; i < _state.Expired.Count; i++)
         {
             var e = _state.Expired[i];
@@ -325,7 +332,7 @@ public sealed partial class WorldService
 
     /// <summary>Apply an expiry: drop the guild-wanted ad / tactics-wanted ad / tactics membership. The map
     /// broadcasts ride the existing *_DEL handlers; here we apply the data effect (C++ OnSM_EVENTEXPIRED_ACK).</summary>
-    private void ExpiryFire(byte type, long _, uint value1, uint value2)
+    private void ExpiryFire(byte type, long time, uint value1, uint value2)
     {
         switch ((ExpiredType)type)
         {
@@ -338,9 +345,9 @@ public sealed partial class WorldService
                     _log.LogInformation("Tactics-wanted ad {Id} auto-expired.", value2);
                 break;
             case ExpiredType.GuildTactics:
-                if (_state.FindGuild(value1) is { } g && g.Tactics.Remove(value2))
+                if (_state.FindGuild(value1) is { } g && g.FindTactics(value2) is { } tm)
                 {
-                    _state.CharTactics.Remove(value2);
+                    _ = GuildTacticsDel(g, tm, 3);                      // C++ OnSM_EVENTEXPIRED_ACK: paid and mailed
                     _log.LogInformation("Tactics contract (char {Char} in guild {Guild}) auto-expired.", value2, value1);
                 }
                 break;

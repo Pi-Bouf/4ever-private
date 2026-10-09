@@ -21,8 +21,7 @@ namespace TMap.Server.Map;
 /// in a package from the operator.</item>
 /// <para><c>CS_ACTEND_REQ</c> is a no-op (its C++ body is commented out). <b>Not ported:</b> the chat-ban check on the comment
 /// (chat bans are not ported), the party loot lottery (<c>CS_MONITEMLOTTERY_REQ</c>, with the party loot modes),
-/// <c>CS_STOPTHECLOCK_REQ</c> (a cash-shop item), the mercenary mails of <c>MW_WORLDPOSTSEND_REQ</c> (their texts are server
-/// messages, and the world does not send them), and what only happens across several map servers: <c>MW_ADDITEM_REQ</c>
+/// <c>CS_STOPTHECLOCK_REQ</c> (a cash-shop item), and what only happens across several map servers: <c>MW_ADDITEM_REQ</c>
 /// (loot), <c>MW_MONSTERDIE_REQ</c> (party exp) and <c>MW_MAGICMIRROR_REQ</c> (a reflected hit).</para>
 /// </summary>
 public sealed partial class MapService
@@ -215,7 +214,9 @@ public sealed partial class MapService
     /// hours) is mailed to the winner in an operator package, and the winner told if online.</summary>
     private async Task OnMW_WORLDPOSTSEND_REQ(PacketReader r)
     {
-        if (r.ReadByte() != WptLotItem || PostStore is not { } db) return;
+        byte type = r.ReadByte();
+        if (type is WptTacticsKick or WptTacticsEnd) { await MailTacticsEnd(type, r); return; }   // MapService.GuildTactics.cs
+        if (type != WptLotItem || PostStore is not { } db) return;
         uint recvId = r.ReadUInt32();
         string recver = r.ReadString(), title = r.ReadString(), message = r.ReadString();
         ushort itemId = r.ReadUInt16();

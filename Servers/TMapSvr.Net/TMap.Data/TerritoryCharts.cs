@@ -32,5 +32,9 @@ public sealed record GodBallSpotRow(ushort Id, byte Camp, ushort MapId, float Po
 /// <summary>A god tower of a castle (C++ <c>CTBLGodTower</c>): where a carried god ball is mounted.</summary>
 public sealed record GodTowerRow(ushort Id, ushort MapId, float PosX, float PosY, float PosZ);
 
+/// <summary>A castle guards' shop post (<c>TMONSTERSHOPCHART</c>, C++ <c>TMONSTERSHOP</c>): the NPC selling it, the spawn it puts out,
+/// its price in guild money, and the god tower whose holders alone may buy it (0 = any).</summary>
+public sealed record MonsterShopRow(ushort Id, ushort NpcId, ushort SpawnId, uint Price, ushort TowerId);
+
 /// <summary>One day of a fort's week (C++ <c>CTBLLocalOccupy</c>): who held it that weekday (1 = Sunday) and how.</summary>
 public sealed record LocalOccupyRow(ushort LocalId, byte Day, uint Guild, byte Type);

@@ -71,9 +71,19 @@ Needs the docker stack, and no fort war due in the next 3 minutes (castle sign-u
 ## Scenario: guild (a guild's life)
 
 `--Bot:Scenario=guild` (same arguments) drives the map's guild relay against the live world: A (set to level 20)
-founds "TbotGuild", invites B who accepts, opens the guild window, makes B vice-chief, gives a peerage, puts B out
-and disbands. A disbanded guild stays 7 days in the world, so the scenario deletes the guild rows and **restarts the
+founds "TbotGuild", invites B who accepts, opens the guild window, makes B vice-chief, gives a peerage; posts, edits
+and removes a board article, contributes silver, tries a fame mark (refused: no guild points), puts a stack in the
+guild cabinet (refused at guild level 1, then accepted once the test raises the cabinet size) and takes part back out,
+opens the point log and PvP record; puts B out, posts a wanted ad that B applies to and A accepts, then disbands. A disbanded guild stays 7 days in the world, so the scenario deletes the guild rows and **restarts the
 world container** at the end; the bots' level and guild-leave marks are put back.
+
+A second part (`GuildTacticsScenario.cs`) needs a level-5 guild with money and PvP points, so it inserts "TbotTactics"
+(A chief, 1 gold, 1000 points) and restarts the world to load it. A posts a mercenary ad, B applies and is taken (a
+welcome letter), B leaves its contract (the guild is paid back), A invites B as a mercenary and B accepts, A fires B
+(B gets its points and a letter with its pay); B joins the guild and A gives it 50 guild points; A buys a castle guard
+post from the mercenary merchant (23100) with the guild's money. The contract, treasury and mails are checked in the
+database. Then everything is removed, the bots' PvP points are restored, and the world **and the map** are restarted (the
+bought guards go with the map). 53 checks in all.
 
 ## Scenario: stress (hundreds of bots)
 

@@ -119,13 +119,14 @@ FROM TGUILDMEMBER";
     public Task<List<GuildCabinetRow>> LoadCabinetAsync(CancellationToken ct = default) => QueryAsync(
         @"SELECT dwOwnerID, dlID, dwStorageID, wItemID, bLevel, bCount, bGLevel, dwDuraMax, dwDuraCur, bRefineCur, dEndTime, bGradeEffect,
                  bMagic1, bMagic2, bMagic3, bMagic4, bMagic5, bMagic6, wValue1, wValue2, wValue3, wValue4, wValue5, wValue6,
-                 dwTime1, dwTime2, dwTime3, dwTime4, dwTime5, dwTime6
+                 dwTime1, dwTime2, dwTime3, dwTime4, dwTime5, dwTime6, bGem, wMoggItemID, bItemID
           FROM TITEMTABLE WHERE bOwnerType = 1 AND bStorageType = 1", // TOWNER_GUILD / STORAGE_CABINET
         r => new GuildCabinetRow(r.GetUIntSafe(0), r.GetInt64Safe(1), r.GetUIntSafe(2), (ushort)r.GetUIntSafe(3), r.GetByteSafe(4), r.GetByteSafe(5),
             r.GetByteSafe(6), r.GetUIntSafe(7), r.GetUIntSafe(8), r.GetByteSafe(9), ToUnix(r, 10), r.GetByteSafe(11),
             new[] { r.GetByteSafe(12), r.GetByteSafe(13), r.GetByteSafe(14), r.GetByteSafe(15), r.GetByteSafe(16), r.GetByteSafe(17) },
             new[] { (ushort)r.GetUIntSafe(18), (ushort)r.GetUIntSafe(19), (ushort)r.GetUIntSafe(20), (ushort)r.GetUIntSafe(21), (ushort)r.GetUIntSafe(22), (ushort)r.GetUIntSafe(23) },
-            new[] { r.GetUIntSafe(24), r.GetUIntSafe(25), r.GetUIntSafe(26), r.GetUIntSafe(27), r.GetUIntSafe(28), r.GetUIntSafe(29) }), ct);
+            new[] { r.GetUIntSafe(24), r.GetUIntSafe(25), r.GetUIntSafe(26), r.GetUIntSafe(27), r.GetUIntSafe(28), r.GetUIntSafe(29) },
+            r.GetByteSafe(30), (ushort)r.GetUIntSafe(31), r.GetByteSafe(32)), ct);
 
     public Task<List<GuildWantedRow>> LoadWantedAsync(CancellationToken ct = default) => QueryAsync(
         "SELECT dwGuildID, bMinLevel, bMaxLevel, dEndTime, szTitle, szText FROM TGUILDWANTEDTABLE",
