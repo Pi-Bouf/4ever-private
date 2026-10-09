@@ -264,6 +264,8 @@ BYTE CTachyonApp::MainProc()
 {
 	MSG msg;
 
+	CTachyonSession::PollAll();
+
 	if( PeekMessage( &msg, NULL, 0U, 0U, PM_REMOVE ) )
 	{
 		if( WM_QUIT == msg.message )
@@ -288,25 +290,6 @@ BYTE CTachyonApp::MainProc()
 		{
 			switch(msg.message)
 			{
-			case WM_SESSION_MSG		:
-				{
-					CTachyonSession *pSession = CTachyonSession::GetSession(msg.wParam);
-
-					if(pSession)
-					{
-						int nError = WSAGETSELECTERROR(msg.lParam);
-
-						switch(WSAGETSELECTEVENT(msg.lParam))
-						{
-						case FD_CONNECT	: pSession->OnConnect(nError); break;
-						case FD_READ	: pSession->OnReceive(nError); break;
-						case FD_CLOSE	: pSession->OnClose(nError); break;
-						}
-					}
-				}
-
-				break;
-
 			case WM_CHAR			:
 				if( msg.hwnd == TSAFE_HWND(m_pTachyonWnd) )
 				{
@@ -345,7 +328,8 @@ BYTE CTachyonApp::MainProc()
 	}
 	else if(!m_pTachyonWnd->m_bActivate)
 	{
-		WaitMessage();
+		// Wake up for a window message or after a short delay, so the sessions are still polled.
+		MsgWaitForMultipleObjects( 0, NULL, FALSE, TSESSION_IDLE_WAIT, QS_ALLINPUT);
 	
 #ifndef TEST_MODE
 		if( CWnd::GetForegroundWindow() != m_pTachyonWnd )

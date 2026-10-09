@@ -89,7 +89,6 @@ inline HANDLE TSAFE_HANDLE( const CGdiObject* pObject )
 
 #define WM_TCOMMAND													(WM_USER + 0x1000)
 #define WM_TOBJMSG													(WM_USER + 0x2000)
-#define WM_SESSION_MSG												(WM_USER + 0x3000)
 
 #define OM_ACTENDING												(0x10000000)
 #define OM_ACTENDED													(0x10000001)

@@ -17,6 +17,7 @@ CTachyonSession::CTachyonSession()
 {
 	memset( &m_target, 0x00, sizeof(SOCKADDR_IN));
 	m_sock = INVALID_SOCKET;
+	m_bConnecting = FALSE;
 
 	m_packet.ExpandIoBuffer(MAX_PACKET_SIZE);
 	m_bValid = FALSE;
@@ -50,6 +51,107 @@ void CTachyonSession::InitTachyonSession()
 void CTachyonSession::ReleaseTachyonSession()
 {
 	m_mapSESSION.clear();
+}
+
+void CTachyonSession::PollAll()
+{
+	static BOOL bPolling = FALSE;
+
+	if(bPolling)
+		return;
+	bPolling = TRUE;
+
+	// The callbacks may end, restart or start sessions: poll a snapshot of the sockets and look
+	// each one up again (a restarted session has a new socket and is polled on the next call).
+	std::vector<SOCKET> vSOCKET;
+	vSOCKET.reserve(m_mapSESSION.size());
+
+	for( MAPSESSION::iterator it = m_mapSESSION.begin(); it != m_mapSESSION.end(); ++it)
+		vSOCKET.push_back((*it).first);
+
+	for( size_t i=0; i<vSOCKET.size(); i++)
+	{
+		CTachyonSession *pSession = GetSession(vSOCKET[i]);
+
+		if(pSession)
+			pSession->Poll();
+	}
+
+	bPolling = FALSE;
+}
+
+void CTachyonSession::Poll()
+{
+	SOCKET sock = m_sock;
+
+	for( int i=0; i<TSESSION_MAX_READS; i++)
+	{
+		// A callback ended or restarted the session, or the connection failed.
+		if( m_sock != sock || sock == INVALID_SOCKET || (!m_bConnecting && !m_bValid) )
+			return;
+
+		fd_set vREAD;
+		fd_set vWRITE;
+		fd_set vERROR;
+		timeval vWAIT = { 0, 0 };
+
+		FD_ZERO(&vREAD);
+		FD_ZERO(&vWRITE);
+		FD_ZERO(&vERROR);
+
+		if(m_bConnecting)
+		{
+			FD_SET( sock, &vWRITE);
+			FD_SET( sock, &vERROR);
+		}
+		else
+			FD_SET( sock, &vREAD);
+
+		if( select( int(sock + 1), &vREAD, &vWRITE, &vERROR, &vWAIT) <= 0 )
+			return;
+
+		if(m_bConnecting)
+		{
+			// Same error codes as the FD_CONNECT event of WSAAsyncSelect.
+			int nError = 0;
+
+			if(FD_ISSET( sock, &vERROR))
+			{
+				int nLength = sizeof(int);
+
+				if( getsockopt( sock, SOL_SOCKET, SO_ERROR, (char *) &nError, &nLength) == SOCKET_ERROR || !nError )
+					nError = WSAECONNREFUSED;
+			}
+
+			m_bConnecting = FALSE;
+			OnConnect(nError);
+
+			continue;
+		}
+
+		// Readable: data, or the peer closed the connection (recv returns 0), or an error.
+		char bPEEK;
+		int nPEEK = recv( sock, &bPEEK, 1, MSG_PEEK);
+
+		if( nPEEK == 0 )
+		{
+			OnClose(0);
+			return;
+		}
+
+		if( nPEEK == SOCKET_ERROR )
+		{
+			int nError = WSAGetLastError();
+
+			if( nError != WSAEWOULDBLOCK )
+				OnClose(nError);
+
+			return;
+		}
+
+		if(!OnReceive(0))
+			return;
+	}
 }
 
 void CTachyonSession::SetOwner( CTachyonWnd *pOwner)
@@ -157,8 +259,8 @@ BYTE CTachyonSession::Start( LPCTSTR strAddr, DWORD dwPort, BYTE bType)
 	m_target.sin_addr.s_addr = inet_addr(strIP);
 	m_target.sin_port = htons((u_short) dwPort);
 
-	if( WSAAsyncSelect( m_sock, TSAFE_HWND(m_pOwner), WM_SESSION_MSG, FD_CONNECT|FD_READ|FD_CLOSE) == SOCKET_ERROR || (
-		connect( m_sock, (SOCKADDR *) &m_target, sizeof(SOCKADDR_IN)) && GetLastError() != WSAEWOULDBLOCK ))
+	// Non-blocking connect: PollAll() reports its completion through OnConnect().
+	if( connect( m_sock, (SOCKADDR *) &m_target, sizeof(SOCKADDR_IN)) && WSAGetLastError() != WSAEWOULDBLOCK )
 	{
 		closesocket(m_sock);
 		m_sock = INVALID_SOCKET;
@@ -166,6 +268,7 @@ BYTE CTachyonSession::Start( LPCTSTR strAddr, DWORD dwPort, BYTE bType)
 		return FALSE;
 	}
 
+	m_bConnecting = TRUE;
 	m_mapSESSION.insert( MAPSESSION::value_type(
 		m_sock,
 		this));
@@ -184,6 +287,7 @@ void CTachyonSession::End()
 		m_mapSESSION.erase(finder);
 
 	m_sock = INVALID_SOCKET;
+	m_bConnecting = FALSE;
 	m_bValid = FALSE;
 
 	memset( &m_target, 0x00, sizeof(SOCKADDR_IN));
