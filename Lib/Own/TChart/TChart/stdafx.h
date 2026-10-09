@@ -22,6 +22,8 @@
 using namespace std;
 
 #include <NetCode.h>
+#include <d3d9.h>
+#include "../../Engine Lib/Engine Lib/TD3DXMath.h"
 #include <d3dx9.h>
 
 #include "TChartType.h"

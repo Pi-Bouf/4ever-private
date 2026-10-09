@@ -203,6 +203,9 @@
     <ClInclude Include="TachyonRes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TD3DXMath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="TachyonInput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
