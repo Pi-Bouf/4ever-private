@@ -327,7 +327,7 @@ void CD3DDevice::ReleaseBACK()
 
 BOOL CD3DDevice::InitDevices( CWnd *pWnd)
 {
-	if( !pWnd || !pWnd->GetSafeHwnd() )
+	if( !pWnd || !TSAFE_HWND(pWnd) )
 		return FALSE;
 
 	m_pD3D = Direct3DCreate9(D3D_SDK_VERSION);
@@ -462,7 +462,7 @@ BOOL CD3DDevice::InitDevices( CWnd *pWnd)
 	hr = m_pD3D->CreateDevice(
 		iAdapter,
 		devType,
-		pWnd->GetSafeHwnd(),
+		TSAFE_HWND(pWnd),
 		dwBehavior,
 		&m_vPRESENT,
 		&m_pDevice);

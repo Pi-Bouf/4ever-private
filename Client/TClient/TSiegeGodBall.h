@@ -69,6 +69,6 @@ public :	// INLINE FUNCTION.
 
 	void						SetBallID( WORD wBallID );
 	void						SetCamp( BYTE bCamp );
-	void						SetGroundPosition( D3DXVECTOR3& vPosition );
+	void						SetGroundPosition( const D3DXVECTOR3& vPosition );
 	void						SetValid( BOOL bValid );
 };

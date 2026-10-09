@@ -120,8 +120,8 @@ CString CTTextLinker::MakeItemNetText( const CString& strFormat, const VECTORDWO
 		{
 			const CString& strLINK = pLINK->ToStr();
 			WORD vLINK[2] = {
-				strLINK.GetLength(),
-				strBODY.GetLength()};
+				(WORD) strLINK.GetLength(),
+				(WORD) strBODY.GetLength()};
 
 			if(vLINK[0])
 			{
@@ -207,8 +207,8 @@ CString CTTextLinker::MakeLinkToNetText( TEdit *pEdit, BOOL bLengthSafety, INT n
 			{
 				const CString& strLINK = pLINK->ToStr();
 				WORD vLINK[2] = {
-					strLINK.GetLength(),
-					strBody.GetLength()};
+					(WORD) strLINK.GetLength(),
+					(WORD) strBody.GetLength()};
 
 				if(vLINK[0])
 				{

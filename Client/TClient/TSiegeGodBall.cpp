@@ -222,7 +222,7 @@ void	CTGodBall::SetCamp( BYTE bCamp )
 	m_bCamp = bCamp;
 }
 
-void	CTGodBall::SetGroundPosition( D3DXVECTOR3& vPosition )
+void	CTGodBall::SetGroundPosition( const D3DXVECTOR3& vPosition )
 {
 	m_vWorld._41 = vPosition.x;
 	m_vWorld._42 = vPosition.y;

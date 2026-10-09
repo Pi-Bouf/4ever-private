@@ -278,7 +278,7 @@ BYTE CTachyonApp::MainProc()
 		}
 
 		int nHotCommand = TranslateAccelerator(
-			m_pTachyonWnd->GetSafeHwnd(),
+			TSAFE_HWND(m_pTachyonWnd),
 			m_hAccel,
 			&msg);
 
@@ -308,7 +308,7 @@ BYTE CTachyonApp::MainProc()
 				break;
 
 			case WM_CHAR			:
-				if( msg.hwnd == m_pTachyonWnd->GetSafeHwnd() )
+				if( msg.hwnd == TSAFE_HWND(m_pTachyonWnd) )
 				{
 					UINT nFlag = HIWORD(msg.lParam);
 					UINT nRep = LOWORD(msg.lParam);
@@ -326,7 +326,7 @@ BYTE CTachyonApp::MainProc()
 			case WM_IME_COMPOSITION	:
 				{
 					m_pTachyonWnd->OnImeComposition(
-						m_pTachyonWnd->GetSafeHwnd(),
+						TSAFE_HWND(m_pTachyonWnd),
 						msg.wParam,
 						msg.lParam);
 				}

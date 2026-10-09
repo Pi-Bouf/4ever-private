@@ -160,7 +160,7 @@ void CTClientTalkBox::Render( LPDIRECT3DDEVICE9 pDevice,
 		vLOCAL._41 = vCORNER[i][0];
 		vLOCAL._42 = vCORNER[i][1];
 
-		pDevice->SetTransform( D3DTS_WORLDMATRIX(i), &(vLOCAL * m_vWORLD));
+		pDevice->SetTransform( D3DTS_WORLDMATRIX(i), TTEMP((vLOCAL * m_vWORLD)));
 	}
 
 	pDevice->DrawIndexedPrimitive(

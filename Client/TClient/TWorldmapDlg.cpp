@@ -1163,9 +1163,9 @@ void CTWorldmapDlg::RenderOBJ( DWORD dwTickCount)
 
 				CString TEXT;
 				if( strTITLE.IsEmpty() )
-					TEXT = CTChart::Format( TSTR_FMT_WORLDMAP_NAME, strTITLE, strNAME);
+					TEXT = CTChart::Format( TSTR_FMT_WORLDMAP_NAME, (LPCTSTR)strTITLE, (LPCTSTR)strNAME);
 				else
-					TEXT = CTChart::Format( TSTR_FMT_WORLDMAP_TITLE, strTITLE, strNAME);
+					TEXT = CTChart::Format( TSTR_FMT_WORLDMAP_TITLE, (LPCTSTR)strTITLE, (LPCTSTR)strNAME);
 
 
 

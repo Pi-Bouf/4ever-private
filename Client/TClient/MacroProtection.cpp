@@ -20,7 +20,7 @@ MacroProtection::~MacroProtection()
 
 void MacroProtection::Update()
 {
-	std::vector<_HotkeyUsed>::iterator& itHotkeyUsed = m_vUsedHotkey.begin();
+	std::vector<_HotkeyUsed>::iterator itHotkeyUsed = m_vUsedHotkey.begin();
 	while (itHotkeyUsed != m_vUsedHotkey.end())
 	{
 		if (GetTickCount() >= itHotkeyUsed->m_dwUsedTick + 30000) {

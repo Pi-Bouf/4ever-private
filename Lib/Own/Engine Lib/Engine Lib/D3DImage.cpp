@@ -328,7 +328,7 @@ BYTE CD3DImage::LoadImageFile( LPDIRECT3DDEVICE9 pDevice,
 	hr = D3DXLoadSurfaceFromFileInMemory(
 		pImage,
 		NULL,
-		&CRect( 0, 0, info.Width, info.Height),
+		TTEMP(CRect( 0, 0, info.Width, info.Height)),
 		pResData,
 		nLength,
 		NULL,
@@ -405,10 +405,10 @@ BYTE CD3DImage::LoadImageFile( LPDIRECT3DDEVICE9 pDevice,
 		{
 			int nLocalW = CTMath::GetNearPow(info.Width - nWidth);
 			int vPoint[4][4] = {
-				{ nWidth, nHeight, 0, 0},
-				{ nWidth + nLocalW, nHeight, 1, 0},
-				{ nWidth, nHeight + nLocalH, 0, 1},
-				{ nWidth + nLocalW, nHeight + nLocalH, 1, 1}};
+				{ int(nWidth), int(nHeight), 0, 0},
+				{ int(nWidth + nLocalW), int(nHeight), 1, 0},
+				{ int(nWidth), int(nHeight + nLocalH), 0, 1},
+				{ int(nWidth + nLocalW), int(nHeight + nLocalH), 1, 1}};
 
 			LPDIRECT3DVERTEXBUFFER9 pVB = NULL;
 			LPTVERTEX pData = NULL;
@@ -494,11 +494,11 @@ BYTE CD3DImage::LoadImageFile( LPDIRECT3DDEVICE9 pDevice,
 				NULL,
 				pImage,
 				NULL,
-				&CRect(
+				TTEMP(CRect(
 				vPoint[0][0],
 				vPoint[0][1],
 				vPoint[3][0],
-				vPoint[3][1]),
+				vPoint[3][1])),
 				D3DX_FILTER_NONE,
 				NULL);
 

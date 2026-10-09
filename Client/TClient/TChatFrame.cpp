@@ -883,11 +883,11 @@ void CTChatFrame::ResetSetting()
 
 	static DWORD defPOS_Y[TCHAT_SET_COUNT] =
 	{
-		-335,
-		-335,
-		-335,
-		-335,
-		-335
+		(DWORD) -335,
+		(DWORD) -335,
+		(DWORD) -335,
+		(DWORD) -335,
+		(DWORD) -335
 	};
 
 	static DWORD defBASIS[TCHAT_SET_COUNT] =
@@ -1607,13 +1607,13 @@ CString CTChatFrame::ChatMSG( const CString& strTYPE,
 	case TCHAT_FLAG_SHOW:
 		{
 			strTYPENAME = CTChart::Format( TSTR_FMT_CHAT_INFO_HEADER,
-				strTYPE );
+				(LPCTSTR)strTYPE );
 			strTYPENAME.Remove('\n');		
 		}
 		break;
 	default:
 		{
-			strTYPENAME = CTChart::Format( TSTR_FMT_CHAT_NAME, strTYPE, strNAME);
+			strTYPENAME = CTChart::Format( TSTR_FMT_CHAT_NAME, (LPCTSTR)strTYPE, (LPCTSTR)strNAME);
 			strTYPENAME.Remove('\n');
 		}
 		break;

@@ -437,7 +437,7 @@ void CTTournamentGage::ResetTournamentINFO()
 						FALSE );
 					m_pMP[t][bOrder]->ShowComponent(TRUE);
 
-					m_pNAME[t][bOrder]->m_strText = CTChart::Format( TSTR_FMT_NAME, pTChar->m_strNAME);
+					m_pNAME[t][bOrder]->m_strText = CTChart::Format( TSTR_FMT_NAME, (LPCTSTR)pTChar->m_strNAME);
 					m_pNAME[t][bOrder]->ShowComponent(TRUE);
 
 					m_pLEVEL[t][bOrder]->m_strText = CTChart::Format( TSTR_FMT_LEVEL, pTChar->m_bLevel);

@@ -245,7 +245,7 @@ void CTRSCSDlg::ResetCORPS()
 		m_pTSQUAD->SetItemData( nIndex, 0, (DWORD) m_vTCORPS.m_vTSQUAD[i]);
 		if(pTUNIT)
 		{
-			strNAME = CTChart::Format( TSTR_FMT_SQUAD_NAME, pTUNIT->m_strNAME);
+			strNAME = CTChart::Format( TSTR_FMT_SQUAD_NAME, (LPCTSTR)pTUNIT->m_strNAME);
 			m_pTSQUADNAME[nIndex]->m_strText = strNAME;
 
 			strNAME = CTChart::LoadString( (TSTRING) dwTCMD[m_vTCORPS.m_vTSQUAD[i]->m_bTCMD]);
@@ -817,7 +817,7 @@ if(IsVisible())
 		{
 			CPoint point = rect.CenterPoint();
 
-			//SetCapture(m_pCommandHandler->GetSafeHwnd());
+			//SetCapture(TSAFE_HWND(m_pCommandHandler));
 			ShowCursor(FALSE);
 			MoveCursor(point);
 			//ClipCursor(&rect);
@@ -1648,7 +1648,7 @@ void CTRSCSDlg::OnRButtonDown( UINT nFlags, CPoint pt)
 		{
 			CPoint point = rect.CenterPoint();
 
-			//SetCapture(m_pCommandHandler->GetSafeHwnd());
+			//SetCapture(TSAFE_HWND(m_pCommandHandler));
 			ShowCursor(FALSE);
 			MoveCursor(point);
 			//ClipCursor(&rect);

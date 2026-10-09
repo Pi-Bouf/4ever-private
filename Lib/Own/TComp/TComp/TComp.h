@@ -68,6 +68,6 @@ void FinishTachyonComponent();
 
 LPIMAGESET FindSprite(DWORD id);
 CGDIFont *FindFont(DWORD id);
-CString BuildMBCSInfo( CString& strTEXT);
+CString BuildMBCSInfo( const CString& strTEXT);
 
 #endif

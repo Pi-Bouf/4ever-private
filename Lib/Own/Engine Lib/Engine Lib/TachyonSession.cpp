@@ -157,7 +157,7 @@ BYTE CTachyonSession::Start( LPCTSTR strAddr, DWORD dwPort, BYTE bType)
 	m_target.sin_addr.s_addr = inet_addr(strIP);
 	m_target.sin_port = htons((u_short) dwPort);
 
-	if( WSAAsyncSelect( m_sock, m_pOwner->GetSafeHwnd(), WM_SESSION_MSG, FD_CONNECT|FD_READ|FD_CLOSE) == SOCKET_ERROR || (
+	if( WSAAsyncSelect( m_sock, TSAFE_HWND(m_pOwner), WM_SESSION_MSG, FD_CONNECT|FD_READ|FD_CLOSE) == SOCKET_ERROR || (
 		connect( m_sock, (SOCKADDR *) &m_target, sizeof(SOCKADDR_IN)) && GetLastError() != WSAEWOULDBLOCK ))
 	{
 		closesocket(m_sock);

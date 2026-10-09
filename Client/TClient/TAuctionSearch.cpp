@@ -642,7 +642,7 @@ void	CTAuctionSearch::UpdateByComp()
 	m_pEdit[ TEDIT_NEEDLEVEL_MAX ]->m_strText = CTChart::Format( TSTR_FMT_NUMBER, pFindInfo->bMaxWearLv );
 	m_pEdit[ TEDIT_UPGRADE_MIN ]->m_strText = CTChart::Format( TSTR_FMT_NUMBER, pFindInfo->bMinPowerLv );
 	m_pEdit[ TEDIT_UPGRADE_MAX ]->m_strText = CTChart::Format( TSTR_FMT_NUMBER, pFindInfo->bMaxPowerLv );
-	m_pEdit[ TEDIT_SEARCH ]->m_strText = CTChart::Format( TSTR_FMT_NAME, m_strSearch );
+	m_pEdit[ TEDIT_SEARCH ]->m_strText = CTChart::Format( TSTR_FMT_NAME, (LPCTSTR)m_strSearch );
 }
 
 TEdit*	CTAuctionSearch::GetCurEdit()

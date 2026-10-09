@@ -465,37 +465,37 @@ void CTClientNET::ResetLight()
 
 	m_pDevice->m_pDevice->SetVertexShaderConstantF(
 		m_pDevice->m_vConstantVS[VC_MTRLAMBIENT],
-		(FLOAT *)&D3DXVECTOR4(
+		(FLOAT *)TTEMP(D3DXVECTOR4(
 			mtrl.Ambient.r,
 			mtrl.Ambient.g,
 			mtrl.Ambient.b,
-			mtrl.Ambient.a), 1);
+			mtrl.Ambient.a)), 1);
 
 	m_pDevice->m_pDevice->SetVertexShaderConstantF(
 		m_pDevice->m_vConstantVS[VC_MTRLDIFFUSE],
-		(FLOAT *)&D3DXVECTOR4(
+		(FLOAT *)TTEMP(D3DXVECTOR4(
 			mtrl.Diffuse.r,
 			mtrl.Diffuse.g,
 			mtrl.Diffuse.b,
-			mtrl.Diffuse.a), 1);
+			mtrl.Diffuse.a)), 1);
 
 	m_pDevice->m_pDevice->SetVertexShaderConstantF(
 		m_pDevice->m_vConstantVS[VC_AMBIENT],
-		(FLOAT *)&D3DXVECTOR4(
+		(FLOAT *)TTEMP(D3DXVECTOR4(
 			1.0f,
 			1.0f,
 			1.0f,
-			1.0f), 1);
+			1.0f)), 1);
 
 	m_pDevice->m_pDevice->SetVertexShaderConstantF(
 		m_pDevice->m_vConstantVS[VC_CAMPOS],
-		(FLOAT *)&D3DXVECTOR4(
+		(FLOAT *)TTEMP(D3DXVECTOR4(
 			m_vCamera.m_vPosition.x,
 			m_vCamera.m_vPosition.y,
 			m_vCamera.m_vPosition.z,
-			0.0f), 1);
+			0.0f)), 1);
 
-	D3DXMatrixTranspose((LPD3DXMATRIX)vCONST, &(m_vCamera.m_matView * m_vCamera.m_matProjection));
+	D3DXMatrixTranspose((LPD3DXMATRIX)vCONST, TTEMP((m_vCamera.m_matView * m_vCamera.m_matProjection)));
 	m_pDevice->m_pDevice->SetVertexShaderConstantF(
 		m_pDevice->m_vConstantVS[VC_PROJ],
 		vCONST, 4);
@@ -506,11 +506,11 @@ void CTClientNET::ResetLight()
 
 	for (int i = 0; i<TLIGHT_COUNT; i++)
 	{
-		memcpy(&vCONST[i * 4], &D3DXVECTOR4(
+		memcpy(&vCONST[i * 4], TTEMP(D3DXVECTOR4(
 			m_pLIGHT[i].m_Light.Ambient.r,
 			m_pLIGHT[i].m_Light.Ambient.g,
 			m_pLIGHT[i].m_Light.Ambient.b,
-			m_pLIGHT[i].m_Light.Ambient.a),
+			m_pLIGHT[i].m_Light.Ambient.a)),
 			4 * sizeof(FLOAT));
 	}
 
@@ -520,11 +520,11 @@ void CTClientNET::ResetLight()
 
 	for (int i = 0; i<TLIGHT_COUNT; i++)
 	{
-		memcpy(&vCONST[i * 4], &D3DXVECTOR4(
+		memcpy(&vCONST[i * 4], TTEMP(D3DXVECTOR4(
 			m_pLIGHT[i].m_Light.Diffuse.r,
 			m_pLIGHT[i].m_Light.Diffuse.g,
 			m_pLIGHT[i].m_Light.Diffuse.b,
-			m_pLIGHT[i].m_Light.Diffuse.a),
+			m_pLIGHT[i].m_Light.Diffuse.a)),
 			4 * sizeof(FLOAT));
 	}
 
@@ -534,11 +534,11 @@ void CTClientNET::ResetLight()
 
 	for (int i = 0; i<TLIGHT_COUNT; i++)
 	{
-		memcpy(&vCONST[i * 4], &D3DXVECTOR4(
+		memcpy(&vCONST[i * 4], TTEMP(D3DXVECTOR4(
 			m_pLIGHT[i].m_Light.Direction.x,
 			m_pLIGHT[i].m_Light.Direction.y,
 			m_pLIGHT[i].m_Light.Direction.z,
-			1.0f),
+			1.0f)),
 			4 * sizeof(FLOAT));
 	}
 
@@ -555,11 +555,11 @@ void CTClientNET::ResetDEFFOG()
 	{
 		m_pDevice->m_pDevice->SetVertexShaderConstantF(
 			m_pDevice->m_vConstantVS[VC_AMBIENT],
-			(FLOAT *)&D3DXVECTOR4(
+			(FLOAT *)TTEMP(D3DXVECTOR4(
 				0.0f,
 				0.0f,
 				0.0f,
-				1.0f), 1);
+				1.0f)), 1);
 	}
 }
 
@@ -571,11 +571,11 @@ void CTClientNET::ResetFOG()
 	{
 		m_pDevice->m_pDevice->SetVertexShaderConstantF(
 			m_pDevice->m_vConstantVS[VC_AMBIENT],
-			(FLOAT *)&D3DXVECTOR4(
+			(FLOAT *)TTEMP(D3DXVECTOR4(
 				0.0f,
 				0.0f,
 				0.0f,
-				1.0f), 1);
+				1.0f)), 1);
 	}
 
 	return;
@@ -1029,13 +1029,14 @@ HRESULT CTClientNET::Render(DWORD dwTickCount)
 	{
 		CPoint pt;
 		::GetCursorPos(&pt);
-		::ScreenToClient(AfxGetMainWnd()->GetSafeHwnd(), &pt);
+		::ScreenToClient(TSAFE_HWND(AfxGetMainWnd()), &pt);
 
 		TImageList* pList = (TImageList*)GetCurrentFrame()->FindKid(ID_CTRLINST_CLASS0);
 		if (pList->HitTest(pt))
 		{
 			CTDetailNameDlg* pDLG = static_cast<CTDetailNameDlg*>(m_pHost->m_MainGame.GetFrame(TFRAME_DETAIL_NAME));
-			pDLG->ResetText(CTChart::LoadString((TSTRING)CTClientGame::m_vTCLASSSTR[pList->GetCurImage()]));
+			CString strCLASS = CTChart::LoadString((TSTRING)CTClientGame::m_vTCLASSSTR[pList->GetCurImage()]);
+			pDLG->ResetText(strCLASS);
 			pDLG->SetPos(pt);
 			pDLG->ShowComponent(TRUE);
 			pDLG->Render(dwTickCount);
@@ -1153,7 +1154,10 @@ void CTClientNET::UpdateRACE()
 	pRACEIMG->SetCurImage(m_pHost->m_vNEWTCHAR.m_bRace);
 
 	if (m_pRACETEXTPOPUP)
-		m_pRACETEXTPOPUP->SetText(CTChart::GetTRACEINFO(m_pHost->m_vNEWTCHAR.m_bRace));
+	{
+		CString strINFO = CTChart::GetTRACEINFO(m_pHost->m_vNEWTCHAR.m_bRace);
+		m_pRACETEXTPOPUP->SetText(strINFO);
+	}
 }
 
 void CTClientNET::SwitchFocus(TComponent *pCandidate)
@@ -1349,7 +1353,7 @@ void CTClientNET::OnLButtonDown(UINT nFlags, CPoint pt)
 				m_pDevice->m_option.m_dwScreenX / 2,
 				m_pDevice->m_option.m_dwScreenY / 2);
 
-			ClientToScreen(AfxGetMainWnd()->GetSafeHwnd(), &point);
+			ClientToScreen(TSAFE_HWND(AfxGetMainWnd()), &point);
 			SetCursorPos(point.x, point.y);
 			m_bROT = TRUE;
 			m_fCharROT = 0.0f;
@@ -1462,7 +1466,7 @@ void CTClientNET::OnMouseMove(UINT nFlags, CPoint pt)
 		m_fROT += (D3DX_PI / 180.0f * fDelta) / 3.5f;
 		m_fROT = RealignRot(m_fROT);
 
-		ClientToScreen(AfxGetMainWnd()->GetSafeHwnd(), &point);
+		ClientToScreen(TSAFE_HWND(AfxGetMainWnd()), &point);
 		SetCursorPos(point.x, point.y);
 
 		if (m_nModelCount != 0)
@@ -1503,7 +1507,7 @@ void CTClientNET::OnMouseMove(UINT nFlags, CPoint pt)
 		m_fCharROT += (D3DX_PI / 180.0f * fDelta) / 10.0f;
 		m_fCharROT = RealignRot(m_fCharROT);
 
-		ClientToScreen(AfxGetMainWnd()->GetSafeHwnd(), &point);
+		ClientToScreen(TSAFE_HWND(AfxGetMainWnd()), &point);
 		SetCursorPos(point.x, point.y);
 	}
 
@@ -1560,7 +1564,7 @@ void CTClientNET::OnRButtonDown(UINT nFlags, CPoint pt)
 				m_pDevice->m_option.m_dwScreenX / 2,
 				m_pDevice->m_option.m_dwScreenY / 2);
 
-			ClientToScreen(AfxGetMainWnd()->GetSafeHwnd(), &point);
+			ClientToScreen(TSAFE_HWND(AfxGetMainWnd()), &point);
 			SetCursorPos(point.x, point.y);
 			m_bCharROT = TRUE;
 		}
@@ -2267,7 +2271,7 @@ void CTClientNET::InitGroupUI()
 
 		CString strFMT;
 		strFMT.Format("   %s [%d]",
-			pGroup->m_strNAME,
+			(LPCTSTR)pGroup->m_strNAME,
 			pGroup->m_bCharCnt);
 
 		int nIndex = pLIST->AddItem(strFMT, (DWORD)pGroup);

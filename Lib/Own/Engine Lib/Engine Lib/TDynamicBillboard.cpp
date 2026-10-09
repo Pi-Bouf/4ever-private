@@ -143,7 +143,7 @@ BYTE CTDynamicBillboard::CanUSE( CD3DDevice *pDevice,
 	if( !pDevice || !pCamera || !pTPOS || fRadius == 0.0f || fHeight == 0.0f )
 		return FALSE;
 
-	FLOAT fDIST = D3DXVec3Length(&(pCamera->m_vPosition - (*pTPOS)));
+	FLOAT fDIST = D3DXVec3Length(TTEMP((pCamera->m_vPosition - (*pTPOS))));
 	if( fDIST < m_fMinDIST )
 		return FALSE;
 

@@ -1469,10 +1469,10 @@ FLOAT CTClientMAP::GetHeight( CTClientObjBase *pOBJ,
 		{
 			FLOAT fHeight = pTCOLL->GetHeight(
 				pOBJ,
-				&D3DXVECTOR3(
+				TTEMP(D3DXVECTOR3(
 				pPOINT->x,
 				fPrevH,
-				pPOINT->z));
+				pPOINT->z)));
 
 			if( fResult < fHeight && fHeight <= fPrevH )
 			{
@@ -1560,14 +1560,14 @@ FLOAT CTClientMAP::GetWaterHeight( CTClientObjBase *pWATER,
 							&vPoint[0],
 							&vPoint[1],
 							&vPoint[2],
-							&D3DXVECTOR3(
+							TTEMP(D3DXVECTOR3(
 							fPosX,
 							-TMIN_HEIGHT,
-							fPosZ),
-							&D3DXVECTOR3(
+							fPosZ)),
+							TTEMP(D3DXVECTOR3(
 							0.0f,
 							-1.0f,
-							0.0f),
+							0.0f)),
 							&fU, &fV,
 							&fDist))
 							return -TMIN_HEIGHT - fDist;
@@ -1799,20 +1799,20 @@ void CTClientMAP::ResetTRSCS( LPDIRECT3DTEXTURE9 pTBACKTEX,
 
 	for( itTENEMY = pTRSCS->m_vTCORPS.m_mapFIXRECALL.begin(); itTENEMY != pTRSCS->m_vTCORPS.m_mapFIXRECALL.end(); itTENEMY++)
 		if( (*itTENEMY).second->m_wMapID == pTRSCS->m_wMapID )
-			ResetTRSCSOBJ( pTRSCS, &pTRSCS->GetEnemyPOS((*itTENEMY).second));
+			ResetTRSCSOBJ( pTRSCS, TTEMP(pTRSCS->GetEnemyPOS((*itTENEMY).second)));
 
 	for( itTENEMY = pTRSCS->m_vTCORPS.m_mapRECALL.begin(); itTENEMY != pTRSCS->m_vTCORPS.m_mapRECALL.end(); itTENEMY++)
 		if( (*itTENEMY).second->m_wMapID == pTRSCS->m_wMapID )
-			ResetTRSCSOBJ( pTRSCS, &pTRSCS->GetEnemyPOS((*itTENEMY).second));
+			ResetTRSCSOBJ( pTRSCS, TTEMP(pTRSCS->GetEnemyPOS((*itTENEMY).second)));
 
 	for( itTENEMY = pTRSCS->m_vTCORPS.m_mapMON.begin(); itTENEMY != pTRSCS->m_vTCORPS.m_mapMON.end(); itTENEMY++)
 		if( (*itTENEMY).second->m_wMapID == pTRSCS->m_wMapID )
-			ResetTRSCSOBJ( pTRSCS, &pTRSCS->GetEnemyPOS((*itTENEMY).second));
+			ResetTRSCSOBJ( pTRSCS, TTEMP(pTRSCS->GetEnemyPOS((*itTENEMY).second)));
 	pTRSCS->m_pDevice->m_pDevice->SetTexture( 0, m_pTPC ? m_pTPC->GetTexture() : NULL);
 
 	for( itTENEMY = pTRSCS->m_vTCORPS.m_mapPC.begin(); itTENEMY != pTRSCS->m_vTCORPS.m_mapPC.end(); itTENEMY++)
 		if( (*itTENEMY).second->m_wMapID == pTRSCS->m_wMapID )
-			ResetTRSCSOBJ( pTRSCS, &pTRSCS->GetEnemyPOS((*itTENEMY).second));
+			ResetTRSCSOBJ( pTRSCS, TTEMP(pTRSCS->GetEnemyPOS((*itTENEMY).second)));
 
 	pTRSCS->m_pDevice->m_pDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 	pTRSCS->m_pDevice->m_pDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_INVSRCCOLOR);
@@ -1881,12 +1881,12 @@ void CTClientMAP::ResetTRSCS( LPDIRECT3DTEXTURE9 pTBACKTEX,
 			pTRSCS->m_pDevice,
 			pTRSCS->m_wMapID,
 			m_pTGodTower[bCAMP] ? m_pTGodTower[bCAMP]->GetTexture() : NULL,
-			&D3DXVECTOR2(
+			TTEMP(D3DXVECTOR2(
 			pTRSCS->m_vTCENTER.x,
-			pTRSCS->m_vTCENTER.y),
-			&D3DXVECTOR2(
+			pTRSCS->m_vTCENTER.y)),
+			TTEMP(D3DXVECTOR2(
 			(*itor_tower).second->GetPositionX(),
-			(*itor_tower).second->GetPositionZ() ),
+			(*itor_tower).second->GetPositionZ() )),
 			m_fTSCALE );
 
 		++itor_tower;
@@ -1908,12 +1908,12 @@ void CTClientMAP::ResetTRSCS( LPDIRECT3DTEXTURE9 pTBACKTEX,
 				pTRSCS->m_pDevice,
 				pTRSCS->m_wMapID,
 				pTexBall ? pTexBall->GetTexture() : NULL,
-				&D3DXVECTOR2(
+				TTEMP(D3DXVECTOR2(
 				pTRSCS->m_vTCENTER.x,
-				pTRSCS->m_vTCENTER.y),
-				&D3DXVECTOR2(
+				pTRSCS->m_vTCENTER.y)),
+				TTEMP(D3DXVECTOR2(
 				vPosBall.x,
-				vPosBall.z),
+				vPosBall.z)),
 				m_fTSCALE);
 		}
 
@@ -2059,9 +2059,9 @@ void CTClientMAP::ResetTRSCSUNIT( CTRSCSDlg *pTRSCS,
 	pTRSCS->m_pDevice->m_pDevice->SetTexture( 0, pTCMD ? pTCMD->GetTexture() : NULL);
 	ResetTRSCSOBJ(
 		pTRSCS,
-		&D3DXVECTOR2(
+		TTEMP(D3DXVECTOR2(
 		vTLINE[1].m_fPosX,
-		vTLINE[1].m_fPosZ));
+		vTLINE[1].m_fPosZ)));
 }
 
 void CTClientMAP::ResetTRSCSALARM( CTRSCSDlg *pTRSCS)
@@ -2321,12 +2321,12 @@ void CTClientMAP::ResetTMINIMAP( LPDIRECT3DTEXTURE9 pTARGET,
 			wMAPID,
 			m_pTDEADDIR ? m_pTDEADDIR->GetTexture() : NULL,
 			m_pTDEAD ? m_pTDEAD->GetTexture() : NULL,
-			&D3DXVECTOR2(
+			TTEMP(D3DXVECTOR2(
 			pHost->GetPositionX(),
-			pHost->GetPositionZ()),
-			&D3DXVECTOR2(
+			pHost->GetPositionZ())),
+			TTEMP(D3DXVECTOR2(
 			pHost->m_vTDEAD.x,
-			pHost->m_vTDEAD.z),
+			pHost->m_vTDEAD.z)),
 			m_fTSCALE);
 	}
 	else if( pTMON && pHost->m_wPursuit != 0xFFFF )
@@ -2360,12 +2360,12 @@ void CTClientMAP::ResetTMINIMAP( LPDIRECT3DTEXTURE9 pTARGET,
 							wMAPID,
 							m_pTPURSUITDIR ? m_pTPURSUITDIR->GetTexture() : NULL,
 							m_pTMON ? m_pTMON->GetTexture() : NULL,
-							&D3DXVECTOR2(
+							TTEMP(D3DXVECTOR2(
 							pHost->GetPositionX(),
-							pHost->GetPositionZ()),
-							&D3DXVECTOR2(
+							pHost->GetPositionZ())),
+							TTEMP(D3DXVECTOR2(
 							(*itTMON).second->GetPositionX(),
-							(*itTMON).second->GetPositionZ()),
+							(*itTMON).second->GetPositionZ())),
 							m_fTSCALE);
 					}
 				}
@@ -2400,12 +2400,12 @@ void CTClientMAP::ResetTMINIMAP( LPDIRECT3DTEXTURE9 pTARGET,
 							wMAPID,
 							m_pTPURSUITDIR ? m_pTPURSUITDIR->GetTexture() : NULL,
 							m_pTMON ? m_pTMON->GetTexture() : NULL,
-							&D3DXVECTOR2(
+							TTEMP(D3DXVECTOR2(
 							pHost->GetPositionX(),
-							pHost->GetPositionZ()),
-							&D3DXVECTOR2(
+							pHost->GetPositionZ())),
+							TTEMP(D3DXVECTOR2(
 							(*itTMON).second->GetPositionX(),
-							(*itTMON).second->GetPositionZ()),
+							(*itTMON).second->GetPositionZ())),
 							m_fTSCALE);
 					}
 				}
@@ -2469,12 +2469,12 @@ void CTClientMAP::ResetTMINIMAP( LPDIRECT3DTEXTURE9 pTARGET,
 				wMAPID,
 				NULL,
 				pTPOS ? pTPOS->GetTexture() : NULL,
-				&D3DXVECTOR2(
+				TTEMP(D3DXVECTOR2(
 				pHost->GetPositionX(),
-				pHost->GetPositionZ()),
-				&D3DXVECTOR2(
+				pHost->GetPositionZ())),
+				TTEMP(D3DXVECTOR2(
 				pNPC->GetPositionX(),
-				pNPC->GetPositionZ()),
+				pNPC->GetPositionZ())),
 				m_fTSCALE);
 		}
 	}
@@ -2494,9 +2494,9 @@ void CTClientMAP::ResetTMINIMAP( LPDIRECT3DTEXTURE9 pTARGET,
 				wMAPID,
 				m_pTPARTYDIR ? m_pTPARTYDIR->GetTexture() : NULL,
 				m_pTPARTY ? m_pTPARTY->GetTexture() : NULL,
-				&D3DXVECTOR2(
+				TTEMP(D3DXVECTOR2(
 				pHost->GetPositionX(),
-				pHost->GetPositionZ()),
+				pHost->GetPositionZ())),
 				&vTPOS,
 				m_fTSCALE);
 		}
@@ -2522,12 +2522,12 @@ void CTClientMAP::ResetTMINIMAP( LPDIRECT3DTEXTURE9 pTARGET,
 				wMAPID,
 				m_pTPARTYDIR ? m_pTPARTYDIR->GetTexture() : NULL,
 				m_pTPARTY ? m_pTPARTY->GetTexture() : NULL,
-				&D3DXVECTOR2(
+				TTEMP(D3DXVECTOR2(
 				pHost->GetPositionX(),
-				pHost->GetPositionZ()),
-				&D3DXVECTOR2(
+				pHost->GetPositionZ())),
+				TTEMP(D3DXVECTOR2(
 				pMate->GetPositionX(),
-				pMate->GetPositionZ()),
+				pMate->GetPositionZ())),
 				m_fTSCALE);
 		}
 
@@ -2550,12 +2550,12 @@ void CTClientMAP::ResetTMINIMAP( LPDIRECT3DTEXTURE9 pTARGET,
 				wMAPID,
 				m_pTPURSUITDIR ? m_pTPURSUITDIR->GetTexture() : NULL,
 				m_pTPC ? m_pTPC->GetTexture() : NULL,
-				&D3DXVECTOR2(
+				TTEMP(D3DXVECTOR2(
 				pHost->GetPositionX(),
-				pHost->GetPositionZ()),
-				&D3DXVECTOR2(
+				pHost->GetPositionZ())),
+				TTEMP(D3DXVECTOR2(
 				(*itPlayer).second->GetPositionX(),
-				(*itPlayer).second->GetPositionZ()),
+				(*itPlayer).second->GetPositionZ())),
 				m_fTSCALE);
 		}
 	}
@@ -2570,12 +2570,12 @@ void CTClientMAP::ResetTMINIMAP( LPDIRECT3DTEXTURE9 pTARGET,
 			pDevice,
 			wMAPID,
 			m_pTGodTower[bCAMP] ? m_pTGodTower[bCAMP]->GetTexture() : NULL,
-			&D3DXVECTOR2(
+			TTEMP(D3DXVECTOR2(
 			pHost->GetPositionX(),
-			pHost->GetPositionZ() ),
-			&D3DXVECTOR2(
+			pHost->GetPositionZ() )),
+			TTEMP(D3DXVECTOR2(
 			(*itor_tower).second->GetPositionX(),
-			(*itor_tower).second->GetPositionZ() ),
+			(*itor_tower).second->GetPositionZ() )),
 			m_fTSCALE );
 
 		++itor_tower;
@@ -2596,12 +2596,12 @@ void CTClientMAP::ResetTMINIMAP( LPDIRECT3DTEXTURE9 pTARGET,
 				pDevice,
 				wMAPID,
 				pTexBall ? pTexBall->GetTexture() : NULL,
-				&D3DXVECTOR2(
+				TTEMP(D3DXVECTOR2(
 				pHost->GetPositionX(),
-				pHost->GetPositionZ() ),
-				&D3DXVECTOR2(
+				pHost->GetPositionZ() )),
+				TTEMP(D3DXVECTOR2(
 				vPosBall.x,
-				vPosBall.z ),
+				vPosBall.z )),
 				m_fTSCALE );
 		}
 
@@ -2636,12 +2636,12 @@ void CTClientMAP::ResetTMINIMAP( LPDIRECT3DTEXTURE9 pTARGET,
 				wMAPID,
 				NULL,
 				pTPOS ? pTPOS->GetTexture() : NULL,
-				&D3DXVECTOR2(
+				TTEMP(D3DXVECTOR2(
 				pHost->GetPositionX(),
-				pHost->GetPositionZ()),
-				&D3DXVECTOR2(
+				pHost->GetPositionZ())),
+				TTEMP(D3DXVECTOR2(
 				pNPC->GetPositionX(),
-				pNPC->GetPositionZ()),
+				pNPC->GetPositionZ())),
 				m_fTSCALE);
 		}
 
@@ -2667,12 +2667,12 @@ void CTClientMAP::ResetTMINIMAP( LPDIRECT3DTEXTURE9 pTARGET,
 				wMAPID,
 				NULL,
 				pTPOS ? pTPOS->GetTexture() : NULL,
-				&D3DXVECTOR2(
+				TTEMP(D3DXVECTOR2(
 				pHost->GetPositionX(),
-				pHost->GetPositionZ()),
-				&D3DXVECTOR2(
+				pHost->GetPositionZ())),
+				TTEMP(D3DXVECTOR2(
 				pNPC->GetPositionX(),
-				pNPC->GetPositionZ()),
+				pNPC->GetPositionZ())),
 				m_fTSCALE);
 		}
 	}
@@ -3922,10 +3922,10 @@ BYTE CTClientMAP::CheckRECT( LPD3DXVECTOR3 pTSTART,
 			&vTPLANE,
 			&vTPOINT[i],
 			&vTPOINT[(i + 1) % 4],
-			&D3DXVECTOR3(
+			TTEMP(D3DXVECTOR3(
 			vTPOINT[i].x,
 			1.0f,
-			vTPOINT[i].z));
+			vTPOINT[i].z)));
 
 		D3DXPlaneNormalize(
 			&vTPLANE,
@@ -4077,7 +4077,7 @@ void CTClientMAP::ResetPVS( CTClientBSP *pTBSP,
 
 			for( itTNODE = pTBSP->m_pINFO->m_mapTNODE.begin(); itTNODE != pTBSP->m_pINFO->m_mapTNODE.end(); itTNODE++)
 			{
-				FLOAT fLocal = D3DXVec3Length(&(pCamera->m_vPosition - (*(*itTNODE).second)));
+				FLOAT fLocal = D3DXVec3Length(TTEMP((pCamera->m_vPosition - (*(*itTNODE).second))));
 
 				if( dwNodeID == NODEID_NULL || fLocal < pTBSP->m_fCamDIST )
 				{
@@ -4100,9 +4100,9 @@ BYTE CTClientMAP::CanMove( CTClientObjBase *pOBJ,
 						   LPD3DXVECTOR3 pSTART,
 						   LPD3DXVECTOR3 pTARGET)
 {
-	FLOAT fRange = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fRange = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		pTARGET->x - pSTART->x,
-		pTARGET->z - pSTART->z));
+		pTARGET->z - pSTART->z)));
 
 	D3DXVECTOR3 vTARGET = (*pTARGET);
 	D3DXVECTOR3 vSTART = (*pSTART);
@@ -4155,13 +4155,13 @@ CTClientFlag *CTClientMAP::FindPath( LPMAPTPATHFLAG pTPATH,
 
 			if(pTNEXT)
 			{
-				FLOAT fLocal = D3DXVec2Length(&D3DXVECTOR2(
+				FLOAT fLocal = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 					pTNEXT->m_vPOS.x - pSTART->x,
-					pTNEXT->m_vPOS.z - pSTART->z)) + D3DXVec2Length(&D3DXVECTOR2(
+					pTNEXT->m_vPOS.z - pSTART->z))) + D3DXVec2Length(TTEMP(D3DXVECTOR2(
 					pTNEXT->m_vPOS.x - pTARGET->x,
-					pTNEXT->m_vPOS.z - pTARGET->z)) + D3DXVec2Length(&D3DXVECTOR2(
+					pTNEXT->m_vPOS.z - pTARGET->z))) + D3DXVec2Length(TTEMP(D3DXVECTOR2(
 					pTNEXT->m_vPOS.x - pTFLAG->m_vPOS.x,
-					pTNEXT->m_vPOS.z - pTFLAG->m_vPOS.z));
+					pTNEXT->m_vPOS.z - pTFLAG->m_vPOS.z)));
 
 				if( !pTRESULT || fLocal < fDIST )
 				{
@@ -4191,7 +4191,7 @@ D3DXVECTOR3 CTClientMAP::GetTargetPoint( CTClientObjBase *pOBJ,
 
 	for( int i=0; i<INT(m_vTPATH.size()); i++)
 	{
-		FLOAT fLocal = D3DXVec3Length(&(m_vTPATH[i]->m_vPOS - (*pTARGET)));
+		FLOAT fLocal = D3DXVec3Length(TTEMP((m_vTPATH[i]->m_vPOS - (*pTARGET))));
 
 		if( !pTFLAG || fLocal < fDIST )
 		{
@@ -4564,10 +4564,10 @@ BYTE CTClientMAP::HitTestHeight( FLOAT *pDIST,
 			D3DXPlaneFromPoints(
 				&vBOUND[i],
 				&vRECT[i],
-				&D3DXVECTOR3(
+				TTEMP(D3DXVECTOR3(
 				vRECT[i].x,
 				vRECT[i].y + 1.0f,
-				vRECT[i].z),
+				vRECT[i].z)),
 				&vRECT[(i + 1) % 4]);
 		}
 
@@ -4639,10 +4639,10 @@ void CTClientMAP::FixTOBJHeight( CTClientObjBase *pTOBJ)
 	FLOAT fHeight = GetHeight(
 		pTOBJ,
 		&pFLOOR,
-		&D3DXVECTOR3(
+		TTEMP(D3DXVECTOR3(
 		pTOBJ->GetPositionX(),
 		pTOBJ->GetPositionY(),
-		pTOBJ->GetPositionZ()),
+		pTOBJ->GetPositionZ())),
 		0.0f, FALSE);
 
 	pTOBJ->AddPositionY(-pTOBJ->m_fSizeY);
@@ -4675,10 +4675,10 @@ void CTClientMAP::LandTOBJ( CTClientObjBase *pTOBJ)
 	FLOAT fHeight = GetHeight(
 		pTOBJ,
 		&pFLOOR,
-		&D3DXVECTOR3(
+		TTEMP(D3DXVECTOR3(
 		pTOBJ->GetPositionX(),
 		pTOBJ->GetPositionY(),
-		pTOBJ->GetPositionZ()),
+		pTOBJ->GetPositionZ())),
 		0.0f, FALSE);
 
 	if(!pTOBJ->CanDIVE())

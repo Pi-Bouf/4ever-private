@@ -55,7 +55,7 @@ void THttpCtrl::UpdateTIMGBUF()
 		return;
 
 	CDC* pDC = m_vHTTP.GetDC();
-	HDC hdc = pDC->GetSafeHdc();
+	HDC hdc = TSAFE_HDC(pDC);
 	HDC hMemDC = CreateCompatibleDC(hdc);
 
 	/*BITMAPFILEHEADER fileHeader;
@@ -266,7 +266,7 @@ BYTE THttpCtrl::HaveCaret( CRect *pRECT)
 	if(pRECT)
 		pRECT->SetRectEmpty();
 
-	HIMC hIME = ImmGetContext(pWND->GetSafeHwnd());
+	HIMC hIME = ImmGetContext(TSAFE_HWND(pWND));
 	if(hIME)
 	{
 		WORD wBUF;
@@ -277,7 +277,7 @@ BYTE THttpCtrl::HaveCaret( CRect *pRECT)
 			&wBUF,
 			sizeof(WORD));
 
-		ImmReleaseContext( pWND->GetSafeHwnd(), hIME);
+		ImmReleaseContext( TSAFE_HWND(pWND), hIME);
 		if( nCount > 0 )
 			return TRUE;
 	}
@@ -402,7 +402,7 @@ BYTE THttpCtrl::OnMouseMSG( UINT nMSG,
 
 	CallWindowProc(
 		(WNDPROC) ((THtmlDocWnd *) pWND)->m_pWINPROC,
-		pWND->GetSafeHwnd(),
+		TSAFE_HWND(pWND),
 		nMSG,
 		nFlags,
 		MAKELONG( point.x, point.y));
@@ -561,9 +561,9 @@ BOOL THttpCtrl::OnSetCursor( CWnd* pWnd, UINT nHitTest, UINT message, CPoint pt)
 
 	CallWindowProc(
 		(WNDPROC) ((THtmlDocWnd *) pWND)->m_pWINPROC,
-		pWND->GetSafeHwnd(),
+		TSAFE_HWND(pWND),
 		WM_SETCURSOR,
-		(WPARAM) (pWnd ? pWnd->GetSafeHwnd() : NULL),
+		(WPARAM) (pWnd ? TSAFE_HWND(pWnd) : NULL),
 		(LPARAM) MAKELONG( nHitTest, message));
 
 	return TRUE;
@@ -583,7 +583,7 @@ BOOL THttpCtrl::DoMouseWheel( UINT nFlags, short zDelta, CPoint pt)
 	pMAIN->ClientToScreen(&pt);
 	CallWindowProc(
 		(WNDPROC) ((THtmlDocWnd *) pWND)->m_pWINPROC,
-		pWND->GetSafeHwnd(),
+		TSAFE_HWND(pWND),
 		WM_MOUSEWHEEL,
 		(WPARAM) MAKELONG( nFlags, zDelta),
 		MAKELONG( pt.x, pt.y));

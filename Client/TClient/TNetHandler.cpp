@@ -124,17 +124,17 @@ int CTClientWnd::OnCS_LOGIN_ACK( CTachyonSession *pSession, CPacket *pPacket)
 				if(!bEternal)
 				{
 					if(cTime.GetDays() != 0)
-						strMessage.Format("Your Account has been suspended.\n Reason: %s\n Duration: %d days", strReason, cTime.GetDays());
+						strMessage.Format("Your Account has been suspended.\n Reason: %s\n Duration: %d days", (LPCTSTR)strReason, cTime.GetDays());
 					else
 					{
 						if(cTime.GetHours() != 0)
-							strMessage.Format("Your Account has been suspended.\n Reason: %s\n Time Left: %d hours and %d minutes", strReason, cTime.GetHours(), cTime.GetMinutes());
+							strMessage.Format("Your Account has been suspended.\n Reason: %s\n Time Left: %d hours and %d minutes", (LPCTSTR)strReason, cTime.GetHours(), cTime.GetMinutes());
 						else
-							strMessage.Format("Your Account has been suspended.\n Reason: %s\n Time Left: %d minutes", strReason, cTime.GetMinutes());
+							strMessage.Format("Your Account has been suspended.\n Reason: %s\n Time Left: %d minutes", (LPCTSTR)strReason, cTime.GetMinutes());
 					}
 				}
 				else
-					strMessage.Format("Your Account has been permanently banned.\n Reason: %s", strReason);
+					strMessage.Format("Your Account has been permanently banned.\n Reason: %s", (LPCTSTR)strReason);
 
 				DWORD dwFrameID = ID_FRAME_LOBBY_1BTN_MSGBOX;
 				DWORD dwYesID = GM_CLOSE_MSGBOX;

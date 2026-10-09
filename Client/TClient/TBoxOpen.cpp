@@ -64,7 +64,7 @@ void CTBoxOpenDlg::SetSession(WORD m_wBoxID, BYTE m_bInvenID, BYTE m_bSlotID)
 	m_bShowBox = TRUE;
 	m_bShowList = TRUE;
 	LPTITEM pITEM = CTChart::FindTITEMTEMP(m_wBoxID);
-	LPTITEMVISUAL pITEMV;
+	LPTITEMVISUAL pITEMV = NULL;
 	if(pITEM)
 		pITEMV = CTChart::FindTITEMVISUAL(pITEM->m_wVisual[0]);
 	if(pITEMV)
@@ -150,7 +150,7 @@ void CTBoxOpenDlg::SetReward(WORD m_wItemID, BYTE bCount, CString strCustom)
 	if(strCustom == NAME_NULL)
 	{
 		LPTITEM pITEM = CTChart::FindTITEMTEMP(m_wItemID);
-		LPTITEMVISUAL pITEMV;
+		LPTITEMVISUAL pITEMV = NULL;
 		if(pITEM)
 			pITEMV = CTChart::FindTITEMVISUAL(pITEM->m_wVisual[0]);
 		if(pITEMV)

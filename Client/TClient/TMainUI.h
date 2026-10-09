@@ -56,7 +56,7 @@ public:
 
 public:
 	void ResetCashMenu();
-	void ResetChapterMSG( CString& strTEXT);
+	void ResetChapterMSG( const CString& strTEXT);
 	void ResetRegionMSG( CString& strTEXT);
 	
 	void ResetPositionMsg( CString& strTEXT);

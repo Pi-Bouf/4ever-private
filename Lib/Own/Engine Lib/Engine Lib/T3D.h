@@ -37,6 +37,32 @@
 using namespace Gdiplus;
 using namespace std;
 
+// Address of a temporary, valid until the end of the full expression: TTEMP(D3DXVECTOR3(...)).
+// Replaces the MSVC-only &D3DXVECTOR3(...), which standard C++ (clang, gcc) rejects.
+template< class T >
+inline T* TTEMP( T&& vTEMP )
+{
+	return &vTEMP;
+}
+
+// MFC's GetSafeHwnd()/GetSafeHdc()/GetSafeHandle() return NULL by testing this == NULL. Standard
+// C++ says this is never NULL, so clang removes that test and p->GetSafeHwnd() crashes on a NULL
+// p (MSVC keeps it). These test the pointer instead: use them whenever the pointer may be NULL.
+inline HWND TSAFE_HWND( const CWnd* pWnd )
+{
+	return pWnd ? pWnd->m_hWnd : NULL;
+}
+
+inline HDC TSAFE_HDC( const CDC* pDC )
+{
+	return pDC ? pDC->m_hDC : NULL;
+}
+
+inline HANDLE TSAFE_HANDLE( const CGdiObject* pObject )
+{
+	return pObject ? (HANDLE) pObject->m_hObject : NULL;
+}
+
 //#define HEBA
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -260,7 +286,7 @@ typedef enum TDBB_LEVEL
 
 typedef union __HUFF_ELEMENT
 {
-	int m_nDATA;
+	DWORD m_dwDATA;		// unsigned: the Huffman tables are written as 0xFF000003-style constants
 	struct
 	{
 		BYTE m_bSIGN;
@@ -701,17 +727,17 @@ struct tagCOMMAND
 	DWORD m_dwID;
 	DWORD m_dwParam;
 
-	struct tagCOMMAND()
+	tagCOMMAND()
 		: m_dwID(0),
 		m_dwParam(0)
 	{}
 
-	struct tagCOMMAND( DWORD dwID )
+	tagCOMMAND( DWORD dwID )
 		: m_dwID(dwID),
 		m_dwParam(0)
 	{}
 
-	struct tagCOMMAND( DWORD dwID, DWORD dwPARAM)
+	tagCOMMAND( DWORD dwID, DWORD dwPARAM)
 		: m_dwID(dwID),
 		m_dwParam(dwPARAM)
 	{}
@@ -2730,7 +2756,7 @@ struct tagTPROTECTED_MODULE
 		m_strModuleName.Empty();
 	};
 
-	LPTPROTECTED_PROC AddProc( CString& strNAME)
+	LPTPROTECTED_PROC AddProc( const CString& strNAME)
 	{
 		LPTPROTECTED_PROC pTPROC = new TPROTECTED_PROC();
 

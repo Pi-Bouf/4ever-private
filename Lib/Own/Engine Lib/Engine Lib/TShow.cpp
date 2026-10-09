@@ -181,7 +181,7 @@ BYTE CTShow::SetPos( LONGLONG nPos)
 		return FALSE;
 
 	if(m_pWnd)
-		UpdateWindow(m_pWnd->GetSafeHwnd());
+		UpdateWindow(TSAFE_HWND(m_pWnd));
 
 	return TRUE;
 }
@@ -224,7 +224,7 @@ BYTE CTShow::Toggle()
 	if( nMode == OAFALSE )
 	{
 		m_pVW->get_MessageDrain((OAHWND *) &hDrain);
-		m_pVW->put_MessageDrain((OAHWND) m_pWnd->GetSafeHwnd());
+		m_pVW->put_MessageDrain((OAHWND) TSAFE_HWND(m_pWnd));
 
 		nMode = OATRUE;
 		if(FAILED(m_pVW->put_FullScreenMode(nMode)))
@@ -240,7 +240,7 @@ BYTE CTShow::Toggle()
 		m_pVW->put_MessageDrain((OAHWND) hDrain);
 		m_pVW->SetWindowForeground(-1);
 
-		UpdateWindow(m_pWnd->GetSafeHwnd());
+		UpdateWindow(TSAFE_HWND(m_pWnd));
 	}
 
 	return TRUE;
@@ -273,17 +273,17 @@ BYTE CTShow::Play()
 
 	if(m_pWnd)
 	{
-		m_pVW->put_MessageDrain((OAHWND) m_pWnd->GetSafeHwnd());
+		m_pVW->put_MessageDrain((OAHWND) TSAFE_HWND(m_pWnd));
 		m_pVW->put_WindowStyle(WS_CHILD);
 
-		m_pVW->put_Owner((OAHWND) m_pWnd->GetSafeHwnd());
+		m_pVW->put_Owner((OAHWND) TSAFE_HWND(m_pWnd));
 		m_pVW->put_Visible(OATRUE);
 
-		UpdateWindow(m_pWnd->GetSafeHwnd());
+		UpdateWindow(TSAFE_HWND(m_pWnd));
 	}
 
 	if(m_pHost)
-		m_pME->SetNotifyWindow( (OAHWND) m_pHost->GetSafeHwnd(), m_dwMessage, (LONG_PTR) m_pME);
+		m_pME->SetNotifyWindow( (OAHWND) TSAFE_HWND(m_pHost), m_dwMessage, (LONG_PTR) m_pME);
 	ResetVolume();
 
 	if(FAILED(m_pMC->Run()))
@@ -312,7 +312,7 @@ BYTE CTShow::Stop()
 	m_pMC->StopWhenReady();
 
 	if(m_pWnd)
-		UpdateWindow(m_pWnd->GetSafeHwnd());
+		UpdateWindow(TSAFE_HWND(m_pWnd));
 
 	return TRUE;
 }

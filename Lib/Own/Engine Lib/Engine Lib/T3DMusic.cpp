@@ -4054,7 +4054,7 @@ void CT3DMusic::Huffman( CTBitStream *pSTREAM,
 			while(!pHUFF[nVALUE + 1].m_vElement.m_bPURGE)
 			{
 				pSTREAM->SeekBITs(pHUFF[0].m_vElement.m_bSIGN);
-				pHUFF += pHUFF[nVALUE + 1].m_nDATA;
+				pHUFF += (int) pHUFF[nVALUE + 1].m_dwDATA;
 				nVALUE = pSTREAM->ReadBITs(pHUFF[0].m_vElement.m_bSIGN);
 			}
 
@@ -4110,7 +4110,7 @@ void CT3DMusic::Huffman( CTBitStream *pSTREAM,
 			while(!pHUFF[nVALUE + 1].m_vElement.m_bPURGE)
 			{
 				pSTREAM->SeekBITs(pHUFF[0].m_vElement.m_bSIGN);
-				pHUFF += pHUFF[nVALUE + 1].m_nDATA;
+				pHUFF += (int) pHUFF[nVALUE + 1].m_dwDATA;
 				nVALUE = pSTREAM->ReadBITs(pHUFF[0].m_vElement.m_bSIGN);
 			}
 

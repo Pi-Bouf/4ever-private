@@ -248,7 +248,7 @@ void CTSkillDlg::OnLButtonDown(UINT nFlags, CPoint pt)
 
 						CString strMSG;
 						LPTSKILL pTSKILL = itr->second;
-						strMSG = CTChart::Format( TSTR_WARN_SKILLINIT_ONE, pTSKILL->m_strNAME);
+						strMSG = CTChart::Format( TSTR_WARN_SKILLINIT_ONE, (LPCTSTR)pTSKILL->m_strNAME);
 
 						CTClientWnd::GetInstance()->MessageBoxYesNo(
 							strMSG,

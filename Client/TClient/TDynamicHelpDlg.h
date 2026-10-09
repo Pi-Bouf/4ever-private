@@ -23,7 +23,7 @@ public:
 	DWORD m_dwTSPEED;
 
 public:
-	void InitTEXT( CString& strTEXT);
+	void InitTEXT( const CString& strTEXT);
 	void Release();
 
 public:

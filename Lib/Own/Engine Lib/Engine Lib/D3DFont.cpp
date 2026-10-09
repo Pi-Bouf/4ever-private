@@ -140,7 +140,7 @@ void CD3DFont::MakeText( LPDIRECT3DDEVICE9 pDevice,
 	HDC hDC = CreateCompatibleDC(NULL);
 	HFONT hOLDFONT = (HFONT) SelectObject(
 		hDC,
-		m_pFont->GetSafeHandle());
+		TSAFE_HANDLE(m_pFont));
 	Font vFONT(hDC);
 
 	if(nFormat&DT_CALCRECT)
@@ -247,7 +247,7 @@ void CD3DFont::MakeText( LPDIRECT3DDEVICE9 pDevice,
 			FLOAT(m_nWidth),
 			FLOAT(m_nHeight - 1.0f)),
 			&vFORMAT,
-			&SolidBrush( Color( 0xFF, 0xFF, 0xFF)));
+			TTEMP(SolidBrush( Color( 0xFF, 0xFF, 0xFF))));
 	}
 
 	int nIndex = 0;
@@ -642,11 +642,12 @@ void CD3DFont::TextOut( LPDIRECT3DDEVICE9 pDevice,
 						BOOL bOpaque,
 						CPoint Hide)
 {
-	TextOut( pDevice, strText, CRect( nPosX, nPosY, 0, 0), DT_CALCRECT, bOpaque, Hide);
+	CRect rect( nPosX, nPosY, 0, 0);
+	TextOut( pDevice, strText, rect, DT_CALCRECT, bOpaque, Hide);
 }
 
 void CD3DFont::TextOut( LPDIRECT3DDEVICE9 pDevice,
-					    D3DXMATRIX& vWorld,
+					    const D3DXMATRIX& vWorld,
 					    CString strText,
 						FLOAT fTextHeight,
 						UINT nFormat)
@@ -660,7 +661,8 @@ void CD3DFont::TextOut( LPDIRECT3DDEVICE9 pDevice,
 	if(!pDevice)
 		return;
 
-	MakeText( pDevice, strText, CRect( 0, 0, m_nWidth, m_nHeight), DT_CALCRECT|nFormat);
+	CRect rect( 0, 0, m_nWidth, m_nHeight);
+	MakeText( pDevice, strText, rect, DT_CALCRECT|nFormat);
 	if(m_strTEXT.IsEmpty())
 		return;
 

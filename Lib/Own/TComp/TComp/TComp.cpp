@@ -163,7 +163,7 @@ LPIMAGESET FindSprite(DWORD id)
 	return NULL;
 }
 
-CString BuildMBCSInfo( CString& strTEXT)
+CString BuildMBCSInfo( const CString& strTEXT)
 {
 	CString strRESULT(_T(""));
 

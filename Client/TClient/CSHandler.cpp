@@ -1306,10 +1306,10 @@ int CTClientGame::OnCS_ENTER_ACK( CTachyonSession *pSession, CPacket *pPacket)
 	{
 		pCHAR->CalcDIR( 0, pCHAR->m_bMouseDIR, pCHAR->m_bKeyDIR);
 		pCHAR->CalcTick(
-			&D3DXVECTOR3(
+			TTEMP(D3DXVECTOR3(
 			pCHAR->GetPositionX(),
 			pCHAR->GetPositionY(),
-			pCHAR->GetPositionZ()),
+			pCHAR->GetPositionZ())),
 			m_pDevice,
 			m_pRES, 0);
 
@@ -1908,10 +1908,10 @@ int CTClientGame::OnCS_ADDMON_ACK( CTachyonSession *pSession, CPacket *pPacket)
 	{
 		pMON->CalcDIR( 0, pMON->m_bMouseDIR, pMON->m_bKeyDIR);
 		pMON->CalcTick(
-			&D3DXVECTOR3(
+			TTEMP(D3DXVECTOR3(
 			pMON->GetPositionX(),
 			pMON->GetPositionY(),
-			pMON->GetPositionZ()),
+			pMON->GetPositionZ())),
 			m_pDevice,
 			m_pRES, 0);
 
@@ -3024,7 +3024,7 @@ int CTClientGame::OnCS_DEFEND_ACK( CTachyonSession *pSession, CPacket *pPacket)
 						if( m_pMainChar == pTDEFEND )
 						{
 							if(pTATTACK)
-								strMSG = CTChart::Format( TSTR_FMT_DEFENDMA, pTATTACK->GetName(), dwDamage);
+								strMSG = CTChart::Format( TSTR_FMT_DEFENDMA, (LPCTSTR)pTATTACK->GetName(), dwDamage);
 							else
 								strMSG = CTChart::Format( TSTR_FMT_DEFENDM, dwDamage);
 
@@ -3032,26 +3032,26 @@ int CTClientGame::OnCS_DEFEND_ACK( CTachyonSession *pSession, CPacket *pPacket)
 						}
 						else if( m_pMainChar == pTATTACK ) //spinny spinny spin spin spin spin spin spin spin spin spin
 						{
-							strMSG = CTChart::Format( TSTR_FMT_ATTACK, pTDEFEND->GetName(), dwDamage);
+							strMSG = CTChart::Format( TSTR_FMT_ATTACK, (LPCTSTR)pTDEFEND->GetName(), dwDamage);
 							dwCLR = TCOLOR_ATTACK;
 						}
 						else if(m_pMainChar->IsAlliance(pTDEFEND))
 						{
 							if(pTATTACK)
-								strMSG = CTChart::Format( TSTR_FMT_DEFENDA, pTATTACK->GetName(), pTDEFEND->GetName(), dwDamage);
+								strMSG = CTChart::Format( TSTR_FMT_DEFENDA, (LPCTSTR)pTATTACK->GetName(), (LPCTSTR)pTDEFEND->GetName(), dwDamage);
 							else
-								strMSG = CTChart::Format( TSTR_FMT_DEFEND, pTDEFEND->GetName(), dwDamage);
+								strMSG = CTChart::Format( TSTR_FMT_DEFEND, (LPCTSTR)pTDEFEND->GetName(), dwDamage);
 
 							dwCLR = TCOLOR_DEFEND;
 						}
 						else if(pTATTACK)
 						{
-							strMSG = CTChart::Format( TSTR_FMT_ATTACKA, pTATTACK->GetName(), pTDEFEND->GetName(), dwDamage);
+							strMSG = CTChart::Format( TSTR_FMT_ATTACKA, (LPCTSTR)pTATTACK->GetName(), (LPCTSTR)pTDEFEND->GetName(), dwDamage);
 							dwCLR = TCOLOR_ATTACK;
 						}
 						else
 						{
-							strMSG = CTChart::Format( TSTR_FMT_ATTACK, pTDEFEND->GetName(), dwDamage);
+							strMSG = CTChart::Format( TSTR_FMT_ATTACK, (LPCTSTR)pTDEFEND->GetName(), dwDamage);
 							dwCLR = TCOLOR_ATTACK;
 						}
 
@@ -3339,7 +3339,7 @@ int CTClientGame::OnCS_LEVEL_ACK( CTachyonSession *pSession, CPacket *pPacket)
 				ResetTargetINFO(FALSE);
 
 			if(bShowLevelUp)
-				strMSG = CTChart::Format( TSTR_FMT_LEVELUP, pCHAR->GetName(), pCHAR->m_bLevel);
+				strMSG = CTChart::Format( TSTR_FMT_LEVELUP, (LPCTSTR)pCHAR->GetName(), pCHAR->m_bLevel);
 		}
 
 		if( bLevel < pCHAR->m_bLevel && bShowLevelUp)
@@ -3741,7 +3741,7 @@ int CTClientGame::OnCS_DIE_ACK( CTachyonSession *pSession, CPacket *pPacket)
 				CString strTYPE;
 				CString strMSG;
 
-				strMSG = CTChart::Format( TSTR_FMT_DIE, pDIE->GetName());
+				strMSG = CTChart::Format( TSTR_FMT_DIE, (LPCTSTR)pDIE->GetName());
 				strTYPE = CTChart::LoadString( TSTR_INFO_TITLE);
 
 				m_pChatFrame->ChatSysMSG( strTYPE, m_pMainChar->GetName(), strMSG,	TCOLOR_DEAD, TCHAT_FLAG_INFO);
@@ -4365,7 +4365,7 @@ int CTClientGame::OnCS_CORPSASK_ACK( CTachyonSession *pSession, CPacket *pPacket
 		m_pSESSION->SendCS_CORPSREPLY_REQ(m_strReqNAME, ASK_BUSY);
 	else
 	{
-		strMSG = CTChart::Format( TSTR_FMT_CORPS_ASK, m_strReqNAME);
+		strMSG = CTChart::Format( TSTR_FMT_CORPS_ASK, (LPCTSTR)m_strReqNAME);
 		m_pMainWnd->MessageBoxYesNo(
 			strMSG,
 			TSTR_YES,
@@ -4392,11 +4392,11 @@ int CTClientGame::OnCS_CORPSREPLY_ACK( CTachyonSession *pSession, CPacket *pPack
 	switch(bResult)
 	{
 	case CORPS_DENY		:
-		strMSG = CTChart::Format( TSTR_FMT_CORPS_DENY, strNAME);
+		strMSG = CTChart::Format( TSTR_FMT_CORPS_DENY, (LPCTSTR)strNAME);
 		break;
 
 	case CORPS_BUSY		:
-		strMSG = CTChart::Format( TSTR_ERR_TARGET_BUSY, strNAME);
+		strMSG = CTChart::Format( TSTR_ERR_TARGET_BUSY, (LPCTSTR)strNAME);
 		break;
 
 	default				: 
@@ -4474,8 +4474,8 @@ int CTClientGame::OnCS_ITEMUPGRADE_ACK( CTachyonSession *pSession, CPacket *pPac
 
 			strCOUNTRY = CTChart::LoadString( (TSTRING) m_vTCOUNTRYSTR[m_pMainChar->m_bContryID]);
 			strJACKPOT = CTChart::Format( TSTR_FMT_UPGRADE_SUCCESS,
-				strCOUNTRY,
-				m_pMainChar->GetName(),
+				(LPCTSTR)strCOUNTRY,
+				(LPCTSTR)m_pMainChar->GetName(),
 				bGrade);
 
 			DWORD dwID = pTextLinker->NewTextLinkData(&pData);
@@ -4885,7 +4885,7 @@ int CTClientGame::OnCS_PARTYJOINASK_ACK( CTachyonSession *pSession, CPacket *pPa
 	}
 	else
 	{
-		strMSG = CTChart::Format( TSTR_FMT_PARTY_REQ, m_strReqNAME);
+		strMSG = CTChart::Format( TSTR_FMT_PARTY_REQ, (LPCTSTR)m_strReqNAME);
 		m_pMainWnd->MessageBoxYesNo(
 			strMSG,
 			TSTR_YES,
@@ -4918,14 +4918,14 @@ int CTClientGame::OnCS_PARTYADD_ACK( CTachyonSession *pSession, CPacket *pPacket
 		{
 		case PARTY_NOTCHIEF		: strMSG = CTChart::LoadString( TSTR_NOT_PARTYCHIEF); break;
 		case PARTY_NOPARTY		: strMSG = CTChart::LoadString( TSTR_NOPARTY); break;
-		case PARTY_ALREADY		: strMSG = CTChart::Format( TSTR_FMT_ALREADY_PARTY, strAckNAME); break;
-		case PARTY_WAITERS		: strMSG = CTChart::Format( TSTR_FMT_PARTY_WAITERS, strAckNAME); break;
-		case PARTY_NOUSER		: strMSG = CTChart::Format( TSTR_FMT_PARTY_NOUSER, strAckNAME); break;
-		case PARTY_NOREQUSER	: strMSG = CTChart::Format( TSTR_FMT_PARTY_NOUSER, strReqNAME); break;
-		case PARTY_DENY			: strMSG = CTChart::Format( TSTR_FMT_PARTY_DENY, strAckNAME); break;
-		case PARTY_BUSY			: strMSG = CTChart::Format( TSTR_ERR_TARGET_BUSY, strAckNAME); break;
+		case PARTY_ALREADY		: strMSG = CTChart::Format( TSTR_FMT_ALREADY_PARTY, (LPCTSTR)strAckNAME); break;
+		case PARTY_WAITERS		: strMSG = CTChart::Format( TSTR_FMT_PARTY_WAITERS, (LPCTSTR)strAckNAME); break;
+		case PARTY_NOUSER		: strMSG = CTChart::Format( TSTR_FMT_PARTY_NOUSER, (LPCTSTR)strAckNAME); break;
+		case PARTY_NOREQUSER	: strMSG = CTChart::Format( TSTR_FMT_PARTY_NOUSER, (LPCTSTR)strReqNAME); break;
+		case PARTY_DENY			: strMSG = CTChart::Format( TSTR_FMT_PARTY_DENY, (LPCTSTR)strAckNAME); break;
+		case PARTY_BUSY			: strMSG = CTChart::Format( TSTR_ERR_TARGET_BUSY, (LPCTSTR)strAckNAME); break;
 		case PARTY_FULL			: strMSG = CTChart::LoadString( TSTR_PARTY_FULL); break;
-		case PARTY_COUNTRY		: strMSG = CTChart::Format( TSTR_FMT_PARTY_COUNTRY, strAckNAME); break;
+		case PARTY_COUNTRY		: strMSG = CTChart::Format( TSTR_FMT_PARTY_COUNTRY, (LPCTSTR)strAckNAME); break;
 		}
 
 		m_pMainWnd->MessageBoxOK(
@@ -5526,7 +5526,7 @@ int CTClientGame::OnCS_NPCITEMLIST_ACK( CTachyonSession *pSession, CPacket *pPac
 							m_pMainWnd->MessageBoxYesNo(
 								CTChart::Format(
 								TSTR_FMT_NODE_TELEPORT,
-								pTITEM->m_pTPortal->m_strNAME,
+								(LPCTSTR)pTITEM->m_pTPortal->m_strNAME,
 								pTITEM->m_dwRealPrice / TRUNE_DIVIDER,
 								(pTITEM->m_dwRealPrice % TRUNE_DIVIDER) / TLUNA_DIVIDER,
 								pTITEM->m_dwRealPrice % TLUNA_DIVIDER),
@@ -7061,7 +7061,7 @@ int CTClientGame::OnCS_REVIVALASK_ACK( CTachyonSession *pSession, CPacket *pPack
 	{
 		CString strMSG;
 
-		strMSG = CTChart::Format( TSTR_FMT_REVIVAL_REQ, pTOBJ->GetName());
+		strMSG = CTChart::Format( TSTR_FMT_REVIVAL_REQ, (LPCTSTR)pTOBJ->GetName());
 		DisableUI(TFRAME_WORLDMAP);
 
 		m_pMainWnd->MessageBoxYesNo(
@@ -7101,7 +7101,7 @@ int CTClientGame::OnCS_REVIVALREPLY_ACK( CTachyonSession *pSession, CPacket *pPa
 		CString strTYPE;
 		CString strMSG;
 
-		strMSG = CTChart::Format( TSTR_FMT_REVIVAL_REJECT, pTCHAR->GetName());
+		strMSG = CTChart::Format( TSTR_FMT_REVIVAL_REJECT, (LPCTSTR)pTCHAR->GetName());
 		strTYPE = CTChart::LoadString( TSTR_INFO_TITLE);
 		m_pChatFrame->ChatSysMSG( strTYPE, m_pMainChar->GetName(), strMSG, TCOLOR_ERROR, TCHAT_FLAG_INFO);
 	}
@@ -7293,10 +7293,10 @@ int CTClientGame::OnCS_ADDSPOLECNIKMON_ACK( CTachyonSession *pSession, CPacket *
 	{
 		pTSPOLECNIK->CalcDIR( 0, pTSPOLECNIK->m_bMouseDIR, pTSPOLECNIK->m_bKeyDIR);
 		pTSPOLECNIK->CalcTick(
-			&D3DXVECTOR3(
+			TTEMP(D3DXVECTOR3(
 			pTSPOLECNIK->GetPositionX(),
 			pTSPOLECNIK->GetPositionY(),
-			pTSPOLECNIK->GetPositionZ()),
+			pTSPOLECNIK->GetPositionZ())),
 			m_pDevice,
 			m_pRES, 0);
 
@@ -7607,10 +7607,10 @@ int CTClientGame::OnCS_ADDRECALLMON_ACK( CTachyonSession *pSession, CPacket *pPa
 	{
 		pTRECALL->CalcDIR( 0, pTRECALL->m_bMouseDIR, pTRECALL->m_bKeyDIR);
 		pTRECALL->CalcTick(
-			&D3DXVECTOR3(
+			TTEMP(D3DXVECTOR3(
 			pTRECALL->GetPositionX(),
 			pTRECALL->GetPositionY(),
-			pTRECALL->GetPositionZ()),
+			pTRECALL->GetPositionZ())),
 			m_pDevice,
 			m_pRES, 0);
 
@@ -7799,10 +7799,10 @@ int CTClientGame::OnCS_ADDSELFOBJ_ACK( CTachyonSession *pSession, CPacket *pPack
 	{
 		pTRECALL->CalcDIR( 0, pTRECALL->m_bMouseDIR, pTRECALL->m_bKeyDIR);
 		pTRECALL->CalcTick(
-			&D3DXVECTOR3(
+			TTEMP(D3DXVECTOR3(
 			pTRECALL->GetPositionX(),
 			pTRECALL->GetPositionY(),
-			pTRECALL->GetPositionZ()),
+			pTRECALL->GetPositionZ())),
 			m_pDevice,
 			m_pRES, 0);
 
@@ -7942,10 +7942,10 @@ int CTClientGame::OnCS_OTHERSELF_ACK( CTachyonSession *pSession, CPacket *pPacke
 	{
 		pTFAKE->CalcDIR( 0, pTFAKE->m_bMouseDIR, pTFAKE->m_bKeyDIR);
 		pTFAKE->CalcTick(
-			&D3DXVECTOR3(
+			TTEMP(D3DXVECTOR3(
 			pTFAKE->GetPositionX(),
 			pTFAKE->GetPositionY(),
-			pTFAKE->GetPositionZ()),
+			pTFAKE->GetPositionZ())),
 			m_pDevice,
 			m_pRES, 0);
 
@@ -8921,7 +8921,7 @@ int CTClientGame::OnCS_DEALITEMASK_ACK( CTachyonSession *pSession, CPacket *pPac
 	}
 	else
 	{
-		strMSG = CTChart::Format( TSTR_FMT_TRADE_REQ, m_strReqNAME);
+		strMSG = CTChart::Format( TSTR_FMT_TRADE_REQ, (LPCTSTR)m_strReqNAME);
 		m_pMainWnd->MessageBoxYesNo(
 			strMSG,
 			TSTR_YES,
@@ -9740,9 +9740,9 @@ int CTClientGame::OnCS_POSTSEND_ACK( CTachyonSession *pSession, CPacket *pPacket
 					break;
 
 				SendCS_ITEMUSE_REQ(
-					&D3DXVECTOR2(
+					TTEMP(D3DXVECTOR2(
 					m_pMainChar->GetPositionX(),
-					m_pMainChar->GetPositionZ()),
+					m_pMainChar->GetPositionZ())),
 					pTITEM->GetTITEM()->m_wItemID,
 					pDlg->m_bInvenIDByCashItem,
 					pDlg->m_bSlotIDByCashItem,
@@ -10188,7 +10188,7 @@ int CTClientGame::OnCS_PETEFFECTCHANGE_ACK(CTachyonSession *pSession, CPacket *p
 	{
 	case EFFECT_SUCCESS:
 		{
-			strMSG.Format(TSRT_CF_SUCCESS, pPet->GetPetName());
+			strMSG.Format(TSRT_CF_SUCCESS, (LPCTSTR)pPet->GetPetName());
 			pPet->SetEffect(bEffect);
 			m_pSESSION->SendCS_PETRECALL_REQ(pPet->GetPetID());
 			pPetDlg->SetRecalling(TRUE);
@@ -10202,7 +10202,7 @@ int CTClientGame::OnCS_PETEFFECTCHANGE_ACK(CTachyonSession *pSession, CPacket *p
 		 break;
 	case EFFECT_DELETE_SUCCESS:
 		{
-			strMSG.Format(TSTR_DF_SUCCESS, pPet->GetPetName());
+			strMSG.Format(TSTR_DF_SUCCESS, (LPCTSTR)pPet->GetPetName());
 			pPet->SetEffect(0);
 
 			m_pSESSION->SendCS_PETRECALL_REQ(pPet->GetPetID());
@@ -10559,7 +10559,7 @@ int CTClientGame::OnCS_DUELINVITE_ACK(CTachyonSession *pSession, CPacket *pPacke
 		m_pDuelTarget = pInviter;
 
 		CString strMSG;
-		strMSG = CTChart::Format( TSTR_DUELINVITE_MSG, pInviter->m_strNAME);
+		strMSG = CTChart::Format( TSTR_DUELINVITE_MSG, (LPCTSTR)pInviter->m_strNAME);
 
 		m_pMainWnd->MessageBoxYesNo(
 			strMSG,
@@ -10647,7 +10647,7 @@ int CTClientGame::OnCS_DUELSTART_ACK(CTachyonSession *pSession, CPacket *pPacket
             
 			bDuelStart = TRUE;
 
-			strCHATMSG = CTChart::Format( TSTR_DUEL_START, pEnemy->m_strNAME);
+			strCHATMSG = CTChart::Format( TSTR_DUEL_START, (LPCTSTR)pEnemy->m_strNAME);
 
 			if( m_pTARGET == pEnemy )
 				((CTGaugePannel*) m_vTFRAME[TFRAME_GAUGE])->ResetHotkeyUI();				
@@ -10663,13 +10663,13 @@ int CTClientGame::OnCS_DUELSTART_ACK(CTachyonSession *pSession, CPacket *pPacket
 		{
 			CTClientChar* pEnemy = FindPC(dwEnemy);
 			if( m_pMainChar->m_dwID == dwInviter && pEnemy )
-				strBOXMSG = CTChart::Format( TSTR_DUEL_REFUSE, pEnemy->m_strNAME);
+				strBOXMSG = CTChart::Format( TSTR_DUEL_REFUSE, (LPCTSTR)pEnemy->m_strNAME);
 		}
 		else if( bResult == DUEL_BUSY )
 		{
 			CTClientChar* pEnemy = FindPC(dwEnemy);
 			if( m_pMainChar->m_dwID == dwInviter && pEnemy )
-				strBOXMSG = CTChart::Format( TSTR_ERR_TARGET_BUSY, pEnemy->m_strNAME);
+				strBOXMSG = CTChart::Format( TSTR_ERR_TARGET_BUSY, (LPCTSTR)pEnemy->m_strNAME);
 		}
 		else
 		{
@@ -10703,14 +10703,14 @@ int CTClientGame::OnCS_DUELEND_ACK(CTachyonSession *pSession, CPacket *pPacket)
 	{
 		if( dwLoser == 0 )
 		{
-			strMSG = CTChart::Format( TSTR_DUEL_DRAW, m_strDuelTargetName);
+			strMSG = CTChart::Format( TSTR_DUEL_DRAW, (LPCTSTR)m_strDuelTargetName);
 		}
 		else if( m_dwDuelTargetID == dwLoser || m_pMainChar->m_dwID == dwLoser ) 
 		{
 			if( m_dwDuelTargetID == dwLoser )
-				strMSG = CTChart::Format( TSTR_DUEL_WIN, m_strDuelTargetName);
+				strMSG = CTChart::Format( TSTR_DUEL_WIN, (LPCTSTR)m_strDuelTargetName);
 			else
-				strMSG = CTChart::Format( TSTR_DUEL_LOSE, m_strDuelTargetName);
+				strMSG = CTChart::Format( TSTR_DUEL_LOSE, (LPCTSTR)m_strDuelTargetName);
 		}
 	}
 
@@ -10862,7 +10862,7 @@ int CTClientGame::OnCS_SKILLINIT_ACK(CTachyonSession *pSession, CPacket *pPacket
 		{
 			LPTSKILL pTSKILL = CTChart::FindTSKILLTEMP(wSkillID);
 			if( pTSKILL )
-				strMSG = CTChart::Format( TSTR_SKILLINIT_ONE_SUCCESS, pTSKILL->m_strNAME);
+				strMSG = CTChart::Format( TSTR_SKILLINIT_ONE_SUCCESS, (LPCTSTR)pTSKILL->m_strNAME);
 		}
 		else
 		{
@@ -11598,7 +11598,7 @@ int CTClientGame::OnCS_GUILDCABINETLIST_ACK( CTachyonSession *pSession, CPacket 
 		EnableUI(TFRAME_GUILDCABINET);
 
 	CString strTITLE;
-	strTITLE = CTChart::Format( TSTR_GUILD_CABINET_TITLE, m_pMainChar->m_strGUILD, bMaxCnt);
+	strTITLE = CTChart::Format( TSTR_GUILD_CABINET_TITLE, (LPCTSTR)m_pMainChar->m_strGUILD, bMaxCnt);
 	pDlg->SetTitle(strTITLE);
 
 	pDlg->CompleteCabUpdate();
@@ -12102,7 +12102,7 @@ int CTClientGame::OnCS_PARTYMEMBERRECALL_ACK( CTachyonSession *pSession, CPacket
 		{
 		case IU_SUCCESS	:
 			{
-				strMSG = CTChart::Format( TSTR_IU_SUCCESS, strTarget);
+				strMSG = CTChart::Format( TSTR_IU_SUCCESS, (LPCTSTR)strTarget);
 				eType = TUISND_TYPE_INFO;
 			}
 			break;
@@ -12112,7 +12112,7 @@ int CTClientGame::OnCS_PARTYMEMBERRECALL_ACK( CTachyonSession *pSession, CPacket
 
 		case IU_DEALING			: //????AIA????A????A??
 			{
-				strMSG = CTChart::Format( TSTR_ERR_IU_DEALING, strTarget);
+				strMSG = CTChart::Format( TSTR_ERR_IU_DEALING, (LPCTSTR)strTarget);
 				eType = TUISND_TYPE_ERROR;
 			}
 			break;
@@ -12130,7 +12130,7 @@ int CTClientGame::OnCS_PARTYMEMBERRECALL_ACK( CTachyonSession *pSession, CPacket
 
 		default					:
 			{
-				strMSG = CTChart::Format( TSTR_ERR_IU_BUSY, strTarget);
+				strMSG = CTChart::Format( TSTR_ERR_IU_BUSY, (LPCTSTR)strTarget);
 				eType = TUISND_TYPE_ERROR;
 			}
 			break;
@@ -12159,7 +12159,7 @@ int CTClientGame::OnCS_PARTYMEMBERRECALL_ACK( CTachyonSession *pSession, CPacket
 
 		default					:
 			{
-				strMSG = CTChart::Format( TSTR_ERR_MOVETO, strTarget);
+				strMSG = CTChart::Format( TSTR_ERR_MOVETO, (LPCTSTR)strTarget);
 				eType = TUISND_TYPE_ERROR;
 			}
 			break;
@@ -12198,7 +12198,7 @@ int CTClientGame::OnCS_PARTYMEMBERRECALLANS_ACK( CTachyonSession *pSession, CPac
 		m_bPartyRecallAnsSlot	= bItemID;
 
 		CString strMSG;
-		strMSG = CTChart::Format( TSTR_FMT_PARTYMEMBERRECALLANS, strInviter, m_pMainChar->m_strNAME);
+		strMSG = CTChart::Format( TSTR_FMT_PARTYMEMBERRECALLANS, (LPCTSTR)strInviter, (LPCTSTR)m_pMainChar->m_strNAME);
 
 		m_pMainWnd->MessageBoxYesNo(
 			strMSG,
@@ -12677,11 +12677,11 @@ int CTClientGame::OnCS_TITLEGAIN_ACK( CTachyonSession *pSession, CPacket *pPacke
 		m_pChatFrame->ChatSysMSG(
 			CTChart::LoadString( TSTR_INFO_TITLE),
 			m_pMainChar->GetName(),
-			CTChart::Format( TSTR_TITLE_GAIN, pTitle->m_strTitle),
+			CTChart::Format( TSTR_TITLE_GAIN, (LPCTSTR)pTitle->m_strTitle),
 			TCOLOR_INFO,
 			TCHAT_FLAG_INFO);
 
-		pMainUI->ResetChapterMSG(CTChart::Format( TSTR_TITLE_GAIN, pTitle->m_strTitle));
+		pMainUI->ResetChapterMSG(CTChart::Format( TSTR_TITLE_GAIN, (LPCTSTR)pTitle->m_strTitle));
 
 
 	}
@@ -13024,7 +13024,7 @@ int CTClientGame::OnCS_SOULMATEREGREADY_ACK( CTachyonSession *pSession, CPacket 
 			CString strCOST = MakeMoneyStr(nCOST);
 
 			CString strMSG;
-			strMSG = CTChart::Format( TSTR_SOULMATEBOX_REG, strCOST);
+			strMSG = CTChart::Format( TSTR_SOULMATEBOX_REG, (LPCTSTR)strCOST);
 
 			m_pMainWnd->MessageBoxYesNo(
 				strMSG,
@@ -13123,7 +13123,7 @@ int CTClientGame::OnCS_SOULMATEEND_ACK( CTachyonSession *pSession, CPacket *pPac
 	if( bResult == SOULMATE_SUCCESS )
 	{
 		CString strMSG;
-		strMSG = CTChart::Format( TSTR_SOULMATEEND_SUCCESS, m_strSoulName);
+		strMSG = CTChart::Format( TSTR_SOULMATEEND_SUCCESS, (LPCTSTR)m_strSoulName);
 		ShowInfoChat(strMSG, TUISND_TYPE_INFO);
 
 		m_dwSoulID = 0;
@@ -13919,9 +13919,9 @@ int CTClientGame::OnCS_DURATIONEND_ACK( CTachyonSession *pSession, CPacket *pPac
 
 			CString strMSG;
 			if( bDeleted )
-				strMSG = CTChart::Format( TSTR_FMT_DURATIONDEL, pTITEM->GetTITEM()->m_strNAME);
+				strMSG = CTChart::Format( TSTR_FMT_DURATIONDEL, (LPCTSTR)pTITEM->GetTITEM()->m_strNAME);
 			else
-				strMSG = CTChart::Format( TSTR_FMT_DURATIONEND, pTITEM->GetTITEM()->m_strNAME);
+				strMSG = CTChart::Format( TSTR_FMT_DURATIONEND, (LPCTSTR)pTITEM->GetTITEM()->m_strNAME);
 
 			ShowInfoChat(strMSG, TUISND_TYPE_ERROR);
 		}
@@ -14763,7 +14763,7 @@ int CTClientGame::OnCS_SYSTEMMSG_ACK( CTachyonSession *pSession, CPacket *pPacke
 			(*pPacket)
 				>> strLocal;
 
-			strMSG = CTChart::Format( TSTR_SM_BATTLE_OPENGATE, strLocal );
+			strMSG = CTChart::Format( TSTR_SM_BATTLE_OPENGATE, (LPCTSTR)strLocal );
 			
 		}
 		break;
@@ -14784,15 +14784,15 @@ int CTClientGame::OnCS_SYSTEMMSG_ACK( CTachyonSession *pSession, CPacket *pPacke
 			if( strGuild.IsEmpty() )
 			{
 				strMSG = CTChart::Format( TSTR_SM_BATTLE_BOSSDIE_NULL,
-					strLocal,
-					CTChart::LoadString((TSTRING) m_vTCOUNTRYSTR[wCountry]) );
+					(LPCTSTR)strLocal,
+					(LPCTSTR)CTChart::LoadString((TSTRING) m_vTCOUNTRYSTR[wCountry]) );
 			}
 			else
 			{
 				strMSG = CTChart::Format( TSTR_SM_BATTLE_BOSSDIE,
-					strLocal,
-					strGuild,
-					CTChart::LoadString((TSTRING) m_vTCOUNTRYSTR[wCountry]) );
+					(LPCTSTR)strLocal,
+					(LPCTSTR)strGuild,
+					(LPCTSTR)CTChart::LoadString((TSTRING) m_vTCOUNTRYSTR[wCountry]) );
 			}
 		}
 		break;
@@ -14809,8 +14809,8 @@ int CTClientGame::OnCS_SYSTEMMSG_ACK( CTachyonSession *pSession, CPacket *pPacke
 			strFMT = CTChart::LoadString( TSTR_SM_DUAL_WIN);
 
 			strMSG.Format( strFMT,
-				strWINNER,
-				strLOSER);
+				(LPCTSTR)strWINNER,
+				(LPCTSTR)strLOSER);
 
 			m_pChatFrame->ChatSysMSG(
 				CTChatFrame::GetChatTypeString(CHAT_SHOW),
@@ -14843,7 +14843,7 @@ int CTClientGame::OnCS_SYSTEMMSG_ACK( CTachyonSession *pSession, CPacket *pPacke
 			strMSG.Format( strFMT,
 				bHOUR,
 				bMIN,
-				strTARGET,
+				(LPCTSTR)strTARGET,
 				bNumber);
 		}
 		break;
@@ -14926,8 +14926,8 @@ int CTClientGame::OnCS_SYSTEMMSG_ACK( CTachyonSession *pSession, CPacket *pPacke
 
 			if( !strGUILD.IsEmpty() )
 				strMSG = CTChart::Format( TSTR_GUILD_SM_CASTLE_END,
-					strLOCAL,
-					strGUILD );
+					(LPCTSTR)strLOCAL,
+					(LPCTSTR)strGUILD );
 		}
 		break;
 	case SM_ITEM_EXPIRE:
@@ -14947,7 +14947,7 @@ int CTClientGame::OnCS_SYSTEMMSG_ACK( CTachyonSession *pSession, CPacket *pPacke
 			if( pTItem && pTItem->GetTITEM() )
 			{
 				strMSG = CTChart::Format( TSTR_SM_ITEM_EXPIRE,
-					pTItem->GetTITEM()->m_strNAME,
+					(LPCTSTR)pTItem->GetTITEM()->m_strNAME,
 					dwSecond );
 				dwChatFlag = TCHAT_FLAG_WORLD;
 			}
@@ -15465,7 +15465,7 @@ int CTClientGame::OnCS_SYSTEMMSG_ACK( CTachyonSession *pSession, CPacket *pPacke
 
 
 			strMSG.Format( "The unified mission map has been occupied by %s",
-				CTChart::LoadString((TSTRING) CTClientGame::m_vTCOUNTRYSTR[ wCountry ]));
+				(LPCTSTR)CTChart::LoadString((TSTRING) CTClientGame::m_vTCOUNTRYSTR[ wCountry ]));
 
 
 			if( dwMapID == m_vMAP.m_wMapID &&
@@ -15716,8 +15716,8 @@ int CTClientGame::OnCS_SYSTEMMSG_ACK( CTachyonSession *pSession, CPacket *pPacke
 
 						CString strText;
 						strText = CTChart::Format( TSTR_CHALLENGE_MSG_WINNING,
-							strFMT,
-							m_pMainChar->m_strNAME,
+							(LPCTSTR)strFMT,
+							(LPCTSTR)m_pMainChar->m_strNAME,
 							bWinCount );
 
 						CString strMsg = CTTextLinker::GetInstance()->BuildNetString(CString(), strText);
@@ -15929,9 +15929,9 @@ int CTClientGame::OnCS_SYSTEMMSG_ACK( CTachyonSession *pSession, CPacket *pPacke
 			BYTE bCountry = (m_pMainChar->m_bContryID == COUNTRY_BROA ? TRUE : FALSE) ? m_pMainChar->m_bAidCountryID : m_pMainChar->m_bContryID;
 
 			if(bCountry == bWinCountry)
-				strMSG = CTChart::Format(TSTR_SKYGARDEN_WIN, CTChart::LoadString( (TSTRING)CTClientGame::m_vTCOUNTRYSTR[ bWinCountry ] ));
+				strMSG = CTChart::Format(TSTR_SKYGARDEN_WIN, (LPCTSTR)CTChart::LoadString( (TSTRING)CTClientGame::m_vTCOUNTRYSTR[ bWinCountry ] ));
 			else
-				strMSG = CTChart::Format(TSTR_SKYGARDEN_LOOSE, CTChart::LoadString( (TSTRING)CTClientGame::m_vTCOUNTRYSTR[ bLoseCountry ] ));
+				strMSG = CTChart::Format(TSTR_SKYGARDEN_LOOSE, (LPCTSTR)CTChart::LoadString( (TSTRING)CTClientGame::m_vTCOUNTRYSTR[ bLoseCountry ] ));
 
 
 			if(m_pMainChar->InSkygarden())
@@ -16912,12 +16912,12 @@ int CTClientGame::OnCS_ITEMCHANGE_ACK( CTachyonSession *pSession, CPacket *pPack
 				if( bCount == 1 )
 				{
 					strMSG = CTChart::Format( TSTR_ITEMCHANGE_SUCCESS,
-						pTITEM->m_strNAME );
+						(LPCTSTR)pTITEM->m_strNAME );
 				}
 				else if( bCount > 1 )
 				{
 					strMSG = CTChart::Format( TSTR_ITEMCHANGE_COUNT_SUCCESS,
-						pTITEM->m_strNAME,
+						(LPCTSTR)pTITEM->m_strNAME,
 						bCount);
 				}
 
@@ -18092,7 +18092,7 @@ int CTClientGame::OnCS_TOURNAMENTPARTYADD_ACK( CTachyonSession *pSession, CPacke
 	{
 	case TOURNAMENT_SUCCESS:
 		strMSG = CTChart::Format(TSTR_TOURNAMENT_PARTY_SUCCESS,
-			strName);
+			(LPCTSTR)strName);
 		break;
 	case TOURNAMENT_NOTFOUND:
 		strMSG = CTChart::LoadString(TSTR_TOURNAMENT_PARTY_NOTFOUND);
@@ -18104,7 +18104,7 @@ int CTClientGame::OnCS_TOURNAMENTPARTYADD_ACK( CTachyonSession *pSession, CPacke
 		strMSG = CTChart::LoadString(TSTR_TOURNAMENT_PARTY_FULL);
 		break;
 	case TOURNAMENT_LEVEL:
-		strMSG = CTChart::Format(TSTR_TOURNAMENT_PARTY_LEVEL, strName);
+		strMSG = CTChart::Format(TSTR_TOURNAMENT_PARTY_LEVEL, (LPCTSTR)strName);
 		break;
 	}
 
@@ -19098,7 +19098,7 @@ int CTClientGame::OnCS_RPSGAME_ACK( CTachyonSession *pSession, CPacket *pPacket 
 			// ??????e???Ao
 			CString strFMT;
 			strFMT = CTChart::Format( TSTR_RPS_NOTICE_LOSE,
-				m_pMainChar->m_strNAME,
+				(LPCTSTR)m_pMainChar->m_strNAME,
 				m_bRPSWinCount+1);
 
 			CString strText = CTTextLinker::GetInstance()->BuildNetString(CString(), strFMT);
@@ -19152,7 +19152,7 @@ int CTClientGame::OnCS_RPSGAME_ACK( CTachyonSession *pSession, CPacket *pPacket 
 			//??A???? ???Ao
 			CString strFMT;
 			strFMT = CTChart::Format(TSTR_RPS_NOTICE_WIN,
-				m_pMainChar->m_strNAME,
+				(LPCTSTR)m_pMainChar->m_strNAME,
 				bWinCount );
 
 			CString strText = CTTextLinker::GetInstance()->BuildNetString(CString(), strFMT);
@@ -19221,7 +19221,7 @@ int CTClientGame::OnCS_MEETINGROOM_ACK( CTachyonSession *pSession, CPacket *pPac
 				// strName == ??? AE??eCN ??c???.
 				CString strFMT;
 				strFMT = CTChart::Format( TSTR_MEETING_ASK_JOIN,
-					strName);
+					(LPCTSTR)strName);
 
 				m_strMeetingInviter = strName;
 
@@ -19236,20 +19236,20 @@ int CTClientGame::OnCS_MEETINGROOM_ACK( CTachyonSession *pSession, CPacket *pPac
 				return TERR_NONE;
 			}
 			else
-				strMSG = CTChart::Format( TSTR_MEETING_MTR_SUCCESS, strName );
+				strMSG = CTChart::Format( TSTR_MEETING_MTR_SUCCESS, (LPCTSTR)strName );
 		}
 		break;
 
 	case MTR_DENY: //AE??e ??AAy
-		strMSG = CTChart::Format( TSTR_MEETING_MTR_DENY, strName );
+		strMSG = CTChart::Format( TSTR_MEETING_MTR_DENY, (LPCTSTR)strName );
 		break;
 
 	case MTR_BUSY: //AA??a ??O???
-		strMSG = CTChart::Format( TSTR_MEETING_MTR_BUSY, strName );
+		strMSG = CTChart::Format( TSTR_MEETING_MTR_BUSY, (LPCTSTR)strName );
 		break;
 
 	case MTR_NOTARGET: //??e??o????A??
-		strMSG = CTChart::Format( TSTR_MEETING_MTR_NOTARGET, strName );
+		strMSG = CTChart::Format( TSTR_MEETING_MTR_NOTARGET, (LPCTSTR)strName );
 		break;
 
 	case MTR_NOTCHIEF: //??CCN????A??
@@ -19257,7 +19257,7 @@ int CTClientGame::OnCS_MEETINGROOM_ACK( CTachyonSession *pSession, CPacket *pPac
 		break;
 
 	case MTR_INROOM: //AOAaA??
-		strMSG = CTChart::Format( TSTR_MEETING_MTR_INROOM, strName );
+		strMSG = CTChart::Format( TSTR_MEETING_MTR_INROOM, (LPCTSTR)strName );
 		break;
 	}
 
@@ -20821,7 +20821,7 @@ int CTClientGame::OnCS_BOWKILLNOTIFY_ACK(CTachyonSession* pSession, CPacket* pPa
 		if (strAttack.IsEmpty()) //smart switch; empty = mainchar, string = party.
 			strMessage.Format("You've got a kill, you've been rewarded with 5 Special Points.");
 		else
-			strMessage.Format("Your party member [%s] has got a kill. You've been rewarded with 2 Special Points.", strAttack);
+			strMessage.Format("Your party member [%s] has got a kill. You've been rewarded with 2 Special Points.", (LPCTSTR)strAttack);
 	}
 	else
 		strMessage.Format("You've got a kill, you've been rewarded with 150 Bonus Points.");
@@ -21032,7 +21032,7 @@ int CTClientGame::OnCS_BRTEAMMATEADD_ACK(CTachyonSession *pSession, CPacket *pPa
 
 		m_strBRInviter = strNAME;
 
-		strMSG.Format("%s invites you to his Battle Royal group, would you like to join?", strNAME);
+		strMSG.Format("%s invites you to his Battle Royal group, would you like to join?", (LPCTSTR)strNAME);
 		m_pMainWnd->MessageBoxYesNo(
 			strMSG, 
 			TSTR_YES,

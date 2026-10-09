@@ -979,7 +979,7 @@ void CTNewQuestDlg::ResetTQUEST( LPTQUEST pTQUEST)
 							TCHECK_CLASS( pTSKILL->m_dwClassID, m_pHost->m_bClassID) /*&&
 							!bHasAlready*/ )
 						{
-							strREWARD = CTChart::Format( TSTR_FMT_SKILL_REWARD, pTSKILL->m_strNAME);
+							strREWARD = CTChart::Format( TSTR_FMT_SKILL_REWARD, (LPCTSTR)pTSKILL->m_strNAME);
 						}
 					}
 
@@ -1002,7 +1002,7 @@ void CTNewQuestDlg::ResetTQUEST( LPTQUEST pTQUEST)
 
 						if( pTITEM && TCHECK_CLASS( pTITEM->m_dwClassID, m_pHost->m_bClassID) )
 						{
-							strREWARD = CTChart::Format( TSTR_FMT_REWARD, pTITEM->m_strNAME, pTMISSION->m_vTREWARD[i]->m_bCount);
+							strREWARD = CTChart::Format( TSTR_FMT_REWARD, (LPCTSTR)pTITEM->m_strNAME, pTMISSION->m_vTREWARD[i]->m_bCount);
 						}
 					}
 
@@ -1437,7 +1437,7 @@ CString CTNewQuestDlg::GetSpeakerString( CString strSpeaker)
 	strSpeaker.TrimLeft();
 
 	if(!strSpeaker.IsEmpty())
-		strResult = CTChart::Format( TSTR_FMT_QUEST_SPEEKER, strSpeaker);
+		strResult = CTChart::Format( TSTR_FMT_QUEST_SPEEKER, (LPCTSTR)strSpeaker);
 
 	return strResult;
 }

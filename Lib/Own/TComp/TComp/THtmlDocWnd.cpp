@@ -152,7 +152,7 @@ BOOL CALLBACK THtmlDocWnd::__HookDocWnd( HWND hWnd, LPARAM lParam)
 
 		pWnd->m_pMainWnd = AfxGetMainWnd();
 		if(pWnd->m_pMainWnd)
-			pWnd->m_pMAINPROC = (DWORD_PTR) GetWindowLongPtr( pWnd->m_pMainWnd->GetSafeHwnd(), GWLP_WNDPROC);
+			pWnd->m_pMAINPROC = (DWORD_PTR) GetWindowLongPtr( TSAFE_HWND(pWnd->m_pMainWnd), GWLP_WNDPROC);
 
 		pWnd->m_pWINPROC = (DWORD_PTR) GetWindowLongPtr( hWnd, GWLP_WNDPROC);
 		pWnd->m_pTHOST = (THttpCtrl *) lParam;
@@ -249,7 +249,7 @@ BYTE THtmlDocWnd::OnMouseMSG( UINT nMSG,
 
 		CallWindowProc(
 			(WNDPROC) m_pMAINPROC,
-			m_pMainWnd->GetSafeHwnd(),
+			TSAFE_HWND(m_pMainWnd),
 			nMSG,
 			(WPARAM) nFlags,
 			(LPARAM) MAKELONG( point.x, point.y));
@@ -265,9 +265,9 @@ BOOL THtmlDocWnd::OnSetCursor( CWnd* pWnd, UINT nHitTest, UINT message)
 
 	CallWindowProc(
 		(WNDPROC) m_pMAINPROC,
-		m_pMainWnd->GetSafeHwnd(),
+		TSAFE_HWND(m_pMainWnd),
 		WM_SETCURSOR,
-		(WPARAM) (pWnd ? pWnd->GetSafeHwnd() : NULL),
+		(WPARAM) (pWnd ? TSAFE_HWND(pWnd) : NULL),
 		(LPARAM) MAKELONG( nHitTest, message));
 
 	return TRUE;
@@ -291,7 +291,7 @@ BOOL THtmlDocWnd::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt)
 	{
 		CallWindowProc(
 			(WNDPROC) m_pMAINPROC,
-			m_pMainWnd->GetSafeHwnd(),
+			TSAFE_HWND(m_pMainWnd),
 			WM_MOUSEWHEEL,
 			(WPARAM) MAKELONG( nFlags, zDelta),
 			(LPARAM) MAKELONG( pt.x, pt.y));

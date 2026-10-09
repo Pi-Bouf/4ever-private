@@ -126,7 +126,7 @@ int CTClientGame::OnCS_CHAT_ACK( CTachyonSession *pSession, CPacket *pPacket)
 			if( dwSenderID == GetMainChar()->m_dwID )
 			{
 				CString strRESULT;
-				strRESULT = CTChart::Format( TSTR_FMT_WHISPER, strNAME, _T("") );
+				strRESULT = CTChart::Format( TSTR_FMT_WHISPER, (LPCTSTR)strNAME, _T("") );
 				strRESULT = pTextLinker->BuildNetString( CString(), strRESULT );
 				strMSG = pTextLinker->AppendNetString( strRESULT, strMSG );
 				strNAME = GetMainChar()->m_strNAME;
@@ -642,7 +642,7 @@ int CTClientGame::OnCS_FORWARDBOWCHAT_ACK( CTachyonSession *pSession, CPacket *p
 	if(dwSenderID == GetMainChar()->m_dwID)
 	{
 		CString strRESULT;
-		strRESULT = CTChart::Format(TSTR_FMT_WHISPER, strNAME, _T(""));
+		strRESULT = CTChart::Format(TSTR_FMT_WHISPER, (LPCTSTR)strNAME, _T(""));
 		strRESULT = pTextLinker->BuildNetString(CString(), strRESULT);
 		strMSG = pTextLinker->AppendNetString(strRESULT, strMSG);
 		strNAME = GetMainChar()->m_strNAME;

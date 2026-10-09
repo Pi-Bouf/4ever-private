@@ -423,7 +423,7 @@ HRESULT CTCompanionDlg::Render(DWORD dwTickCount)
 				LPTMONTEMP pTMON = CTChart::FindTMONTEMP( m_pSelPet->GetMonID() );
 				if( pTMON )
 				{
-					m_pName->m_strText.Format( "%s (%s)", m_pSelPet->GetCompanionName(), pTMON->m_strNAME);
+					m_pName->m_strText.Format( "%s (%s)", (LPCTSTR)m_pSelPet->GetCompanionName(), (LPCTSTR)pTMON->m_strNAME);
 					m_pIcon->SetCurImage( pTMON->m_wFaceIcon );
 				}
 
@@ -489,9 +489,9 @@ HRESULT CTCompanionDlg::Render(DWORD dwTickCount)
 				GetAttrString( strAttr, m_pSelPet );
 
 				if( m_pSelPet->GetBonusID() != 88 )
-					strBonus.Format( "%s +%g", strAttr, m_pSelPet->GetBonusValue() );
+					strBonus.Format( "%s +%g", (LPCTSTR)strAttr, m_pSelPet->GetBonusValue() );
 				else
-					strBonus.Format( "%s +%.1f%%", strAttr, m_pSelPet->GetBonusValue() );
+					strBonus.Format( "%s +%.1f%%", (LPCTSTR)strAttr, m_pSelPet->GetBonusValue() );
 
 				m_pBonusName->m_strText = strBonus;
 

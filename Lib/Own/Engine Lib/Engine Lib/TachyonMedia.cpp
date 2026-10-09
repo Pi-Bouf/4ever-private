@@ -79,9 +79,9 @@ BYTE CTachyonMedia::InitMEDIA( HWND hWnd,
 
 	CD3DSound::InitGARBAGE();
 	CD3DSound::ResetLISTENER(
-		&D3DXVECTOR3(vLISTENER.vPosition),
-		&D3DXVECTOR3(vLISTENER.vOrientFront),
-		&D3DXVECTOR3(vLISTENER.vOrientTop));
+		TTEMP(D3DXVECTOR3(vLISTENER.vPosition)),
+		TTEMP(D3DXVECTOR3(vLISTENER.vOrientFront)),
+		TTEMP(D3DXVECTOR3(vLISTENER.vOrientTop)));
 	CT3DMusic::DecodeINIT(m_pDS);
 
 	return TRUE;

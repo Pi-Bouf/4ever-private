@@ -72,7 +72,7 @@ void CTDynamicHelpDlg::Release()
 	m_dwTRES = 0;
 }
 
-void CTDynamicHelpDlg::InitTEXT( CString& strTEXT)
+void CTDynamicHelpDlg::InitTEXT( const CString& strTEXT)
 {
 	WCHAR pBUF[TGDIBUFFER_SIZE];
 	Release();
@@ -86,7 +86,7 @@ void CTDynamicHelpDlg::InitTEXT( CString& strTEXT)
 	HDC hDC = CreateCompatibleDC(NULL);
 	HFONT hOLDFONT = (HFONT) SelectObject(
 		hDC,
-		m_pGDIFont->m_pFont->GetSafeHandle());
+		TSAFE_HANDLE(m_pGDIFont->m_pFont));
 
 	Graphics *pGDI = new Graphics(hDC);
 	StringFormat vFORMAT;
@@ -155,7 +155,7 @@ void CTDynamicHelpDlg::InitTEXT( CString& strTEXT)
 		FLOAT(m_nWIDTH),
 		FLOAT(m_nHEIGHT) - 1.0f),
 		&vFORMAT,
-		&SolidBrush( Color( 0xFF, 0xFF, 0xFF)));
+		TTEMP(SolidBrush( Color( 0xFF, 0xFF, 0xFF))));
 
 	delete pGDI;
 	pGDI = NULL;

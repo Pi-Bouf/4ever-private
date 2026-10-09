@@ -104,7 +104,7 @@ void TComponent::TextLine::MakeDotLine( LPDIRECT3DDEVICE9 pDevice, INT StartX, I
 		D3DXVECTOR2 vStart( (FLOAT) (StartX), (FLOAT) (StartY));
 		D3DXVECTOR2 vEnd( (FLOAT) (EndX), (FLOAT) (EndY));
 
-		FLOAT fLength = D3DXVec2Length( &D3DXVECTOR2(vEnd-vStart) );
+		FLOAT fLength = D3DXVec2Length( TTEMP(D3DXVECTOR2(vEnd-vStart)) );
 		INT nCount = (INT) (fLength / (DotLength+SpaceLength) );
 
 		D3DXVECTOR2 vDir(vEnd-vStart);
@@ -142,12 +142,12 @@ void TComponent::TextLine::MakeDotLine( LPDIRECT3DDEVICE9 pDevice, INT StartX, I
 		{
 			// vCur°? vEnd를 lNl載?지 lElN큊면 lS머지 컍캪도 그려핾큊.	
 			D3DXVECTOR2 vDir1, vDir2;
-			D3DXVec2Normalize( &vDir1, &(vCur-vStart));
-			D3DXVec2Normalize( &vDir2, &(vEnd-vCur));
+			D3DXVec2Normalize( &vDir1, TTEMP((vCur-vStart)));
+			D3DXVec2Normalize( &vDir2, TTEMP((vEnd-vCur)));
 
-			if( D3DXVec2Length( &(vDir1-vDir2)) < 0.00001f )
+			if( D3DXVec2Length( TTEMP((vDir1-vDir2))) < 0.00001f )
 			{
-				D3DXVECTOR2 vEndDot = D3DXVec2Length( &(vEnd-vCur) ) < D3DXVec2Length( &(vDot) ) ? vEnd : vCur + vDot;
+				D3DXVECTOR2 vEndDot = D3DXVec2Length( TTEMP((vEnd-vCur)) ) < D3DXVec2Length( &(vDot) ) ? vEnd : vCur + vDot;
 
 				TNLPOINT pt;
 				pt.m_fPosZ = 0.0f;
@@ -1313,7 +1313,7 @@ void TComponent::GetTextExtentPoint( LPCTSTR strText, CSize &size)
 			PointF(
 			0.0f,
 			0.0f),
-			&StringFormat(StringFormatFlagsMeasureTrailingSpaces),
+			TTEMP(StringFormat(StringFormatFlagsMeasureTrailingSpaces)),
 			&vRECT);
 		vRECT.Width -= 3.0f;
 	}

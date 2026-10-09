@@ -16,8 +16,8 @@ const CString CPacketSpyDlg::PACKTYPE_STRS[PACKTYPE_CNT] =
 
 const CString CPacketSpyDlg::COL_STRS[COL_CNT] =
 {
-	"시각",
-	"패킷"
+	"\xBD\xC3\xB0\xA2",	// "시각"
+	"\xC6\xD0\xC5\xB6"	// "패킷"
 };
 
 const FLOAT CPacketSpyDlg::SIZE_RATES[COL_CNT] =
@@ -54,8 +54,8 @@ void CPacketSpyDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CPacketSpyDlg, CDialog)
 	ON_WM_TIMER()
-	ON_BN_CLICKED(IDC_BUTTON_ADD, OnBnClickedButtonAdd)
-	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST_CAPTURED, OnLvnItemchangedListCaptured)
+	ON_BN_CLICKED(IDC_BUTTON_ADD, &CPacketSpyDlg::OnBnClickedButtonAdd)
+	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST_CAPTURED, &CPacketSpyDlg::OnLvnItemchangedListCaptured)
 END_MESSAGE_MAP()
 
 BOOL CPacketSpyDlg::OnInitDialog()

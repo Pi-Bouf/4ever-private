@@ -112,7 +112,7 @@ void CTKeySettingDlg::SetReplaceResult(TKEY_SET eSrcKeySet, TKEY_SET eRepKeySet)
 	if( strRepKeySet.IsEmpty() )
 		return;
 
-	m_pInfo->m_strText = CTChart::Format( TSTR_KEYRT_REPLACE, strSrcKeySet,strRepKeySet);
+	m_pInfo->m_strText = CTChart::Format( TSTR_KEYRT_REPLACE, (LPCTSTR)strSrcKeySet,(LPCTSTR)strRepKeySet);
 	m_eLastResult = RT_REPLACE;
 }
 // =========================================================================

@@ -250,7 +250,7 @@ void CTGuildTerritoryFrame::SetCurMode(INT nMode)
 		}
 	}
 
-	m_pBox->m_strText = CTChart::Format( TSTR_SKYGARDEN_CONQUEROR, CTChart::LoadString( (TSTRING) CTClientGame::m_vTCOUNTRYSTR[pCmd->m_SkyGarden.m_bCountry] ));
+	m_pBox->m_strText = CTChart::Format( TSTR_SKYGARDEN_CONQUEROR, (LPCTSTR)CTChart::LoadString( (TSTRING) CTClientGame::m_vTCOUNTRYSTR[pCmd->m_SkyGarden.m_bCountry] ));
 }
 // ====================================================================
 

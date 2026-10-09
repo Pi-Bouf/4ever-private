@@ -441,7 +441,7 @@ void CTMessengerCommander::OnAddFriend(BYTE bResult, FriendMember* pFriend)
 	CString msg;
 	if( bResult == FRIEND_SUCCESS )
 	{
-		msg = CTChart::Format( TSTR_MBOX_FRIENDREPLY_YES, pFriend->strName);
+		msg = CTChart::Format( TSTR_MBOX_FRIENDREPLY_YES, (LPCTSTR)pFriend->strName);
 
 		CTMessengerBase* pMsgBase = pGame->GetMessengerBase();
 		CTMsgGroupList* pList = pMsgBase->GetMsgGroupList();
@@ -449,9 +449,9 @@ void CTMessengerCommander::OnAddFriend(BYTE bResult, FriendMember* pFriend)
 		SetFriend( pList->AddMember( pList->GetEtcGroup() ), pFriend);
 	}
 	else if( bResult == FRIEND_REFUSE )
-		msg = CTChart::Format( TSTR_MBOX_FRIENDREPLY_NO, pFriend->strName);
+		msg = CTChart::Format( TSTR_MBOX_FRIENDREPLY_NO, (LPCTSTR)pFriend->strName);
 	else if( bResult == FRINED_BUSY )
-		msg = CTChart::Format( TSTR_ERR_TARGET_BUSY, pFriend->strName);
+		msg = CTChart::Format( TSTR_ERR_TARGET_BUSY, (LPCTSTR)pFriend->strName);
 
 	if( !msg.IsEmpty() )
 	{
@@ -523,7 +523,7 @@ void CTMessengerCommander::OnConnectFriend(BYTE bResult, const CString& strName,
 			if( pInfo )
 				pFMem->m_vTxt[CTMsgGroupList::MTXT_POS]->m_strText = pInfo->m_strNAME;
 
-			strChatMsg = CTChart::Format( TSTR_CMSG_FRIEND_CONNECT, strName);
+			strChatMsg = CTChart::Format( TSTR_CMSG_FRIEND_CONNECT, (LPCTSTR)strName);
 		}
 		else
 		{
@@ -531,7 +531,7 @@ void CTMessengerCommander::OnConnectFriend(BYTE bResult, const CString& strName,
 			pFMem->m_vTxt[CTMsgGroupList::MTXT_STATE]->m_strText = CTChart::LoadString( TSTR_STATE_DISCONNECT);
 			pFMem->m_vTxt[CTMsgGroupList::MTXT_POS]->m_strText.Empty();
 
-			strChatMsg = CTChart::Format( TSTR_CMSG_FRIEND_DISCONNECT, strName);
+			strChatMsg = CTChart::Format( TSTR_CMSG_FRIEND_DISCONNECT, (LPCTSTR)strName);
 		}
 
 		ChatSysMSG( strChatMsg );

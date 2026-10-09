@@ -470,7 +470,7 @@ void CD3DSound::ResetLISTENER( LPD3DXVECTOR3 pPosition,
 	D3DXMatrixLookAtLH(
 		&m_vLISTENER,
 		pPosition,
-		&((*pPosition) + (*pAxisZ)),
+		TTEMP(((*pPosition) + (*pAxisZ))),
 		pAxisY);
 	m_vLISTENER *= vSCALE;
 

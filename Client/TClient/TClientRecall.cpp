@@ -495,7 +495,7 @@ BYTE CTClientRecall::GetTAction()
 CTClientSkill *CTClientRecall::GetBestTSKILL(CTClientObjBase *pTARGET)
 {
 	return NULL;
-	FLOAT fDIST = pTARGET ? D3DXVec3LengthSq(&(pTARGET->GetPosition() - GetPosition())) : TCAM_LENGTH * TCAM_LENGTH;
+	FLOAT fDIST = pTARGET ? D3DXVec3LengthSq(TTEMP((pTARGET->GetPosition() - GetPosition()))) : TCAM_LENGTH * TCAM_LENGTH;
 	FLOAT fMAX = 0.0f;
 
 	CTClientSkill *pTRESULT = NULL;
@@ -627,9 +627,9 @@ BYTE CTClientRecall::GetRoamACT(LPD3DXVECTOR3 pTARGET)
 {
 	if (m_bType != OT_SELF)
 	{
-		FLOAT fDIST = D3DXVec2LengthSq(&D3DXVECTOR2(
+		FLOAT fDIST = D3DXVec2LengthSq(TTEMP(D3DXVECTOR2(
 			pTARGET->x - m_vPosition._41,
-			pTARGET->z - m_vPosition._43));
+			pTARGET->z - m_vPosition._43)));
 		FLOAT fSB = TROAM_BOUND;
 
 		if (m_bSubAI == TRECALLAI_STAY || fDIST < fSB * fSB)

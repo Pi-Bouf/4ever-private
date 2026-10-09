@@ -211,7 +211,7 @@ HRESULT CQuestNewDlg::Render(DWORD dwTickCount)
 
 			if (m_QuestList[i].m_Opened)
 			{
-				for (std::map<DWORD, std::vector<CQuest>>::iterator& itQClass = m_QuestList[i].m_mapQuest.begin(); itQClass != m_QuestList[i].m_mapQuest.end(); ++itQClass)
+				for (std::map<DWORD, std::vector<CQuest>>::iterator itQClass = m_QuestList[i].m_mapQuest.begin(); itQClass != m_QuestList[i].m_mapQuest.end(); ++itQClass)
 				{
 					for (BYTE l = 0; l < m_QuestList[i].GetSize(); ++l)
 					{
@@ -226,7 +226,7 @@ HRESULT CQuestNewDlg::Render(DWORD dwTickCount)
 						}
 					}
 
-					for (std::vector<CQuest>::iterator& Quest = itQClass->second.begin(); Quest != itQClass->second.end(); ++Quest)
+					for (std::vector<CQuest>::iterator Quest = itQClass->second.begin(); Quest != itQClass->second.end(); ++Quest)
 					{
 						if (Quest->m_pCheckBox)
 							Quest->m_pCheckBox->MoveComponentBy(0, INT(16 * fIndex));
@@ -1621,7 +1621,7 @@ CString CQuestNewDlg::GetSpeakerString(CString strSpeaker)
 	strSpeaker.TrimLeft();
 
 	if (!strSpeaker.IsEmpty())
-		strResult = CTChart::Format(TSTR_FMT_QUEST_SPEEKER, strSpeaker);
+		strResult = CTChart::Format(TSTR_FMT_QUEST_SPEEKER, (LPCTSTR)strSpeaker);
 
 	return strResult;
 }
@@ -2299,7 +2299,7 @@ void CQuest::AddQuest(CString strQName, CString strLevel)
 	m_pFrame->AddKid(m_pQuestName);
 	m_pFrame->AddKid(m_pProgress);
 
-	m_pQuestName->m_strText.Format("Lv %s %s", strLevel, strQName);
+	m_pQuestName->m_strText.Format("Lv %s %s", (LPCTSTR)strLevel, (LPCTSTR)strQName);
 
 	if (m_Accepted)
 	{
@@ -2615,7 +2615,7 @@ void CRightSide::AddReward(BYTE Type, DWORD Value, BYTE Count, const LPTREWARD R
 		}
 
 		if (pTITLE)
-			m_pRewardName[m_RewardCnt]->m_strText.Format("Title : %s", pTITLE->m_strTitle);
+			m_pRewardName[m_RewardCnt]->m_strText.Format("Title : %s", (LPCTSTR)pTITLE->m_strTitle);
 
 		m_pFrame->AddKid(m_pTitleIcon[m_RewardCnt]);
 		m_pFrame->AddKid(m_pRewardName[m_RewardCnt]);
@@ -2787,7 +2787,7 @@ void CRightSide::AddTerm(const LPTTERM& Term, BYTE bCount)
 	m_pTermText->ShowComponent(TRUE);
 	m_Goal = TRUE;
 
-	m_pTermStr[m_TermCnt]->m_strText.Format("%d.%s", m_TermCnt + 1, Term->m_strTermMSG);
+	m_pTermStr[m_TermCnt]->m_strText.Format("%d.%s", m_TermCnt + 1, (LPCTSTR)Term->m_strTermMSG);
 
 	if (bCount >= Term->m_bCount)
 		m_pTermRes[m_TermCnt]->m_strText = "(finished)";

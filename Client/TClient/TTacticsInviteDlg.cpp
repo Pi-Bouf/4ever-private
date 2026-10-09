@@ -221,8 +221,8 @@ void CTTacticsInviteDlg::SetShowAccept(
 	m_pTITLE->m_strText = CTChart::Format( TSTR_MBOX_TACTICS_TITLE_ACCEPT );
 
 	m_pMSG->m_strText = CTChart::Format( TSTR_MBOX_TACTICS_INVITE,
-		strInviter,
-		strGuild );
+		(LPCTSTR)strInviter,
+		(LPCTSTR)strGuild );
 
 	m_pPeriod->m_strText.Format( "%d", bDay );
 	m_pHornor->m_strText.Format( "%d", dwPoint );
