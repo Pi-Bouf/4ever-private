@@ -69,6 +69,9 @@ public sealed class Skill
     /// <summary>C++ <c>m_dwUseTick = m_dwDelayTick = 0</c> (<c>CTObjBase::CancelSkill</c>): no cooldown left.</summary>
     public void ResetCooldown() { _useTick = 0; _delayTick = 0; }
 
+    /// <summary>A wait of <paramref name="remain"/> ms from <paramref name="now"/> (a guild skill's shared cooldown).</summary>
+    public void SetCooldown(uint now, uint remain) { _useTick = now == 0 ? 1u : now; _delayTick = remain; }
+
     /// <summary>C++ <c>CTSkill::CanUse</c> (TSkill.cpp:224-227) — <c>!GetReuseRemainTick</c>.</summary>
     public bool CanUse(uint now) => GetReuseRemainTick(now) == 0;
 

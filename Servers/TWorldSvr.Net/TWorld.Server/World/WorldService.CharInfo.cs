@@ -168,6 +168,7 @@ public sealed partial class WorldService
                 guild.Members.Remove(ch.CharId);
                 _state.CharGuild.Remove(ch.CharId);
                 ch.Guild = null;
+                UpdateGuildLevel(guild);
                 if (_guildDb is not null)
                     _ = Persist(async () => await _guildDb.LeaveAsync(guild.Id, ch.CharId, (byte)GuildResult.LeaveSelf, (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds()), "TGuildLeave(country)");
                 _state.FindMapSvr(ch.MainId)?.Send(BuildGuildLeaveReq(ch.CharId, ch.Key, name, (byte)GuildResult.LeaveSelf, (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds()));

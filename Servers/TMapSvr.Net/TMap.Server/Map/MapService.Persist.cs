@@ -281,9 +281,9 @@ public sealed partial class MapService
     }
 
     /// <summary>The skills to save (C++ <c>SendDM_SAVECHAR_REQ</c>'s skill loop: every held skill, its remaining reuse
-    /// time). Batch-thread; the result is an immutable snapshot.</summary>
+    /// time) — but not the guild skills, which the guild tables keep. Batch-thread; the result is an immutable snapshot.</summary>
     public static List<SkillSaveRow> BuildSkillSaves(Character ch, uint nowMs)
-        => ch.Skills.OrderBy(k => k.SkillId).Select(k => new SkillSaveRow(k.SkillId, k.Level, k.GetReuseRemainTick(nowMs))).ToList();
+        => ch.Skills.Where(k => !ch.GuildSkills.ContainsKey(k.SkillId)).OrderBy(k => k.SkillId).Select(k => new SkillSaveRow(k.SkillId, k.Level, k.GetReuseRemainTick(nowMs))).ToList();
 
     /// <summary>The periodic-save tick (C++ per-player <c>OnTimer</c> 30-min flush). Saves every due session.</summary>
     public void RunPeriodicSaves(uint nowMs)

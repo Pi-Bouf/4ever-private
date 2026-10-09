@@ -177,7 +177,7 @@ public sealed partial class MapService
         _world.Send(w);
     }
 
-    private void OnMW_CHARINFO_REQ(PacketReader r)
+    private async Task OnMW_CHARINFO_REQ(PacketReader r)
     {
         uint charId = r.ReadUInt32();
         uint key = r.ReadUInt32();
@@ -209,6 +209,10 @@ public sealed partial class MapService
         // The saddle goes first (C++ OnDM_LOADCHAR_ACK sends it before the world's CHARINFO step).
         var saddle = ch.Saddle ?? default;
         SendCS_SENDSADDLE_REQ(s, saddle.ItemId, saddle.EndTime, saddle.Type, openUi: false);
+
+        // C++ OnMW_CHARINFO_REQ: the guild skills first, among the skills the character info carries (MapService.GuildSkill.cs).
+        await RefreshGuildSkills(s, notify: false);
+        if (s.Char != ch) return;
 
         // This is where the client actually receives its character (see agent analysis, item 5).
         SendCS_CHARINFO_ACK(s);
@@ -642,6 +646,7 @@ public sealed partial class MapService
         catch (Exception ex) { _log.LogWarning(ex, "Char {Char} summon load failed; continuing without them.", ch.CharId); }
 
         foreach (var sk in await _gameDb.LoadSkillsAsync(ch.CharId))
+            if (!IsGuildSkill(sk.SkillId))                                     // those come from the guild's tables
             ch.Skills.Add(new Skill
             {
                 SkillId = sk.SkillId, Level = sk.Level, ReuseRemainTick = sk.RemainTick,

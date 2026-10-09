@@ -218,6 +218,9 @@ public sealed class Character
     /// <summary>Learned skills (CS_CHARINFO_ACK skill sub-loop).</summary>
     public List<Skill> Skills { get; } = new();
 
+    /// <summary>C++ <c>m_mapGuildSkill</c> — the guild skills held, run out or not (MapService.GuildSkill.cs).</summary>
+    public Dictionary<ushort, GuildSkillHeld> GuildSkills { get; } = new();
+
     /// <summary>C++ <c>m_vRemainSkill</c> — the learned skills whose rows apply for good (<c>IsRemainType</c>). The C++
     /// fills it with every such skill at login and, on learning one, first drops another of the same
     /// <c>m_bPriority</c>; this reads the learned list instead (the live remain skills, 41-46, are one per class).</summary>

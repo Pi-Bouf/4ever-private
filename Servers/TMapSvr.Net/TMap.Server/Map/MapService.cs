@@ -41,6 +41,7 @@ public sealed partial class MapService
         PostStore = gameDb;
         PetStore = gameDb;
         CompanionStore = gameDb;
+        GuildSkillStore = gameDb;
         _templates = templates;
         _log = log;
     }
@@ -204,6 +205,7 @@ public sealed partial class MapService
                 case Msg.CS_GUILDTACTICSLIST_REQ: OnCS_GUILDTACTICSLIST_REQ(session); break;
                 case Msg.CS_GUILDPOINTREWARD_REQ: OnCS_GUILDPOINTREWARD_REQ(session, r); break;
                 case Msg.CS_MONSTERBUY_REQ: OnCS_MONSTERBUY_REQ(session, r); break;
+                case Msg.CS_GUILDSKILLACTION_REQ: OnCS_GUILDSKILLACTION_REQ(session, r); break;
                 case Msg.CS_GUILDESTABLISH_REQ: OnCS_GUILDESTABLISH_REQ(session, r); break;
                 case Msg.CS_GUILDDISORGANIZATION_REQ: OnCS_GUILDDISORGANIZATION_REQ(session, r); break;
                 case Msg.CS_GUILDINVITE_REQ: OnCS_GUILDINVITE_REQ(session, r); break;
@@ -301,7 +303,7 @@ public sealed partial class MapService
             {
                 case Msg.MW_ENTERSVR_REQ: await OnMW_ENTERSVR_REQ(r); break;
                 case Msg.MW_CHARDATA_REQ: OnMW_CHARDATA_REQ(r); break;
-                case Msg.MW_CHARINFO_REQ: OnMW_CHARINFO_REQ(r); break;
+                case Msg.MW_CHARINFO_REQ: await OnMW_CHARINFO_REQ(r); break;
                 case Msg.MW_HELMETHIDE_REQ: OnMW_HELMETHIDE_REQ(r); break;
                 case Msg.MW_LOCALENABLE_REQ: OnMW_LOCALENABLE_REQ(r); break;
                 case Msg.MW_CASTLEENABLE_REQ: OnMW_CASTLEENABLE_REQ(r); break;
@@ -335,15 +337,18 @@ public sealed partial class MapService
                 case Msg.MW_GUILDVOLUNTEERING_REQ: RelayResult(r, Msg.CS_GUILDVOLUNTEERING_ACK); break;
                 case Msg.MW_GUILDVOLUNTEERINGDEL_REQ: RelayResult(r, Msg.CS_GUILDVOLUNTEERINGDEL_ACK); break;
                 case Msg.MW_GUILDVOLUNTEERREPLY_REQ: RelayResult(r, Msg.CS_GUILDVOLUNTEERREPLY_ACK); break;
-                case Msg.MW_GUILDESTABLISH_REQ: OnMW_GUILDESTABLISH_REQ(r); break;
+                case Msg.MW_GUILDESTABLISH_REQ: await OnMW_GUILDESTABLISH_REQ(r); break;
                 case Msg.MW_GUILDDISORGANIZATION_REQ: OnMW_GUILDDISORGANIZATION_REQ(r); break;
                 case Msg.MW_GUILDINVITE_REQ: OnMW_GUILDINVITE_REQ(r); break;
-                case Msg.MW_GUILDJOIN_REQ: OnMW_GUILDJOIN_REQ(r); break;
-                case Msg.MW_GUILDDUTY_REQ: OnMW_GUILDDUTY_REQ(r); break;
+                case Msg.MW_GUILDJOIN_REQ: await OnMW_GUILDJOIN_REQ(r); break;
+                case Msg.MW_GUILDDUTY_REQ: await OnMW_GUILDDUTY_REQ(r); break;
                 case Msg.MW_GUILDPEER_REQ: OnMW_GUILDPEER_REQ(r); break;
-                case Msg.MW_GUILDLEAVE_REQ: OnMW_GUILDLEAVE_REQ(r); break;
+                case Msg.MW_GUILDLEAVE_REQ: await OnMW_GUILDLEAVE_REQ(r); break;
                 case Msg.MW_GUILDMEMBERLIST_REQ: OnMW_GUILDMEMBERLIST_REQ(r); break;
-                case Msg.MW_GUILDINFO_REQ: OnMW_GUILDINFO_REQ(r); break;
+                case Msg.MW_GUILDINFO_REQ: await OnMW_GUILDINFO_REQ(r); break;
+                case Msg.MW_GUILDSKILLACTION_ACK: await OnMW_GUILDSKILLACTION_ACK(r); break;              // MapService.GuildSkill.cs
+                case Msg.MW_UPDATEGUILDCOOLDOWN_REQ: await OnMW_UPDATEGUILDCOOLDOWN_REQ(r); break;
+                case Msg.MW_ADDCOOLDOWN_REQ: OnMW_ADDCOOLDOWN_REQ(r); break;
                 case Msg.MW_CASTLEOCCUPY_REQ: OnMW_CASTLEOCCUPY_REQ(r); break;
                 case Msg.MW_ENDWAR_REQ: OnMW_ENDWAR_REQ(r); break;
                 case Msg.MW_MISSIONENABLE_REQ: OnMW_MISSIONENABLE_REQ(r); break;

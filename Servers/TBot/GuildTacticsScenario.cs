@@ -13,7 +13,7 @@ public static partial class Scenarios
 {
     private const uint TacticsGuild = 990011;
     private const string TacticsGuildName = "TbotTactics";
-    private const ushort GuardShopNpc = 23100;
+    private const ushort GuardShopNpc = 23100, BattleCry = 3000;              // a chief's guild skill (180 s reuse)
     private const ushort CS_GUILDTACTICSWANTEDADD_REQ = M + 0x0179, CS_GUILDTACTICSWANTEDADD_ACK = M + 0x017A,
         CS_GUILDTACTICSWANTEDLIST_REQ = M + 0x017D, CS_GUILDTACTICSWANTEDLIST_ACK = M + 0x017E,
         CS_GUILDTACTICSVOLUNTEERING_REQ = M + 0x017F, CS_GUILDTACTICSVOLUNTEERING_ACK = M + 0x0180,
@@ -40,7 +40,10 @@ INSERT INTO TGUILDTABLE (dwID, szName, dwChief, bLevel, dwFame, dwFameColor, bMa
     bGPoint, bStatus, bDisorg, dwTime, timeEstablish, dwPvPTotalPoint, dwPvPUseablePoint, dwPvPMonthPoint)
 VALUES ({TacticsGuild}, '{TacticsGuildName}', @p0, 5, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, GETDATE(), 1000, 1000, 0);
 SET IDENTITY_INSERT TGUILDTABLE OFF;
-INSERT INTO TGUILDMEMBERTABLE (dwCharID, dwGuildID, bDuty, bPeer, dwService) VALUES (@p0, {TacticsGuild}, 2, 0, 0)", (int)idA);
+INSERT INTO TGUILDMEMBERTABLE (dwCharID, dwGuildID, bDuty, bPeer, dwService) VALUES (@p0, {TacticsGuild}, 2, 0, 0);
+INSERT INTO TGUILDSTATSTABLE (dwGuildID, bSkillPoint, bLevel, dwExp) VALUES ({TacticsGuild}, 1, 1, 0);
+INSERT INTO TGUILDMASTERSKILLTABLE (dwGuildID, wSkillID, bLevel, tEndTime) VALUES ({TacticsGuild}, {BattleCry}, 1, '1900-01-01')", (int)idA);
+            await db.ExecAsync("UPDATE TPVPOINTTABLE SET dwUseablePoint=571 WHERE dwCharID=@p0", (int)idA);   // 300 for a renewal
             Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] tactics guild in; restarting the world ...");
             await Docker("compose restart worldsvr");
             await WaitForWorld();
@@ -68,7 +71,8 @@ EXEC (@s);
 DELETE FROM TGUILDTABLE WHERE dwID = {TacticsGuild};
 DELETE FROM TGUILDVOLUNTEERTABLE WHERE dwCharID IN (@p0, @p1);
 DELETE FROM TGUILDTACTICSTABLE WHERE dwCharID IN (@p0, @p1);
-DELETE FROM TPOSTTABLE WHERE dwCharID = @p1 AND dwSendID = @p0", (int)idA, (int)idB);
+DELETE FROM TPOSTTABLE WHERE dwCharID = @p1 AND dwSendID = @p0;
+DELETE FROM TGUILDMEMBERSKILLTABLE WHERE dwCharID IN (@p0, @p1)", (int)idA, (int)idB);
 
     /// <summary>CS_GUILDATTR_ACK of <paramref name="charId"/>: its tactics guild.</summary>
     private static uint? TacticsShown(Bot bot, uint charId)
@@ -79,6 +83,45 @@ DELETE FROM TPOSTTABLE WHERE dwCharID = @p1 AND dwSendID = @p0", (int)idA, (int)
     private static async Task<object[]?> GuildRow(GameDb db)
         => await db.RowAsync($"SELECT dwGold, dwSilver, dwCooper, dwPvPUseablePoint FROM TGUILDTABLE WHERE dwID={TacticsGuild}");
 
+    /// <summary>The chief's Battle Cry: shown run out, renewed for 300 PvP points, a level bought with the guild's stat point, cast —
+    /// the guild's cooldown comes back to the caster.</summary>
+    private static async Task GuildSkills(Bot a, GameDb db, uint idA)
+    {
+        a.Send(Req(CS_GUILDINFO_REQ, _ => { }));
+        var shown = a.TryWait(CS_GUILDSKILLUPDATE_ACK, r => r.ReadByte() > 0, 5000);
+        var list = shown is null ? new() : GuildSkillList(shown);
+        Check("guild skills: the chief sees the guild's Battle Cry, level 1, run out", list.Contains((BattleCry, (byte)1, 0L)), Describe(shown));
+        a.Discard(CS_PVPPOINT_ACK); a.Discard(CS_GUILDSKILLUPDATE_ACK);
+        a.Send(Req(CS_GUILDSKILLACTION_REQ, w => { w.WriteByte(1); w.WriteByte(2); w.WriteUInt16(BattleCry); w.WriteUInt16(0); }));   // GS_RENEW
+        var renewed = a.TryWait(CS_GUILDSKILLACTION_ACK, timeoutMs: 5000);
+        var paid = a.TryWait(CS_PVPPOINT_ACK, timeoutMs: 3000);
+        await Task.Delay(500);
+        var row = await db.RowAsync($"SELECT bLevel, DATEDIFF(day, GETDATE(), tEndTime) FROM TGUILDMASTERSKILLTABLE WHERE dwGuildID={TacticsGuild} AND wSkillID={BattleCry}");
+        Check("guild skills: renewed for 300 PvP points (271 left) — 31 days (TGUILDMASTERSKILLTABLE)", renewed is not null
+            && paid is not null && Read(paid, r => { r.ReadUInt32(); uint u = r.ReadUInt32(); while (r.Remaining > 0) r.ReadByte(); return u; }) == 271
+            && row is not null && Convert.ToInt32(row[1]) is >= 30 and <= 31, row is null ? "no row" : $"{row[0]} {row[1]} days");
+        a.Send(Req(CS_GUILDSKILLACTION_REQ, w => { w.WriteByte(0); w.WriteByte(2); w.WriteUInt16(BattleCry); w.WriteUInt16(0); }));   // GS_BUY
+        var bought = a.TryWait(CS_GUILDSKILLACTION_ACK, timeoutMs: 5000);
+        await Task.Delay(500);
+        row = await db.RowAsync($"SELECT bLevel FROM TGUILDMASTERSKILLTABLE WHERE dwGuildID={TacticsGuild} AND wSkillID={BattleCry}");
+        var stats = await db.RowAsync($"SELECT bSkillPoint FROM TGUILDSTATSTABLE WHERE dwGuildID={TacticsGuild}");
+        Check("guild skills: a level bought with the guild's stat point — level 2, 0 points left", bought is not null && row is not null
+            && Convert.ToInt32(row[0]) == 2 && stats is not null && Convert.ToInt32(stats[0]) == 0,
+            $"level={row?[0]} points={stats?[0]}");
+        a.Discard(CS_SKILLBUY_ACK);
+        a.Send(Req(CS_SKILLUSE_REQ, w =>
+        {
+            w.WriteUInt32(a.CharId); w.WriteByte(1 /* OT_PC */); w.WriteByte(1); w.WriteUInt16(0); w.WriteUInt16(BattleCry);
+            w.WriteByte(0); w.WriteUInt32(0); w.WriteUInt32(0); w.WriteFloat(0); w.WriteFloat(0); w.WriteFloat(0);
+            w.WriteByte(1); w.WriteUInt32(a.CharId); w.WriteByte(1); w.WriteByte(1);
+        }));
+        var cast = a.TryWait(CS_SKILLUSE_ACK, r => r.ReadByte() == 0 && r.ReadUInt32() == a.CharId, 5000);
+        var wait = a.TryWait(CS_SKILLBUY_ACK, r => { r.ReadByte(); if (r.ReadUInt16() != BattleCry) return false; r.ReadByte(); return r.ReadUInt32() != 0; }, 5000);
+        Check("guild skills: A casts it — the guild's cooldown comes back (CS_SKILLBUY_ACK, 180 s)", cast is not null && wait is not null
+            && Read(wait, r => { r.ReadByte(); r.ReadUInt16(); byte l = r.ReadByte(); uint t = r.ReadUInt32(); while (r.Remaining > 0) r.ReadByte(); return (l, t); }) == (2, 180_000u),
+            $"cast={Describe(cast)} wait={Describe(wait)}");
+    }
+
     private static async Task Mercenaries(BotConfig cfgA, BotConfig cfgB, GameDb db, uint idA, uint idB)
     {
         using var a = new Bot(cfgA);
@@ -87,6 +130,8 @@ DELETE FROM TPOSTTABLE WHERE dwCharID = @p1 AND dwSendID = @p0", (int)idA, (int)
         Thread.Sleep(1500);
         string nameA = a.Spawn.Name, nameB = b.Spawn.Name;
         (byte, uint) Res(PacketReader p) => Read(p, r => (r.ReadByte(), r.ReadUInt32()));
+
+        await GuildSkills(a, db, idA);
 
         // ---- a mercenary ad: posted, seen, applied to, taken ----
         a.Send(Req(CS_GUILDTACTICSWANTEDADD_REQ, w =>
@@ -180,6 +225,10 @@ DELETE FROM TPOSTTABLE WHERE dwCharID = @p1 AND dwSendID = @p0", (int)idA, (int)
         b.Send(Req(CS_GUILDINVITEANSWER_REQ, w => { w.WriteByte(0); w.WriteUInt32(a.CharId); }));
         var joined = b.TryWait(CS_GUILDJOIN_ACK, timeoutMs: 5000);
         Check("guild points: B joins the guild (CS_GUILDJOIN_ACK)", joined is not null, Describe(joined));
+        await Task.Delay(500);
+        var lvl = await db.RowAsync($"SELECT bLevel, bMaxCabinet FROM TGUILDTABLE WHERE dwID={TacticsGuild}");
+        Check("guild level: 2 members, under level 5's 40 — the guild falls to level 4, its cabinet grows to 4 (TGUILDTABLE)",
+            lvl is not null && Convert.ToInt32(lvl[0]) == 4 && Convert.ToInt32(lvl[1]) == 4, lvl is null ? "none" : $"{lvl[0]}/{lvl[1]}");
         b.Discard(CS_POSTRECV_ACK); b.Discard(CS_PVPPOINT_ACK);
         a.Send(Req(CS_GUILDPOINTREWARD_REQ, w => { w.WriteString(nameB); w.WriteUInt32(50); w.WriteString("Well fought"); }));
         var reward = a.TryWait(CS_GUILDPOINTREWARD_ACK, timeoutMs: 5000);

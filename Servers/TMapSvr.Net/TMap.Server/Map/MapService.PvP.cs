@@ -41,7 +41,7 @@ public sealed partial class MapService
         if (power is null) ch.EnterBattle(NowMs, RecoverInit);
         target.EnterBattle(NowMs, RecoverInit);                                          // CTPlayer::Defend ChgMode(MT_BATTLE)
 
-        byte hitType = forceMiss ? HtMiss : HitTypeVsPlayer(CombatRng, p.Crit, p.AttackLevel);
+        byte hitType = forceMiss ? HtMiss : IsGuildSkill(skillId) ? HtNormal : HitTypeVsPlayer(CombatRng, p.Crit, p.AttackLevel);   // a guild skill always hits (C++ GetAtkHitType)
         uint maxHp = MaxHpFor(target), maxMp = MaxMpFor(target);
         var def = DamageTarget.Of(target, self: false, maxHp, maxMp, CombatRng, _templates, v => DistributeSkill(ts, target, v));
         var dmg = CalcDamage(p, def, tpl, level, hitType, isMagic, isLong);

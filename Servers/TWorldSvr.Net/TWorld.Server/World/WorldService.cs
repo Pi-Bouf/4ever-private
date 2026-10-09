@@ -569,6 +569,7 @@ public sealed partial class WorldService
         };
         _state.CharGuild[charId] = guild.Id;
         ch.Guild = guild;
+        UpdateGuildLevel(guild);                                           // CTGuild::AddMember
         if (_guildDb is not null) { try { await _guildDb.MemberAddAsync(guild.Id, charId, ch.Level, (byte)GuildDuty.None); } catch (Exception ex) { _log.LogWarning(ex, "TGuildMemberAdd failed."); } }
 
         byte[] join = BuildGuildJoinReq(charId, key, (byte)GuildResult.JoinSuccess, guild.Id, guild.Fame, guild.FameColor, guild.Name, charId, ch.Name, (byte)guild.MaxMembers);
@@ -592,6 +593,7 @@ public sealed partial class WorldService
         guild.Members.Remove(charId);
         _state.CharGuild.Remove(charId);
         ch.Guild = null;
+        UpdateGuildLevel(guild);                                           // CTGuild::DelMember
         if (_guildDb is not null) { try { await _guildDb.LeaveAsync(guild.Id, charId, (byte)GuildResult.LeaveSelf, (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds()); } catch (Exception ex) { _log.LogWarning(ex, "TGuildLeave failed."); } }
         // C++ OnMW_GUILDLEAVE_ACK: only the one leaving is told, with the time (its wait before joining again).
         SendToChar(ch, BuildGuildLeaveReq(charId, key, name, (byte)GuildResult.LeaveSelf, (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds()));
@@ -612,6 +614,7 @@ public sealed partial class WorldService
         var targetChar = mem.OnlineChar;
         guild.Members.Remove(targetId);
         _state.CharGuild.Remove(targetId);
+        UpdateGuildLevel(guild);
         if (targetChar is not null) targetChar.Guild = null;
         if (_guildDb is not null) { try { await _guildDb.KickoutAsync(guild.Id, targetId); } catch (Exception ex) { _log.LogWarning(ex, "TGuildKickout failed."); } }
         if (targetChar is not null) SendToChar(targetChar, BuildGuildLeaveReq(targetId, targetChar.Key, target, (byte)GuildResult.LeaveKick, 0));

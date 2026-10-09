@@ -78,12 +78,14 @@ opens the point log and PvP record; puts B out, posts a wanted ad that B applies
 world container** at the end; the bots' level and guild-leave marks are put back.
 
 A second part (`GuildTacticsScenario.cs`) needs a level-5 guild with money and PvP points, so it inserts "TbotTactics"
-(A chief, 1 gold, 1000 points) and restarts the world to load it. A posts a mercenary ad, B applies and is taken (a
+(A chief, 1 gold, 1000 points, 1 guild stat point, a run-out Battle Cry) and restarts the world to load it. A renews the
+guild skill (300 PvP points), buys a level with the guild's stat point and casts it (the guild's cooldown comes back). A posts a mercenary ad, B applies and is taken (a
 welcome letter), B leaves its contract (the guild is paid back), A invites B as a mercenary and B accepts, A fires B
 (B gets its points and a letter with its pay); B joins the guild and A gives it 50 guild points; A buys a castle guard
 post from the mercenary merchant (23100) with the guild's money. The contract, treasury and mails are checked in the
 database. Then everything is removed, the bots' PvP points are restored, and the world **and the map** are restarted (the
-bought guards go with the map). 53 checks in all.
+bought guards go with the map). The first part also checks the founder's 10 guild skills, the second the guild falling a
+level when a member joins below its level's minimum. 59 checks in all.
 
 ## Scenario: stress (hundreds of bots)
 

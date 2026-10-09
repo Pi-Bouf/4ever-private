@@ -19,8 +19,8 @@ namespace TMap.Server.Map;
 /// <item><b>The guild window</b>: its info (with the player's own stat level, points and exp) and the member list, as the world
 /// sends them.</item>
 /// </list>
-/// <para>The guild skills are empty in this database (see the guild-skills memo): <c>CS_GUILDSKILLUPDATE_ACK</c> goes out with
-/// none, as the C++ does then. <b>Not ported:</b> the protected list (an invite is never refused by it), the guild cloak reset on
+/// <para>The guild skills (re-read on founding, joining, leaving, a duty and the guild window) are in MapService.GuildSkill.cs.
+/// <b>Not ported:</b> the protected list (an invite is never refused by it), the guild cloak reset on
 /// leaving, the security-code lock on leave / kick, the UDP guild log.</para>
 /// </summary>
 public sealed partial class MapService
@@ -184,11 +184,8 @@ public sealed partial class MapService
         foreach (var p in _state.Neighbors(s)) p.Send(msg);
     }
 
-    /// <summary>C++ <c>SendCS_GUILDSKILLUPDATE_ACK</c> — the guild skills (none in this database).</summary>
-    private static void SendCS_GUILDSKILLUPDATE_ACK(ClientSession s) => s.Send(new PacketWriter(Msg.CS_GUILDSKILLUPDATE_ACK, capacity: 1).WriteByte(0));
-
     /// <summary>C++ <c>OnMW_GUILDESTABLISH_REQ</c> (SSHandler.cpp:8094): the founder learns the result and becomes chief.</summary>
-    private void OnMW_GUILDESTABLISH_REQ(PacketReader r)
+    private async Task OnMW_GUILDESTABLISH_REQ(PacketReader r)
     {
         uint charId = r.ReadUInt32(), key = r.ReadUInt32();
         byte result = r.ReadByte();
@@ -199,9 +196,9 @@ public sealed partial class MapService
         if (establish != 0) SendGuildResult(s, Msg.CS_GUILDESTABLISH_ACK, result, w => { w.WriteUInt32(guildId); w.WriteString(name); });
         if (result != GuildSuccess) return;
         ch.GuildId = guildId; ch.GuildDuty = GuildDutyChief; ch.GuildPeer = GuildPeerNone; ch.GuildName = name;
-        SendCS_GUILDSKILLUPDATE_ACK(s);
         ch.Fame = ch.FameColor = 0;
         ShowGuildAttr(s, ch, GuildPeerNone);
+        await GiveFounderGuildSkills(s, ch);                                // MapService.GuildSkill.cs
     }
 
     /// <summary>C++ <c>OnMW_GUILDDISORGANIZATION_REQ</c> (SSHandler.cpp:8167).</summary>
@@ -233,7 +230,7 @@ public sealed partial class MapService
 
     /// <summary>C++ <c>OnMW_GUILDJOIN_REQ</c> (SSHandler.cpp:8259): every member online is told who joined; the new member takes
     /// the guild and shows it around.</summary>
-    private void OnMW_GUILDJOIN_REQ(PacketReader r)
+    private async Task OnMW_GUILDJOIN_REQ(PacketReader r)
     {
         uint charId = r.ReadUInt32(), key = r.ReadUInt32();
         byte result = r.ReadByte();
@@ -247,16 +244,18 @@ public sealed partial class MapService
         {
             w.WriteUInt32(guildId); w.WriteString(guildName); w.WriteUInt32(newId); w.WriteString(newName); w.WriteByte(max);
         });
-        SendCS_GUILDSKILLUPDATE_ACK(s);
-        if (charId != newId) return;
-        (ch.GuildId, ch.GuildName, ch.Fame, ch.FameColor, ch.GuildDuty, ch.GuildPeer) = (guildId, guildName, fame, fameColor, GuildDutyNone, GuildPeerNone);
-        ch.Persist.GuildLeave = 0;
-        ch.Persist.GuildLeaveTime = 0;
-        ShowGuildAttr(s, ch, GuildPeerNone);
+        if (charId == newId)
+        {
+            (ch.GuildId, ch.GuildName, ch.Fame, ch.FameColor, ch.GuildDuty, ch.GuildPeer) = (guildId, guildName, fame, fameColor, GuildDutyNone, GuildPeerNone);
+            ch.Persist.GuildLeave = 0;
+            ch.Persist.GuildLeaveTime = 0;
+            ShowGuildAttr(s, ch, GuildPeerNone);
+        }
+        if (result == GuildSuccess) await RefreshGuildSkills(s);
     }
 
     /// <summary>C++ <c>OnMW_GUILDDUTY_REQ</c> (SSHandler.cpp:8379).</summary>
-    private void OnMW_GUILDDUTY_REQ(PacketReader r)
+    private async Task OnMW_GUILDDUTY_REQ(PacketReader r)
     {
         uint charId = r.ReadUInt32(), key = r.ReadUInt32();
         string target = r.ReadString();
@@ -265,7 +264,7 @@ public sealed partial class MapService
         SendGuildResult(s, Msg.CS_GUILDDUTY_ACK, GuildSuccess, w => { w.WriteString(target); w.WriteByte(duty); });
         if (ch.Name != target) return;
         ch.GuildDuty = duty;
-        SendCS_GUILDSKILLUPDATE_ACK(s);
+        await RefreshGuildSkills(s);
     }
 
     /// <summary>C++ <c>OnMW_GUILDPEER_REQ</c> (SSHandler.cpp:8450): the new peerage, shown around for the one who got it.</summary>
@@ -284,7 +283,7 @@ public sealed partial class MapService
 
     /// <summary>C++ <c>OnMW_GUILDLEAVE_REQ</c> (SSHandler.cpp:8507): someone left (or was put out, or the guild was disbanded); the
     /// one who left loses the guild and its castle sign-up, shows it around, and is sent out of a castle.</summary>
-    private void OnMW_GUILDLEAVE_REQ(PacketReader r)
+    private async Task OnMW_GUILDLEAVE_REQ(PacketReader r)
     {
         uint charId = r.ReadUInt32(), key = r.ReadUInt32();
         string target = r.ReadString();
@@ -303,6 +302,7 @@ public sealed partial class MapService
         if (!s.IsMain) return;
         ShowGuildAttr(s, ch, GuildPeerNone);
         if (IsInCastle(ch)) Teleport(s, ch, ch.Persist.LastSpawnId != 0 ? ch.Persist.LastSpawnId : ch.Persist.SpawnId);
+        await RefreshGuildSkills(s);                                        // no guild: no guild skills
     }
 
     /// <summary>C++ <c>OnMW_GUILDMEMBERLIST_REQ</c> / <c>OnMW_GUILDINFO_REQ</c> (SSHandler.cpp:8601/8616): the world's list / info
@@ -314,13 +314,13 @@ public sealed partial class MapService
         s.Send(new PacketWriter(Msg.CS_GUILDMEMBERLIST_ACK).WriteRaw(r.ReadBytes(r.Remaining)));
     }
 
-    private void OnMW_GUILDINFO_REQ(PacketReader r)
+    private async Task OnMW_GUILDINFO_REQ(PacketReader r)
     {
         uint charId = r.ReadUInt32(), key = r.ReadUInt32();
         if (FindPlayer(charId, key) is not { Char: { } ch } s) return;
         var w = new PacketWriter(Msg.CS_GUILDINFO_ACK).WriteRaw(r.ReadBytes(r.Remaining));
         w.WriteByte(ch.Persist.StatLevel); w.WriteByte(ch.Persist.StatPoint); w.WriteUInt32(ch.Persist.StatExp);
         s.Send(w);
-        SendCS_GUILDSKILLUPDATE_ACK(s);
+        await RefreshGuildSkills(s);
     }
 }

@@ -195,7 +195,9 @@ public sealed class WorldWorker : BackgroundService
                 {
                     g.Tactics[t.CharId] = new TacticsMember { CharId = t.CharId, Name = t.Name, Level = t.Level, Class = t.Class, RewardPoint = t.RewardPoint, RewardMoney = t.RewardMoney, GainPoint = t.GainPoint, Day = t.Day, EndTime = t.EndTime };
                     state.CharTactics[t.CharId] = t.GuildId;
+                    state.Expired.Add(new ExpiredBuf((byte)ExpiredType.GuildTactics, t.EndTime, t.GuildId, t.CharId));   // C++ bInitExpired
                 }
+            state.Expired.Sort((x, y) => x.TimeExpired.CompareTo(y.TimeExpired));   // the queue is kept by fire time
         });
         await TryLoad("relations", async () =>
         {

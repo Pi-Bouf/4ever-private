@@ -44,8 +44,8 @@ public sealed partial class WorldService
             case Msg.MW_GUILDPOINTLOG_ACK: OnGuildPointLog(r); return true;
             case Msg.MW_GUILDPVPRECORD_ACK: OnGuildPvpRecord(r); return true;
             case Msg.MW_GUILDMONEYRECOVER_ACK: await OnGuildMoneyRecover(r); return true;
-            case Msg.MW_GUILDSKILLACTION_REQ: OnGuildSkillAction(session, packet); return true;
-            case Msg.MW_UPDATEGUILDCOOLDOWN_ACK: return true; // cooldown sync: map-driven
+            case Msg.MW_GUILDSKILLACTION_REQ: await OnGuildSkillAction(r); return true;              // WorldService.GuildSkill.cs
+            case Msg.MW_UPDATEGUILDCOOLDOWN_ACK: OnUpdateGuildCooldown(r); return true;
 
             // --- tactics (sub-guild) ---
             case Msg.MW_GUILDTACTICSLIST_ACK: OnGuildTacticsList(r); return true;
@@ -173,6 +173,7 @@ public sealed partial class WorldService
         {
             if (money != 0) g.GainMoney(gold, silver, cooper);
             g.Exp += exp;
+            if (exp != 0) UpdateGuildLevel(g);                             // CTGuild::GainEXP
             if (pv != 0) g.GainPvPoint(pv, Proto.PvpUseable);
             await Persist("contribution", db => db.ContributionAsync(g.Id, charId, g.Exp, g.Gold, g.Silver, g.Cooper));   // totals, as the C++
             if (pv != 0) await SaveGuildPvPoint(g);
@@ -421,6 +422,7 @@ public sealed partial class WorldService
         g.Members[targetId] = new GuildMember { CharId = targetId, Name = app.Name, Level = app.Level, Class = app.Class, Duty = (byte)GuildDuty.None, OnlineChar = tgt };
         _state.CharGuild[targetId] = g.Id;
         if (tgt is not null) tgt.Guild = g;
+        UpdateGuildLevel(g);                                               // CTGuild::AddMember
         foreach (var a in _state.GuildWanted.Values) a.Apps.Remove(targetId);
         await Persist("volunteerReply", db => db.MemberAddAsync(g.Id, targetId, app.Level, (byte)GuildDuty.None));
         // C++ NotifyAddGuildMember: the newcomer (if online) and the chief.
@@ -471,15 +473,6 @@ public sealed partial class WorldService
                 }
             }
         SendToCharId(charId, key, w.ToArray());
-    }
-
-    private void OnGuildSkillAction(ServerSession session, byte[] packet)
-    {
-        // Relay the guild-skill action to the acting char's guild (map applies the effect).
-        var r = new PacketReader(packet);
-        uint charId = r.ReadUInt32();
-        var g = _state.FindGuildByChar(charId);
-        if (g is not null) BroadcastToGuild(g, () => packet);
     }
 
     // ===== tactics (mercenaries) =====

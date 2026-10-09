@@ -160,6 +160,8 @@ public sealed partial class MapService
         // Resolve the attacking skill (C++ FindTSkill(m_wTriggerID); for a basic attack triggerID == wSkillID) — or the one
         // FINISHSKILL decided on (a random pick, Deadly Poison's damage over time).
         var atkSkill = castSkill ?? LearnedSkill(ch, skillId);
+        // C++ OnCS_DEFEND_REQ (CSHandler.cpp:1626): a guild skill needs the guild and the duty, and never touches a monster.
+        if (IsGuildSkill(skillId) && (targetType != OtPc || !CanCastGuildSkill(ch, skillId))) return;
 
         // ---- PC→PC: an attack on another player (MapService.PvP.cs); otherwise a positive maintain-type skill applies
         // a buff, and/or a cure skill dispels/heals, on self/an ally. C++ Defend runs MaintainSkill + PerformSkill(SDT_CURE) both. ----

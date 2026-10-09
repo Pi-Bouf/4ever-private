@@ -27,7 +27,8 @@ public static partial class Scenarios
         CS_GUILDWANTEDADD_ACK = M + 0x016C, CS_GUILDWANTEDLIST_REQ = M + 0x016F, CS_GUILDWANTEDLIST_ACK = M + 0x0170,
         CS_GUILDVOLUNTEERING_REQ = M + 0x0171, CS_GUILDVOLUNTEERING_ACK = M + 0x0172, CS_GUILDVOLUNTEERLIST_REQ = M + 0x0175,
         CS_GUILDVOLUNTEERLIST_ACK = M + 0x0176, CS_GUILDVOLUNTEERREPLY_REQ = M + 0x0177, CS_GUILDPOINTLOG_REQ = M + 0x01E3,
-        CS_GUILDPOINTLOG_ACK = M + 0x01E4, CS_GUILDPVPRECORD_REQ = M + 0x01E7, CS_GUILDPVPRECORD_ACK = M + 0x01E8;
+        CS_GUILDPOINTLOG_ACK = M + 0x01E4, CS_GUILDPVPRECORD_REQ = M + 0x01E7, CS_GUILDPVPRECORD_ACK = M + 0x01E8,
+        CS_GUILDSKILLACTION_REQ = M + 0x039A, CS_GUILDSKILLACTION_ACK = M + 0x039B, CS_GUILDSKILLUPDATE_ACK = M + 0x039C;
     // A stack the guild cabinet takes (TITEMCHART bIsSell has ITEMTRADE_CABINET), put in A's backpack for the run.
     private const ushort CabinetItem = 1573;
     private const byte CabinetItemSlot = 43;
@@ -45,6 +46,7 @@ public static partial class Scenarios
         try
         {
             await ClearTestGuild(db);
+            await ClearMemberGuildSkills(db, idA, idB);
             await db.ExecAsync("UPDATE TCHARTABLE SET bLevel=20, dwGold=0, dwSilver=5, dwCooper=0 WHERE dwCharID=@p0", (int)idA);
             await ClearCabinetItem(db, idA);
             await db.ExecAsync(@"INSERT INTO TITEMTABLE (dlID, bStorageType, dwStorageID, bOwnerType, dwOwnerID, bItemID, wItemID, bLevel,
@@ -59,6 +61,7 @@ public static partial class Scenarios
         {
             await Task.Delay(2500);                                              // the logout saves land first
             await ClearTestGuild(db);
+            await ClearMemberGuildSkills(db, idA, idB);
             await ClearCabinetItem(db, idA);
             foreach (var (id, row) in new[] { (idA, savedA), (idB, savedB) })
                 if (row is not null)
@@ -70,6 +73,18 @@ public static partial class Scenarios
         await RunGuildTacticsAsync(cfg, db, idA, idB);              // G3: GuildTacticsScenario.cs
         return PrintResults();
     }
+
+    /// <summary>The bots' own guild skills (a founder holds them all), from <c>TGUILDMEMBERSKILLTABLE</c>.</summary>
+    private static Task ClearMemberGuildSkills(GameDb db, uint idA, uint idB)
+        => db.ExecAsync("DELETE FROM TGUILDMEMBERSKILLTABLE WHERE dwCharID IN (@p0, @p1)", (int)idA, (int)idB);
+
+    /// <summary>A CS_GUILDSKILLUPDATE_ACK read: (skill, level, end).</summary>
+    private static List<(ushort Id, byte Level, long End)> GuildSkillList(PacketReader p) => Read(p, r =>
+    {
+        var list = new List<(ushort, byte, long)>();
+        for (byte n = r.ReadByte(), i = 0; i < n; i++) list.Add((r.ReadUInt16(), r.ReadByte(), r.ReadInt64()));
+        return list;
+    });
 
     /// <summary>The run's cabinet stack, wherever it went (A's bags, or the guild's cabinet — that goes with the guild).</summary>
     private static Task ClearCabinetItem(GameDb db, uint idA)
@@ -109,6 +124,10 @@ DELETE FROM TGUILDTABLE WHERE szName = '{TestGuild}'");
         var est = a.TryWait(CS_GUILDESTABLISH_ACK, timeoutMs: 5000);
         var (res, guildId, gname) = est is null ? default : Read(est, r => (r.ReadByte(), r.ReadUInt32(), r.ReadString()));
         Check("guild: A founds a guild (CS_GUILDESTABLISH_ACK success)", est is not null && res == 0 && guildId != 0 && gname == TestGuild, Describe(est));
+        var founderSkills = a.TryWait(CS_GUILDSKILLUPDATE_ACK, r => r.ReadByte() > 0, 5000);
+        var fs = founderSkills is null ? new() : GuildSkillList(founderSkills);
+        Check("guild skills: the founder holds all 10 at level 1, not yet renewed (CS_GUILDSKILLUPDATE_ACK)",
+            fs.Count == 10 && fs.All(x => x.Level == 1 && x.End == 0), Describe(founderSkills));
         var attr = b.TryWait(CS_GUILDATTR_ACK, r => r.ReadUInt32() == a.CharId, 5000);
         Check("guild: … B, nearby, sees A's new guild (CS_GUILDATTR_ACK)", attr is not null
             && Read(attr, r => { r.ReadUInt32(); uint g = r.ReadUInt32(); r.ReadUInt32(); r.ReadUInt32(); string n = r.ReadString(); r.ReadByte(); r.ReadUInt32(); r.ReadString(); return (g, n); })

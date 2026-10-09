@@ -262,6 +262,7 @@ public static class Msg
     public const ushort MW_GUILDSKILLACTION_ACK = MW_BASE + 0x022C;
     public const ushort MW_UPDATEGUILDCOOLDOWN_ACK = MW_BASE + 0x022D;
     public const ushort MW_UPDATEGUILDCOOLDOWN_REQ = MW_BASE + 0x022E;
+    public const ushort MW_ADDCOOLDOWN_REQ = MW_BASE + 0x022F;          // world -> every map: a guild skill's shared cooldown starts
 
     // --- Phase 2b: corps + party move/recall ---
     public const ushort MW_PARTYATTR_REQ = MW_BASE + 0x004A;

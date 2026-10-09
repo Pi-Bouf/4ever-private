@@ -477,13 +477,16 @@ SELECT wID, wMapID, fPosX, fPosY, fPosZ FROM TGODTOWERCHART ORDER BY wID";
 
         try
         {
-            await using var cmd = new SqlCommand("SELECT wID, wNpcID, wSpawnID, dwPrice, wTowerID FROM TMONSTERSHOPCHART; SELECT dwID, szMessage FROM TSVRMSGCHART", c);
+            await using var cmd = new SqlCommand("SELECT wID, wNpcID, wSpawnID, dwPrice, wTowerID FROM TMONSTERSHOPCHART; SELECT dwID, szMessage FROM TSVRMSGCHART; SELECT wSkillID, bType FROM TGUILDSKILLCHART", c);
             await using var r = await cmd.ExecuteReaderAsync(ct);
             while (await r.ReadAsync(ct))
                 store.MonsterShops.Add(new MonsterShopRow(r.GetUShortSafe(0), r.GetUShortSafe(1), r.GetUShortSafe(2), r.GetUIntSafe(3), r.GetUShortSafe(4)));
             await r.NextResultAsync(ct);
             while (await r.ReadAsync(ct))
                 if (!r.IsDBNull(1)) store.SvrMsgs[r.GetUIntSafe(0)] = r.GetString(1);
+            await r.NextResultAsync(ct);
+            while (await r.ReadAsync(ct))
+                store.GuildSkillTypes[r.GetUShortSafe(0)] = r.GetByteSafe(1);
         }
         catch (SqlException ex) when (ex.Number == 208) { /* no guard shop / server messages in this baseline */ }
 

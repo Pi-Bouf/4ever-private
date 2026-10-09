@@ -215,6 +215,8 @@ public static class Msg
     public const ushort CS_GUILDPEER_ACK = CS_MAP + 0x0071;
     public const ushort CS_GUILDINFO_REQ = CS_MAP + 0x0072;
     public const ushort CS_GUILDINFO_ACK = CS_MAP + 0x0073;
+    public const ushort CS_GUILDSKILLACTION_REQ = CS_MAP + 0x039A; // bAction bCount wParam[bCount] (GS_BUY: wSkillID; GS_RENEW: wSkillID)
+    public const ushort CS_GUILDSKILLACTION_ACK = CS_MAP + 0x039B; // bAction bCount wParam[bCount]
     public const ushort CS_GUILDSKILLUPDATE_ACK = CS_MAP + 0x039C;
     // The guild relay, batch G2 (MapService.GuildBoard.cs).
     public const ushort CS_GUILDLOCALRETURN_REQ = CS_MAP + 0x0157;
@@ -568,6 +570,11 @@ public static class Msg
     public const ushort MW_GUILDPOINTREWARD_REQ = MW_BASE + 0x0125;
     public const ushort MW_GUILDPOINTREWARD_ACK = MW_BASE + 0x0126;
     public const ushort MW_MONSTERBUY_REQ = MW_BASE + 0x012A;
+    public const ushort MW_GUILDSKILLACTION_REQ = MW_BASE + 0x022B;     // map -> world: dwCharID dwKey bAction bCount wParam[]
+    public const ushort MW_GUILDSKILLACTION_ACK = MW_BASE + 0x022C;     // world -> map: the same back
+    public const ushort MW_UPDATEGUILDCOOLDOWN_ACK = MW_BASE + 0x022D;  // map -> world: dwGuildID wSkillID bLevel BOOL renew BOOL use
+    public const ushort MW_UPDATEGUILDCOOLDOWN_REQ = MW_BASE + 0x022E;  // world -> member's map: dwCharID dwKey wSkillID bLevel BOOL BOOL
+    public const ushort MW_ADDCOOLDOWN_REQ = MW_BASE + 0x022F;          // world -> every map: dwGuildID wSkillID
     public const ushort MW_MONSTERBUY_ACK = MW_BASE + 0x012B;
     public const ushort MW_GUILDMONEYRECOVER_ACK = MW_BASE + 0x012C;
     public const ushort MW_GUILDTACTICSINVITE_REQ = MW_BASE + 0x0135;

@@ -251,6 +251,10 @@ public sealed class TemplateStore
     /// <summary>The castle guards' shops (TMONSTERSHOPCHART), in chart order.</summary>
     public List<MonsterShopRow> MonsterShops { get; } = new();
 
+    /// <summary>C++ <c>m_mapGuildSkill</c> (TGUILDSKILLCHART, migration 016): each guild skill and the duty it needs (0 member,
+    /// 1 vice-chief, 2 chief), by skill id.</summary>
+    public SortedDictionary<ushort, byte> GuildSkillTypes { get; } = new();
+
     /// <summary>C++ <c>m_mapTSvrMsg</c> — the server's own texts (TSVRMSGCHART: mail titles, …) by <c>SERVER_MESSAGE</c> id.</summary>
     public Dictionary<uint, string> SvrMsgs { get; } = new();
 
