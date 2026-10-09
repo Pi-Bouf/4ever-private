@@ -89,7 +89,9 @@ public sealed record MonSpawnRow(
     byte Count, byte Range, byte Prob, uint Region, uint Delay, byte Event,
     // The ROAM radius (C++ m_bArea). Not Range: Range is the spawn scatter, and is 0 for most spawns while Area
     // is 3-5 — using Range made most monsters roam to their own anchor point and turn on the spot.
-    byte Area = 0);
+    byte Area = 0,
+    // C++ m_wLocalID: the territory (TBATTLEZONECHART id) the spawn belongs to — its war brings it out (0 = none).
+    ushort LocalId = 0);
 
 /// <summary>
 /// One entry of a spawn's monster-type table from <c>TMAPMONCHART</c> (C++ <c>CTBLMapMonAll</c> →

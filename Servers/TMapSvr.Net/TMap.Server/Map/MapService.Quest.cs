@@ -1008,13 +1008,13 @@ public sealed partial class MapService
     }
 
     /// <summary>C++ <c>SendCS_NPCITEMLIST_ACK(wID, items)</c> (CSSender.cpp:3218) — wNpcID, <c>TNPC_BOX</c>, the
-    /// discount rate (0 — the NPC-discount subsystem is unported), the count, then each WORD item id.</summary>
-    private static void SendCS_NPCITEMLIST_ACK(ClientSession s, ushort npcId, List<ushort> items)
+    /// NPC's discount rate for the player, the count, then each WORD item id.</summary>
+    private void SendCS_NPCITEMLIST_ACK(ClientSession s, ushort npcId, List<ushort> items)
     {
         var w = new PacketWriter(Msg.CS_NPCITEMLIST_ACK, capacity: 32);
         w.WriteUInt16(npcId);
         w.WriteByte(TNpcBox);
-        w.WriteByte(0);                 // discount rate (GetDiscountRate ⇒ 0, no discount subsystem)
+        w.WriteByte(s.Char is { } ch ? DiscountRate(ch, _state.FindNpc(npcId)) : (byte)0);
         w.WriteByte((byte)items.Count);
         foreach (var id in items) w.WriteUInt16(id);
         s.Send(w);

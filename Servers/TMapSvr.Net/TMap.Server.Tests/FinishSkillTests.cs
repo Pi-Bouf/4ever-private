@@ -172,7 +172,7 @@ public class FinishSkillTests
     [Fact]
     public async Task NegativeSkill_SkipsAMonsterOfTheAttackersOwnFaction()
     {
-        var own = Mob(0x30001, country: 0);   // hero is country 0 — a same-faction guard
+        var own = Mob(0x30001, country: 1);   // hero is country 1 (the enter packet's) — a same-faction guard
         var (h, s, _) = await Setup(DrainSkill(positive: 0), own);
 
         await h.Service.DispatchClientAsync(s, FinishSkill(1, Sid, (own.Id, OtMon)));

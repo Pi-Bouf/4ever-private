@@ -59,6 +59,34 @@ dotnet run -- --Bot:Scenario=features --Bot:Account=tbot27 --Bot:Account2=tbot28
 
 Exit code 0 when every check passes.
 
+## Scenario: castle (a real castle war)
+
+`--Bot:Scenario=castle` (same arguments as `features`) plays a castle war on Chesed end to end. The database has no
+guilds, so it inserts two (A chief of the defenders, B chief of the attackers) and **restarts the world container**
+(`docker compose restart worldsvr`) so it loads them; it names them Chesed's sides (`CT_CASTLEGUILDCHG_REQ`), the
+chiefs sign up, and the bots come in, carry, mount and knock off god balls, and the war ends on time — result, news,
+save, reward mail, everyone sent out. Everything is put back after, and the world and map containers are restarted.
+Needs the docker stack, and no fort war due in the next 3 minutes (castle sign-up closes once a fort's war comes first).
+
+## Scenario: guild (a guild's life)
+
+`--Bot:Scenario=guild` (same arguments) drives the map's guild relay against the live world: A (set to level 20)
+founds "TbotGuild", invites B who accepts, opens the guild window, makes B vice-chief, gives a peerage; posts, edits
+and removes a board article, contributes silver, tries a fame mark (refused: no guild points), puts a stack in the
+guild cabinet (refused at guild level 1, then accepted once the test raises the cabinet size) and takes part back out,
+opens the point log and PvP record; puts B out, posts a wanted ad that B applies to and A accepts, then disbands. A disbanded guild stays 7 days in the world, so the scenario deletes the guild rows and **restarts the
+world container** at the end; the bots' level and guild-leave marks are put back.
+
+A second part (`GuildTacticsScenario.cs`) needs a level-5 guild with money and PvP points, so it inserts "TbotTactics"
+(A chief, 1 gold, 1000 points, 1 guild stat point, a run-out Battle Cry) and restarts the world to load it. A renews the
+guild skill (300 PvP points), buys a level with the guild's stat point and casts it (the guild's cooldown comes back). A posts a mercenary ad, B applies and is taken (a
+welcome letter), B leaves its contract (the guild is paid back), A invites B as a mercenary and B accepts, A fires B
+(B gets its points and a letter with its pay); B joins the guild and A gives it 50 guild points; A buys a castle guard
+post from the mercenary merchant (23100) with the guild's money. The contract, treasury and mails are checked in the
+database. Then everything is removed, the bots' PvP points are restored, and the world **and the map** are restarted (the
+bought guards go with the map). The first part also checks the founder's 10 guild skills, the second the guild falling a
+level when a member joins below its level's minimum. 59 checks in all.
+
 ## Scenario: stress (hundreds of bots)
 
 `--Bot:Scenario=stress` runs `StressCount` bots in one process, each on its own thread and account

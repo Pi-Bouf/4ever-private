@@ -28,10 +28,12 @@ public sealed partial class MapService
     /// <summary>C++ <c>CTMonster::OnDie</c> spine: award exp to the keeper, roll the money drop, broadcast
     /// <c>CS_DIE_ACK</c>, then either keep the corpse (if it holds loot) or despawn + re-arm the spawn slot
     /// immediately (the behavior for a loot-less kill).</summary>
-    private void OnMonsterDeath(Monster mon)
+    private void OnMonsterDeath(Monster mon, uint killerId = 0)
     {
         long nowMs = _tickSeconds * 1000L;
         AwardKill(mon);   // exp (solo or party split) + the per-recipient hunt-quest advance
+        // C++ TMonster.cpp:785 — dwAttackID, the one who struck the last blow (the keeper when it is not known).
+        if (SpawnOf(mon.Id) is { Suspended: true }) OnBattleZoneEvent(mon, killerId != 0 ? killerId : mon.KeeperId);
         RollLoot(mon);
         foreach (var p in _state.PlayersAround(mon)) SendCS_DIE_ACK(p, mon.Id, Monster.OtMon);
         ReleaseMaintainMonster(mon, notify: false);   // C++ OnDie → ReleaseMaintain: drop the monster's debuffs

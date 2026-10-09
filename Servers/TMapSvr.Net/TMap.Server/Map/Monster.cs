@@ -206,6 +206,10 @@ public sealed class Monster
         }
     }
 
+    /// <summary>C++ <c>m_mapGuildDamage</c> — the damage each guild did (TMonster.cpp:403): a fort's boss goes to the guild that
+    /// did the most.</summary>
+    public Dictionary<uint, uint> GuildDamage { get; } = new();
+
     /// <summary>Enter battle mode on being hit (C++ <c>ChgMode(MT_BATTLE)</c>): pushes the recover anchors to
     /// <c>now + RECOVER_INIT</c> on the transition (suppressing monster HP regen while <c>MT_BATTLE</c>), and
     /// refreshes <see cref="LastAtkTick"/> on every hit.</summary>

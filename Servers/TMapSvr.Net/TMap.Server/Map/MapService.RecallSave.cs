@@ -54,7 +54,7 @@ public sealed partial class MapService
         var list = new List<MaintainLoadRow>();
         foreach (var b in ch.MaintainSkills)
         {
-            if (b.SkillId == TstoreSkill) continue;
+            if (b.SkillId == TstoreSkill || IsZoneBuff(ch, b.SkillId)) continue;   // nor a territory's zone buffs
             uint remain = b.StartTick == 0 ? 0 : b.GetRemainTick(now);
             if (b.StartTick != 0 && remain == 0) continue;
             list.Add(new MaintainLoadRow(b.SkillId, b.Level, remain, b.AttackType, b.AttackId, b.HostType, b.HostId, b.AttackCountry));

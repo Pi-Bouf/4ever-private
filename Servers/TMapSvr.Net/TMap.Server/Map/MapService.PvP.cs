@@ -16,8 +16,8 @@ namespace TMap.Server.Map;
 /// total points and pays the killer — or, in a party, pays the killer the same and each partner nearby 12 — see
 /// <see cref="PvPKill"/>. Each kill and death is recorded (<see cref="RecordPvP"/>). A landed skill also leaves its debuff
 /// (a stun, a slow, a curse…) through the buff engine, as it does on a monster; a dispel strips the target's buffs; and
-/// a hostile skill, hit or miss, ends the target's buffs that stop on being hit (<c>EraseBuffByDefend</c>). <b>Not
-/// ported:</b> the local / battle-zone tallies (<c>LocalRecord</c>).</para>
+/// a hostile skill, hit or miss, ends the target's buffs that stop on being hit (<c>EraseBuffByDefend</c>). A kill in a fort at
+/// war goes by the local chart and is written down for the fort (MapService.Fort.cs).</para>
 /// </summary>
 public sealed partial class MapService
 {
@@ -41,7 +41,7 @@ public sealed partial class MapService
         if (power is null) ch.EnterBattle(NowMs, RecoverInit);
         target.EnterBattle(NowMs, RecoverInit);                                          // CTPlayer::Defend ChgMode(MT_BATTLE)
 
-        byte hitType = forceMiss ? HtMiss : HitTypeVsPlayer(CombatRng, p.Crit, p.AttackLevel);
+        byte hitType = forceMiss ? HtMiss : IsGuildSkill(skillId) ? HtNormal : HitTypeVsPlayer(CombatRng, p.Crit, p.AttackLevel);   // a guild skill always hits (C++ GetAtkHitType)
         uint maxHp = MaxHpFor(target), maxMp = MaxMpFor(target);
         var def = DamageTarget.Of(target, self: false, maxHp, maxMp, CombatRng, _templates, v => DistributeSkill(ts, target, v));
         var dmg = CalcDamage(p, def, tpl, level, hitType, isMagic, isLong);
@@ -136,6 +136,9 @@ public sealed partial class MapService
     /// partner in view, who gets 12.</summary>
     private void PvPKill(ClientSession vs, Character victim, ClientSession ks, Character killer)
     {
+        // C++ CTPlayer::OnDie: the kill counts in the victim's territory (m_mapKills).
+        if (victim.LocalId != 0 && _territories.TryGetValue(victim.LocalId, out var at)) at.Kills[killer.CharId] = at.Kills.GetValueOrDefault(killer.CharId) + 1;
+        var local = LocalOf(victim) is { Status: BsBattle } l ? l : null;      // GetPvPStatus: PVPS_LOCAL in a territory at war
         var atkParty = killer.GetPartyId() != 0
             ? _state.InView(ks).Where(x => x.Char is { } c && c.GetPartyId() == killer.GetPartyId()).ToList()
             : new List<ClientSession>();
@@ -146,21 +149,24 @@ public sealed partial class MapService
                 if (x.Char is { } c && c.GetPartyId() == victim.GetPartyId()) defMax = Math.Max(defMax, c.Level);
 
         byte evt = atkMax > defMax + PvpLevelGap ? PvpeKillL : atkMax + PvpLevelGap < defMax ? PvpeKillH : PvpeKillE;
-        if (!_templates.PvPointKill.TryGetValue((PvpsNormal, evt), out var row)) return;
+        if (!_templates.PvPointKill.TryGetValue((local is null ? PvpsNormal : PvpsLocal, evt), out var row)) return;
         if (!_templates.LevelPvPoint.TryGetValue(victim.Level, out var worth)) return;
 
         uint dec = worth * row.Dec / 100, inc = worth * row.Inc / 100;
-        inc = inc * (uint)(100 - victim.Persist.Aftermath / 2) / 100;                     // no local battle
+        if (local is not null) LocalRecord(local, victim, evt, dec, gain: false);
+        else inc = inc * (uint)(100 - victim.Persist.Aftermath / 2) / 100;              // no local battle
 
         UsePvPoint(vs, victim, dec, evt, PvpTotal, killer);
         if (atkParty.Count == 0)
         {
+            if (local is not null) LocalRecord(local, killer, evt, inc, gain: true);
             GainPvPoint(ks, killer, inc, evt, PvpTotal | PvpUseable, victim);
             return;
         }
         for (int i = atkParty.Count - 1; i >= 0; i--)                                    // vParty.back() first
         {
             var x = atkParty[i];
+            if (local is not null) LocalRecord(local, x.Char!, evt, PvpPartnerPoint, gain: true);
             if (x.Char!.CharId == killer.CharId) GainPvPoint(x, x.Char, inc, evt, PvpTotal | PvpUseable, victim);
             else if (x.IsMain) GainPvPoint(x, x.Char, PvpPartnerPoint, evt, PvpTotal | PvpUseable, victim);
         }

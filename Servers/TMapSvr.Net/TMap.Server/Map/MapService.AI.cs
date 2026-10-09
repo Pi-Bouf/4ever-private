@@ -202,6 +202,7 @@ public sealed partial class MapService
     {
         foreach (var p in viewers) SendCS_DIE_ACK(p, target.CharId, OtPc);
         if (_state.FindByChar(target.CharId) is not { } dead) return;
+        CastleOnDeath(target);                                                  // a carried god ball falls; a kill point (MapService.Castle.cs)
         RecallsOwnerDied(dead, target);
         CompanionOwnerDied(dead, target);
         ReleaseMaintainPlayer(dead, target, notify: false);

@@ -177,7 +177,7 @@ public sealed partial class MapService
         _world.Send(w);
     }
 
-    private void OnMW_CHARINFO_REQ(PacketReader r)
+    private async Task OnMW_CHARINFO_REQ(PacketReader r)
     {
         uint charId = r.ReadUInt32();
         uint key = r.ReadUInt32();
@@ -194,8 +194,8 @@ public sealed partial class MapService
         ch.TacticsName = r.ReadString();
         ch.GuildDuty = r.ReadByte();
         ch.GuildPeer = r.ReadByte();
-        r.ReadUInt16();                   // wCastle
-        r.ReadByte();                     // bCamp
+        ch.Castle = r.ReadUInt16();       // wCastle (SSHandler.cpp:2085)
+        ch.Camp = r.ReadByte();           // bCamp
         ch.PartyId = r.ReadUInt16();
         ch.PartyType = r.ReadByte();      // bPartyType (loot/exp mode; PT_SOLO opts out of party sharing)
         ch.PartyChiefId = r.ReadUInt32();
@@ -209,6 +209,10 @@ public sealed partial class MapService
         // The saddle goes first (C++ OnDM_LOADCHAR_ACK sends it before the world's CHARINFO step).
         var saddle = ch.Saddle ?? default;
         SendCS_SENDSADDLE_REQ(s, saddle.ItemId, saddle.EndTime, saddle.Type, openUi: false);
+
+        // C++ OnMW_CHARINFO_REQ: the guild skills first, among the skills the character info carries (MapService.GuildSkill.cs).
+        await RefreshGuildSkills(s, notify: false);
+        if (s.Char != ch) return;
 
         // This is where the client actually receives its character (see agent analysis, item 5).
         SendCS_CHARINFO_ACK(s);
@@ -263,8 +267,8 @@ public sealed partial class MapService
         ch.GuildName = r.ReadString();
         ch.GuildDuty = r.ReadByte();
         ch.GuildPeer = r.ReadByte();
-        r.ReadUInt16();                   // wCastle
-        r.ReadByte();                     // bCamp
+        ch.Castle = r.ReadUInt16();       // wCastle (SSHandler.cpp:1477)
+        ch.Camp = r.ReadByte();           // bCamp
         ch.TacticsId = r.ReadUInt32();
         ch.TacticsName = r.ReadString();
         ch.PartyId = r.ReadUInt16();
@@ -379,6 +383,8 @@ public sealed partial class MapService
             RecallsEnterMap(s, s.Char);    // summons that followed through a teleport come back (InitMap)
             CompanionEnterMap(s, s.Char);  // and the summoned companion is called out (InitMap)
             DuringItemsAtLogin(s, s.Char); // the premium / exp boost buffs, the premium shown around (InitMap)
+            SkyGardenEnterMap(s, s.Char);  // on the sky garden's map: one's camp and the garden's state (InitMap)
+            CastleEnterMap(s, s.Char);     // on a castle's map: signed up, or sent out (InitMap, MapService.Castle.cs)
             _log.LogInformation("Char {Char} live on map {Map} ch {Ch}.", s.CharId, s.Char.MapId, s.Channel);
         }
     }
@@ -531,6 +537,9 @@ public sealed partial class MapService
                     ch.Hair = c.Hair; ch.Face = c.Face; ch.Body = c.Body; ch.Pants = c.Pants;
                     ch.Hand = c.Hand; ch.Foot = c.Foot; ch.Level = c.Level == 0 ? (byte)1 : c.Level;
                     ch.RegionId = c.Region; ch.HelmetHide = c.HelmetHide;
+                    // Where it was saved (C++ CTBLChar): the map and the spot — a never-placed row (all 0) keeps the default.
+                    if (c.MapId != 0 || c.PosX != 0 || c.PosZ != 0)
+                    { ch.MapId = c.MapId; ch.PosX = c.PosX; ch.PosY = c.PosY; ch.PosZ = c.PosZ; ch.Dir = c.Dir; }
                     ch.Hp = c.Hp; ch.Mp = c.Mp; // persisted CURRENT hp/mp; max is computed + clamped at serialize
                     ch.Gold = c.Gold; ch.Silver = c.Silver; ch.Cooper = c.Cooper;
                     ch.Exp = c.Exp; ch.SkillPoint = c.SkillPoint;
@@ -637,6 +646,7 @@ public sealed partial class MapService
         catch (Exception ex) { _log.LogWarning(ex, "Char {Char} summon load failed; continuing without them.", ch.CharId); }
 
         foreach (var sk in await _gameDb.LoadSkillsAsync(ch.CharId))
+            if (!IsGuildSkill(sk.SkillId))                                     // those come from the guild's tables
             ch.Skills.Add(new Skill
             {
                 SkillId = sk.SkillId, Level = sk.Level, ReuseRemainTick = sk.RemainTick,
@@ -726,8 +736,14 @@ public sealed partial class MapService
     private void LinkItemAttr(Item item)
     {
         StampCompanionRune(item);
+        LinkItemAttrAt(item, item.Level);
+    }
+
+    /// <summary>C++ <c>SetItemAttr(pItem, bLevel)</c>: the attributes of the item at a given level (a territory's item cap).</summary>
+    private void LinkItemAttrAt(Item item, byte level)
+    {
         if (item.Template is null || !_templates.HasItemAttrs) return;
-        ushort key = (ushort)(item.Template.AttrId + _templates.GradeForLevel(item.Level) + item.Gem);
+        ushort key = (ushort)(item.Template.AttrId + _templates.GradeForLevel(level) + item.Gem);
         item.Attr = _templates.Attr(key) ?? _templates.DefaultAttr;
     }
 

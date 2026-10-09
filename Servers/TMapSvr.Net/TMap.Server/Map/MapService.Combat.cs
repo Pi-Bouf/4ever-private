@@ -97,6 +97,8 @@ public sealed partial class MapService
             return;
         }
         if (attackType != OtPc) return;
+        // C++ (CSHandler.cpp:1653): no hostile skill out of a peace zone, on anything.
+        if ((_templates.Skill(skillId)?.IsNegative ?? true) && CheckPeaceZone(ch)) return;
 
         PlayerHitsTarget(s, ch, hostId, attackId, attackType, targetId, targetType, actId, aniId, attackerLevel,
             transHp, transMp, canSelect, skillId, skillLevel, atkX, atkY, atkZ, defX, defY, defZ);
@@ -158,6 +160,8 @@ public sealed partial class MapService
         // Resolve the attacking skill (C++ FindTSkill(m_wTriggerID); for a basic attack triggerID == wSkillID) — or the one
         // FINISHSKILL decided on (a random pick, Deadly Poison's damage over time).
         var atkSkill = castSkill ?? LearnedSkill(ch, skillId);
+        // C++ OnCS_DEFEND_REQ (CSHandler.cpp:1626): a guild skill needs the guild and the duty, and never touches a monster.
+        if (IsGuildSkill(skillId) && (targetType != OtPc || !CanCastGuildSkill(ch, skillId))) return;
 
         // ---- PC→PC: an attack on another player (MapService.PvP.cs); otherwise a positive maintain-type skill applies
         // a buff, and/or a cure skill dispels/heals, on self/an ally. C++ Defend runs MaintainSkill + PerformSkill(SDT_CURE) both. ----
@@ -165,6 +169,10 @@ public sealed partial class MapService
         {
             // C++ CanDuel: a player in a duel is off limits to its own side except its opponent.
             if (_state.FindByChar(targetId)?.Char is { } dueller && !CanDuel(dueller, ch)) return;
+            // Peace zones (C++ CSHandler.cpp:20520 / 20552): no hostile skill on a player from one, nor on one standing in one.
+            if (atkSkill?.Template is not { IsNegative: false } && (CheckPeaceZone(ch)
+                || (targetId != ch.CharId && _state.FindByChar(targetId)?.Char is { } inPeace && InPeaceTerritory(inPeace))))
+                return;
             if (targetId != ch.CharId && atkSkill?.Template is not { IsNegative: false })
             {
                 if (_state.FindByChar(targetId) is { State: EnterState.InGame, Char: { } target } ts
@@ -220,7 +228,7 @@ public sealed partial class MapService
         // Otherwise this phase covers only a player attacking a field monster: a live one, or a corpse for the
         // skills that can land on one (C++ OS_DEAD && !CanDefendAtDie — Enslave Monster).
         if (targetType != Monster.OtMon) return;
-        if (_state.FindMonster(targetId) is not { } mon) return;
+        if (_state.FindMonster(targetId) is not { } mon || mon.MapId != ch.MapId || mon.Channel != s.Channel) return;   // C++: the attacker's own map
         var atkTpl = atkSkill?.Template;
         if (mon.Hp == 0 && atkTpl?.CanDefendAtDie() != true) return;
 
@@ -266,6 +274,7 @@ public sealed partial class MapService
         ApplyMonsterDamage(mon, dmg);   // C++ OnDamage: HP/MP damage floors at 0, heal clamps to max
         // Loot/exp owner = the HP actually removed this swing (party bucket if partied — Phase 17/38; 0 on a miss/heal).
         mon.AddDamage(owner.CharId, owner.GetPartyId(), hpBefore - mon.Hp);
+        AddGuildDamage(mon, owner, hpBefore - mon.Hp);   // MapService.Fort.cs
 
         // bAtkHit carries the hit result (HT_MISS/NORMAL/CRITICAL), overridden to HT_LASTHIT on the killing blow.
         byte atkHit = hitType == HtMiss || corpse ? hitType : (mon.Hp == 0 ? HtLastHit : hitType);
@@ -314,7 +323,7 @@ public sealed partial class MapService
         }
 
         // ---- death → despawn → respawn re-arm ----
-        if (hitType != HtMiss && !corpse && mon.Hp == 0) OnMonsterDeath(mon);
+        if (hitType != HtMiss && !corpse && mon.Hp == 0) OnMonsterDeath(mon, owner.CharId);
     }
 
     /// <summary>The net HP/MP change a hit inflicts on the defender plus the per-exec damage map that fills

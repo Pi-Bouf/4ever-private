@@ -92,6 +92,11 @@ public sealed partial class MapService
         // ---- skill known? (pATTACK->FindTSkill(wSkillID)) ----
         var skill = LearnedSkill(ch, skillId);
         if (skill is null) { SendSkillUseFail(s, SkillUseResult.NotFound, attackId, attackType, skillId, actionId, actId, aniId); return; }
+        // ---- a guild skill: the guild, the duty, its time (MapService.GuildSkill.cs) ----
+        if (!CanCastGuildSkill(ch, skillId)) { SendSkillUseFail(s, SkillUseResult.NotFound, attackId, attackType, skillId, actionId, actId, aniId); return; }
+        // ---- no hostile skill in a peace zone (C++ CheckPeaceZone, CSHandler.cpp:2584) ----
+        if ((skill.Template?.IsNegative ?? true) && CheckPeaceZone(s.Char!))
+        { SendSkillUseFail(s, SkillUseResult.PeaceZone, attackId, attackType, skillId, actionId, actId, aniId); return; }
 
         // ---- MP cost (GetRequiredMP vs GetPureMaxMP; strict <) ----
         uint needMp = skill.GetRequiredMp(StatEngine.PureMaxMp(ch, _templates));
@@ -122,6 +127,7 @@ public sealed partial class MapService
         byte cp = isMagic ? StatEngine.CriticalMagicProb(ch, _templates) : StatEngine.CriticalPysProb(ch, _templates);
 
         if (skill.Template is { } used) EraseBuffByAttack(casterSession, ch, used);   // C++ CSHandler.cpp:2971
+        GuildSkillCast(ch, skillId, skill.Level);                                       // C++ CSHandler.cpp:2974: the guild's cooldown
 
         var ack = BuildCS_SKILLUSE_ACK(SkillUseResult.Success, attackId, attackType, skillId, actionId, actId, aniId,
             skill.Level, backSkill: 0, attackLevel, ch.Level, pysMin, pysMax, mgMin, mgMax,

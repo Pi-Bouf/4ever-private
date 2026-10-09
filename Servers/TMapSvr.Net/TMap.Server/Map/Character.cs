@@ -74,6 +74,20 @@ public sealed class Character
 
     // Position / motion
     public uint RegionId { get; set; }
+
+    /// <summary>C++ <c>m_wLocalID</c> — the territory the player stands in (MapService.Territory.cs), as its client names it; and
+    /// that territory's two zone buffs (kept out of the save).</summary>
+    public ushort LocalId { get; set; }
+    public (ushort Skill1, ushort Skill2) ZoneSkills { get; set; }
+
+    /// <summary>C++ <c>m_wCastle</c> / <c>m_bCamp</c> — the castle the player signed up for and its side (CAMP_DEFEND 1 /
+    /// CAMP_ATTACK 2), from the world.</summary>
+    public ushort Castle { get; set; }
+    public byte Camp { get; set; }
+    /// <summary>C++ <c>m_wGodBall</c> — the god ball carried in a castle war, 0 = none (MapService.Castle.cs).</summary>
+    public ushort GodBall { get; set; }
+    /// <summary>C++ <c>m_guildItem</c> — the item on its way into the guild cabinet, until the database answers (MapService.GuildBoard.cs).</summary>
+    public Item? GuildItem { get; set; }
     public ushort MapId { get; set; }
     public float PosX { get; set; }
     public float PosY { get; set; }
@@ -203,6 +217,9 @@ public sealed class Character
 
     /// <summary>Learned skills (CS_CHARINFO_ACK skill sub-loop).</summary>
     public List<Skill> Skills { get; } = new();
+
+    /// <summary>C++ <c>m_mapGuildSkill</c> — the guild skills held, run out or not (MapService.GuildSkill.cs).</summary>
+    public Dictionary<ushort, GuildSkillHeld> GuildSkills { get; } = new();
 
     /// <summary>C++ <c>m_vRemainSkill</c> — the learned skills whose rows apply for good (<c>IsRemainType</c>). The C++
     /// fills it with every such skill at login and, on learning one, first drops another of the same

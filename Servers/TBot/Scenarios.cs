@@ -8,7 +8,7 @@ namespace TBot;
 /// client reads (TClient CSHandler.cpp) — every reply must be consumed to its last byte — and, after logout,
 /// what the map server saved. The characters' money, HP, position and test items are put back at the end.
 /// </summary>
-public static class Scenarios
+public static partial class Scenarios
 {
     // CS_MAP offsets (CSProtocol.h), mirrored from TMap.Protocol/NetCode.cs.
     private const ushort M = Msg.CS_MAP;
@@ -50,6 +50,9 @@ public static class Scenarios
         CS_LOOPSKILL_REQ = M + 0x00F2, CS_LOOPSKILL_ACK = M + 0x00F3,
         CS_CANCELSKILL_REQ = M + 0x0146, CS_QUESTUPDATE_ACK = M + 0x0053, CS_QUESTENDTIMER_REQ = M + 0x0058,
         CS_QUESTPOSEXEC_REQ = M + 0x0354, CS_MONITEMTAKEALL_REQ = M + 0x0152, CS_MONITEMTAKE_ACK = M + 0x008B,
+        CS_GUILDLOCALLIST_REQ = M + 0x0155, CS_GUILDLOCALLIST_ACK = M + 0x0156, CS_REGION_REQ = M + 0x00F1,
+        CS_LOCALOCCUPY_ACK = M + 0x00A8, CS_DELMON_ACK = M + 0x0012, CS_ENTERCASTLE_ACK = M + 0x01EF, CS_LEAVECASTLE_ACK = M + 0x01F0,
+        CS_ITEMLEVELREVISION_ACK = M + 0x0245, CS_ENTERSKYGARDEN_ACK = M + 0x0254, CS_LEAVESKYGARDEN_ACK = M + 0x0269,
         CS_DIE_ACK = M + 0x0025, CS_REVIVAL_REQ = M + 0x0026, CS_REVIVAL_ACK = M + 0x0027, CS_PVPPOINT_ACK = M + 0x01E2,
         CS_MOVEITEM_REQ = M + 0x0028, CS_MOVEITEM_ACK = M + 0x0029, CS_SKILLEND_ACK = M + 0x0037,
         CS_SKILLBUY_REQ = M + 0x0032, CS_SKILLBUY_ACK = M + 0x0033, CS_NPCITEMLIST_REQ = M + 0x0082, CS_NPCITEMLIST_ACK = M + 0x0083;
@@ -112,18 +115,22 @@ public static class Scenarios
     private const ushort HonourTitle = 56;
     // Backed up before the run and put back after (by dwCharID); TSKILLMAINTAINTABLE because the map saves the bots' buffs.
     private static readonly string[] RankTables = { "TMONTHPVPOINTTABLE", "TPVPRECORDTABLE", "TTITLETABLE", "TSKILLMAINTAINTABLE" };
+    // The forts' wars write every fort's next war and week (TSaveLocalOccupy): those two tables are copied aside whole.
+    private static readonly string[] WarTables = { "TLOCALTABLE", "TLOCALOCCUPYTABLE" };
     private const byte InvenEquip = 0xFE, InvenBackpack = 0xFF;
 
     private static readonly List<(string Name, bool Ok, string Detail)> Results = new();
 
     public static async Task<int> RunAsync(BotConfig cfg, CancellationToken ct)
     {
-        if (cfg.Scenario != "features") { Console.Error.WriteLine($"unknown scenario '{cfg.Scenario}'"); return 2; }
+        if (cfg.Scenario is not ("features" or "castle" or "guild")) { Console.Error.WriteLine($"unknown scenario '{cfg.Scenario}'"); return 2; }
         if (cfg.Account2.Length == 0 || cfg.GameConnectionString.Length == 0)
         {
-            Console.Error.WriteLine("the features scenario needs --Bot:Account2 and --Bot:GameConnectionString");
+            Console.Error.WriteLine($"the {cfg.Scenario} scenario needs --Bot:Account2 and --Bot:GameConnectionString");
             return 2;
         }
+        if (cfg.Scenario == "castle") return await RunCastleAsync(cfg);     // CastleScenario.cs
+        if (cfg.Scenario == "guild") return await RunGuildAsync(cfg);       // GuildScenario.cs
         var db = new GameDb(cfg.GameConnectionString);
         var cfgA = Clone(cfg, cfg.Account, "[A]");
         var cfgB = Clone(cfg, cfg.Account2, "[B]");
@@ -163,6 +170,7 @@ public static class Scenarios
 
             LoginStatSheet(a);
             SmallRequests(a, b);
+            Territory(a, b);
             Party(a, b, nameA, nameB);
             Mail(a, b, nameA, nameB);
             HotkeyAdd(a);
@@ -224,6 +232,175 @@ public static class Scenarios
         var row = await db.RowAsync("SELECT COUNT(*) FROM THOTKEYTABLE WHERE dwCharID=@p0 AND bInvenID=@p1", (int)idA, (int)HotkeyPage);
         Check("hotkey: emptied page deleted from THOTKEYTABLE", row is not null && Convert.ToInt32(row[0]) == 0,
             $"rows={row?[0]}");
+
+        await MissionWar(cfgA, db, idA);
+        await SkyGardenWar(cfgA, db, idA);
+        await FortWar(cfgA, db, idA);
+        await CastleOutsider(cfgA, db, idA);
+    }
+
+    private const ushort ChesedMap = 801;
+
+    /// <summary>Territory batch E: a castle lets in only the signed-up members of its two guilds. A — no guild, no camp — logs in
+    /// on Chesed's map and is sent out at once (to its last spawn, 4505 by the usual spot).</summary>
+    private static async Task CastleOutsider(BotConfig cfgA, GameDb db, uint idA)
+    {
+        await db.ExecAsync("UPDATE TCHARTABLE SET wMapID=@p1, fPosX=426.0, fPosY=161.0, fPosZ=290.0, wLastSpawnID=@p2 WHERE dwCharID=@p0",
+            (int)idA, (int)ChesedMap, (int)BindSpawn);
+        using (var a = new Bot(cfgA))
+        {
+            a.Enter();
+            var left = a.TryWait(CS_LEAVECASTLE_ACK, timeoutMs: 8000);
+            Check("castle: an outsider on the castle's map is sent out (CS_LEAVECASTLE_ACK), never let in", left is not null
+                && !a.Received.Any(p => PacketHeader.ReadId(p) == CS_ENTERCASTLE_ACK), left is null ? "not sent out" : "CS_ENTERCASTLE_ACK came");
+        }
+        await Task.Delay(2500);                                     // the logout save lands before the fixtures are put back
+    }
+
+    // The first fort (Moswood Research Camp, map 0), Defugel's, held by guild 2609: its left gatekeeper is spawn 25003 at
+    // (3842, 98.97, 5264).
+    private const ushort FirstFort = 1, FortGateKeeperL = 25003;
+
+    /// <summary>Territory battles, batch D: A stands by the first fort when the forts' war is forced on. Its gatekeepers (100k HP)
+    /// are out of a level-19 bot's reach, so the war runs out: nobody took the fort, it is held (OCCUPY_DEFEND) — everyone is told,
+    /// the fort's week records it — and at normal the gatekeepers go.</summary>
+    private static async Task FortWar(BotConfig cfgA, GameDb db, uint idA)
+    {
+        await db.ExecAsync("UPDATE TCHARTABLE SET wMapID=0, fPosX=3835.0, fPosY=99.0, fPosZ=5264.0 WHERE dwCharID=@p0", (int)idA);
+        WorldTool.BattleStatus(WorldTool.BtLocal, WorldTool.BsBattle, 0, 1800);
+        try
+        {
+            using var a = new Bot(cfgA);
+            a.Enter();
+            Thread.Sleep(1500);
+            uint gate = ((uint)FortGateKeeperL << 16) | (1u << 8);
+            Check("fort: at war, the fort's gatekeeper is out", a.Received.Any(p => PacketHeader.ReadId(p) == CS_ADDMON_ACK
+                && BitConverter.ToUInt32(p, PacketHeader.Size) == gate), "no CS_ADDMON_ACK for the gatekeeper");
+
+            a.Discard(CS_LOCALOCCUPY_ACK);
+            WorldTool.BattleStatus(WorldTool.BtLocal, WorldTool.BsPeace, 0, 180);
+            var held = a.TryWait(CS_LOCALOCCUPY_ACK, r => { r.ReadByte(); return r.ReadUInt16() == FirstFort; }, 8000);
+            Check("fort: the war runs out, nobody took it: everyone is told it is held (CS_LOCALOCCUPY_ACK, OCCUPY_DEFEND, Defugel)",
+                held is not null && Read(held, r => (r.ReadByte(), r.ReadUInt16(), r.ReadByte(), r.ReadUInt32())) == (0, FirstFort, 0, 2609u),
+                Describe(held));
+
+            a.Discard(CS_DELMON_ACK);
+            WorldTool.BattleStatus(WorldTool.BtLocal, WorldTool.BsNormal, 0, 0);
+            Check("fort: back to normal, the gatekeeper goes", a.TryWait(CS_DELMON_ACK, r => r.ReadUInt32() == gate, 5000) is not null,
+                "no CS_DELMON_ACK");
+        }
+        finally
+        {
+            WorldTool.BattleStatus(WorldTool.BtLocal, WorldTool.BsNormal, 0, 0);
+        }
+        await Task.Delay(1500);
+        var week = await db.RowAsync("SELECT dwGuildID, bType FROM TLOCALOCCUPYTABLE WHERE wLocalID=@p0 AND bDay=DATEPART(weekday, GETDATE())",
+            (int)FirstFort);
+        Check("saved: today in the fort's week, held by its guild (TLOCALOCCUPYTABLE)", week is not null && Convert.ToInt32(week[0]) == 2609
+            && Convert.ToInt32(week[1]) == 0, week is null ? "no row" : $"guild={week[0]} type={week[1]}");
+    }
+
+    // The sky garden (Avalon, map 2100), Defugel's: its middle guardian is spawn 32388 at (508.45, 0, 572.32).
+    // Sent out at the end, A goes to its last spawn: 4505 is by the usual spot on map 0 (the bot chars have none).
+    private const ushort SkyGarden = 200, SkyMap = 2100, SkyMiddleGuardian = 32388, BindSpawn = 4505;
+    private static byte SkyCountryBefore;
+    private static int LastSpawnBefore;
+
+    /// <summary>Territory battles, batch C: A (Craxion, the attacker) stands in the sky garden when its war is forced on. The guardians
+    /// (341k HP, level 90) are out of a level-19 bot's reach, so the war is let run out: Defugel holds its three points and keeps the
+    /// garden — the news, 360 PvP points (DEFEND) for A, the save, and everyone sent out at the end.</summary>
+    private static async Task SkyGardenWar(BotConfig cfgA, GameDb db, uint idA)
+    {
+        var before = await db.RowAsync("SELECT bCountry FROM TSKYGARDENTABLE WHERE wID=@p0", (int)SkyGarden);
+        SkyCountryBefore = before is null ? (byte)0 : Convert.ToByte(before[0]);
+        await db.ExecAsync("UPDATE TSKYGARDENTABLE SET bCountry=3 WHERE wID=@p0", (int)SkyGarden);   // so the save shows (the map keeps its own)
+        var spawn = await db.RowAsync("SELECT wLastSpawnID FROM TCHARTABLE WHERE dwCharID=@p0", (int)idA);
+        LastSpawnBefore = spawn is null ? 0 : Convert.ToInt32(spawn[0]);
+        await db.ExecAsync("UPDATE TCHARTABLE SET wLastSpawnID=@p1 WHERE dwCharID=@p0", (int)idA, (int)BindSpawn);
+        await db.ExecAsync("UPDATE TCHARTABLE SET wMapID=@p1, fPosX=508.0, fPosY=0.0, fPosZ=590.0 WHERE dwCharID=@p0", (int)idA, (int)SkyMap);
+        WorldTool.BattleStatus(WorldTool.BtSkyGarden, WorldTool.BsBattle, 21 * 3600, 1800);
+        try
+        {
+            using var a = new Bot(cfgA);
+            a.Enter();
+            var enter = a.TryWait(CS_ENTERSKYGARDEN_ACK, timeoutMs: 8000);
+            Check("sky garden: coming in, A is in the attackers' camp of Defugel's garden, all three points Defugel's", enter is not null
+                && Read(enter, r => (r.ReadUInt16(), r.ReadByte(), r.ReadByte(), r.ReadByte(), r.ReadByte(), r.ReadByte(), r.ReadByte()))
+                   == (SkyGarden, 2, 0, 1, 1, 1, 1), Describe(enter));
+            Thread.Sleep(1500);
+            uint guardian = ((uint)SkyMiddleGuardian << 16) | (1u << 8);
+            Check("sky garden: at war, the middle guardian is out", a.Received.Any(p => PacketHeader.ReadId(p) == CS_ADDMON_ACK
+                && BitConverter.ToUInt32(p, PacketHeader.Size) == guardian), "no CS_ADDMON_ACK for the guardian");
+
+            a.Discard(CS_PVPPOINT_ACK); a.Discard(CS_SYSTEMMSG_ACK);
+            WorldTool.BattleStatus(WorldTool.BtSkyGarden, WorldTool.BsPeace, 21 * 3600, 0);
+            var news = a.TryWait(CS_SYSTEMMSG_ACK, r => r.ReadByte() == 34, 8000);
+            Check("sky garden: the war runs out, Defugel held its points: everyone hears it (SM_SKYGARDEN_END, Defugel)", news is not null
+                && Read(news, r => { r.ReadByte(); string name = r.ReadString(); ushort country = r.ReadUInt16(); uint map = r.ReadUInt32(); r.ReadString(); r.ReadString(); return (name.Length > 0, country, map); })
+                   == (true, 0, SkyMap), Describe(news));
+            var points = a.TryWait(CS_PVPPOINT_ACK, timeoutMs: 5000);
+            Check("sky garden: … and the attacker on the map gets PvP points for it (PVPE_DEFEND)", points is not null
+                && Read(points, r => { r.ReadUInt32(); r.ReadUInt32(); byte ev = r.ReadByte(); r.ReadUInt32(); return ev; }) == 7, Describe(points));
+
+            WorldTool.BattleStatus(WorldTool.BtSkyGarden, WorldTool.BsNormal, 21 * 3600, 0);
+            var leave = a.TryWait(CS_LEAVESKYGARDEN_ACK, timeoutMs: 8000);
+            Check("sky garden: back to normal, everyone is sent out of the garden", leave is not null, "no CS_LEAVESKYGARDEN_ACK");
+        }
+        finally
+        {
+            WorldTool.BattleStatus(WorldTool.BtSkyGarden, WorldTool.BsNormal, 21 * 3600, 0);
+        }
+        await Task.Delay(1500);
+        var saved = await db.RowAsync("SELECT bCountry FROM TSKYGARDENTABLE WHERE wID=@p0", (int)SkyGarden);
+        Check("saved: the sky garden is Defugel's, written to TSKYGARDENTABLE", saved is not null && Convert.ToInt32(saved[0]) == 0,
+            saved is null ? "no row" : $"country={saved[0]}");
+    }
+
+    // The first mission area (Yesod, map 700): Defugel's gatekeeper is spawn 30123 at (624.66, 121.59, 644.25).
+    private const ushort MissionMap = 700, GateKeeperD = 30123;
+    private static byte MissionCountryBefore = 3;
+
+    /// <summary>Territory battles, batch B: A (Craxion) stands in the first mission area when its war is forced on; its monsters come
+    /// out, A brings Defugel's gatekeeper down, and the area falls to Craxion — 200 PvP points, the news, and the save.</summary>
+    private static async Task MissionWar(BotConfig cfgA, GameDb db, uint idA)
+    {
+        var before = await db.RowAsync("SELECT bCountry FROM TMISSIONTABLE WHERE wMissionID=@p0", (int)FirstMission);
+        MissionCountryBefore = before is null ? (byte)3 : Convert.ToByte(before[0]);
+        await db.ExecAsync("UPDATE TCHARTABLE SET wMapID=@p1, fPosX=624.66, fPosY=121.59, fPosZ=640.0 WHERE dwCharID=@p0", (int)idA, (int)MissionMap);
+        WorldTool.BattleStatus(WorldTool.BtMission, WorldTool.BsBattle, 20 * 3600, 1800);
+        try
+        {
+            using var a = new Bot(cfgA);
+            a.Enter();
+            Thread.Sleep(1500);
+            uint gate = ((uint)GateKeeperD << 16) | (1u << 8);
+            Check("mission: at war, the area's gatekeeper is out", a.Received.Any(p => PacketHeader.ReadId(p) == CS_ADDMON_ACK
+                && BitConverter.ToUInt32(p, PacketHeader.Size) == gate), "no CS_ADDMON_ACK for the gatekeeper");
+
+            a.Discard(CS_PVPPOINT_ACK); a.Discard(CS_SYSTEMMSG_ACK);
+            PacketReader? died = null;
+            for (int i = 0; i < 600 && died is null; i++)
+            {
+                a.Send(FinishSkill(a, a.CharId, 1, BasicMelee, a.Spawn.X, a.Spawn.Z, (gate, 2)));
+                died = a.TryWait(CS_DIE_ACK, r => r.ReadUInt32() == gate, 60);
+            }
+            Check("mission: the bot brings Defugel's gatekeeper down", died is not null, "it still stands");
+            var points = a.TryWait(CS_PVPPOINT_ACK, timeoutMs: 3000);
+            Check("mission: … the area falls to Craxion: the Craxion player on its map gets 200 useable PvP points", points is not null
+                && Read(points, r => { r.ReadUInt32(); r.ReadUInt32(); byte ev = r.ReadByte(); r.ReadUInt32(); return ev; }) == 0, Describe(points));
+            var news = a.TryWait(CS_SYSTEMMSG_ACK, r => r.ReadByte() == 22, 5000);
+            Check("mission: … and everyone hears it (SM_MISSION_BOSSDIE: Craxion took the 1st mission area)", news is not null
+                && Read(news, r => { r.ReadByte(); string name = r.ReadString(); ushort country = r.ReadUInt16(); uint map = r.ReadUInt32(); return (name.Length > 0, country, map); })
+                   == (true, 1, MissionMap), Describe(news));
+        }
+        finally
+        {
+            WorldTool.BattleStatus(WorldTool.BtMission, WorldTool.BsNormal, 20 * 3600, 0);
+        }
+        await Task.Delay(1500);
+        var saved = await db.RowAsync("SELECT bCountry FROM TMISSIONTABLE WHERE wMissionID=@p0", (int)FirstMission);
+        Check("saved: the 1st mission area belongs to Craxion now, in TMISSIONTABLE", saved is not null && Convert.ToInt32(saved[0]) == 1,
+            saved is null ? "no row" : $"country={saved[0]}");
     }
 
     private static void Party(Bot a, Bot b, string nameA, string nameB)
@@ -990,6 +1167,119 @@ public static class Scenarios
         b.Discard(CS_LOOPSKILL_ACK);
     }
 
+    // Territories (TBATTLEZONECHART): castle Chesed (4) and the first mission area (101, item cap 15).
+    private const ushort ChesedCastle = 4, FirstMission = 101;
+    private const byte SkillPeaceZone = 25;
+
+    /// <summary>Territory battles, batch A: the war-info window, entering a territory (its item cap), a castle out of its war is a
+    /// peace zone (for the caster and for a player standing in it), and the war phases forced on the world, with their news.</summary>
+    private static void Territory(Bot a, Bot b)
+    {
+        // The war-info window: 4 castles (Chesed with 3 forts), then 8 missions and the sky garden.
+        a.Send(Req(CS_GUILDLOCALLIST_REQ, _ => { }));
+        var list = a.TryWait(CS_GUILDLOCALLIST_ACK);
+        var shape = list is null ? default : Read(list, r =>
+        {
+            int castles = r.ReadUInt16(); int firstForts = -1;
+            for (int c = 0; c < castles; c++)
+            {
+                r.ReadUInt16(); r.ReadString(); r.ReadByte(); r.ReadUInt32(); r.ReadString(); r.ReadByte(); r.ReadInt64();
+                r.ReadString(); r.ReadString(); r.ReadString();
+                r.ReadUInt16(); r.ReadUInt16(); r.ReadByte(); r.ReadUInt16(); r.ReadUInt16(); r.ReadByte(); r.ReadUInt16(); r.ReadByte();
+                for (int side = 0; side < 2; side++) { int n = r.ReadByte(); for (int i = 0; i < n; i++) { r.ReadString(); r.ReadUInt16(); } }
+                int forts = r.ReadUInt16();
+                if (c == 0) firstForts = forts;
+                for (int f = 0; f < forts; f++) { r.ReadUInt16(); r.ReadString(); r.ReadUInt32(); r.ReadString(); r.ReadByte(); r.ReadInt64(); r.ReadString(); r.ReadByte(); }
+            }
+            int missions = r.ReadByte();
+            for (int m = 0; m < missions; m++) { r.ReadUInt16(); r.ReadString(); r.ReadByte(); r.ReadByte(); r.ReadInt64(); }
+            int sky = r.ReadByte();
+            for (int g = 0; g < sky; g++) { r.ReadUInt16(); r.ReadString(); r.ReadByte(); r.ReadByte(); r.ReadInt64(); }
+            r.ReadByte(); r.ReadUInt32(); r.ReadByte(); r.ReadByte(); r.ReadUInt32(); r.ReadByte();
+            return (castles, firstForts, missions, sky);
+        });
+        Check("territory: the war-info window lists 4 castles (Chesed with 3 forts), 8 missions and the sky garden",
+            shape == (4, 3, 8, 1), list is null ? "no CS_GUILDLOCALLIST_ACK" : shape.ToString());
+
+        PacketWriter Region(Bot bot, ushort local) => Req(CS_REGION_REQ, w =>
+        {
+            w.WriteUInt32(bot.CharId); w.WriteByte(1); w.WriteByte(1); w.WriteUInt16(0); w.WriteUInt32(0); w.WriteUInt16(local);
+        });
+
+        // A territory's item cap: in the first mission area, equipment counts as level 15 at most; out of it, as itself.
+        a.Discard(CS_ITEMLEVELREVISION_ACK);
+        a.Send(Region(a, FirstMission));
+        var cap = a.TryWait(CS_ITEMLEVELREVISION_ACK);
+        Check("territory: entering a mission area caps the equipment at its level (15)", cap is not null && Read(cap, r => r.ReadByte()) == 15, Describe(cap));
+        a.Send(Region(a, 0));
+        var uncap = a.TryWait(CS_ITEMLEVELREVISION_ACK);
+        Check("territory: … and leaving it lifts the cap", uncap is not null && Read(uncap, r => r.ReadByte()) == 0, Describe(uncap));
+
+        byte? Kick()
+        {
+            a.Discard(CS_SKILLUSE_ACK);
+            a.Send(Req(CS_SKILLUSE_REQ, w =>
+            {
+                w.WriteUInt32(a.CharId); w.WriteByte(1); w.WriteByte(1); w.WriteUInt16(0); w.WriteUInt16(DefenceBreak); w.WriteByte(0);
+                w.WriteUInt32(0); w.WriteUInt32(0); w.WriteFloat(a.Spawn.X); w.WriteFloat(a.Spawn.Y); w.WriteFloat(a.Spawn.Z);
+                w.WriteByte(1); w.WriteUInt32(b.CharId); w.WriteByte(1); w.WriteByte(1);
+            }));
+            return a.TryWait(CS_SKILLUSE_ACK, r => { r.ReadByte(); return r.ReadUInt32() == a.CharId; }) is { } ack
+                ? new PacketReader(Bot.Raw.TryGetValue(ack, out var raw) ? raw : throw new InvalidOperationException()).ReadByte() : null;
+        }
+
+        // A castle out of its war is a peace zone: no hostile skill from it…
+        a.Send(Region(a, ChesedCastle));
+        Thread.Sleep(300);
+        Check("territory: in a castle out of its war, a hostile skill is refused (SKILL_PEACEZONE)", Kick() == SkillPeaceZone, "not refused");
+        a.Send(Region(a, 0));
+
+        // … nor on a player standing in it.
+        b.Send(Region(b, ChesedCastle));
+        Thread.Sleep(300);
+        b.Discard(CS_DEFEND_ACK);
+        a.Send(FinishSkill(a, a.CharId, 1, DefenceBreak, a.Spawn.X, a.Spawn.Z, (b.CharId, 1)));
+        Check("territory: … nor does one land on a player standing in it", b.TryWait(CS_DEFEND_ACK, r => r.ReadUInt32() == a.CharId, 1500) is null,
+            "a CS_DEFEND_ACK came");
+        b.Send(Region(b, 0));
+
+        // The war phases, forced on the world: the news reach the players.
+        (byte Type, uint Second)? News(Bot bot, byte type) => bot.TryWait(CS_SYSTEMMSG_ACK, r => r.ReadByte() == type, 5000) is { } m
+            ? Read(m, r => { byte t = r.ReadByte(); return (t, r.Remaining >= 4 ? r.ReadUInt32() : 0u); }) : null;
+        a.Discard(CS_SYSTEMMSG_ACK); b.Discard(CS_SYSTEMMSG_ACK);
+        WorldTool.BattleStatus(WorldTool.BtLocal, WorldTool.BsBattle, 0, 1800);
+        Check("territory: the forts' war starts (SM_BATTLE_START), for both players", News(a, 2) is not null && News(b, 2) is not null, "no news");
+        WorldTool.BattleStatus(WorldTool.BtLocal, WorldTool.BsPeace, 0, 180);
+        var peace = News(a, 5);
+        Check("territory: … and ends in 3 minutes of peace (SM_BATTLE_PEACE 180)", peace == (5, 180), peace?.ToString() ?? "no news");
+        WorldTool.BattleStatus(WorldTool.BtLocal, WorldTool.BsNormal, 0, 0);
+        Check("territory: … then back to normal (SM_BATTLE_NORMAL)", News(a, 1) is not null, "no news");
+
+        // A castle war: no castle has both a defender and an attacker in this database, so (C++ EndWar(WIN_NOWAR)) it ends at
+        // once and the castle stays a peace zone.
+        Thread.Sleep(3200);                                                      // Mean Kick's cooldown
+        WorldTool.BattleStatus(WorldTool.BtCastle, WorldTool.BsBattle, 0, 2700);
+        Check("territory: the castle war starts (SM_CASTLE_START)", News(a, 12) is not null, "no news");
+        a.Send(Region(a, ChesedCastle));
+        Thread.Sleep(300);
+        Check("territory: … with no defender and attacker it ends at once: still no hostile skill there", Kick() == SkillPeaceZone, "allowed");
+        a.Send(Region(a, 0));
+        WorldTool.BattleStatus(WorldTool.BtCastle, WorldTool.BsPeace, 0, 0);
+        Check("territory: … the castle war ends (SM_CASTLE_PEACE)", News(a, 15) is not null, "no news");
+        WorldTool.BattleStatus(WorldTool.BtCastle, WorldTool.BsNormal, 0, 0);
+        Check("territory: … then back to normal (SM_CASTLE_NORMAL)", News(a, 11) is not null, "no news");
+
+        // The mission news carry the start hour the map knew before (C++ static dwCurStart): the second alarm shows 20 h.
+        WorldTool.BattleStatus(WorldTool.BtMission, WorldTool.BsNormal, 20 * 3600, 600);
+        a.TryWait(CS_SYSTEMMSG_ACK, r => r.ReadByte() == 23, 5000);
+        WorldTool.BattleStatus(WorldTool.BtMission, WorldTool.BsNormal, 20 * 3600, 300);
+        var mission = a.TryWait(CS_SYSTEMMSG_ACK, r => r.ReadByte() == 23, 5000);
+        Check("territory: the mission alarm carries its start hour (SM_MISSION_START_ALARM, 20 h, 300 s)", mission is not null
+            && Read(mission, r => { r.ReadByte(); return (r.ReadUInt16(), r.ReadUInt32()); }) == (20, 300), Describe(mission));
+        Thread.Sleep(300);
+        a.Discard(CS_SYSTEMMSG_ACK); b.Discard(CS_SYSTEMMSG_ACK); b.Discard(CS_SKILLUSE_ACK); b.Discard(CS_HPMP_ACK);
+    }
+
     /// <summary>Money pouch, reward box, exp book, exp boost (and a second one, refused) and an XP Plus premium.</summary>
     private static void MoreUseItems(Bot a, Bot b)
     {
@@ -1383,6 +1673,8 @@ public static class Scenarios
             bGem, wMoggItemID)
             VALUES (@p0, 0, 255, 0, @p1, @p2, @p3, 0, 1, 0, 0, 0, 0, '1900-01-01', 0, 0,0,0,0,0,0, 0,0,0,0,0,0, 0,0,0,0,0,0, 0, 0)",
             RuneDlId, (int)idA, (int)RuneSlot, (int)RuneItem);   // dwTime5 = 0: no species until the server stamps it
+        foreach (var t in WarTables)                                   // kept if a crashed run left one: it holds the original
+            await db.ExecAsync($"IF OBJECT_ID('TBOT_BAK_{t}') IS NULL SELECT * INTO TBOT_BAK_{t} FROM {t}");
         foreach (var t in RankTables)
         {
             await db.ExecAsync($"IF OBJECT_ID('TBOT_BAK_{t}') IS NOT NULL DROP TABLE TBOT_BAK_{t}");
@@ -1493,6 +1785,11 @@ public static class Scenarios
         await ClearItemSkills(db, idA);
         await ClearPassives(db, idA);
         await ClearSmallRequests(db, idA);
+        await db.ExecAsync("UPDATE TMISSIONTABLE SET bCountry=@p1 WHERE wMissionID=@p0", (int)FirstMission, (int)MissionCountryBefore);
+        await db.ExecAsync("UPDATE TSKYGARDENTABLE SET bCountry=@p1 WHERE wID=@p0", (int)SkyGarden, (int)SkyCountryBefore);
+        await db.ExecAsync("UPDATE TCHARTABLE SET wLastSpawnID=@p1 WHERE dwCharID=@p0", (int)idA, LastSpawnBefore);
+        foreach (var t in WarTables)
+            await db.ExecAsync($"IF OBJECT_ID('TBOT_BAK_{t}') IS NOT NULL BEGIN DELETE FROM {t}; INSERT INTO {t} SELECT * FROM TBOT_BAK_{t}; DROP TABLE TBOT_BAK_{t} END");
         foreach (var t in RankTables)
         {
             await db.ExecAsync($"DELETE FROM {t} WHERE dwCharID IN (@p0, @p1)", (int)idA, (int)idB);

@@ -60,6 +60,51 @@ public class BattleTests
         Assert.Equal(BattleStatus.Normal, host.State.Battles![BattleType.Local].Status);   // cycled back
     }
 
+    private static List<PacketReader> Drain(TcpTestClient c)
+    {
+        var got = new List<PacketReader>();
+        for (int i = 0; i < 30; i++) { try { got.Add(c.Receive(TimeSpan.FromMilliseconds(150))); } catch { break; } }
+        return got;
+    }
+
+    [Fact]
+    public async Task ANewMap_IsToldWhereEveryWarStands()
+    {
+        await using var host = new WorldTestHost(s => s.Battles = Schedule(sc =>
+        {
+            sc[BattleType.Local].BattleStart = 70200;
+            sc[BattleType.Castle].Day = 1; sc[BattleType.Castle].BattleStart = 70200;
+            sc[BattleType.SkyGarden].Day = 7; sc[BattleType.SkyGarden].BattleStart = 77400;
+        }));
+        using var map = await host.ConnectAsync();
+        Connect(map, 1);
+
+        var got = Drain(map);
+        var local = got.First(p => p.Id == Msg.MW_LOCALENABLE_REQ);
+        Assert.Equal(((byte)0, 0u, 70200u, (byte)1, 70200u), (local.ReadByte(), local.ReadUInt32(), local.ReadUInt32(), local.ReadByte(), local.ReadUInt32()));
+        Assert.Contains(got, p => p.Id == Msg.MW_MISSIONENABLE_REQ);
+        var sky = got.First(p => p.Id == Msg.MW_SKYGARDENENABLE_REQ);
+        Assert.Equal(((byte)BattleStatus.SkyGardenStart, 0u, (byte)7, 77400u), (sky.ReadByte(), sky.ReadUInt32(), sky.ReadByte(), sky.ReadUInt32()));
+    }
+
+    [Fact]
+    public async Task AWarPhaseFromOutside_GoesToEveryMap()
+    {
+        await using var host = new WorldTestHost(s => s.Battles = Schedule(_ => { }));
+        using var map = await host.ConnectAsync();
+        Connect(map, 1);
+        using var tool = await host.ConnectAsync();                   // the control server / a test tool on the server plane
+        Drain(map);
+
+        var w = new PacketWriter(Msg.SM_BATTLESTATUS_REQ);
+        w.WriteByte(0 /* BT_LOCAL */); w.WriteByte((byte)BattleStatus.Battle); w.WriteUInt32(0); w.WriteUInt32(1800);
+        tool.Send(w);
+
+        var local = Drain(map).First(p => p.Id == Msg.MW_LOCALENABLE_REQ);
+        Assert.Equal(((byte)BattleStatus.Battle, 1800u), (local.ReadByte(), local.ReadUInt32()));
+        Assert.Equal(BattleStatus.Normal, host.State.Battles![BattleType.Local].Status);   // the schedule itself is left alone
+    }
+
     [Fact]
     public async Task CastleDay_SelectsCastleWindow()
     {
@@ -72,6 +117,8 @@ public class BattleTests
         using var map = await host.ConnectAsync();
         Connect(map, 1);
         await Task.Delay(80);
+        // The connect itself tells the map where every war stands (a LOCALENABLE among them): drain it.
+        for (int i = 0; i < 20; i++) { try { map.Receive(TimeSpan.FromMilliseconds(100)); } catch { break; } }
 
         // Drive into the battle window on the castle day -> a CASTLEENABLE (not LOCALENABLE) must appear.
         bool sawCastle = false;

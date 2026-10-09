@@ -41,6 +41,7 @@ public sealed partial class MapService
         PostStore = gameDb;
         PetStore = gameDb;
         CompanionStore = gameDb;
+        GuildSkillStore = gameDb;
         _templates = templates;
         _log = log;
     }
@@ -80,6 +81,7 @@ public sealed partial class MapService
             SendMW_CLOSECHAR_ACK(session.CharId, session.Key);
 
         SaveCharData(session);   // flush the char record + dirty quests on logout (C++ SetEventCloseSession)
+        if (session.State == EnterState.InGame && session.Char is { } carrier) DropGodBall(carrier);   // C++ ExitMAP (MapService.Castle.cs)
         if (session.Char is { } looter) ReleaseLootLock(looter);   // C++ SSHandler.cpp:19205 / TMapSvr.cpp:1544
         if (session.Char is { } dueller) { LeaveDuel(dueller, loses: false); ClearDuel(dueller); }   // CTPlayer release
         if (session.Char is { } leaving) { ClearRecalls(session, leaving); ClearCompanionObjs(leaving); }
@@ -170,6 +172,50 @@ public sealed partial class MapService
                 case Msg.CS_JUMP_REQ: OnCS_JUMP_REQ(session, r); break;
                 case Msg.CS_BLOCK_REQ: OnCS_BLOCK_REQ(session, r); break;
                 case Msg.CS_CHGMODE_REQ: OnCS_CHGMODE_REQ(session, r); break;
+                case Msg.CS_GUILDLOCALLIST_REQ: OnCS_GUILDLOCALLIST_REQ(session, r); break;
+                case Msg.CS_GUILDLOCALRETURN_REQ: OnCS_GUILDLOCALRETURN_REQ(session, r); break;
+                case Msg.CS_GUILDCABINETLIST_REQ: OnCS_GUILDCABINETLIST_REQ(session, r); break;
+                case Msg.CS_GUILDCABINETPUTIN_REQ: OnCS_GUILDCABINETPUTIN_REQ(session, r); break;
+                case Msg.CS_GUILDCABINETTAKEOUT_REQ: OnCS_GUILDCABINETTAKEOUT_REQ(session, r); break;
+                case Msg.CS_GUILDCONTRIBUTION_REQ: OnCS_GUILDCONTRIBUTION_REQ(session, r); break;
+                case Msg.CS_GUILDARTICLELIST_REQ: OnCS_GUILDARTICLELIST_REQ(session, r); break;
+                case Msg.CS_GUILDARTICLEADD_REQ: OnCS_GUILDARTICLEADD_REQ(session, r); break;
+                case Msg.CS_GUILDARTICLEDEL_REQ: OnCS_GUILDARTICLEDEL_REQ(session, r); break;
+                case Msg.CS_GUILDARTICLEUPDATE_REQ: OnCS_GUILDARTICLEUPDATE_REQ(session, r); break;
+                case Msg.CS_GUILDFAME_REQ: OnCS_GUILDFAME_REQ(session, r); break;
+                case Msg.CS_GUILDWANTEDADD_REQ: OnCS_GUILDWANTEDADD_REQ(session, r); break;
+                case Msg.CS_GUILDWANTEDDEL_REQ: OnCS_GUILDWANTEDDEL_REQ(session, r); break;
+                case Msg.CS_GUILDWANTEDLIST_REQ: OnCS_GUILDWANTEDLIST_REQ(session, r); break;
+                case Msg.CS_GUILDVOLUNTEERING_REQ: OnCS_GUILDVOLUNTEERING_REQ(session, r); break;
+                case Msg.CS_GUILDVOLUNTEERINGDEL_REQ: OnCS_GUILDVOLUNTEERINGDEL_REQ(session, r); break;
+                case Msg.CS_GUILDVOLUNTEERLIST_REQ: OnCS_GUILDVOLUNTEERLIST_REQ(session, r); break;
+                case Msg.CS_GUILDVOLUNTEERREPLY_REQ: OnCS_GUILDVOLUNTEERREPLY_REQ(session, r); break;
+                case Msg.CS_GUILDPOINTLOG_REQ: OnCS_GUILDPOINTLOG_REQ(session, r); break;
+                case Msg.CS_GUILDPVPRECORD_REQ: OnCS_GUILDPVPRECORD_REQ(session, r); break;
+                case Msg.CS_GUILDTACTICSWANTEDADD_REQ: OnCS_GUILDTACTICSWANTEDADD_REQ(session, r); break;
+                case Msg.CS_GUILDTACTICSWANTEDDEL_REQ: OnCS_GUILDTACTICSWANTEDDEL_REQ(session, r); break;
+                case Msg.CS_GUILDTACTICSWANTEDLIST_REQ: OnCS_GUILDTACTICSWANTEDLIST_REQ(session); break;
+                case Msg.CS_GUILDTACTICSVOLUNTEERING_REQ: OnCS_GUILDTACTICSVOLUNTEERING_REQ(session, r); break;
+                case Msg.CS_GUILDTACTICSVOLUNTEERINGDEL_REQ: OnCS_GUILDTACTICSVOLUNTEERINGDEL_REQ(session); break;
+                case Msg.CS_GUILDTACTICSVOLUNTEERLIST_REQ: OnCS_GUILDTACTICSVOLUNTEERLIST_REQ(session); break;
+                case Msg.CS_GUILDTACTICSREPLY_REQ: OnCS_GUILDTACTICSREPLY_REQ(session, r); break;
+                case Msg.CS_GUILDTACTICSKICKOUT_REQ: OnCS_GUILDTACTICSKICKOUT_REQ(session, r); break;
+                case Msg.CS_GUILDTACTICSINVITE_REQ: OnCS_GUILDTACTICSINVITE_REQ(session, r); break;
+                case Msg.CS_GUILDTACTICSANSWER_REQ: OnCS_GUILDTACTICSANSWER_REQ(session, r); break;
+                case Msg.CS_GUILDTACTICSLIST_REQ: OnCS_GUILDTACTICSLIST_REQ(session); break;
+                case Msg.CS_GUILDPOINTREWARD_REQ: OnCS_GUILDPOINTREWARD_REQ(session, r); break;
+                case Msg.CS_MONSTERBUY_REQ: OnCS_MONSTERBUY_REQ(session, r); break;
+                case Msg.CS_GUILDSKILLACTION_REQ: OnCS_GUILDSKILLACTION_REQ(session, r); break;
+                case Msg.CS_GUILDESTABLISH_REQ: OnCS_GUILDESTABLISH_REQ(session, r); break;
+                case Msg.CS_GUILDDISORGANIZATION_REQ: OnCS_GUILDDISORGANIZATION_REQ(session, r); break;
+                case Msg.CS_GUILDINVITE_REQ: OnCS_GUILDINVITE_REQ(session, r); break;
+                case Msg.CS_GUILDINVITEANSWER_REQ: OnCS_GUILDINVITEANSWER_REQ(session, r); break;
+                case Msg.CS_GUILDLEAVE_REQ: OnCS_GUILDLEAVE_REQ(session, r); break;
+                case Msg.CS_GUILDKICKOUT_REQ: OnCS_GUILDKICKOUT_REQ(session, r); break;
+                case Msg.CS_GUILDDUTY_REQ: OnCS_GUILDDUTY_REQ(session, r); break;
+                case Msg.CS_GUILDPEER_REQ: OnCS_GUILDPEER_REQ(session, r); break;
+                case Msg.CS_GUILDMEMBERLIST_REQ: OnCS_GUILDMEMBERLIST_REQ(session, r); break;
+                case Msg.CS_GUILDINFO_REQ: OnCS_GUILDINFO_REQ(session, r); break;
                 case Msg.CS_CANCELSKILL_REQ: OnCS_CANCELSKILL_REQ(session, r); break;
                 case Msg.CS_LOOPSKILL_REQ: OnCS_LOOPSKILL_REQ(session, r); break;
                 case Msg.CS_CANCELACTION_REQ: OnCS_CANCELACTION_REQ(session, r); break;
@@ -226,6 +272,10 @@ public sealed partial class MapService
                 case Msg.CS_QUESTLIST_POSSIBLE_REQ: OnCS_QUESTLIST_POSSIBLE_REQ(session, r); break;
                 case Msg.CS_CHAT_REQ: OnCS_CHAT_REQ(session, r); break;
                 case Msg.CS_REGION_REQ: OnCS_REGION_REQ(session, r); break;
+                case Msg.CS_CASTLEAPPLY_REQ: OnCS_CASTLEAPPLY_REQ(session, r); break;
+                case Msg.CS_TAKEGODBALL_REQ: OnCS_TAKEGODBALL_REQ(session, r); break;
+                case Msg.CS_MOUNTGODBALL_REQ: OnCS_MOUNTGODBALL_REQ(session, r); break;
+                case Msg.CS_DEMOUNTGODBALL_REQ: OnCS_DEMOUNTGODBALL_REQ(session, r); break;
                 case Msg.CS_PINGMEASUREMENT_REQ: OnCS_PINGMEASUREMENT_REQ(session, r); break;
                 case Msg.CS_COUNTDOWN_REQ: OnCS_COUNTDOWN_REQ(session, r); break;
                 case Msg.CS_DISCONNECT_REQ: OnCS_DISCONNECT_REQ(session, r); break;
@@ -253,8 +303,65 @@ public sealed partial class MapService
             {
                 case Msg.MW_ENTERSVR_REQ: await OnMW_ENTERSVR_REQ(r); break;
                 case Msg.MW_CHARDATA_REQ: OnMW_CHARDATA_REQ(r); break;
-                case Msg.MW_CHARINFO_REQ: OnMW_CHARINFO_REQ(r); break;
+                case Msg.MW_CHARINFO_REQ: await OnMW_CHARINFO_REQ(r); break;
                 case Msg.MW_HELMETHIDE_REQ: OnMW_HELMETHIDE_REQ(r); break;
+                case Msg.MW_LOCALENABLE_REQ: OnMW_LOCALENABLE_REQ(r); break;
+                case Msg.MW_CASTLEENABLE_REQ: OnMW_CASTLEENABLE_REQ(r); break;
+                case Msg.MW_CASTLEAPPLY_REQ: OnMW_CASTLEAPPLY_REQ(r); break;
+                case Msg.MW_GUILDCABINETLIST_REQ: OnMW_GUILDCABINETLIST_REQ(r); break;
+                case Msg.MW_GUILDCONTRIBUTION_REQ: OnMW_GUILDCONTRIBUTION_REQ(r); break;
+                case Msg.MW_GUILDFAME_REQ: OnMW_GUILDFAME_REQ(r); break;
+                case Msg.MW_GUILDARTICLELIST_REQ: RelayToClient(r, Msg.CS_GUILDARTICLELIST_ACK); break;
+                case Msg.MW_GUILDWANTEDLIST_REQ: RelayToClient(r, Msg.CS_GUILDWANTEDLIST_ACK); break;
+                case Msg.MW_GUILDVOLUNTEERLIST_REQ: RelayToClient(r, Msg.CS_GUILDVOLUNTEERLIST_ACK); break;
+                case Msg.MW_GUILDPOINTLOG_REQ: RelayToClient(r, Msg.CS_GUILDPOINTLOG_ACK); break;
+                case Msg.MW_GUILDPVPRECORD_REQ: RelayToClient(r, Msg.CS_GUILDPVPRECORD_ACK); break;
+                case Msg.MW_GUILDTACTICSWANTEDLIST_REQ: RelayToClient(r, Msg.CS_GUILDTACTICSWANTEDLIST_ACK); break;
+                case Msg.MW_GUILDTACTICSVOLUNTEERLIST_REQ: RelayToClient(r, Msg.CS_GUILDTACTICSVOLUNTEERLIST_ACK); break;
+                case Msg.MW_GUILDTACTICSLIST_REQ: RelayToClient(r, Msg.CS_GUILDTACTICSLIST_ACK); break;
+                case Msg.MW_GUILDTACTICSWANTEDADD_REQ: RelayResult(r, Msg.CS_GUILDTACTICSWANTEDADD_ACK); break;
+                case Msg.MW_GUILDTACTICSWANTEDDEL_REQ: RelayResult(r, Msg.CS_GUILDTACTICSWANTEDDEL_ACK); break;
+                case Msg.MW_GUILDTACTICSVOLUNTEERING_REQ: RelayResult(r, Msg.CS_GUILDTACTICSVOLUNTEERING_ACK); break;
+                case Msg.MW_GUILDTACTICSVOLUNTEERINGDEL_REQ: RelayResult(r, Msg.CS_GUILDTACTICSVOLUNTEERINGDEL_ACK); break;
+                case Msg.MW_GUILDTACTICSINVITE_REQ: OnMW_GUILDTACTICSINVITE_REQ(r); break;
+                case Msg.MW_GUILDTACTICSANSWER_REQ: OnMW_GUILDTACTICSJOIN(r, Msg.CS_GUILDTACTICSANSWER_ACK); break;
+                case Msg.MW_GUILDTACTICSREPLY_REQ: OnMW_GUILDTACTICSJOIN(r, Msg.CS_GUILDTACTICSREPLY_ACK); break;
+                case Msg.MW_GUILDTACTICSKICKOUT_REQ: OnMW_GUILDTACTICSKICKOUT_REQ(r); break;
+                case Msg.MW_GUILDPOINTREWARD_REQ: OnMW_GUILDPOINTREWARD_REQ(r); break;
+                case Msg.MW_MONSTERBUY_REQ: OnMW_MONSTERBUY_REQ(r); break;
+                case Msg.MW_GUILDARTICLEADD_REQ: RelayResult(r, Msg.CS_GUILDARTICLEADD_ACK); break;
+                case Msg.MW_GUILDARTICLEDEL_REQ: RelayResult(r, Msg.CS_GUILDARTICLEDEL_ACK); break;
+                case Msg.MW_GUILDARTICLEUPDATE_REQ: RelayResult(r, Msg.CS_GUILDARTICLEUPDATE_ACK); break;
+                case Msg.MW_GUILDWANTEDADD_REQ: RelayResult(r, Msg.CS_GUILDWANTEDADD_ACK); break;
+                case Msg.MW_GUILDWANTEDDEL_REQ: RelayResult(r, Msg.CS_GUILDWANTEDDEL_ACK); break;
+                case Msg.MW_GUILDVOLUNTEERING_REQ: RelayResult(r, Msg.CS_GUILDVOLUNTEERING_ACK); break;
+                case Msg.MW_GUILDVOLUNTEERINGDEL_REQ: RelayResult(r, Msg.CS_GUILDVOLUNTEERINGDEL_ACK); break;
+                case Msg.MW_GUILDVOLUNTEERREPLY_REQ: RelayResult(r, Msg.CS_GUILDVOLUNTEERREPLY_ACK); break;
+                case Msg.MW_GUILDESTABLISH_REQ: await OnMW_GUILDESTABLISH_REQ(r); break;
+                case Msg.MW_GUILDDISORGANIZATION_REQ: OnMW_GUILDDISORGANIZATION_REQ(r); break;
+                case Msg.MW_GUILDINVITE_REQ: OnMW_GUILDINVITE_REQ(r); break;
+                case Msg.MW_GUILDJOIN_REQ: await OnMW_GUILDJOIN_REQ(r); break;
+                case Msg.MW_GUILDDUTY_REQ: await OnMW_GUILDDUTY_REQ(r); break;
+                case Msg.MW_GUILDPEER_REQ: OnMW_GUILDPEER_REQ(r); break;
+                case Msg.MW_GUILDLEAVE_REQ: await OnMW_GUILDLEAVE_REQ(r); break;
+                case Msg.MW_GUILDMEMBERLIST_REQ: OnMW_GUILDMEMBERLIST_REQ(r); break;
+                case Msg.MW_GUILDINFO_REQ: await OnMW_GUILDINFO_REQ(r); break;
+                case Msg.MW_GUILDSKILLACTION_ACK: await OnMW_GUILDSKILLACTION_ACK(r); break;              // MapService.GuildSkill.cs
+                case Msg.MW_UPDATEGUILDCOOLDOWN_REQ: await OnMW_UPDATEGUILDCOOLDOWN_REQ(r); break;
+                case Msg.MW_ADDCOOLDOWN_REQ: OnMW_ADDCOOLDOWN_REQ(r); break;
+                case Msg.MW_CASTLEOCCUPY_REQ: OnMW_CASTLEOCCUPY_REQ(r); break;
+                case Msg.MW_ENDWAR_REQ: OnMW_ENDWAR_REQ(r); break;
+                case Msg.MW_MISSIONENABLE_REQ: OnMW_MISSIONENABLE_REQ(r); break;
+                case Msg.MW_SKYGARDENENABLE_REQ: OnMW_SKYGARDENENABLE_REQ(r); break;
+                case Msg.MW_CASTLEWARINFO_REQ: OnMW_CASTLEWARINFO_REQ(r); break;
+                case Msg.MW_CASTLEGUILDCHG_REQ: OnMW_CASTLEGUILDCHG_REQ(r); break;
+                case Msg.MW_CASTLEAPPLICANTCOUNT_REQ: OnMW_CASTLEAPPLICANTCOUNT_REQ(r); break;
+                case Msg.MW_HEROSELECT_REQ: OnMW_HEROSELECT_REQ(r); break;
+                case Msg.MW_MISSIONOCCUPY_REQ: OnMW_MISSIONOCCUPY_REQ(r); break;
+                case Msg.MW_SKYGARDENOCCUPY_REQ: OnMW_SKYGARDENOCCUPY_REQ(r); break;
+                case Msg.MW_LOCALOCCUPY_REQ: OnMW_LOCALOCCUPY_REQ(r); break;
+                case Msg.MW_GAINPVPPOINT_REQ: OnMW_GAINPVPPOINT_REQ(r); break;
+                case Msg.MW_BATTLEMODESTATUS_ACK: OnMW_BATTLEMODESTATUS_ACK(r); break;
                 case Msg.MW_WORLDPOSTSEND_REQ: await OnMW_WORLDPOSTSEND_REQ(r); break;
                 case Msg.MW_LEVELUP_REQ: OnMW_LEVELUP_REQ(r); break;
                 case Msg.MW_CHARSTATINFO_REQ: OnMW_CHARSTATINFO_REQ(r); break;
@@ -327,6 +434,8 @@ public sealed partial class MapService
     {
         _tickSeconds++;
         NowMs = unchecked((uint)(_tickSeconds * 1000L)); // advance the map ms clock (skill cooldowns)
+        RunDbResults();                        // the database's answers, applied here (MapService.Fort.cs)
+        RunGodBallCmds();                      // the castle wars' god ball commands and power race (MapService.Castle.cs)
         RunMonsterRegen(_tickSeconds * 1000L); // monster spawn/respawn regen (map clock in ms)
         RunMaintainSkills(NowMs);              // expire ended buffs/debuffs (C++ CheckMaintainSkill, before Recover)
         RunSwitchReverts(NowMs);               // auto-revert duration-limited switches (C++ m_vTSWITCHOBJ sweep)

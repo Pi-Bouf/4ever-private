@@ -9,6 +9,7 @@ public static class Msg
     // Plane bases (ProtocolBase.h)
     public const ushort SM_BASE = 0x1581; // system / batch / timer
     public const ushort SM_GUILDDISORGANIZATION_REQ = SM_BASE + 0x000C; // cross-instance guild-disband-timer sync
+    public const ushort SM_BATTLESTATUS_REQ = SM_BASE + 0x001C;        // bType bStatus dwStart dwSecond: a war phase for every map
     public const ushort SM_EVENTQUARTER_REQ = SM_BASE + 0x0017;        // timed lucky-event draw -> fan to maps
     public const ushort SM_EVENTQUARTERNOTIFY_REQ = SM_BASE + 0x0018;  // lucky-event pre-announce -> world chat
     public const ushort SM_EVENTEXPIRED_REQ = SM_BASE + 0x0023;        // insert/remove a timed-expiry entry
@@ -261,6 +262,7 @@ public static class Msg
     public const ushort MW_GUILDSKILLACTION_ACK = MW_BASE + 0x022C;
     public const ushort MW_UPDATEGUILDCOOLDOWN_ACK = MW_BASE + 0x022D;
     public const ushort MW_UPDATEGUILDCOOLDOWN_REQ = MW_BASE + 0x022E;
+    public const ushort MW_ADDCOOLDOWN_REQ = MW_BASE + 0x022F;          // world -> every map: a guild skill's shared cooldown starts
 
     // --- Phase 2b: corps + party move/recall ---
     public const ushort MW_PARTYATTR_REQ = MW_BASE + 0x004A;
@@ -407,7 +409,7 @@ public static class Msg
     public const ushort MW_LOCALENABLE_REQ = MW_BASE + 0x0067;     // local (open-field) PvP window
     public const ushort MW_CASTLEENABLE_REQ = MW_BASE + 0x007E;    // castle-siege window
     public const ushort MW_MISSIONENABLE_REQ = MW_BASE + 0x0165;   // mission/event window
-    public const ushort MW_SKYGARDENENABLE_REQ = MW_BASE + 0x0181; // sky-garden window (off in the shipped build)
+    public const ushort MW_SKYGARDENENABLE_REQ = MW_BASE + 0x0181; // sky-garden window (bStatus dwSecond bDay dwStart)
 
     // --- Remaining MW handlers (final slice) ---
     public const ushort MW_CREATERECALLMON_REQ = MW_BASE + 0x00B8;   // world -> conns: spawn a recall monster (full record)
@@ -604,6 +606,12 @@ public enum GuildResult : byte
     MemberFull,
     MismatchLevel,
     SameGuildTactics,
+    NoMoney,
+    NoPoint,
+    MaxWanted,
+    WantedEnd,
+    AlreadyApply,
+    Same,
 }
 
 /// <summary>enum FRIEND_RESULT (NetCode.h).</summary>

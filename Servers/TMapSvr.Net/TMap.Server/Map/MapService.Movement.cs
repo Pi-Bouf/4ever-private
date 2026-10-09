@@ -273,9 +273,10 @@ public sealed partial class MapService
         w.WriteByte(ch.InPcBang);         // bInPcBang
         w.WriteByte(ch.Persist.Aftermath); // aftermath.m_bStep
         w.WriteUInt32(0);                 // dwRankPoint
-        w.WriteUInt16(0);                 // wCastle
-        w.WriteByte(0);                   // bCamp
-        w.WriteUInt16(0);                 // wGodBall
+        var (castle, camp, godBall) = EnterCastleFields(ch);   // MapService.Territory.cs (the entering player's)
+        w.WriteUInt16(castle);            // wCastle
+        w.WriteByte(camp);                // bCamp
+        w.WriteUInt16(godBall);           // wGodBall
 
         // Maintained (buff) skills — same block as CS_CHARINFO_ACK.
         w.WriteByte((byte)ch.MaintainSkills.Count);
