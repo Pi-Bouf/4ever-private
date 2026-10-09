@@ -12429,7 +12429,7 @@ void CTClientGame::OnChar( UINT nChar, int nRepCnt, UINT nFlags)
 	if( m_vTFRAME[TFRAME_KEYSETTING]->IsVisible() )
 		return;
 
-	WORD wVKey = (WORD) MapVirtualKey(LOBYTE(nFlags),1);
+	WORD wVKey = CTachyonInput::ScanToVKey(nFlags);
 	WORD wModKey = CTClientKEY::GetCurMOD();
 	WORD wKEY = CTKeySetting::GetInstance()->GetCurKeySet(wVKey,wModKey);
 
@@ -12549,7 +12549,7 @@ void CTClientGame::OnKeyDown( UINT nChar, int nRepCnt, UINT nFlags)
 			ImmReleaseContext( TSAFE_HWND(m_pMainWnd), hImc);
 		}
 
-		if( m_vTFRAME[TFRAME_CINEMATIC]->IsVisible() && CTKeySetting::GetInstance()->GetCurKeySet( (WORD) MapVirtualKey( LOBYTE(nFlags), 1), CTClientKEY::GetCurMOD()) == TKEY_CLOSE_UI )
+		if( m_vTFRAME[TFRAME_CINEMATIC]->IsVisible() && CTKeySetting::GetInstance()->GetCurKeySet( CTachyonInput::ScanToVKey(nFlags), CTClientKEY::GetCurMOD()) == TKEY_CLOSE_UI )
 			OnGM_SKIP_SCENE();
 
 		return;
@@ -12568,7 +12568,7 @@ void CTClientGame::OnKeyDown( UINT nChar, int nRepCnt, UINT nFlags)
 			ImmReleaseContext( TSAFE_HWND(m_pMainWnd), hImc);
 		}
 
-		OnActivateKEY((WORD) MapVirtualKey( LOBYTE(nFlags), 1));
+		OnActivateKEY(CTachyonInput::ScanToVKey(nFlags));
 	}
 #ifdef NEW_IF
 	if( pTEDIT && pTEDIT == m_pChatFrame->GetChatEditMenu() )
@@ -12609,7 +12609,7 @@ void CTClientGame::OnKeyUp( UINT nChar, int nRepCnt, UINT nFlags)
 	TEdit *pTEDIT = GetCurEdit();
 
 	if( !pTEDIT )
-		OnReleaseKEY((WORD) MapVirtualKey(LOBYTE(nFlags),1));
+		OnReleaseKEY(CTachyonInput::ScanToVKey(nFlags));
 
 	CFrameGroup::OnKeyUp( nChar, nRepCnt, nFlags);
 }
@@ -12664,8 +12664,7 @@ void CTClientGame::OnMouseMove( UINT nFlags, CPoint pt)
 	if(bMOVE)
 	{
 		pt = point;
-		ClientToScreen( TSAFE_HWND(m_pMainWnd), &point);
-		SetCursorPos( point.x, point.y);
+		CTachyonInput::SetCursorPos(point);
 	}
 	m_vKEY.m_point = pt;
 

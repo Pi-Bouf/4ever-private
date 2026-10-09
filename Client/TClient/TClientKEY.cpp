@@ -36,25 +36,25 @@ WORD CTClientKEY::GetCurMOD()
 
 BYTE CTClientKEY::GetCTRL()
 {
-	return GetKeyState(VK_CONTROL) < 0 ? 0x01 : 0x00;
+	return CTachyonInput::IsCtrlDown();
 }
 
 BYTE CTClientKEY::GetALT()
 {
-	return GetKeyState(VK_MENU) < 0 ? 0x01 : 0x00;
+	return CTachyonInput::IsAltDown();
 }
 
 BYTE CTClientKEY::GetSHIFT()
 {
-	return GetKeyState(VK_SHIFT) < 0 ? 0x01 : 0x00;
+	return CTachyonInput::IsShiftDown();
 }
 
 BYTE CTClientKEY::GetWIN()
 {
-	return (GetKeyState(VK_LWIN) < 0 ? 0x01 : 0x00) || (GetKeyState(VK_RWIN) < 0 ? 0x01 : 0x00);
+	return CTachyonInput::IsWinDown();
 }
 
 BYTE CTClientKEY::IsKeyDown(BYTE bVKey)
 {
-	return GetAsyncKeyState(bVKey) < 0 ? 0x01 : 0x00;
+	return CTachyonInput::IsKeyDown(bVKey);
 }

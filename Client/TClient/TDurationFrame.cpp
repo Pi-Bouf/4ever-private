@@ -223,9 +223,7 @@ HRESULT CTDurationFrame::Render( DWORD dwTickCount )
 	{
 		m_pInfo->ShowComponent(FALSE);
 
-		CPoint point;
-		GetCursorPos(&point);
-		CTClientWnd::GetInstance()->ScreenToClient(&point);
+		CPoint point = CTachyonInput::GetCursorPos();
 
 		if( CTClientUIBase::HitTest(point) )
 

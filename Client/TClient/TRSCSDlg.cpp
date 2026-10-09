@@ -818,7 +818,7 @@ if(IsVisible())
 			CPoint point = rect.CenterPoint();
 
 			//SetCapture(TSAFE_HWND(m_pCommandHandler));
-			ShowCursor(FALSE);
+			CTachyonInput::ShowCursor(FALSE);
 			MoveCursor(point);
 			//ClipCursor(&rect);
 
@@ -902,8 +902,7 @@ void CTRSCSDlg::OnRButtonUp( UINT nFlags, CPoint pt)
 		ComponentToScreen(&point);
 		MoveCursor(point);
 		ReleaseCapture();
-		ClipCursor(NULL);
-		ShowCursor(TRUE);
+		CTachyonInput::ShowCursor(TRUE);
 
 		m_bMOVE = FALSE;
 	}
@@ -913,8 +912,7 @@ void CTRSCSDlg::OnRButtonUp( UINT nFlags, CPoint pt)
 
 void CTRSCSDlg::MoveCursor( CPoint point)
 {
-	m_pCommandHandler->ClientToScreen(&point);
-	SetCursorPos( point.x, point.y);
+	CTachyonInput::SetCursorPos(point);
 }
 void CTRSCSDlg::ShowComponent( BOOL bVisible)
 {
@@ -1649,7 +1647,7 @@ void CTRSCSDlg::OnRButtonDown( UINT nFlags, CPoint pt)
 			CPoint point = rect.CenterPoint();
 
 			//SetCapture(TSAFE_HWND(m_pCommandHandler));
-			ShowCursor(FALSE);
+			CTachyonInput::ShowCursor(FALSE);
 			MoveCursor(point);
 			//ClipCursor(&rect);
 
@@ -1729,8 +1727,7 @@ void CTRSCSDlg::OnRButtonUp( UINT nFlags, CPoint pt)
 		ComponentToScreen(&point);
 		MoveCursor(point);
 		ReleaseCapture();
-		ClipCursor(NULL);
-		ShowCursor(TRUE);
+		CTachyonInput::ShowCursor(TRUE);
 
 		m_bMOVE = FALSE;
 	}
@@ -1740,8 +1737,7 @@ void CTRSCSDlg::OnRButtonUp( UINT nFlags, CPoint pt)
 
 void CTRSCSDlg::MoveCursor( CPoint point)
 {
-	m_pCommandHandler->ClientToScreen(&point);
-	SetCursorPos( point.x, point.y);
+	CTachyonInput::SetCursorPos(point);
 }
 
 BOOL CTRSCSDlg::HitTest( CPoint pt)

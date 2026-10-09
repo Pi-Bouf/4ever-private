@@ -2278,9 +2278,7 @@ int CTClientGame::OnGM_HOTKEY_DOWN()
 {
 	CTGaugePannel* pDlg = static_cast<CTGaugePannel*>(m_vTFRAME[TFRAME_GAUGE]);
 
-	CPoint point;
-	GetCursorPos(&point);
-	m_pMainWnd->ScreenToClient(&point);
+	CPoint point = CTachyonInput::GetCursorPos();
 
 	THOTKEY_BASE eHotKeyType;
 	if( !pDlg->CheckHotkeyBase(point,&eHotKeyType) )
@@ -2300,9 +2298,7 @@ int CTClientGame::OnGM_HOTKEY_UP()
 {
 	CTGaugePannel* pDlg = static_cast<CTGaugePannel*>(m_vTFRAME[TFRAME_GAUGE]);
 
-	CPoint point;
-	GetCursorPos(&point);
-	m_pMainWnd->ScreenToClient(&point);
+	CPoint point = CTachyonInput::GetCursorPos();
 
 	THOTKEY_BASE eHotKeyType;
 	if( !pDlg->CheckHotkeyBase(point,&eHotKeyType) )

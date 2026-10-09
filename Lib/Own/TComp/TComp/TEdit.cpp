@@ -13,19 +13,7 @@ HKL TEdit::m_hKL = NULL;
 
 CHAR TEdit::SCodeToAscii( UINT nScanCode)
 {
-	BYTE bUpper = ::GetKeyState(VK_CAPITAL) & 0x0001 ? TRUE : FALSE;
-
-	if(::GetKeyState(VK_SHIFT) & 0x0100)
-		bUpper = !bUpper;
-
-	CHAR nChar[2] = {
-		CHAR(MapVirtualKey( LOBYTE(nScanCode), 1)),
-		NULL};
-
-	if(!bUpper)
-		_strlwr_s(nChar);
-
-	return nChar[0];
+	return CTachyonInput::ScanToChar(nScanCode);
 }
 
 //////////////////////////////////////////////////////////////////////

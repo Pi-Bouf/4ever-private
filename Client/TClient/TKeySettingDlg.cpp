@@ -145,7 +145,7 @@ void CTKeySettingDlg::OnKeyUp(UINT nChar, int nRepCnt, UINT nFlags)
 			if( nChar == VK_SNAPSHOT )
 				wVKey = VK_SNAPSHOT;
 			else
-				wVKey = (WORD) MapVirtualKey(LOBYTE(nFlags),1);
+				wVKey = CTachyonInput::ScanToVKey(nFlags);
 
 			WORD wModKey = CTClientKEY::GetCurMOD();
 

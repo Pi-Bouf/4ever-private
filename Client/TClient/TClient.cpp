@@ -111,8 +111,8 @@ BOOL CALLBACK NPGameMonCallback(DWORD dwMsg, DWORD dwArg)
 
 LRESULT CALLBACK CTClientApp::KeyHookProc( int nCode, WPARAM wParam, LPARAM lParam)
 {
-   //bool bWinDown = ( GetAsyncKeyState( VK_LWIN ) & 0x8000 || GetAsyncKeyState( VK_RWIN ) & 0x8000 );
-	  // bool bLDown = ( GetAsyncKeyState( VK_KEY_L ) & 0x8000);
+   //bool bWinDown = ( CTachyonInput::IsKeyDown(VK_LWIN) || CTachyonInput::IsKeyDown(VK_RWIN) );
+	  // bool bLDown = ( CTachyonInput::IsKeyDown(VK_KEY_L));
 
 	bool bWinDown = false;
 	bool bLDown = false;
@@ -139,8 +139,8 @@ LRESULT CALLBACK CTClientApp::KeyHookProc( int nCode, WPARAM wParam, LPARAM lPar
 	else if( pKey->vkCode == VK_DELETE )
 
 	{
-		bool bCtrlDown = ( GetAsyncKeyState( VK_LCONTROL ) & 0x8000 || GetAsyncKeyState( VK_RCONTROL ) & 0x8000 );
-		bool bAltDown = ( GetAsyncKeyState( VK_LMENU ) & 0x8000 || GetAsyncKeyState( VK_RMENU ) & 0x8000 );
+		bool bCtrlDown = ( CTachyonInput::IsKeyDown(VK_LCONTROL) || CTachyonInput::IsKeyDown(VK_RCONTROL) );
+		bool bAltDown = ( CTachyonInput::IsKeyDown(VK_LMENU) || CTachyonInput::IsKeyDown(VK_RMENU) );
    
 
 		if( bCtrlDown && bAltDown )
@@ -1508,7 +1508,7 @@ BYTE CTClientApp::MainProc()
 					if(THttpCtrl::IsFocusedHTML(msg.hwnd))
 					{
 						WORD wKEY = CTKeySetting::GetInstance()->GetCurKeySet(
-							MapVirtualKey( LOBYTE(HIWORD(msg.lParam)), 1),
+							CTachyonInput::ScanToVKey(HIWORD(msg.lParam)),
 							CTClientKEY::GetCurMOD());
 
 						if( wKEY == TKEY_CLOSE_UI )

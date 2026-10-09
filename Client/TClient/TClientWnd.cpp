@@ -907,8 +907,7 @@ void CTClientWnd::Render()
 		if( m_MainGame.m_vKEY.m_dwTick != dwPrevTick)
 		{
 			CTachyonMesh::m_fLevelFactor = CTClientGame::GetObjDETAILOption();
-			GetCursorPos(&point);
-			ScreenToClient(&point);
+			point = CTachyonInput::GetCursorPos();
 
 
 
@@ -5542,10 +5541,7 @@ void CTClientWnd::ReFresh()
 {
 	if(m_pMainFrame)
 	{
-		CPoint point;
-
-		GetCursorPos(&point);
-		ScreenToClient(&point);
+		CPoint point = CTachyonInput::GetCursorPos();
 
 		m_pMainFrame->OnMouseMove( 0, point);
 	}
@@ -6126,10 +6122,7 @@ void CTClientWnd::ResetTOption()
 
 BOOL CTClientWnd::OnSetCursor( CWnd* pWnd, UINT nHitTest, UINT message)
 {
-	CPoint point;
-
-	GetCursorPos(&point);
-	ScreenToClient(&point);
+	CPoint point = CTachyonInput::GetCursorPos();
 
 	if( m_MainGame.m_vKEY.m_vSTATE[TKEY_ROT] || m_MainGame.m_vKEY.m_vSTATE[TKEY_CAM_ROT] || m_TNet.m_bROT || m_TNet.m_bCharROT )
 		::SetCursor(NULL);

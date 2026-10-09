@@ -84,6 +84,9 @@
     <ClCompile Include="TachyonRes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TachyonInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="TachyonSession.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -198,6 +201,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TachyonRes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TachyonInput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TachyonSession.h">

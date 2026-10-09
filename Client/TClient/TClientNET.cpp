@@ -1027,9 +1027,7 @@ HRESULT CTClientNET::Render(DWORD dwTickCount)
 	{
 	case ID_FRAME_CHAR_NEW:
 	{
-		CPoint pt;
-		::GetCursorPos(&pt);
-		::ScreenToClient(TSAFE_HWND(AfxGetMainWnd()), &pt);
+		CPoint pt = CTachyonInput::GetCursorPos();
 
 		TImageList* pList = (TImageList*)GetCurrentFrame()->FindKid(ID_CTRLINST_CLASS0);
 		if (pList->HitTest(pt))
@@ -1353,8 +1351,7 @@ void CTClientNET::OnLButtonDown(UINT nFlags, CPoint pt)
 				m_pDevice->m_option.m_dwScreenX / 2,
 				m_pDevice->m_option.m_dwScreenY / 2);
 
-			ClientToScreen(TSAFE_HWND(AfxGetMainWnd()), &point);
-			SetCursorPos(point.x, point.y);
+			CTachyonInput::SetCursorPos(point);
 			m_bROT = TRUE;
 			m_fCharROT = 0.0f;
 			m_bTargetROT = FALSE;
@@ -1466,8 +1463,7 @@ void CTClientNET::OnMouseMove(UINT nFlags, CPoint pt)
 		m_fROT += (D3DX_PI / 180.0f * fDelta) / 3.5f;
 		m_fROT = RealignRot(m_fROT);
 
-		ClientToScreen(TSAFE_HWND(AfxGetMainWnd()), &point);
-		SetCursorPos(point.x, point.y);
+		CTachyonInput::SetCursorPos(point);
 
 		if (m_nModelCount != 0)
 		{
@@ -1507,8 +1503,7 @@ void CTClientNET::OnMouseMove(UINT nFlags, CPoint pt)
 		m_fCharROT += (D3DX_PI / 180.0f * fDelta) / 10.0f;
 		m_fCharROT = RealignRot(m_fCharROT);
 
-		ClientToScreen(TSAFE_HWND(AfxGetMainWnd()), &point);
-		SetCursorPos(point.x, point.y);
+		CTachyonInput::SetCursorPos(point);
 	}
 
 	switch (m_dwLevel)
@@ -1564,8 +1559,7 @@ void CTClientNET::OnRButtonDown(UINT nFlags, CPoint pt)
 				m_pDevice->m_option.m_dwScreenX / 2,
 				m_pDevice->m_option.m_dwScreenY / 2);
 
-			ClientToScreen(TSAFE_HWND(AfxGetMainWnd()), &point);
-			SetCursorPos(point.x, point.y);
+			CTachyonInput::SetCursorPos(point);
 			m_bCharROT = TRUE;
 		}
 		break;

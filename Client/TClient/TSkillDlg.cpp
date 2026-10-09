@@ -380,9 +380,7 @@ HRESULT CTSkillDlg::Render( DWORD dwTickCount)
 {
 	if( IsVisible() )
 	{
-		CPoint point;
-		GetCursorPos(&point);
-		m_pCommandHandler->ScreenToClient(&point);
+		CPoint point = CTachyonInput::GetCursorPos();
 
 		BYTE bCNT = (BYTE)m_pTTAB->m_Buttons.size();
 		for( BYTE i=0; i<bCNT; ++i)

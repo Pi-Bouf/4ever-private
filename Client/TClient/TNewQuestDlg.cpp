@@ -530,11 +530,8 @@ void CTNewQuestDlg::OnRButtonUp(UINT nFlags, CPoint pt)
 			(rtFRAME.Width() / 2) + rtFRAME.left,
 			(rtFRAME.Height() / 2) + rtFRAME.top);
 
-		m_pCommandHandler->ClientToScreen(&point);
-		SetCursorPos(
-			point.x,
-			point.y);
-		ShowCursor(TRUE);
+		CTachyonInput::SetCursorPos(point);
+		CTachyonInput::ShowCursor(TRUE);
 
 		m_bMOVE = FALSE;
 	}
@@ -554,11 +551,8 @@ void CTNewQuestDlg::OnRButtonDown(UINT nFlags, CPoint pt)
 			(rtFRAME.Width() / 2) + rtFRAME.left,
 			(rtFRAME.Height() / 2) + rtFRAME.top);
 
-		m_pCommandHandler->ClientToScreen(&point);
-		ShowCursor(FALSE);
-		SetCursorPos(
-			point.x,
-			point.y);
+		CTachyonInput::ShowCursor(FALSE);
+		CTachyonInput::SetCursorPos(point);
 
 		m_bMOVE = TRUE;
 	}
@@ -606,11 +600,7 @@ void CTNewQuestDlg::OnMouseMove(UINT nFlags, CPoint pt)
 			(rtFRAME.Width() / 2) + rtFRAME.left,
 			(rtFRAME.Height() / 2) + rtFRAME.top);
 
-		m_pCommandHandler->ClientToScreen(&point);
-		SetCursorPos(
-			point.x,
-			point.y);
-		m_pCommandHandler->ScreenToClient(&point);
+		CTachyonInput::SetCursorPos(point);
 		point -= pt;
 
 		m_vTCENTER.x += fLength * FLOAT(point.x) / (m_fTSCALE * FLOAT(TWORLDMAP_SIZE));

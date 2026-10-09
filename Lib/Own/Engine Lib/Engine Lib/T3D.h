@@ -719,6 +719,7 @@ typedef vector<TCOMMAND>									VTCOMMAND, *LPVTCOMMAND;
 
 #include <TModuleProtector.h>
 
+#include <TachyonInput.h>
 #include <TachyonSession.h>
 #include <TachyonRes.h>
 #include <TachyonApp.h>
