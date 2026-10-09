@@ -5122,23 +5122,18 @@ void CTClientObjBase::PlayRandomSND(LPMAPSNDINST pINST,
 
 		if (pItem->m_nIndex >= 0)
 		{
-			if (b3DSound)
+			if (b3DSound && pWAV->Is3D(pItem->m_nIndex))
 			{
-				LPDIRECTSOUND3DBUFFER p3DBUF = pWAV->GetDS3D(pItem->m_nIndex);
+				D3DXVECTOR3 vSNDPOS = CD3DSound::ConvertPOS(
+					m_vPosition._41,
+					m_vPosition._42,
+					m_vPosition._43);
 
-				if (p3DBUF)
-				{
-					D3DXVECTOR3 vSNDPOS = CD3DSound::ConvertPOS(
-						m_vPosition._41,
-						m_vPosition._42,
-						m_vPosition._43);
-
-					p3DBUF->SetPosition(
-						vSNDPOS.x,
-						vSNDPOS.y,
-						vSNDPOS.z,
-						DS3D_IMMEDIATE);
-				}
+				pWAV->SetPosition(
+					pItem->m_nIndex,
+					vSNDPOS.x,
+					vSNDPOS.y,
+					vSNDPOS.z);
 			}
 
 			m_pMedia->Play(
@@ -5170,23 +5165,18 @@ void CTClientObjBase::PlaySND(DWORD dwSndID,
 
 		if (nIndex >= 0)
 		{
-			if (b3DSound)
+			if (b3DSound && pWAV->Is3D(nIndex))
 			{
-				LPDIRECTSOUND3DBUFFER p3DBUF = pWAV->GetDS3D(nIndex);
+				D3DXVECTOR3 vSNDPOS = CD3DSound::ConvertPOS(
+					m_vPosition._41,
+					m_vPosition._42,
+					m_vPosition._43);
 
-				if (p3DBUF)
-				{
-					D3DXVECTOR3 vSNDPOS = CD3DSound::ConvertPOS(
-						m_vPosition._41,
-						m_vPosition._42,
-						m_vPosition._43);
-
-					p3DBUF->SetPosition(
-						vSNDPOS.x,
-						vSNDPOS.y,
-						vSNDPOS.z,
-						DS3D_IMMEDIATE);
-				}
+				pWAV->SetPosition(
+					nIndex,
+					vSNDPOS.x,
+					vSNDPOS.y,
+					vSNDPOS.z);
 			}
 
 			pWAV->Play(nIndex);

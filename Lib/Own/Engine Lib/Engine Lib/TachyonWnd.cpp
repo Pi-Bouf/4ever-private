@@ -299,7 +299,7 @@ BOOL CTachyonWnd::InitDevices()
 	CTachyonObject::m_pMedia = &CTachyonRes::m_MEDIA;
 	CTachyonMesh::InitGlobalVB();
 
-	CTachyonRes::m_MEDIA.InitMEDIA(GetSafeHwnd());
+	CTachyonRes::m_MEDIA.InitMEDIA();
 	CTachyonRes::m_pDEVICE = &m_Device;
 	CTachyonSFX::InitCommon();
 	CSFX::InitTEXVB();

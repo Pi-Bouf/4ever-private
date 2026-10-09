@@ -286,7 +286,7 @@ target_link_libraries(TClient PRIVATE
     TChart
     TCML
     TComp
-    d3d9 d3dx9 dsound dxguid strmiids
+    d3d9 d3dx9 dxguid strmiids
     advapi32 imm32 version dbghelp psapi
 )
 target_link_options(TClient PRIVATE

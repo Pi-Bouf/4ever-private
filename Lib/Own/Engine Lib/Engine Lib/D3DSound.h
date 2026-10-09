@@ -11,31 +11,6 @@
 #endif // _MSC_VER > 1000
 
 
-class CWaveFile
-{
-public:
-	LPWAVEFORMATEX m_pWFX;
-	HMMIO m_hMMIO;
-
-	MMCKINFO m_mmckRIFF;
-	MMCKINFO m_mmckINFO;
-	DWORD m_dwSize;
-
-public:
-	void Load( CString strFileName);
-
-	void Release();
-	void Reset();
-
-	DWORD Read( LPBYTE pBUF, DWORD dwSize);
-	DWORD GetSize();
-
-public:
-	CWaveFile();
-	virtual ~CWaveFile();
-};
-
-
 class CD3DSound
 {
 	friend class CTachyonMedia;
@@ -45,10 +20,8 @@ public:
 	static BYTE m_bON;
 
 protected:
-	static VDIRECTSOUND3DBUFFER m_v3DGARBAGE;
-	static VDIRECTSOUNDBUFFER m_vGARBAGE;
-
-	static LPDIRECTSOUND3DLISTENER8 m_pLISTENER;
+	// Released sounds that were still playing, freed once they end.
+	static VTSOUND m_vGARBAGE;
 	static D3DXMATRIX m_vLISTENER;
 
 public:
@@ -62,21 +35,15 @@ public:
 		FLOAT fPosY,
 		FLOAT fPosZ);
 
-	static void GetListener( LPDS3DLISTENER pLISTENER);
-	static void SetListener(
-		LPDS3DLISTENER pLISTENER,
-		DWORD dwApply);
-
-	static BYTE IsPlay( LPDIRECTSOUNDBUFFER pBUF);
+	static BYTE IsPlay( ma_sound *pSOUND);
 	static void ClearGARBAGE();
 	static void InitGARBAGE();
 
 protected:
-	VDIRECTSOUND3DBUFFER m_v3DBUF;
-	VDIRECTSOUNDBUFFER m_vBUF;
+	// One playing instance per slot: slot 0 is loaded from the file, the others are copies of it.
+	VTSOUND m_vBUF;
 	VECTORBYTE m_vLOCK;
 
-	LPDIRECTSOUND8 m_pDS;
 	CString m_strFile;
 	DWORD m_dwSize;
 
@@ -84,22 +51,23 @@ public:
 	BYTE m_bFadeVolume;
 	BYTE m_bVolume;
 
-public:
-	void Initialize(
-		LPDIRECTSOUND8 pDS,
-		CString strFile);
+protected:
+	ma_sound *CopySound();
+	void Release( ma_sound *pSOUND);
 
-	BYTE LoadData(
-		LPDIRECTSOUNDBUFFER pDSBUF,
-		CWaveFile *pFILE);
+public:
+	void Initialize( CString strFile);
 
 	BYTE LoadData();
-	void Restore();
 	void Release();
 
 public:
-	LPDIRECTSOUND3DBUFFER GetDS3D( int nIndex);
-	LPDIRECTSOUNDBUFFER GetDSB( int nIndex);
+	BYTE SetPosition(
+		int nIndex,
+		FLOAT fPosX,
+		FLOAT fPosY,
+		FLOAT fPosZ);
+	BYTE Is3D( int nIndex);
 
 	BYTE ResetVolume( int nIndex);
 	BYTE ResetVolume();

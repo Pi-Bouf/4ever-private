@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -172,7 +172,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>HwidLibd.lib;Engine Libd.lib;TChartd.lib;TCMLd.lib;TCompd.lib;D3d9.lib;D3dx9.lib;winmm.lib;Advapi32.lib;Imm32.lib;dsound.lib;dxguid.lib;strmiids.lib;Version.lib;dbghelp.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>HwidLibd.lib;Engine Libd.lib;TChartd.lib;TCMLd.lib;TCompd.lib;D3d9.lib;D3dx9.lib;winmm.lib;Advapi32.lib;Imm32.lib;dxguid.lib;strmiids.lib;Version.lib;dbghelp.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>..\..\Lib\Own\HwidLib\Lib\x86;..\..\Lib\Own\TChart\Lib\x86;..\..\Lib\Own\TComp\Lib\x86;..\..\Lib\Own\TCML\Lib\x86;..\..\Lib\Own\Engine Lib\Lib\x86;..\..\Lib\3rdParty\VLD\lib\Win32</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -212,7 +212,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>HwidLibd.lib;Engine Libd.lib;TChartd.lib;TCMLd.lib;TCompd.lib;D3d9.lib;D3dx9.lib;winmm.lib;Advapi32.lib;Imm32.lib;dsound.lib;dxguid.lib;strmiids.lib;Version.lib;dbghelp.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>HwidLibd.lib;Engine Libd.lib;TChartd.lib;TCMLd.lib;TCompd.lib;D3d9.lib;D3dx9.lib;winmm.lib;Advapi32.lib;Imm32.lib;dxguid.lib;strmiids.lib;Version.lib;dbghelp.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>..\..\Lib\Own\HwidLib\Lib\x64;..\..\Lib\Own\TChart\Lib\x64;..\..\Lib\Own\TComp\Lib\x64;..\..\Lib\Own\TCML\Lib\x64;..\..\Lib\Own\Engine Lib\Lib\x64;..\..\Lib\3rdParty\VLD\lib\Win64</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -260,7 +260,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>HwidLib.lib;Engine Lib.lib;TChart.lib;TCML.lib;TComp.lib;D3d9.lib;D3dx9.lib;Advapi32.lib;Imm32.lib;dsound.lib;dxguid.lib;strmiids.lib;Version.lib;dbghelp.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>HwidLib.lib;Engine Lib.lib;TChart.lib;TCML.lib;TComp.lib;D3d9.lib;D3dx9.lib;Advapi32.lib;Imm32.lib;dxguid.lib;strmiids.lib;Version.lib;dbghelp.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>..\..\Lib\Own\HwidLib\Lib\x86;..\..\Lib\3rdParty\HShield\Lib\Win\x86\Multithreaded\Update;..\..\Lib\3rdParty\HShield\Lib\Win\x86\Multithreaded\HShield;..\..\Lib\Own\TChart\Lib\x86;..\..\Lib\Own\TComp\Lib\x86;..\..\Lib\Own\TCML\Lib\x86;..\..\Lib\Own\Engine Lib\Lib\x86</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -315,7 +315,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>HwidLib.lib;Engine Lib.lib;TChart.lib;TCML.lib;TComp.lib;D3d9.lib;D3dx9.lib;Advapi32.lib;Imm32.lib;dsound.lib;dxguid.lib;strmiids.lib;Version.lib;dbghelp.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>HwidLib.lib;Engine Lib.lib;TChart.lib;TCML.lib;TComp.lib;D3d9.lib;D3dx9.lib;Advapi32.lib;Imm32.lib;dxguid.lib;strmiids.lib;Version.lib;dbghelp.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>..\..\Lib\Own\HwidLib\Lib\x64;..\..\Lib\Own\TChart\Lib\x64;..\..\Lib\Own\TComp\Lib\x64;..\..\Lib\Own\TCML\Lib\x64;..\..\Lib\Own\Engine Lib\Lib\x64;</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -364,7 +364,7 @@
       <IntrinsicFunctions>false</IntrinsicFunctions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>HwidLib.lib;Engine LibTR.lib;TChart.lib;TCML.lib;TComp.lib;D3d9.lib;D3dx9.lib;winmm.lib;Imm32.lib;dsound.lib;dxguid.lib;strmiids.lib;Version.lib;dbghelp.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>HwidLib.lib;Engine LibTR.lib;TChart.lib;TCML.lib;TComp.lib;D3d9.lib;D3dx9.lib;winmm.lib;Imm32.lib;dxguid.lib;strmiids.lib;Version.lib;dbghelp.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>..\..\Lib\Own\HwidLib\Lib\x86;..\..\Lib\Own\TChart\Lib\x86;..\..\Lib\Own\TComp\Lib\x86;..\..\Lib\Own\TCML\Lib\x86;..\..\Lib\Own\Engine Lib\Lib\x86</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -412,7 +412,7 @@
       <IntrinsicFunctions>false</IntrinsicFunctions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>HwidLib.lib;Engine LibTR.lib;TChart.lib;TCML.lib;TComp.lib;D3d9.lib;D3dx9.lib;winmm.lib;Imm32.lib;dsound.lib;dxguid.lib;strmiids.lib;Version.lib;dbghelp.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>HwidLib.lib;Engine LibTR.lib;TChart.lib;TCML.lib;TComp.lib;D3d9.lib;D3dx9.lib;winmm.lib;Imm32.lib;dxguid.lib;strmiids.lib;Version.lib;dbghelp.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>..\..\Lib\Own\HwidLib\Lib\x64;..\..\Lib\Own\TChart\Lib\x64;..\..\Lib\Own\TComp\Lib\x64;..\..\Lib\Own\TCML\Lib\x64;..\..\Lib\Own\Engine Lib\Lib\x64;</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>

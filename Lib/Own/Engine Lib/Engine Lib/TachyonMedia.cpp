@@ -1,8 +1,11 @@
 #include "stdafx.h"
+#include "TMiniAudio.h"
 
 BYTE CTachyonMedia::m_bMasterVolume = VOLUME_MAX;
 BYTE CTachyonMedia::m_bBACK = FALSE;
 BYTE CTachyonMedia::m_bON = TRUE;
+
+ma_engine *CTachyonMedia::m_pENGINE = NULL;
 
 
 CTachyonMedia::CTachyonMedia()
@@ -10,8 +13,6 @@ CTachyonMedia::CTachyonMedia()
 	m_mapDSOUND.clear();
 	m_mapDMUSIC.clear();
 	m_mapDSHOW.clear();
-
-	m_pDS = NULL;
 }
 
 CTachyonMedia::~CTachyonMedia()
@@ -19,70 +20,26 @@ CTachyonMedia::~CTachyonMedia()
 	ReleaseAll();
 }
 
-BYTE CTachyonMedia::InitMEDIA( HWND hWnd,
-							   DWORD dwCoopLevel,
-							   DWORD dwPrimaryChannels,
-							   DWORD dwPrimaryFreq,
-							   DWORD dwPrimaryBitRate)
+BYTE CTachyonMedia::InitMEDIA()
 {
-	LPDIRECTSOUNDBUFFER pDSB = NULL;
-	DS3DLISTENER vLISTENER;
+	if(m_pENGINE)
+		return TRUE;
+	m_pENGINE = new ma_engine;
 
-	if(m_pDS)
+	// Default output device, mixed in 32-bit float at the device rate.
+	if( ma_engine_init( NULL, m_pENGINE) != MA_SUCCESS )
 	{
-		m_pDS->Release();
-		m_pDS = NULL;
+		delete m_pENGINE;
+		m_pENGINE = NULL;
+
+		return FALSE;
 	}
-
-	if(FAILED(DirectSoundCreate8( NULL, &m_pDS, NULL)))
-		return FALSE;
-
-	if(FAILED(m_pDS->SetCooperativeLevel( hWnd, dwCoopLevel)))
-		return FALSE;
-
-	m_pDS->SetSpeakerConfig( DSSPEAKER_COMBINED(
-		DSSPEAKER_STEREO,
-		DSSPEAKER_GEOMETRY_WIDE));
-
-	DSBUFFERDESC desc;
-	ZeroMemory( &desc, sizeof(DSBUFFERDESC));
-	desc.dwSize = sizeof(DSBUFFERDESC);
-	desc.dwFlags = DSBCAPS_CTRL3D|DSBCAPS_PRIMARYBUFFER;
-	desc.dwBufferBytes = 0;
-	desc.lpwfxFormat = NULL;
-
-	if(FAILED(m_pDS->CreateSoundBuffer( &desc, &pDSB, NULL)))
-		return FALSE;
-
-	WAVEFORMATEX wfx;
-	ZeroMemory( &wfx, sizeof(WAVEFORMATEX));
-	wfx.wFormatTag = WAVE_FORMAT_PCM;
-	wfx.nChannels = (WORD) dwPrimaryChannels;
-	wfx.nSamplesPerSec = dwPrimaryFreq;
-	wfx.wBitsPerSample = (WORD) dwPrimaryBitRate;
-	wfx.nBlockAlign = (WORD) (wfx.wBitsPerSample / 8 * wfx.nChannels);
-	wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
-
-	if(FAILED(pDSB->QueryInterface( IID_IDirectSound3DListener8, (LPVOID *) &CD3DSound::m_pLISTENER)))
-		return FALSE;
-
-	if(FAILED(pDSB->SetFormat(&wfx)))
-		return FALSE;
-
-	CD3DSound::GetListener(&vLISTENER);
-	pDSB->Release();
-
-	vLISTENER.vOrientFront = D3DXVECTOR3( 0.0f, 0.0f, 1.0f);
-	vLISTENER.vOrientTop = D3DXVECTOR3( 0.0f, 1.0f, 0.0f);
-	vLISTENER.vPosition = D3DXVECTOR3( 0.0f, 0.0f, 0.0f);
-	CD3DSound::SetListener( &vLISTENER, DS3D_IMMEDIATE);
 
 	CD3DSound::InitGARBAGE();
 	CD3DSound::ResetLISTENER(
-		TTEMP(D3DXVECTOR3(vLISTENER.vPosition)),
-		TTEMP(D3DXVECTOR3(vLISTENER.vOrientFront)),
-		TTEMP(D3DXVECTOR3(vLISTENER.vOrientTop)));
-	CT3DMusic::DecodeINIT(m_pDS);
+		TTEMP(D3DXVECTOR3( 0.0f, 0.0f, 0.0f)),
+		TTEMP(D3DXVECTOR3( 0.0f, 0.0f, 1.0f)),
+		TTEMP(D3DXVECTOR3( 0.0f, 1.0f, 0.0f)));
 
 	return TRUE;
 }
@@ -108,16 +65,11 @@ void CTachyonMedia::ReleaseAll()
 	m_mapDSOUND.clear();
 	m_mapDSHOW.clear();
 
-	if(CD3DSound::m_pLISTENER)
+	if(m_pENGINE)
 	{
-		CD3DSound::m_pLISTENER->Release();
-		CD3DSound::m_pLISTENER = NULL;
-	}
-
-	if(m_pDS)
-	{
-		m_pDS->Release();
-		m_pDS = NULL;
+		ma_engine_uninit(m_pENGINE);
+		delete m_pENGINE;
+		m_pENGINE = NULL;
 	}
 }
 
@@ -397,9 +349,7 @@ void CTachyonMedia::LoadDSound( DWORD dwID,
 {
 	CD3DSound *pItem = new CD3DSound();
 
-	pItem->Initialize(
-		m_pDS,
-		szFileName);
+	pItem->Initialize(szFileName);
 	pItem->m_bVolume = bVolume;
 
 	Register( MEDIA_TSOUND, dwID, pItem);
@@ -417,7 +367,7 @@ void CTachyonMedia::SetPos( BYTE bType,
 			MAPMEDIA::iterator finder = m_mapDMUSIC.find(dwID);
 
 			if( finder != m_mapDMUSIC.end() )
-				((CT3DMusic *) (*finder).second)->SetPos((MUSIC_TIME) nPos);
+				((CT3DMusic *) (*finder).second)->SetPos((DWORD) nPos);
 		}
 
 		break;

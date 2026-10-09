@@ -23844,20 +23844,18 @@ void CTClientGame::CalcBGM( DWORD dwTick)
 
 					if( nIndex >= 0 )
 					{
-						LPDIRECTSOUND3DBUFFER p3DBUF = pWAV->GetDS3D(nIndex);
-
-						if(p3DBUF)
+						if(pWAV->Is3D(nIndex))
 						{
 							D3DXVECTOR3 vSNDPOS = CD3DSound::ConvertPOS(
 								m_pCamera->m_vPosition.x + FLOAT(rand() % (20 * INT(TENVSND_RANGE))) / 10.0f - TENVSND_RANGE,
 								m_pCamera->m_vPosition.y,
 								m_pCamera->m_vPosition.z + FLOAT(rand() % (20 * INT(TENVSND_RANGE))) / 10.0f - TENVSND_RANGE);
 
-							p3DBUF->SetPosition(
+							pWAV->SetPosition(
+								nIndex,
 								vSNDPOS.x,
 								vSNDPOS.y,
-								vSNDPOS.z,
-								DS3D_IMMEDIATE);
+								vSNDPOS.z);
 						}
 
 						pWAV->Play(nIndex);

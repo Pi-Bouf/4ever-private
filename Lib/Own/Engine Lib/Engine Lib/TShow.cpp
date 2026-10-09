@@ -4,6 +4,10 @@
 
 #include "stdafx.h"
 
+// IBasicAudio volume range, in hundredths of a decibel.
+#define TSHOW_VOLUME_MIN							(-10000)
+#define TSHOW_VOLUME_MAX							(0)
+
 BYTE CTShow::m_bMasterVolume = VOLUME_MAX;
 BYTE CTShow::m_bON = TRUE;
 
@@ -159,7 +163,7 @@ BYTE CTShow::ResetVolume()
 	}
 
 	FLOAT fVolume = CTachyonMedia::m_bBACK ? 0.0f : FLOAT(CTachyonMedia::m_bMasterVolume) * FLOAT(m_bMasterVolume) * FLOAT(m_bVolume) / FLOAT(VOLUME_MAX * VOLUME_MAX * VOLUME_MAX);
-	LONG nVolume = DSBVOLUME_MIN + LONG(fVolume * FLOAT(DSBVOLUME_MAX - DSBVOLUME_MIN));
+	LONG nVolume = TSHOW_VOLUME_MIN + LONG(fVolume * FLOAT(TSHOW_VOLUME_MAX - TSHOW_VOLUME_MIN));
 
 	pBA->put_Volume(nVolume);
 	pBA->Release();

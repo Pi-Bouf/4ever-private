@@ -28,12 +28,12 @@ set(EngineLib_SOURCES
     TachyonSFX.cpp
     TachyonSlashSFX.cpp
     TachyonWnd.cpp
-    TBitStream.cpp
     TBSPNode.cpp
     TBSPPortal.cpp
     TConsole.cpp
     TDynamicBillboard.cpp
     TMath.cpp
+    TMiniAudio.cpp
     TModuleProtector.cpp
     TNICEventSink.cpp
     TProfile.cpp
@@ -49,6 +49,7 @@ target_include_directories(EngineLib
         "${TCLIENT_LIB_3RD}/zlib/include"
     PRIVATE
         "${TCLIENT_LIB_OWN}/GameConfig"
+        "${TCLIENT_LIB_3RD}/miniaudio"
         # TComp and Engine Lib include each other's headers.
         "${TCLIENT_LIB_OWN}/TComp/TComp"
 )

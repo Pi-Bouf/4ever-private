@@ -13,9 +13,7 @@
 #include <mmsystem.h>
 #include <Iphlpapi.h>
 #include <Wbemidl.h>
-#include <dmusicc.h>
 #include <gdiplus.h>
-#include <dsound.h>
 #include <ddraw.h>
 #include <dshow.h>
 #include <d3dx9.h>
@@ -206,18 +204,6 @@ inline HANDLE TSAFE_HANDLE( const CGdiObject* pObject )
 #define VBTYPE_GLOBAL												((BYTE) 0x00)
 #define VBTYPE_LOCAL												((BYTE) 0x01)
 
-#define MPEG_GLOBAL_GAIN_SCALE										(4 * 15)
-#define MPEG_BUFFER_COUNT											(2)
-
-#define VBR_FRAMES_FLAG												(0x0001)
-#define VBR_BYTES_FLAG												(0x0002)
-#define VBR_TOC_FLAG												(0x0004)
-#define VBR_SCALE_FLAG												(0x0008)
-
-#define DEF_NBUF													(8192)
-#define IS_MAX														(32)
-#define DEF_BUF_TRIGGER												(DEF_NBUF - 1500)
-
 #define TMAX_CHECK_CODE_SIZE										((BYTE) 7)
 #define TESSPROC_COUNT												(2)
 
@@ -260,17 +246,6 @@ typedef enum __MM_STATE
 	MMS_COUNT
 } MM_STATE, *LPMM_STATE;
 
-typedef enum __HUFF_CASE
-{
-	HUFFCASE_NOBIT = 0,
-	HUFFCASE_ONE,
-	HUFFCASE_NOLIN,
-	HUFFCASE_LIN,
-	HUFFCASE_QUADA,
-	HUFFCASE_QUADB,
-	HUFFCASE_COUNT
-} HUFF_CASE, *LPHUFF_CASE;
-
 typedef enum TDBB_LEVEL
 {
 	TDBB_LEVEL_HI = 0,
@@ -278,34 +253,6 @@ typedef enum TDBB_LEVEL
 	TDBB_LEVEL_LOW,
 	TDBB_LEVEL_COUNT
 } *LPTDBB_LEVEL;
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// T3D Union
-
-typedef union __HUFF_ELEMENT
-{
-	DWORD m_dwDATA;		// unsigned: the Huffman tables are written as 0xFF000003-style constants
-	struct
-	{
-		BYTE m_bSIGN;
-		BYTE m_bX;
-		BYTE m_bY;
-		BYTE m_bPURGE;
-	} m_vElement;
-} HUFF_ELEMENT, *LPHUFF_ELEMENT;
-
-typedef union __SAMPLE
-{
-	FLOAT m_fF;
-	int m_nI;
-} SAMPLE, *LPSAMPLE;
-
-typedef union __SAMPLEBUF
-{
-	SAMPLE m_vA[2][2][576];
-	SAMPLE m_vB[2304];
-} SAMPLEBUF, *LPSAMPLEBUF;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -397,17 +344,6 @@ typedef struct tagTEXWINDING										TEXWINDING, *LPTEXWINDING;
 typedef struct tagFARIMGPT											FARIMGPT, *LPFARIMGPT;
 typedef struct tagFARIMG											FARIMG, *LPFARIMG;
 
-typedef struct tagMPEG_DECODE_OPTION								MPEG_DECODE_OPTION, *LPMPEG_DECODE_OPTION;
-typedef struct tagMPEG_DECODE_INFO									MPEG_DECODE_INFO, *LPMPEG_DECODE_INFO;
-
-typedef struct tagHUFF_SETUP										HUFF_SETUP, *LPHUFF_SETUP;
-typedef struct tagSIDE_INFO											SIDE_INFO, *LPSIDE_INFO;
-
-typedef struct tagGR_INFO											GR_INFO, *LPGR_INFO;
-typedef struct tagCB_INFO											CB_INFO, *LPCB_INFO;
-
-typedef struct tagSCALE_FACTOR										SCALE_FACTOR, *LPSCALE_FACTOR;
-typedef struct tagIS_SF_INFO										IS_SF_INFO, *LPIS_SF_INFO;
 typedef struct tagTLOADINGSCENE										TLOADINGSCENE, *LPTLOADINGSCENE;
 
 typedef struct tagTPROTECTED_MODULE									TPROTECTED_MODULE, *LPTPROTECTED_MODULE;
@@ -428,8 +364,11 @@ typedef vector<LPVERTEXWINDING>										VECTORVERTEXWINDING, *LPVECTORVERTEXWIN
 typedef vector<LPPOINTWINDING>										VECTORPOINTWINDING, *LPVECTORPOINTWINDING;
 typedef vector<LPTEXWINDING>										VECTORTEXWINDING, *LPVECTORTEXWINDING;
 
-typedef vector<LPDIRECTSOUND3DBUFFER>								VDIRECTSOUND3DBUFFER, *LPVDIRECTSOUND3DBUFFER;
-typedef vector<LPDIRECTSOUNDBUFFER>									VDIRECTSOUNDBUFFER, *LPVDIRECTSOUNDBUFFER;
+// miniaudio types (TMiniAudio.h), complete only in the files that play audio.
+struct ma_engine;
+struct ma_sound;
+
+typedef vector<ma_sound *>											VTSOUND, *LPVTSOUND;
 
 typedef vector<LPDIRECT3DVERTEXBUFFER9>								VECTORVB, *LPVECTORVB;
 typedef vector<LPDIRECT3DINDEXBUFFER9>								VECTORIB, *LPVECTORIB;
@@ -579,7 +518,6 @@ typedef set< FLOAT>													SETFLOAT, *LPSETFLOAT;
 // T3D Base Utility Class
 
 class CT3DTexture;
-class CTBitStream;
 class CD3DDevice;
 class CD3DCamera;
 class CD3DLight;
@@ -690,14 +628,6 @@ typedef map< DWORD, CTBSPNode *>						MAPTBSPNODE, *LPMAPTBSPNODE;
 typedef map< LPVOID, CTDynamicBillboard *>				MAPTDBB, *LPMAPTDBB;
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// T3D function type
-
-typedef void (*XFORM_PROC)( CT3DMusic *pMUSIC, LPSIDE_INFO pSIDE, LPVOID pPCM, int nVersion, int nFREQ, int nGROUP);
-typedef void (*SBT_PROC)( CT3DMusic *pMUSIC, FLOAT *pSAMPLE, LPVOID pPCM, int nCH);
-typedef int (*FRAME_PROC)( CT3DMusic *pMUSIC, int nFRAME);
-
-
 //////////////////////////////////////////////////////////////////////////////
 // Smart sync class for critical section
 
@@ -757,7 +687,6 @@ typedef vector<TCOMMAND>									VTCOMMAND, *LPVTCOMMAND;
 #include <TProfile.h>
 
 #include <T3DTexture.h>
-#include <TBitStream.h>
 #include <D3DDevice.h>
 #include <D3DCamera.h>
 #include <D3DLight.h>
@@ -2607,91 +2536,6 @@ struct tagMAPLIGHT
 		m_bUseLM = TRUE;
 		m_bUseDL = TRUE;
 	};
-};
-
-struct tagHUFF_SETUP
-{
-	LPHUFF_ELEMENT m_pTABLE;
-
-	int m_nBITS;
-	int m_nCASE;
-};
-
-struct tagMPEG_DECODE_OPTION
-{
-	int m_nReduction;
-	int m_nConvert;
-	int m_nFreqLimit;
-};
-
-struct tagMPEG_DECODE_INFO
-{
-	MPEG_HEADER m_vHeader;
-
-	int m_nChannels;
-	int m_nBitsPerSample;
-	int m_nBitRate;
-
-	int m_nFrames;
-	int m_nSkipSize;
-	int m_nDataSize;
-
-	int m_nMinInputSize;
-	int m_nMaxInputSize;
-	int m_nOutputSize;
-};
-
-struct tagGR_INFO
-{
-	DWORD m_dwPart2_3_Length;
-	DWORD m_dwBigValues;
-	DWORD m_dwGlobalGain;
-	DWORD m_dwSFCompress;
-	DWORD m_dwWindowSwitchingFlag;
-	DWORD m_dwBlockType;
-	DWORD m_dwMixedBlockFlag;
-	DWORD m_dwTableSelect[3];
-	DWORD m_dwSubblockGain[3];
-	DWORD m_dwRegion0Count;
-	DWORD m_dwRegion1Count;
-	DWORD m_dwPreFlag;
-	DWORD m_dwSFScale;
-	DWORD m_dwCount1TableSelect;
-};
-
-struct tagCB_INFO
-{
-	int m_nMaxS[3];
-	int m_nMax;
-
-	int m_nLBType;
-	int m_nType;
-
-	int m_nStart;
-	int m_nEnd;
-};
-
-struct tagSIDE_INFO
-{
-	GR_INFO m_vINFO[2][2];
-	DWORD m_dwSCFSI[2];
-
-	DWORD m_dwPRIVATE;
-	DWORD m_dwSTART;
-};
-
-struct tagSCALE_FACTOR
-{
-	int m_nS[3][13];
-	int m_nL[23];
-};
-
-struct tagIS_SF_INFO
-{
-	int m_nIScale;
-
-	int m_vSL[3];
-	int m_vR[3];
 };
 
 struct tagTLOADINGSCENE

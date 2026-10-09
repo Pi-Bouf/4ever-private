@@ -1153,16 +1153,11 @@ void CTClientMAP::LoadMAPOBJ( CD3DDevice *pDevice,
 
 		if( pIDX->m_nIndex >= 0 )
 		{
-			LPDIRECTSOUND3DBUFFER p3DBUF = pIDX->m_pSND->GetDS3D(pIDX->m_nIndex);
-
-			if(p3DBUF)
-			{
-				p3DBUF->SetPosition(
-					(*pTMAPSND)[i]->m_vPOS.x,
-					(*pTMAPSND)[i]->m_vPOS.y,
-					(*pTMAPSND)[i]->m_vPOS.z,
-					DS3D_IMMEDIATE);
-			}
+			pIDX->m_pSND->SetPosition(
+				pIDX->m_nIndex,
+				(*pTMAPSND)[i]->m_vPOS.x,
+				(*pTMAPSND)[i]->m_vPOS.y,
+				(*pTMAPSND)[i]->m_vPOS.z);
 		}
 		else
 		{

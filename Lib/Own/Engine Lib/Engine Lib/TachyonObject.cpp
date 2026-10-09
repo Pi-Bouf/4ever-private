@@ -2110,21 +2110,19 @@ void CTachyonObject::CalcSND( LPMAPSNDINST pINST,
 
 			if( finder != pSND->end() && (*finder).second->m_bPlay )
 			{
-				LPDIRECTSOUND3DBUFFER p3DBUF = (*finder).second->m_pWAV->GetDS3D((*finder).second->m_nIndex);
-
 				(*finder).second->m_pWAV->Stop((*finder).second->m_nIndex);
-				if(p3DBUF)
+				if((*finder).second->m_pWAV->Is3D((*finder).second->m_nIndex))
 				{
 					D3DXVECTOR3 vSNDPOS = CD3DSound::ConvertPOS(
 						m_vPosition._41,
 						m_vPosition._42,
 						m_vPosition._43);
 
-					p3DBUF->SetPosition(
+					(*finder).second->m_pWAV->SetPosition(
+						(*finder).second->m_nIndex,
 						vSNDPOS.x,
 						vSNDPOS.y,
-						vSNDPOS.z,
-						DS3D_IMMEDIATE);
+						vSNDPOS.z);
 				}
 
 				(*finder).second->m_pWAV->Play((*finder).second->m_nIndex);

@@ -8,20 +8,17 @@ public:
 	static BYTE m_bBACK;
 	static BYTE m_bON;
 
+	// The audio device and mixer of every sound and music, NULL when there is no audio.
+	static ma_engine *m_pENGINE;
+
 protected:
-	LPDIRECTSOUND8 m_pDS;
 
 	MAPMEDIA m_mapDSOUND;
 	MAPMEDIA m_mapDMUSIC;
 	MAPMEDIA m_mapDSHOW;
 
 public:
-	BYTE InitMEDIA(
-		HWND hWnd,
-		DWORD dwCoopLevel = DSSCL_EXCLUSIVE,
-		DWORD dwPrimaryChannels = 2,
-		DWORD dwPrimaryFreq = 44100,
-		DWORD dwPrimaryBitRate = 16);
+	BYTE InitMEDIA();
 
 	void LoadDShow(
 		CWnd *pHost,
