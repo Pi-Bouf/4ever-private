@@ -47,7 +47,7 @@ void CTPetMakeDlg::Update(DWORD dwTickCount)
 	if( strPetName.IsEmpty() )
 		m_pKindNameTxt->m_strText = m_pDisplayPet->GetPetKindName();
 	else
-		m_pKindNameTxt->m_strText = CTChart::Format( TSTR_PETMAKE_KINDNAME, m_pDisplayPet->GetPetKindName(), strPetName);
+		m_pKindNameTxt->m_strText = CTChart::Format( TSTR_PETMAKE_KINDNAME, (LPCTSTR)m_pDisplayPet->GetPetKindName(), (LPCTSTR)strPetName);
 
 	CString str;
 	INT nCurLine = 0;

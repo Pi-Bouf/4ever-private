@@ -878,9 +878,9 @@ void CTClientGame::SendCS_ITEMUSE_REQ( LPD3DXVECTOR2 pPOS,
 
 	for( itRECALL = m_mapFIXRECALL.begin(); itRECALL != m_mapFIXRECALL.end(); itRECALL++)
 	{
-		FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+		FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 			(*itRECALL).second->GetPositionX() - pPOS->x,
-			(*itRECALL).second->GetPositionZ() - pPOS->y));
+			(*itRECALL).second->GetPositionZ() - pPOS->y)));
 
 		if( fDist < TARGET_BOUND )
 			vTBOUND.push_back((*itRECALL).second);
@@ -888,9 +888,9 @@ void CTClientGame::SendCS_ITEMUSE_REQ( LPD3DXVECTOR2 pPOS,
 
 	for( itRECALL = m_mapRECALL.begin(); itRECALL != m_mapRECALL.end(); itRECALL++)
 	{
-		FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+		FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 			(*itRECALL).second->GetPositionX() - pPOS->x,
-			(*itRECALL).second->GetPositionZ() - pPOS->y));
+			(*itRECALL).second->GetPositionZ() - pPOS->y)));
 
 		if( fDist < TARGET_BOUND )
 			vTBOUND.push_back((*itRECALL).second);
@@ -898,9 +898,9 @@ void CTClientGame::SendCS_ITEMUSE_REQ( LPD3DXVECTOR2 pPOS,
 
 	for( itMON = m_mapMONSTER.begin(); itMON != m_mapMONSTER.end(); itMON++)
 	{
-		FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+		FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 			(*itMON).second->GetPositionX() - pPOS->x,
-			(*itMON).second->GetPositionZ() - pPOS->y));
+			(*itMON).second->GetPositionZ() - pPOS->y)));
 
 		if( fDist < TARGET_BOUND )
 			vTBOUND.push_back((*itMON).second);
@@ -908,17 +908,17 @@ void CTClientGame::SendCS_ITEMUSE_REQ( LPD3DXVECTOR2 pPOS,
 
 	for( itPC = m_mapPLAYER.begin(); itPC != m_mapPLAYER.end(); itPC++)
 	{
-		FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+		FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 			(*itPC).second->GetPositionX() - pPOS->x,
-			(*itPC).second->GetPositionZ() - pPOS->y));
+			(*itPC).second->GetPositionZ() - pPOS->y)));
 
 		if( fDist < TARGET_BOUND )
 			vTBOUND.push_back((*itPC).second);
 	}
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pMainChar->GetPositionX() - pPOS->x,
-		m_pMainChar->GetPositionZ() - pPOS->y));
+		m_pMainChar->GetPositionZ() - pPOS->y)));
 
 	if( fDist < TARGET_BOUND )
 		vTBOUND.push_back(m_pMainChar);

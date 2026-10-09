@@ -170,7 +170,7 @@ void CTachyonSlashSFX::CalcKEY()
 		&vKeyS,
 		&vKeyR[1],
 		&vKeyP[1],
-		&(m_vLENGTH * (*m_pPIVOT)));
+		TTEMP((m_vLENGTH * (*m_pPIVOT))));
 
 	for(auto i=0; i<m_bINTER; i++)
 	{

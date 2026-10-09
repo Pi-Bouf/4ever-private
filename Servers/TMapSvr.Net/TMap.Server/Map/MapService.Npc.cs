@@ -14,8 +14,7 @@ namespace TMap.Server.Map;
 /// <para>Deferred (documented — PORT_STATUS.md): the <b>quest engine</b> (<c>CheckQuest</c>/<c>FindQuestTemplate</c>/
 /// <c>CanRunQuest</c>) — talk always returns questId 0, and a client-supplied nonzero <c>dwQuestID</c> resolves
 /// the item from shop stock and skips payment exactly as the C++ does when no quest chart matches (a latent
-/// free-buy that closes once quests gate the item list); the NPC discount (<c>GetDiscountRate</c> — occupation/
-/// guild/hero data unported ⇒ rate 0, full price) and <b>BoW-mode</b> pricing (a gold NPC is assumed); the price-up
+/// free-buy that closes once quests gate the item list); <b>BoW-mode</b> pricing (a gold NPC is assumed); the price-up
 /// buff on sell (<c>SDT_STATUS_PRICEUP</c>); the secure-code, player-store, deal (trade) and tournament guards;
 /// the item-count / quest / UDP logging. No DB save (the C++ buy/sell path saves nothing back).</para>
 /// </summary>
@@ -38,7 +37,7 @@ public sealed partial class MapService
             var npc = new Npc
             {
                 Id = def.Id, Type = def.Type, Country = def.Country,
-                DiscountCondition = def.DiscountCondition, DiscountRate = def.DiscountRate,
+                DiscountCondition = def.DiscountCondition, DiscountRate = def.DiscountRate, AddProb = def.AddProb, LocalId = def.LocalId,
                 MapId = def.MapId, PosX = def.PosX, PosY = def.PosY, PosZ = def.PosZ,
             };
             if (def.Type is TnpcItem or TnpcPvPoint)
@@ -52,6 +51,7 @@ public sealed partial class MapService
             if (def.Type == TnpcPortal)
                 foreach (var portal in def.ItemIds)
                     if (_templates.Portals.ContainsKey(portal)) npc.PortalId = portal;
+            if (def.Type == TnpcMonster) InitMonsterShop(npc);
             npc.RequiredItemId = def.ItemId;
             _state.AddNpc(npc);
         }
@@ -71,7 +71,7 @@ public sealed partial class MapService
         ushort npcId = r.ReadUInt16();
 
         if (_state.FindNpc(npcId) is not { } npc) return;
-        if (!npc.CanTalk(ch.Country, ch.AidCountry, 0)) return; // disguise buff unported ⇒ 0
+        if (!CanTalk(npc, ch)) return; // disguise buff unported ⇒ 0
         // C++ advances any QTT_TALK objective keyed by this NPC and echoes the matched quest id (0 = none).
         uint questId = PlayerCheckQuest(s, ch, npcId, QttTalk, 0, 1);
         SendCS_NPCTALK_ACK(s, questId, npcId);
@@ -90,7 +90,7 @@ public sealed partial class MapService
 
         var npc = _state.FindNpc(npcId);
         if (npc is null || count == 0) { SendCS_ITEMBUY_ACK(s, ch, ItemBuyResult.NotFound, itemId); return; }
-        if (!npc.CanTalk(ch.Country, ch.AidCountry, 0)) return;
+        if (!CanTalk(npc, ch)) return;
 
         // Quest-item resolution deferred: with no quest chart FindQuestTemplate is null, so (like the C++) the
         // item resolves from shop stock and the price gate below stays on questId == 0.
@@ -104,12 +104,13 @@ public sealed partial class MapService
         {
             // A PvP shop takes useable PvP points (GetItemPvPrice), answering ITEMBUY_NEEDMONEY when they fall short.
             buyPrice = GetItemPvPrice(t) * count;
+            buyPrice -= buyPrice * DiscountRate(ch, npc) / 100;
             if (ch.PvpUseablePoint < buyPrice) { SendCS_ITEMBUY_ACK(s, ch, ItemBuyResult.NeedMoney, itemId); return; }
         }
         else if (questId == 0) // C++: !dwQuestID && npc not on the BoW map (BoW pricing deferred ⇒ gold)
         {
             buyPrice = GetItemPrice(t) * count;
-            const byte discount = 0; // GetDiscountRate deferred ⇒ 0 (full price)
+            byte discount = DiscountRate(ch, npc);                         // GetDiscountRate (MapService.Fort.cs)
             buyPrice -= buyPrice * discount / 100;
             if (!ch.UseMoney(buyPrice, commit: false))
             {

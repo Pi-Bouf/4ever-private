@@ -92,8 +92,8 @@ D3DXQUATERNION CTMath::MaxSquad( D3DXQUATERNION& vStart,
 		2.0f * fTime * ( 1.0f - fTime ));
 }
 
-D3DXQUATERNION CTMath::MaxSlerp( D3DXQUATERNION& vStart,
-								 D3DXQUATERNION& vEnd,
+D3DXQUATERNION CTMath::MaxSlerp( const D3DXQUATERNION& vStart,
+								 const D3DXQUATERNION& vEnd,
 								 FLOAT fTime)
 {
 	D3DXQUATERNION vResult;
@@ -138,14 +138,14 @@ DWORD CTMath::GetTimeTick( FLOAT fTime)
 WMESHVERTEX CTMath::Average( LPWMESHVERTEX pPoint1, LPWMESHVERTEX pPoint2)
 {
 	int nIndex[2][WEIGHT_COUNT + 1] = {{
-		MATRIXID_1ST(pPoint1->m_dwMatIndex),
-		MATRIXID_2ND(pPoint1->m_dwMatIndex),
-		MATRIXID_3RD(pPoint1->m_dwMatIndex),
-		MATRIXID_4TH(pPoint1->m_dwMatIndex)}, {
-		MATRIXID_1ST(pPoint2->m_dwMatIndex),
-		MATRIXID_2ND(pPoint2->m_dwMatIndex),
-		MATRIXID_3RD(pPoint2->m_dwMatIndex),
-		MATRIXID_4TH(pPoint2->m_dwMatIndex)}};
+		(int) MATRIXID_1ST(pPoint1->m_dwMatIndex),
+		(int) MATRIXID_2ND(pPoint1->m_dwMatIndex),
+		(int) MATRIXID_3RD(pPoint1->m_dwMatIndex),
+		(int) MATRIXID_4TH(pPoint1->m_dwMatIndex)}, {
+		(int) MATRIXID_1ST(pPoint2->m_dwMatIndex),
+		(int) MATRIXID_2ND(pPoint2->m_dwMatIndex),
+		(int) MATRIXID_3RD(pPoint2->m_dwMatIndex),
+		(int) MATRIXID_4TH(pPoint2->m_dwMatIndex)}};
 
 	FLOAT fWeight[2][WEIGHT_COUNT] = {{
 		pPoint1->m_fWeight[0],
@@ -505,7 +505,7 @@ void CTMath::ProgressMesh( LPVECTORDWORD pMESH,
 
 		if(wCheck)
 		{
-			FLOAT fLOCAL = D3DXVec3Length(&(pPOINT[LOWORD((*itEDGE).first)] - pPOINT[HIWORD((*itEDGE).first)]));
+			FLOAT fLOCAL = D3DXVec3Length(TTEMP((pPOINT[LOWORD((*itEDGE).first)] - pPOINT[HIWORD((*itEDGE).first)])));
 			DWORD dwLOCAL = MAKELONG(
 				wCount > 1 ? 0 : 1,
 				!pMULTI[LOWORD((*itEDGE).first)] || !pMULTI[HIWORD((*itEDGE).first)] ? 0 : 1);
@@ -710,10 +710,10 @@ D3DXMATRIX CTMath::GetTransformMatrix( LPD3DXMATRIX pBones,
 	if( pVertex->m_dwMatIndex > 0 )
 	{
 		int nIndex[WEIGHT_COUNT + 1] = {
-			MATRIXID_1ST(pVertex->m_dwMatIndex),
-			MATRIXID_2ND(pVertex->m_dwMatIndex),
-			MATRIXID_3RD(pVertex->m_dwMatIndex),
-			MATRIXID_4TH(pVertex->m_dwMatIndex)};
+			(int) MATRIXID_1ST(pVertex->m_dwMatIndex),
+			(int) MATRIXID_2ND(pVertex->m_dwMatIndex),
+			(int) MATRIXID_3RD(pVertex->m_dwMatIndex),
+			(int) MATRIXID_4TH(pVertex->m_dwMatIndex)};
 
 		D3DXMATRIX vLocal(
 			0.0f, 0.0f, 0.0f, 0.0f,
@@ -754,10 +754,10 @@ BYTE CTMath::GetPointPosition( LPD3DXVECTOR3 pPoint, LPD3DXPLANE pPlane)
 BYTE CTMath::GetPointPosition( LPMESHVERTEX pPoint, LPD3DXPLANE pPlane)
 {
 	return GetPointPosition(
-		&D3DXVECTOR3(
+		TTEMP(D3DXVECTOR3(
 		pPoint->m_fPosX,
 		pPoint->m_fPosY,
-		pPoint->m_fPosZ),
+		pPoint->m_fPosZ)),
 		pPlane);
 }
 
@@ -1522,12 +1522,12 @@ BYTE CTMath::IntersectPlane( LPMESHVERTEX pResult,
 
 	PlaneIntersectLine(
 		&vPoint,
-		&D3DXVECTOR3( pBegin->m_fPosX, pBegin->m_fPosY, pBegin->m_fPosZ),
-		&D3DXVECTOR3( pEnd->m_fPosX, pEnd->m_fPosY, pEnd->m_fPosZ),
+		TTEMP(D3DXVECTOR3( pBegin->m_fPosX, pBegin->m_fPosY, pBegin->m_fPosZ)),
+		TTEMP(D3DXVECTOR3( pEnd->m_fPosX, pEnd->m_fPosY, pEnd->m_fPosZ)),
 		pPlane);
 
-	fRatio = D3DXVec3Length(&(D3DXVECTOR3( pBegin->m_fPosX, pBegin->m_fPosY, pBegin->m_fPosZ) - vPoint));
-	fRatio /= D3DXVec3Length(&(D3DXVECTOR3( pBegin->m_fPosX, pBegin->m_fPosY, pBegin->m_fPosZ) - D3DXVECTOR3( pEnd->m_fPosX, pEnd->m_fPosY, pEnd->m_fPosZ)));
+	fRatio = D3DXVec3Length(TTEMP((D3DXVECTOR3( pBegin->m_fPosX, pBegin->m_fPosY, pBegin->m_fPosZ) - vPoint)));
+	fRatio /= D3DXVec3Length(TTEMP((D3DXVECTOR3( pBegin->m_fPosX, pBegin->m_fPosY, pBegin->m_fPosZ) - D3DXVECTOR3( pEnd->m_fPosX, pEnd->m_fPosY, pEnd->m_fPosZ))));
 
 	pResult->m_fNormalX = (1.0f - fRatio) * pBegin->m_fNormalX + fRatio * pEnd->m_fNormalX;
 	pResult->m_fNormalY = (1.0f - fRatio) * pBegin->m_fNormalY + fRatio * pEnd->m_fNormalY;
@@ -1953,8 +1953,8 @@ BYTE CTMath::HitPoly( LPD3DXVECTOR3 pPOLY,
 			&pPOLY[0],
 			&pPOLY[1],
 			&pPOLY[2],
-			&D3DXVECTOR3( 0.0f, 0.0f, 0.0f),
-			&D3DXVECTOR3( 0.0f, 1.0f, 0.0f),
+			TTEMP(D3DXVECTOR3( 0.0f, 0.0f, 0.0f)),
+			TTEMP(D3DXVECTOR3( 0.0f, 1.0f, 0.0f)),
 			&fU, &fV,
 			pDIST);
 	}
@@ -1979,10 +1979,10 @@ BYTE CTMath::HitPoly( LPD3DXVECTOR3 pPOLY,
 		D3DXPlaneFromPoints(
 			&vBOUND[i],
 			&pPOLY[i],
-			&D3DXVECTOR3(
+			TTEMP(D3DXVECTOR3(
 			pPOLY[i].x,
 			pPOLY[i].y + 1.0f,
-			pPOLY[i].z),
+			pPOLY[i].z)),
 			&pPOLY[(i + 1) % 3]);
 	}
 

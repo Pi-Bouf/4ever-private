@@ -81,7 +81,7 @@ public:
 
 	void TextOut(
 		LPDIRECT3DDEVICE9 pDevice,
-		D3DXMATRIX& vWorld,
+		const D3DXMATRIX& vWorld,
 		CString strText,
 		FLOAT fTextHeight = 0.3f,
 		UINT nFormat = 0);

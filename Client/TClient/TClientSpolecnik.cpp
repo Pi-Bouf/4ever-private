@@ -443,9 +443,9 @@ D3DXVECTOR3 CTClientSpolecnik::AdjustRoamTarget(
 BYTE CTClientSpolecnik::GetRoamACT(LPD3DXVECTOR3 pTARGET)
 {
 	CTClientGame* pGame = CTClientGame::GetInstance();
-	FLOAT fDIST = D3DXVec2LengthSq(&D3DXVECTOR2(
+	FLOAT fDIST = D3DXVec2LengthSq(TTEMP(D3DXVECTOR2(
 		pTARGET->x - m_vPosition._41,
-		pTARGET->z - m_vPosition._43));
+		pTARGET->z - m_vPosition._43)));
 
 	FLOAT fSB = 2.5f;
 
@@ -607,9 +607,9 @@ void CTClientSpolecnik::Render(CD3DDevice *pDevice, CD3DCamera *pCamera)
 		D3DXVECTOR3 vTARGET = pHOST->GetPosition();
 		D3DXVECTOR3 vTPOS = GetPosition();
 
-		FLOAT fDIST = D3DXVec2LengthSq(&D3DXVECTOR2(
+		FLOAT fDIST = D3DXVec2LengthSq(TTEMP(D3DXVECTOR2(
 			vTARGET.x - vTPOS.x,
-			vTARGET.z - vTPOS.z));
+			vTARGET.z - vTPOS.z)));
 
 		if (m_bTrans)
 			m_fSpeedFactor = fDIST / 4.0f; //THIS IS WHAT I MADE AND THIS IS OKAY.
@@ -664,10 +664,10 @@ void CTClientSpolecnik::Render(CD3DDevice *pDevice, CD3DCamera *pCamera)
 
 		if (pHOST == pGAME->GetMainChar())
 		{
-			FLOAT fTotalDist = D3DXVec3LengthSq(&D3DXVECTOR3(
+			FLOAT fTotalDist = D3DXVec3LengthSq(TTEMP(D3DXVECTOR3(
 				pHOST->GetPositionX() - m_vWorld._41,
 				pHOST->GetPositionY() - m_vWorld._42,
-				pHOST->GetPositionZ() - m_vWorld._43));
+				pHOST->GetPositionZ() - m_vWorld._43)));
 
 			if (abs(fTotalDist) > MAX_PET_DIST)
 				if (pGAME->GetSession() &&
@@ -723,10 +723,10 @@ void CTClientSpolecnik::CalcHeight(LPD3DXVECTOR3 pPREV,
 
 		fHeight = pMAP->GetHeight(
 			this, &pFLOOR,
-			&D3DXVECTOR3(
+			TTEMP(D3DXVECTOR3(
 				m_vPosition._41,
 				max(pPREV->y, m_vPosition._42) + 0.2f,
-				m_vPosition._43),
+				m_vPosition._43)),
 			fMove,
 			TRUE);
 

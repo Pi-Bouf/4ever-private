@@ -660,7 +660,7 @@ D3DXQUATERNION CTachyonAnimation::GetReviseROT( LPD3DXVECTOR3 pPREV,
 	{
 		D3DXQuaternionRotationAxis(
 			&vRESULT,
-			&D3DXVECTOR3( 0.0f, 0.0f, pPREV->y < 0.0f ? -1.0f : 1.0f),
+			TTEMP(D3DXVECTOR3( 0.0f, 0.0f, pPREV->y < 0.0f ? -1.0f : 1.0f)),
 			D3DX_PI);
 
 		return vRESULT;
@@ -671,7 +671,7 @@ D3DXQUATERNION CTachyonAnimation::GetReviseROT( LPD3DXVECTOR3 pPREV,
 	{
 		D3DXQuaternionRotationAxis(
 			&vRESULT,
-			&D3DXVECTOR3( pPREV->z < 0.0f ? -1.0f : 1.0f, 0.0f, 0.0f),
+			TTEMP(D3DXVECTOR3( pPREV->z < 0.0f ? -1.0f : 1.0f, 0.0f, 0.0f)),
 			D3DX_PI);
 
 		return vRESULT;
@@ -682,7 +682,7 @@ D3DXQUATERNION CTachyonAnimation::GetReviseROT( LPD3DXVECTOR3 pPREV,
 	{
 		D3DXQuaternionRotationAxis(
 			&vRESULT,
-			&D3DXVECTOR3( 0.0f, pPREV->x < 0.0f ? -1.0f : 1.0f, 0.0f),
+			TTEMP(D3DXVECTOR3( 0.0f, pPREV->x < 0.0f ? -1.0f : 1.0f, 0.0f)),
 			D3DX_PI);
 
 		return vRESULT;
@@ -740,7 +740,7 @@ void CTachyonAnimation::GetFrameMatrix( LPD3DXMATRIX pResult,
 				pPivot[bRootID - 1].m_vScale.z);
 		}
 
-		vRESULT[bRootID] = CTMath::Inverse(&(m_pBones[bRootID - 1] * vRESULT[bRootID]));
+		vRESULT[bRootID] = CTMath::Inverse(TTEMP((m_pBones[bRootID - 1] * vRESULT[bRootID])));
 	}
 
 	for(auto i=0; i<m_dwNodeCount; i++)
@@ -880,7 +880,7 @@ void CTachyonAnimation::GetFrameMatrix( LPD3DXMATRIX pResult,
 	D3DXMatrixTransformation(
 		&vLocal,
 		&vCenter,
-		&D3DXQUATERNION( 0.0f, 0.0f, 0.0f, 1.0f),
+		TTEMP(D3DXQUATERNION( 0.0f, 0.0f, 0.0f, 1.0f)),
 		&vScale,
 		&vCenter,
 		&vRotation,
@@ -1092,7 +1092,7 @@ int CTachyonAnimation::HitTest( LPD3DXMATRIX pBones,
 		return nResult;
 
 	D3DXVECTOR3 vCenter = (vMin + vMax) / 2.0f;
-	FLOAT fRadius = D3DXVec3Length(&(vMax - vMin));
+	FLOAT fRadius = D3DXVec3Length(TTEMP((vMax - vMin)));
 
 	CTMath::Transform(
 		&pBones[0],

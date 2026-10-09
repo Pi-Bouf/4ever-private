@@ -98,6 +98,7 @@ public sealed class MapWorker : BackgroundService
         var service = new MapService(_opt, state, worldLink, gameDb, templates, _loggerFactory.CreateLogger<MapService>());
         service.InitMonsterSpawns(); // build the SE_DEFAULT spawn points (empty when the charts aren't loaded)
         service.InitNpcs();          // build the NPC registry + shop stock (empty when the charts aren't loaded)
+        service.InitTerritories();   // the forts, castles, missions and sky garden (MapService.Territory.cs)
         service.InitSwitches();      // build the per-channel map switches + gates (empty when the charts aren't loaded)
         service.InitQuests();        // build the quest trigger index (empty when the charts aren't loaded)
         await service.InitItemIdSeedAsync(); // seed the per-server item-id counter (enables inventory save; no-op DB-free)

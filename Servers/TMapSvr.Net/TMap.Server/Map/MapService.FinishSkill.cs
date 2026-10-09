@@ -112,7 +112,7 @@ public sealed partial class MapService
             }
             else if (targetType == Monster.OtMon)
             {
-                if (_state.FindMonster(targetId) is not { } mon) continue;
+                if (_state.FindMonster(targetId) is not { } mon || mon.MapId != ch.MapId || mon.Channel != s.Channel) continue;
                 // A negative skill never lands on a monster of the attacker's own faction (or on anything
                 // non-neutral when attacking as TCONTRY_B).
                 if (tpl.IsNegative && mon.Country != TcontryN

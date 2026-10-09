@@ -210,7 +210,8 @@ public sealed partial class WorldService
     }
 
     /// <summary>C++ SaveGuildStats — roll over to the next stat level when exp crosses the threshold, then
-    /// persist (TSaveGuildStats). No-op on persistence in DB-free tests.</summary>
+    /// persist (TSaveGuildStats). No-op on persistence in DB-free tests. A failed save is logged and the caller goes on, as
+    /// the C++ DB thread's would (a capture must still be relayed to the maps).</summary>
     private async Task SaveGuildStats(Guild guild)
     {
         if (guild.StatExp >= (uint)guild.StatLevel * Proto.GuildStatExpPerLevel)
@@ -219,8 +220,9 @@ public sealed partial class WorldService
             guild.StatPoint++;
             guild.StatExp = 0;
         }
-        if (_guildDb is not null)
-            await _guildDb.SaveGuildStatsAsync(guild.Id, guild.StatPoint, guild.StatLevel, guild.StatExp);
+        if (_guildDb is null) return;
+        try { await _guildDb.SaveGuildStatsAsync(guild.Id, guild.StatPoint, guild.StatLevel, guild.StatExp); }
+        catch (Exception ex) { _log.LogWarning(ex, "TSaveGuildStats failed for guild {Guild}.", guild.Id); }
     }
 
     private void BroadcastServers(byte[] packet)

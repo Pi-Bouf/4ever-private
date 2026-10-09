@@ -146,7 +146,7 @@ BYTE CTSpCode::CalcTick( CTClientGame *pTGAME, DWORD dwTick)
 				D3DXVec3Lerp(
 					&pCAM->m_vTOFFSET,
 					&vDIR,
-					&D3DXVECTOR3( 0.0f, 0.0f, 0.0f),
+					TTEMP(D3DXVECTOR3( 0.0f, 0.0f, 0.0f)),
 					fTIME);
 			}
 		}

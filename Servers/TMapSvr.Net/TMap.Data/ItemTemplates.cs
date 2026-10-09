@@ -136,6 +136,10 @@ public sealed class TemplateStore
     /// the victim's loss %, of the victim level's <see cref="LevelPvPoint"/>.</summary>
     public Dictionary<(byte Status, byte Event), (uint Inc, uint Dec)> PvPointKill { get; } = new();
 
+    /// <summary>The territories' own point rows (C++ <c>TBATTLEZONE::m_mapTPvPoint</c>): (local, PVP status, event) → the gain and
+    /// the loss — the boss kill, taking part, winning and holding a fort.</summary>
+    public Dictionary<(ushort Local, byte Status, byte Event), (uint Inc, uint Dec)> LocalPvPoints { get; } = new();
+
     /// <summary>The title chart (C++ <c>m_mapTTITLE</c>), by id — the order the C++ walks it in.</summary>
     public SortedDictionary<ushort, TitleRow> Titles { get; } = new();
 
@@ -231,6 +235,24 @@ public sealed class TemplateStore
 
     /// <summary>C++ <c>m_mapMaxCashGambleProb</c> — each group's total weight.</summary>
     public Dictionary<ushort, uint> CashGambleTotal { get; } = new();
+
+    /// <summary>C++ <c>m_mapTBATTLEZONE</c> — the war zones by id (TBATTLEZONECHART).</summary>
+    public Dictionary<ushort, BattleZone> BattleZones { get; } = new();
+
+    /// <summary>The territories' saved state, in the C++ load order (missions, castles, sky gardens, forts — each in table
+    /// order), and the forts' week of owners (TLOCALOCCUPYTABLE).</summary>
+    public List<TerritoryRow> Territories { get; } = new();
+    public List<LocalOccupyRow> LocalOccupy { get; } = new();
+
+    /// <summary>The castles' god ball spots and god towers (TGODBALLCHART / TGODTOWERCHART), in id order.</summary>
+    public List<GodBallSpotRow> GodBallSpots { get; } = new();
+    public List<GodTowerRow> GodTowers { get; } = new();
+
+    /// <summary>The castle guards' shops (TMONSTERSHOPCHART), in chart order.</summary>
+    public List<MonsterShopRow> MonsterShops { get; } = new();
+
+    /// <summary>C++ <c>m_mapTSvrMsg</c> — the server's own texts (TSVRMSGCHART: mail titles, …) by <c>SERVER_MESSAGE</c> id.</summary>
+    public Dictionary<uint, string> SvrMsgs { get; } = new();
 
     /// <summary>C++ <c>m_mapSpecialBox</c> — each special-box group's items, in chart order.</summary>
     public Dictionary<ushort, List<SpecialBoxRow>> SpecialBoxes { get; } = new();

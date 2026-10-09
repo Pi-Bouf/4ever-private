@@ -4,6 +4,10 @@
 
 #include "stdafx.h"
 
+// IBasicAudio volume range, in hundredths of a decibel.
+#define TSHOW_VOLUME_MIN							(-10000)
+#define TSHOW_VOLUME_MAX							(0)
+
 BYTE CTShow::m_bMasterVolume = VOLUME_MAX;
 BYTE CTShow::m_bON = TRUE;
 
@@ -159,7 +163,7 @@ BYTE CTShow::ResetVolume()
 	}
 
 	FLOAT fVolume = CTachyonMedia::m_bBACK ? 0.0f : FLOAT(CTachyonMedia::m_bMasterVolume) * FLOAT(m_bMasterVolume) * FLOAT(m_bVolume) / FLOAT(VOLUME_MAX * VOLUME_MAX * VOLUME_MAX);
-	LONG nVolume = DSBVOLUME_MIN + LONG(fVolume * FLOAT(DSBVOLUME_MAX - DSBVOLUME_MIN));
+	LONG nVolume = TSHOW_VOLUME_MIN + LONG(fVolume * FLOAT(TSHOW_VOLUME_MAX - TSHOW_VOLUME_MIN));
 
 	pBA->put_Volume(nVolume);
 	pBA->Release();
@@ -181,7 +185,7 @@ BYTE CTShow::SetPos( LONGLONG nPos)
 		return FALSE;
 
 	if(m_pWnd)
-		UpdateWindow(m_pWnd->GetSafeHwnd());
+		UpdateWindow(TSAFE_HWND(m_pWnd));
 
 	return TRUE;
 }
@@ -224,7 +228,7 @@ BYTE CTShow::Toggle()
 	if( nMode == OAFALSE )
 	{
 		m_pVW->get_MessageDrain((OAHWND *) &hDrain);
-		m_pVW->put_MessageDrain((OAHWND) m_pWnd->GetSafeHwnd());
+		m_pVW->put_MessageDrain((OAHWND) TSAFE_HWND(m_pWnd));
 
 		nMode = OATRUE;
 		if(FAILED(m_pVW->put_FullScreenMode(nMode)))
@@ -240,7 +244,7 @@ BYTE CTShow::Toggle()
 		m_pVW->put_MessageDrain((OAHWND) hDrain);
 		m_pVW->SetWindowForeground(-1);
 
-		UpdateWindow(m_pWnd->GetSafeHwnd());
+		UpdateWindow(TSAFE_HWND(m_pWnd));
 	}
 
 	return TRUE;
@@ -273,17 +277,17 @@ BYTE CTShow::Play()
 
 	if(m_pWnd)
 	{
-		m_pVW->put_MessageDrain((OAHWND) m_pWnd->GetSafeHwnd());
+		m_pVW->put_MessageDrain((OAHWND) TSAFE_HWND(m_pWnd));
 		m_pVW->put_WindowStyle(WS_CHILD);
 
-		m_pVW->put_Owner((OAHWND) m_pWnd->GetSafeHwnd());
+		m_pVW->put_Owner((OAHWND) TSAFE_HWND(m_pWnd));
 		m_pVW->put_Visible(OATRUE);
 
-		UpdateWindow(m_pWnd->GetSafeHwnd());
+		UpdateWindow(TSAFE_HWND(m_pWnd));
 	}
 
 	if(m_pHost)
-		m_pME->SetNotifyWindow( (OAHWND) m_pHost->GetSafeHwnd(), m_dwMessage, (LONG_PTR) m_pME);
+		m_pME->SetNotifyWindow( (OAHWND) TSAFE_HWND(m_pHost), m_dwMessage, (LONG_PTR) m_pME);
 	ResetVolume();
 
 	if(FAILED(m_pMC->Run()))
@@ -312,7 +316,7 @@ BYTE CTShow::Stop()
 	m_pMC->StopWhenReady();
 
 	if(m_pWnd)
-		UpdateWindow(m_pWnd->GetSafeHwnd());
+		UpdateWindow(TSAFE_HWND(m_pWnd));
 
 	return TRUE;
 }

@@ -32,9 +32,9 @@ public:
 		int nHeight);
 
 	void SetPosition(
-		D3DXVECTOR3& vPosition,
-		D3DXVECTOR3& vTarget,
-		D3DXVECTOR3& vUp,
+		const D3DXVECTOR3& vPosition,
+		const D3DXVECTOR3& vTarget,
+		const D3DXVECTOR3& vUp,
 		BOOL bMove = TRUE);
 
 	void ZoomOrthoCamera( FLOAT fZoom);

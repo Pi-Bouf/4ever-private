@@ -3386,10 +3386,10 @@ struct tagTITEMGRADEVISUALKEY
 	BYTE m_bKind;
 	WORD m_wGrade;
 
-	struct tagTITEMGRADEVISUALKEY()
+	tagTITEMGRADEVISUALKEY()
 	{}
 
-	struct tagTITEMGRADEVISUALKEY( BYTE _bKind, WORD _wGrade)
+	tagTITEMGRADEVISUALKEY( BYTE _bKind, WORD _wGrade)
 		: m_bKind(_bKind),
 		m_wGrade(_wGrade)
 	{}
@@ -3479,8 +3479,8 @@ struct tagTMANTLECOORD
 	D3DXVECTOR2 m_vLeftBottom;
 	D3DXVECTOR2 m_vRightBottom;
 
-	struct tagTMANTLECOORD() {};
-	struct tagTMANTLECOORD( D3DXVECTOR2 vLeftTop, D3DXVECTOR2 vRightTop, D3DXVECTOR2 vLeftBottom, D3DXVECTOR2 vRightBottom )
+	tagTMANTLECOORD() {};
+	tagTMANTLECOORD( D3DXVECTOR2 vLeftTop, D3DXVECTOR2 vRightTop, D3DXVECTOR2 vLeftBottom, D3DXVECTOR2 vRightBottom )
 		: m_vLeftTop(vLeftTop), m_vRightTop(vRightTop), m_vLeftBottom(vLeftBottom), m_vRightBottom(vRightBottom) {};
 
 	static struct tagTMANTLECOORD m_vDefaultUV1;
@@ -3512,13 +3512,13 @@ struct tagTMANTLEDETAILKEY
 	BYTE m_bSexID;
 	DWORD m_dwCond;
 
-	struct tagTMANTLEDETAILKEY()
+	tagTMANTLEDETAILKEY()
 		: m_bRaceID(-1),
 		m_bSexID(-1),
 		m_dwCond(-1)
 	{}
 
-	struct tagTMANTLEDETAILKEY( BYTE bRaceID, BYTE bSexID, DWORD dwCond )
+	tagTMANTLEDETAILKEY( BYTE bRaceID, BYTE bSexID, DWORD dwCond )
 		: m_bRaceID( bRaceID ),
 		m_bSexID( bSexID ),
 		m_dwCond( dwCond )
@@ -3544,13 +3544,13 @@ struct tagTMANTLECOORDKEY
 	BYTE m_bSexID;
 	DWORD m_dwMeshID;
 
-	struct tagTMANTLECOORDKEY()
+	tagTMANTLECOORDKEY()
 		: m_bRaceID(-1),
 		m_bSexID(-1),
 		m_dwMeshID(-1)
 	{}
 
-	struct tagTMANTLECOORDKEY( BYTE bRaceID, BYTE bSexID, DWORD dwMeshID )
+	tagTMANTLECOORDKEY( BYTE bRaceID, BYTE bSexID, DWORD dwMeshID )
 		: m_bRaceID( bRaceID ),
 		m_bSexID( bSexID ),
 		m_dwMeshID( dwMeshID )

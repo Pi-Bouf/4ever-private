@@ -143,7 +143,7 @@ void CBRTRanking::UpdateUI()
 					m_pName[i]->SetTextClr(0xFFFF4500);
 
 				CString strNAME = (*itBegin).second->m_strNAME;
-				m_pName[i]->m_strText.Format("%s", strNAME);
+				m_pName[i]->m_strText.Format("%s", (LPCTSTR)strNAME);
 				m_pKills[i]->m_strText.Format("%d", pTEAM->m_wTotalKills);
 			}
 			else
@@ -197,7 +197,7 @@ ITDetailInfoPtr	CBRTRanking::GetTInfoKey( const CPoint& pt )
 	{
 		for (MAPBRTPLAYER::iterator it = pTEAM->m_mapBRTPlayers.begin(); it != pTEAM->m_mapBRTPlayers.end(); ++it)
 		{
-			strPlayer[bPIndex].Format("%s - %d kills | %d lifes", (*it).second->m_strNAME, (*it).second->m_wKills, (*it).second->m_bLifes);
+			strPlayer[bPIndex].Format("%s - %d kills | %d lifes", (LPCTSTR)(*it).second->m_strNAME, (*it).second->m_wKills, (*it).second->m_bLifes);
 			bPIndex++;
 		}
 	}

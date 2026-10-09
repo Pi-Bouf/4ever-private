@@ -59,7 +59,7 @@ public sealed partial class MapService
         {
             npc = _state.FindNpc(npcId);
             if (npc is null) { SendCS_TELEPORT_ACK(s, TprNotTeleportNpc, ch.MapId, 0, 0, 0); return; }
-            if (!npc.CanTalk(ch.Country, ch.AidCountry, 0)) return;                          // disguise unported ⇒ 0
+            if (!CanTalk(npc, ch)) return;                          // disguise unported ⇒ 0
 
             if (npc.PortalId == 0 || !_templates.Portals.TryGetValue(npc.PortalId, out npcPortal))
             {
@@ -72,7 +72,8 @@ public sealed partial class MapService
                 return;
             }
 
-            price = dest.Price;                                                              // GetDiscountRate: 0
+            price = dest.Price;
+            price -= price * DiscountRate(ch, npc) / 100;                                    // GetDiscountRate
             if (!ch.UseMoney(price, commit: false)) { SendCS_TELEPORT_ACK(s, TprNeedMoney, ch.MapId, 0, 0, 0); return; }
 
             if (npc.RequiredItemId != 0 && !ch.Invens.Any(i => i.Items.Any(it => it.TemplateId == npc.RequiredItemId)))
@@ -233,6 +234,9 @@ public sealed partial class MapService
 
         if (s.State != EnterState.InGame) return;
 
+        EraseZoneEffects(s, ch);               // C++ ExitMAP → EraseMissionSkill (MapService.Mission.cs)
+        SkyGardenExitMap(s, ch);               // and CS_LEAVESKYGARDEN_ACK (MapService.SkyGarden.cs)
+        CastleExitMap(s, ch);                  // a carried god ball falls, CS_LEAVECASTLE_ACK (MapService.Castle.cs)
         RecallsExitMap(s, ch);
         CompanionExitMap(ch);
         var watching = _state.MonstersInView(s).ToList();

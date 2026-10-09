@@ -2473,7 +2473,7 @@ void CTGaugePannel::ResetHotkeyStr()
 #ifdef NEW_IF
 			TKEY_SET eKEY = (TKEY_SET)(wSkillKey[h]+i);
 
-			TComponent * pVKStr;
+			TComponent * pVKStr = NULL;
 
 			if(h == THOTKEYBASE_DEF)
 				pVKStr = m_pTHOTKEYFRM[dwVKStr1[i][1]]->FindKid(dwVKStr1[i][0]);
@@ -2542,7 +2542,7 @@ void CTGaugePannel::CalcHotkeyTick()
 					{ ID_CTRLINST_VK_NEW6, THOTKEYBASE_SUB1 }
 				};
 
-				TComponent * pVKStr;
+				TComponent * pVKStr = NULL;
 
 				if(i == THOTKEYBASE_DEF)
 					pVKStr = m_pTHOTKEYFRM[dwVKStr1[j][1]]->FindKid(dwVKStr1[j][0]);
@@ -2588,7 +2588,7 @@ void CTGaugePannel::CalcHotkeyTick()
 					{ ID_CTRLINST_VK_NEW6, THOTKEYBASE_SUB1 }
 				};
 
-				TComponent * pVKStr;
+				TComponent * pVKStr = NULL;
 
 				if(i == THOTKEYBASE_DEF)
 					pVKStr = m_pTHOTKEYFRM[dwVKStr1[j][1]]->FindKid(dwVKStr1[j][0]);
@@ -3663,9 +3663,9 @@ CString CTGaugePannel::GetLocalTimeString()
 		strLocalTime.Format("0%d:0%d", dwHour, dwMinute);
 
 	if(dwHour < 12)
-		strLocalTime.Format("AM %s", strLocalTime);
+		strLocalTime.Format("AM %s", (LPCTSTR)strLocalTime);
 	else
-		strLocalTime.Format("PM %s", strLocalTime);
+		strLocalTime.Format("PM %s", (LPCTSTR)strLocalTime);
 
 	return strLocalTime;
 

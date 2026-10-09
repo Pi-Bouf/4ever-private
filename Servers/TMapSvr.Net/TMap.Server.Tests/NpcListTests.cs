@@ -191,13 +191,15 @@ public class NpcListTests
     // ================================ others ================================
 
     [Fact]
-    public async Task AMonsterShop_GetsNoAnswer()
+    public async Task AMonsterShop_ListsItsGuardPosts()
     {
         var (h, s, c, _, _) = await Setup();
 
         await h.Service.DispatchClientAsync(s, ListReq(Monsters));
 
-        Assert.False(c.Has(Msg.CS_NPCITEMLIST_ACK));
+        var r = new PacketReader(c.Last(Msg.CS_NPCITEMLIST_ACK)!);           // none sold by this one (a shop with posts: GuildTacticsTests)
+        r.ReadUInt16(); r.ReadByte(); r.ReadByte();
+        Assert.Equal((byte)0, r.ReadByte());
     }
 
     [Fact]

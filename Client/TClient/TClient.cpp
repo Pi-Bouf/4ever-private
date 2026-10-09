@@ -111,8 +111,8 @@ BOOL CALLBACK NPGameMonCallback(DWORD dwMsg, DWORD dwArg)
 
 LRESULT CALLBACK CTClientApp::KeyHookProc( int nCode, WPARAM wParam, LPARAM lParam)
 {
-   //bool bWinDown = ( GetAsyncKeyState( VK_LWIN ) & 0x8000 || GetAsyncKeyState( VK_RWIN ) & 0x8000 );
-	  // bool bLDown = ( GetAsyncKeyState( VK_KEY_L ) & 0x8000);
+   //bool bWinDown = ( CTachyonInput::IsKeyDown(VK_LWIN) || CTachyonInput::IsKeyDown(VK_RWIN) );
+	  // bool bLDown = ( CTachyonInput::IsKeyDown(VK_KEY_L));
 
 	bool bWinDown = false;
 	bool bLDown = false;
@@ -139,8 +139,8 @@ LRESULT CALLBACK CTClientApp::KeyHookProc( int nCode, WPARAM wParam, LPARAM lPar
 	else if( pKey->vkCode == VK_DELETE )
 
 	{
-		bool bCtrlDown = ( GetAsyncKeyState( VK_LCONTROL ) & 0x8000 || GetAsyncKeyState( VK_RCONTROL ) & 0x8000 );
-		bool bAltDown = ( GetAsyncKeyState( VK_LMENU ) & 0x8000 || GetAsyncKeyState( VK_RMENU ) & 0x8000 );
+		bool bCtrlDown = ( CTachyonInput::IsKeyDown(VK_LCONTROL) || CTachyonInput::IsKeyDown(VK_RCONTROL) );
+		bool bAltDown = ( CTachyonInput::IsKeyDown(VK_LMENU) || CTachyonInput::IsKeyDown(VK_RMENU) );
    
 
 		if( bCtrlDown && bAltDown )
@@ -627,11 +627,11 @@ BOOL CTClientApp::InitInstance()
 		m_pTachyonWnd->m_Device.m_option.m_dwScreenX,
 		m_pTachyonWnd->m_Device.m_option.m_dwScreenY );
 
-	CTMiniDump::SetHWND(AfxGetMainWnd()->GetSafeHwnd());
+	CTMiniDump::SetHWND(TSAFE_HWND(AfxGetMainWnd()));
 
 #ifdef USE_GG
 	if (m_pNpgl)
-		m_pNpgl->SetHwnd(AfxGetMainWnd()->GetSafeHwnd());
+		m_pNpgl->SetHwnd(TSAFE_HWND(AfxGetMainWnd()));
 #endif
 
 	if(m_bFirstRun)
@@ -729,7 +729,7 @@ BOOL CTClientApp::InitInstance()
 		LeaveCriticalSection(&m_cs);
 
 		CString msg;
-		msg = CTChart::Format( TSTR_ERROR_FILE, fe->m_strFileName);
+		msg = CTChart::Format( TSTR_ERROR_FILE, (LPCTSTR)fe->m_strFileName);
 		::MessageBox(NULL, msg, "ERROR", MB_OK|MB_ICONERROR);
 		::PostQuitMessage(0);
 
@@ -759,7 +759,7 @@ BOOL CTClientApp::InitInstance()
 	m_pTachyonWnd->SetFocus();
 
 /*#ifndef WINFIX
-	WTSRegisterSessionNotification(m_pTachyonWnd->GetSafeHwnd(),NOTIFY_FOR_THIS_SESSION);
+	WTSRegisterSessionNotification(TSAFE_HWND(m_pTachyonWnd),NOTIFY_FOR_THIS_SESSION);
 #endif*/
 
 	return TRUE;
@@ -1361,7 +1361,7 @@ void CTClientApp::SaveStdProfileSettings()
 
 void CTClientApp::ToggleImeLocalMode()
 {
-	HWND hWnd = ::AfxGetMainWnd()->GetSafeHwnd();
+	HWND hWnd = TSAFE_HWND(::AfxGetMainWnd());
 	if(!hWnd)
 		return;
 
@@ -1389,7 +1389,7 @@ void CTClientApp::ToggleImeLocalMode()
 
 BOOL CTClientApp::IsImeLocalMode()
 {
-	HWND hWnd = ::AfxGetMainWnd()->GetSafeHwnd();
+	HWND hWnd = TSAFE_HWND(::AfxGetMainWnd());
 	if(!hWnd)
 		return FALSE;
 
@@ -1417,6 +1417,8 @@ BYTE CTClientApp::MainProc()
 
 	static DWORD dwMSGTick = 0;
 	MSG msg;
+
+	CTachyonSession::PollAll();
 
 	if( dwMSGTick < TTICK_INTERVAL && PeekMessage( &msg, NULL, 0U, 0U, PM_REMOVE) )
 	{
@@ -1456,7 +1458,7 @@ BYTE CTClientApp::MainProc()
 		}
 
 		int nHotCommand = TranslateAccelerator(
-			m_pTachyonWnd->GetSafeHwnd(),
+			TSAFE_HWND(m_pTachyonWnd),
 			m_hAccel,
 			&msg);
 
@@ -1466,27 +1468,8 @@ BYTE CTClientApp::MainProc()
 		{
 			switch(msg.message)
 			{
-			case WM_SESSION_MSG		:
-				{
-					CTachyonSession *pSession = CTachyonSession::GetSession(msg.wParam);
-
-					if(pSession)
-					{
-						int nError = WSAGETSELECTERROR(msg.lParam);
-
-						switch(WSAGETSELECTEVENT(msg.lParam))
-						{
-						case FD_CONNECT	: pSession->OnConnect(nError); break;
-						case FD_READ	: pSession->OnReceive(nError); break;
-						case FD_CLOSE	: pSession->OnClose(nError); break;
-						}
-					}
-				}
-
-				break;
-
 			case WM_CHAR			:
-				if( !msg.hwnd || msg.hwnd == m_pTachyonWnd->GetSafeHwnd() )
+				if( !msg.hwnd || msg.hwnd == TSAFE_HWND(m_pTachyonWnd) )
 				{
 					UINT nFlag = HIWORD(msg.lParam);
 					UINT nRep = LOWORD(msg.lParam);
@@ -1502,7 +1485,7 @@ BYTE CTClientApp::MainProc()
 				break;
 
 			case WM_IME_COMPOSITION			:
-				if( !msg.hwnd || msg.hwnd == m_pTachyonWnd->GetSafeHwnd() )
+				if( !msg.hwnd || msg.hwnd == TSAFE_HWND(m_pTachyonWnd) )
 					if( CTNationOption::JAPAN_IME || CTNationOption::TAIWAN_IME )
 					{
 						TranslateMessage(&msg);
@@ -1511,7 +1494,7 @@ BYTE CTClientApp::MainProc()
 					else
 					{
 						m_pTachyonWnd->OnImeComposition(
-							m_pTachyonWnd->GetSafeHwnd(),
+							TSAFE_HWND(m_pTachyonWnd),
 							msg.wParam,
 							msg.lParam);
 					}
@@ -1521,18 +1504,18 @@ BYTE CTClientApp::MainProc()
 			case WM_SYSKEYUP		:
 			case WM_KEYDOWN			:
 			case WM_KEYUP			:
-				if( msg.hwnd && msg.hwnd != m_pTachyonWnd->GetSafeHwnd() )
+				if( msg.hwnd && msg.hwnd != TSAFE_HWND(m_pTachyonWnd) )
 					if(THttpCtrl::IsFocusedHTML(msg.hwnd))
 					{
 						WORD wKEY = CTKeySetting::GetInstance()->GetCurKeySet(
-							MapVirtualKey( LOBYTE(HIWORD(msg.lParam)), 1),
+							CTachyonInput::ScanToVKey(HIWORD(msg.lParam)),
 							CTClientKEY::GetCurMOD());
 
 						if( wKEY == TKEY_CLOSE_UI )
-							msg.hwnd = m_pTachyonWnd->GetSafeHwnd();
+							msg.hwnd = TSAFE_HWND(m_pTachyonWnd);
 					}
 					else
-						msg.hwnd = m_pTachyonWnd->GetSafeHwnd();
+						msg.hwnd = TSAFE_HWND(m_pTachyonWnd);
 
 			default					:
 				{
@@ -1544,7 +1527,7 @@ BYTE CTClientApp::MainProc()
 			}
 		}
 
-		if( msg.message != WM_SYSCOMMAND || msg.hwnd != m_pTachyonWnd->GetSafeHwnd() )
+		if( msg.message != WM_SYSCOMMAND || msg.hwnd != TSAFE_HWND(m_pTachyonWnd) )
 		{
 			DWORD dwTICK = ((CTClientWnd *) m_pTachyonWnd)->GetTClientTickCount();
 
@@ -1560,8 +1543,9 @@ BYTE CTClientApp::MainProc()
 
 		if(!m_pTachyonWnd->m_bActivate)
 		{
+			// Wake up for a window message or after a short delay, so the sessions are still polled.
 			LeaveCriticalSection(&m_cs);
-			WaitMessage();
+			MsgWaitForMultipleObjects( 0, NULL, FALSE, TSESSION_IDLE_WAIT, QS_ALLINPUT);
 			EnterCriticalSection(&m_cs);
 
 #ifndef TEST_MODE

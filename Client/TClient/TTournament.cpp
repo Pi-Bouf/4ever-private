@@ -1288,7 +1288,7 @@ int CTTournament::OnGM_TOURNAMENT_OK()
 					TMATCH* pMATCH = (TMATCH*) it->second->m_param;
 					DWORD dwParam = (DWORD)( pMATCH->m_bEntryID );
 
-					CString strMSG = CTChart::Format(TSTR_TOURNAMENT_JOIN_ENTRY, it->second->m_strText);
+					CString strMSG = CTChart::Format(TSTR_TOURNAMENT_JOIN_ENTRY, (LPCTSTR)it->second->m_strText);
 					CTClientGame::GetInstance()->GetMainWnd()->MessageBoxYesNo(
 						strMSG,
 						TSTR_YES,

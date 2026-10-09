@@ -164,7 +164,7 @@ void CTPetDlg::Update(DWORD dwTickCount)
 	if (strPetName.IsEmpty())
 		m_pKindNameTxt->m_strText = m_pDisplayPet->GetPetKindName();
 	else
-		m_pKindNameTxt->m_strText = CTChart::Format(TSTR_PETMAKE_KINDNAME, m_pDisplayPet->GetPetKindName(), strPetName);
+		m_pKindNameTxt->m_strText = CTChart::Format(TSTR_PETMAKE_KINDNAME, (LPCTSTR)m_pDisplayPet->GetPetKindName(), (LPCTSTR)strPetName);
 
 	m_bNeedUpdate = FALSE;
 }
@@ -303,24 +303,24 @@ void CTPetDlg::EnableTLIGHT(CD3DCamera* pCamera, BYTE bENABLE)
 
 		m_pDxDevice->SetVertexShaderConstantF(
 			m_pCDevice->m_vConstantVS[VC_CAMPOS],
-			(FLOAT *)&D3DXVECTOR4(
+			(FLOAT *)TTEMP(D3DXVECTOR4(
 				pCamera->m_vPosition.x,
 				pCamera->m_vPosition.y,
 				pCamera->m_vPosition.z,
-				0.0f), 1);
+				0.0f)), 1);
 
-		D3DXMatrixTranspose((LPD3DXMATRIX)vCONST, &(pCamera->m_matView * pCamera->m_matProjection));
+		D3DXMatrixTranspose((LPD3DXMATRIX)vCONST, TTEMP((pCamera->m_matView * pCamera->m_matProjection)));
 		m_pDxDevice->SetVertexShaderConstantF(
 			m_pCDevice->m_vConstantVS[VC_PROJ],
 			vCONST, 4);
 
 		for (auto i = 0; i < TLIGHT_COUNT; ++i)
 		{
-			memcpy(&vCONST[i * 4], &D3DXVECTOR4(
+			memcpy(&vCONST[i * 4], TTEMP(D3DXVECTOR4(
 				m_vLights[i].m_Light.Ambient.r,
 				m_vLights[i].m_Light.Ambient.g,
 				m_vLights[i].m_Light.Ambient.b,
-				m_vLights[i].m_Light.Ambient.a),
+				m_vLights[i].m_Light.Ambient.a)),
 				4 * sizeof(FLOAT));
 		}
 
@@ -330,11 +330,11 @@ void CTPetDlg::EnableTLIGHT(CD3DCamera* pCamera, BYTE bENABLE)
 
 		for (auto i = 0; i < TLIGHT_COUNT; ++i)
 		{
-			memcpy(&vCONST[i * 4], &D3DXVECTOR4(
+			memcpy(&vCONST[i * 4], TTEMP(D3DXVECTOR4(
 				m_vLights[i].m_Light.Diffuse.r,
 				m_vLights[i].m_Light.Diffuse.g,
 				m_vLights[i].m_Light.Diffuse.b,
-				m_vLights[i].m_Light.Diffuse.a),
+				m_vLights[i].m_Light.Diffuse.a)),
 				4 * sizeof(FLOAT));
 		}
 
@@ -344,11 +344,11 @@ void CTPetDlg::EnableTLIGHT(CD3DCamera* pCamera, BYTE bENABLE)
 
 		for (auto i = 0; i < TLIGHT_COUNT; ++i)
 		{
-			memcpy(&vCONST[i * 4], &D3DXVECTOR4(
+			memcpy(&vCONST[i * 4], TTEMP(D3DXVECTOR4(
 				m_vLights[i].m_Light.Direction.x,
 				m_vLights[i].m_Light.Direction.y,
 				m_vLights[i].m_Light.Direction.z,
-				1.0f),
+				1.0f)),
 				4 * sizeof(FLOAT));
 		}
 

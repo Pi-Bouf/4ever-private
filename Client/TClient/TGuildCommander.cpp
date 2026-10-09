@@ -665,7 +665,7 @@ void CTGuildCommander::RequestGuildKickOut(const CString& strTarget, BOOL bWarn)
 		m_strKickTarget = strKickTarget;
 
 		CString strMSG;
-		strMSG = CTChart::Format( TSTR_WARN_GUILDKICKOUT, strKickTarget);
+		strMSG = CTChart::Format( TSTR_WARN_GUILDKICKOUT, (LPCTSTR)strKickTarget);
 
 		CTClientWnd::GetInstance()->MessageBoxYesNo(
 			strMSG,
@@ -716,7 +716,7 @@ void CTGuildCommander::RequestGuildTacticsKickOut(const CString& strTarget, DWOR
 		m_dwKickTarget = dwKickTarget;
 
 		CString strMSG;
-		strMSG = CTChart::Format( TSTR_WARN_GUILDKICKOUT, strKickTarget);
+		strMSG = CTChart::Format( TSTR_WARN_GUILDKICKOUT, (LPCTSTR)strKickTarget);
 
 		CTClientWnd::GetInstance()->MessageBoxYesNo(
 			strMSG,
@@ -883,7 +883,7 @@ void CTGuildCommander::RecvGuildPeer(BYTE bResult, const CString& strTarget, BYT
 	else
 	{
 		CString to = GetPeerageStr(bPeer);
-		msgMSG = CTChart::Format( TSTR_MBOX_GUILD_PEERMAX, to);
+		msgMSG = CTChart::Format( TSTR_MBOX_GUILD_PEERMAX, (LPCTSTR)to);
 	}
 
 	if( !msgMSG.IsEmpty() )

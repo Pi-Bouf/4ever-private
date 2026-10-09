@@ -1709,9 +1709,9 @@ void CTachyonHUGEMAP::BuildBLOCK( CRect rect)
 		CPoint center = rect.CenterPoint();
 		LPBLOCK pBLOCK = new BLOCK();
 
-		pBLOCK->m_fDIST = D3DXVec2Length( &D3DXVECTOR2(
+		pBLOCK->m_fDIST = D3DXVec2Length( TTEMP(D3DXVECTOR2(
 			FLOAT(center.x),
-			FLOAT(center.y)));
+			FLOAT(center.y))));
 		pBLOCK->m_vRECT.m_nLEFT = SHORT(rect.left);
 		pBLOCK->m_vRECT.m_nTOP = SHORT(rect.top);
 		pBLOCK->m_vRECT.m_nRIGHT = SHORT(rect.right);
@@ -1754,12 +1754,12 @@ void CTachyonHUGEMAP::BuildBLOCKDIR( LPBLOCK pBLOCK)
 int CTachyonHUGEMAP::GetLODLevel( CRect rect)
 {
 	CPoint center = rect.CenterPoint();
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		FLOAT(center.x),
-		FLOAT(center.y))) -
-		D3DXVec2Length(&D3DXVECTOR2(
+		FLOAT(center.y)))) -
+		D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		FLOAT(rect.Width()),
-		FLOAT(rect.Height()))) / 2.0f;
+		FLOAT(rect.Height())))) / 2.0f;
 	fDist = max( 0.0f, fDist);
 
 	return min( m_nMaxLevel, INT(fDist) / m_nLODBound);
@@ -1946,8 +1946,8 @@ BYTE CTachyonHUGEMAP::HitTest( LPD3DXVECTOR3 pResult,
 
 				D3DXPlaneFromPoints(
 					&vCUTTERV,
-					&(vPOS + (*pDIR)),
-					&(vPOS + vUP),
+					TTEMP((vPOS + (*pDIR))),
+					TTEMP((vPOS + vUP)),
 					&vPOS);
 
 				D3DXVec3Cross(
@@ -1957,8 +1957,8 @@ BYTE CTachyonHUGEMAP::HitTest( LPD3DXVECTOR3 pResult,
 
 				D3DXPlaneFromPoints(
 					&vCUTTERH,
-					&(vPOS + (*pDIR)),
-					&(vPOS + vUP),
+					TTEMP((vPOS + (*pDIR))),
+					TTEMP((vPOS + vUP)),
 					&vPOS);
 
 				for( int j=0; j<m_nUnitLength; j++)
@@ -2230,9 +2230,9 @@ void CTachyonHUGEMAP::BuildDIFFUSE( LPDIRECT3DDEVICE9 pDevice,
 						{
 							BlendTILE(
 								pDevice,
-								&IPOINT(
+								TTEMP(IPOINT(
 								nCellX + j,
-								nCellZ + i),
+								nCellZ + i)),
 								vBLEND[0][k],
 								wBLEND);
 						}
@@ -2240,9 +2240,9 @@ void CTachyonHUGEMAP::BuildDIFFUSE( LPDIRECT3DDEVICE9 pDevice,
 						{
 							BlendTILE(
 								pDevice,
-								&IPOINT(
+								TTEMP(IPOINT(
 								nCellX + j + nBLEND[k][0],
-								nCellZ + i + nBLEND[k][1]),
+								nCellZ + i + nBLEND[k][1])),
 								vBLEND[1][k],
 								wTileID);
 						}

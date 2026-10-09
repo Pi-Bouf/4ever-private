@@ -830,7 +830,7 @@ int CTClientGame::OnGM_REVIVAL_NO()
 
 int CTClientGame::OnGM_NPC_REVIVAL()
 {
-	if( CheckRevival(m_pTARGET ? &(m_pTARGET->GetPosition()) : &(m_pMainChar->m_vTDEAD) ) )
+	if( CheckRevival(m_pTARGET ? TTEMP((m_pTARGET->GetPosition())) : &(m_pMainChar->m_vTDEAD) ) )
 	{
 		if( m_pMainChar->IsDead() || m_pMainChar->m_bGhost )
 		{
@@ -1052,9 +1052,9 @@ int CTClientGame::OnGM_NPC_TRADE()
 	if( !bAlliance )
 		return TERR_NONE;
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TARGETUI_DIST )
 	{
@@ -1177,9 +1177,9 @@ int CTClientGame::OnGM_NPC_GUILD_NEW()
 		return TERR_NONE;
 	}
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TARGETUI_DIST )
 	{
@@ -1250,9 +1250,9 @@ int CTClientGame::OnGM_NPC_GUILD_DEL()
 		return TERR_NONE;
 	}
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TARGETUI_DIST )
 	{
@@ -1282,9 +1282,9 @@ int CTClientGame::OnGM_NPC_GUILD_DEL_CANCEL()
 		return TERR_NONE;
 	}
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TARGETUI_DIST )
 	{
@@ -1402,14 +1402,14 @@ int CTClientGame::OnGM_ITEM_BUY()
 		case TSHOP_PHURCHASE_TYPE_MONEY:
 			{
 				strMSG = CTChart::Format( TSTR_FMT_BUYITEM_AS_PRICE,
-					pTITEM->m_strNAME,
-					strPRICE);
+					(LPCTSTR)pTITEM->m_strNAME,
+					(LPCTSTR)strPRICE);
 			}
 			break;
 		case TSHOP_PHURCHASE_TYPE_POINT:
 			{
 				strMSG = CTChart::Format( TSTR_FMT_BUYITEM_AS_PVPPOINT,
-					pTITEM->m_strNAME,
+					(LPCTSTR)pTITEM->m_strNAME,
 					pInfo->m_dwRealPrice );
 			}
 			break;
@@ -1451,8 +1451,8 @@ int CTClientGame::OnGM_MAGICITEM_BUY()
 	{
 		CString strPRICE = CTClientGame::MakeMoneyStr(pItem->m_dwRealPrice);
 		CString strMSG = CTChart::Format( TSTR_FMT_BUYITEM_AS_PRICE,
-			pItem->m_pClientItem->GetTITEM()->m_strNAME,
-			strPRICE);
+			(LPCTSTR)pItem->m_pClientItem->GetTITEM()->m_strNAME,
+			(LPCTSTR)strPRICE);
 
 		m_pMainWnd->MessageBoxYesNo(
 			strMSG,
@@ -1488,13 +1488,13 @@ int CTClientGame::OnGM_MONSTER_BUY()
 		default:
 		case TSHOP_PHURCHASE_TYPE_MONEY:
 			strMSG = CTChart::Format( TSTR_FMT_BUYITEM_AS_PRICE,
-				pTMON->m_strName,
-				strPRICE);
+				(LPCTSTR)pTMON->m_strName,
+				(LPCTSTR)strPRICE);
 			break;
 		case TSHOP_PHURCHASE_TYPE_POINT:
 			{
 				strMSG = CTChart::Format( TSTR_FMT_BUYITEM_AS_PVPPOINT,
-					pTMON->m_strName,
+					(LPCTSTR)pTMON->m_strName,
 					pInfo->m_dwRealPrice );
 			}
 			break;
@@ -1546,7 +1546,7 @@ int CTClientGame::OnGM_ITEM_SELL()
 			pTITEM->GetCount());
 
 		strMSG = CTChart::Format( TSTR_FMT_SELLITEMS,
-			pTITEM->GetTITEM()->m_strNAME);
+			(LPCTSTR)pTITEM->GetTITEM()->m_strNAME);
 
 		m_pMainWnd->MessageBox(
 			strMSG,
@@ -1606,7 +1606,7 @@ int CTClientGame::OnGM_WARN_GRADE_ITEM_SELL()
 	if ( CTNationOption::JAPAN )
 	{
 		pDlg->m_strSecurityCode.Format("%04d", rand() % 9999);
-		pDlg->m_pMSG->m_strText = CTChart::Format( TSTR_WARN_UPITEM_SELL_SECURITYCODE, pDlg->m_strSecurityCode );
+		pDlg->m_pMSG->m_strText = CTChart::Format( TSTR_WARN_UPITEM_SELL_SECURITYCODE, (LPCTSTR)pDlg->m_strSecurityCode );
 	}
 	else
 		pDlg->m_pMSG->m_strText = CTChart::Format( TSTR_WARN_UPITEM_SELL );
@@ -1736,9 +1736,9 @@ int CTClientGame::OnGM_CONFIRM_ITEM_SELL()
 
 	CString strMSG;
 	strMSG = CTChart::Format( TSTR_FMT_SELLITEM,
-		pTITEM->GetTITEM()->m_strNAME,
+		(LPCTSTR)pTITEM->GetTITEM()->m_strNAME,
 		m_nSellCount,
-		strPrice);
+		(LPCTSTR)strPrice);
 
 	m_pMainWnd->MessageBoxYesNo(
 		strMSG,
@@ -1784,7 +1784,7 @@ int CTClientGame::OnGM_ITEM_DO_BUY()
 			pTITEM->m_bStack);
 
 		strMSG = CTChart::Format( TSTR_FMT_BUYSTACK,
-			pTITEM->m_strNAME,
+			(LPCTSTR)pTITEM->m_strNAME,
 			pTITEM->m_bStack);
 
 		m_pMainWnd->CloseMessageBox();
@@ -1817,7 +1817,7 @@ int CTClientGame::OnGM_ITEM_DO_BUY()
 		strEDITTITLE = CTChart::LoadString( TSTR_EA);
 
 		strMSG = CTChart::Format( TSTR_FMT_BUYONE,
-			pTITEM->m_strNAME);
+			(LPCTSTR)pTITEM->m_strNAME);
 
 		m_pMainWnd->CloseMessageBox();
 		m_pMainWnd->MessageBox(
@@ -1949,7 +1949,7 @@ int CTClientGame::OnGM_ITEM_DO_SELL()
 			pTITEM->GetCount());
 
 		strMSG = CTChart::Format( TSTR_FMT_SELLALL,
-			pTITEM->GetTITEM()->m_strNAME,
+			(LPCTSTR)pTITEM->GetTITEM()->m_strNAME,
 			pTITEM->GetCount());
 
 		m_pMainWnd->CloseMessageBox();
@@ -1980,7 +1980,7 @@ int CTClientGame::OnGM_ITEM_DO_SELL()
 		strEDITTITLE = CTChart::LoadString( TSTR_EA);
 
 		strMSG = CTChart::Format( TSTR_FMT_SELLONE,
-			pTITEM->GetTITEM()->m_strNAME);
+			(LPCTSTR)pTITEM->GetTITEM()->m_strNAME);
 
 		m_pMainWnd->CloseMessageBox();
 		m_pMainWnd->MessageBox(
@@ -2278,9 +2278,7 @@ int CTClientGame::OnGM_HOTKEY_DOWN()
 {
 	CTGaugePannel* pDlg = static_cast<CTGaugePannel*>(m_vTFRAME[TFRAME_GAUGE]);
 
-	CPoint point;
-	GetCursorPos(&point);
-	m_pMainWnd->ScreenToClient(&point);
+	CPoint point = CTachyonInput::GetCursorPos();
 
 	THOTKEY_BASE eHotKeyType;
 	if( !pDlg->CheckHotkeyBase(point,&eHotKeyType) )
@@ -2300,9 +2298,7 @@ int CTClientGame::OnGM_HOTKEY_UP()
 {
 	CTGaugePannel* pDlg = static_cast<CTGaugePannel*>(m_vTFRAME[TFRAME_GAUGE]);
 
-	CPoint point;
-	GetCursorPos(&point);
-	m_pMainWnd->ScreenToClient(&point);
+	CPoint point = CTachyonInput::GetCursorPos();
 
 	THOTKEY_BASE eHotKeyType;
 	if( !pDlg->CheckHotkeyBase(point,&eHotKeyType) )
@@ -2327,9 +2323,9 @@ int CTClientGame::OnGM_ACTIVATE_SWITCH()
 		(((CTClientSwitch *) m_pTARGET)->m_pTSWITCH->m_bLockOnOpen && ((CTClientSwitch *) m_pTARGET)->m_bOPEN) )
 		return TERR_NONE;
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TSWITCH_DIST )
 	{
@@ -2362,9 +2358,9 @@ int CTClientGame::OnGM_NPC_TALK()
 		!m_pMainChar->CanTalkWithNPC( (CTClientNpc*)m_pTARGET ) )
 		return TERR_NONE;
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TARGETUI_DIST )
 	{
@@ -2510,9 +2506,9 @@ int CTClientGame::OnGM_QUEST_CRAFT()
 		!m_pMainChar->CanTalkWithNPC( (CTClientNpc*)m_pTARGET ) )
 		return TERR_NONE;
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TARGETUI_DIST )
 	{
@@ -2600,9 +2596,9 @@ int CTClientGame::OnGM_OPEN_MONINVEN()
 		return TERR_NONE;
 	}
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TARGETUI_DIST )
 	{
@@ -2659,9 +2655,9 @@ int CTClientGame::OnGM_GETALL()
 
 	if( !m_vTFRAME[TFRAME_MONINVEN]->IsVisible() )
 	{
-		FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+		FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 			m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-			m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+			m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 		if( fDist > TARGETUI_DIST )
 		{
@@ -3128,7 +3124,7 @@ int CTClientGame::OnGM_WARN_GRADE_ITEM_DROP()
 	if ( CTNationOption::JAPAN )
 	{
 		pDlg->m_strSecurityCode.Format( "%04d", rand() % 9999 );
-		pDlg->m_pMSG->m_strText = CTChart::Format( TSTR_WARN_UPITEM_DROP_SECURITYCODE, pDlg->m_strSecurityCode );
+		pDlg->m_pMSG->m_strText = CTChart::Format( TSTR_WARN_UPITEM_DROP_SECURITYCODE, (LPCTSTR)pDlg->m_strSecurityCode );
 	}
 	else
 		pDlg->m_pMSG->m_strText = CTChart::Format( TSTR_WARN_UPITEM_DROP );
@@ -3388,7 +3384,7 @@ int CTClientGame::OnGM_ITEMUP_READY()
 
 				DWORD dwCost = CTChart::m_vTITEMGRADE[pCTItem->GetGrade()].m_dwCost;
 				CString strCost = MakeMoneyStr(dwCost);
-				strMSG = CTChart::Format( TSTR_ITEMUP_WARN_UP, strCost);
+				strMSG = CTChart::Format( TSTR_ITEMUP_WARN_UP, (LPCTSTR)strCost);
 
 				if ( !m_pMainChar->FindMaintain( CTItemUpCashDlg::MAINTAIN_PROTECTIONOFUPGRADING ) ||
 					(!m_pMainChar->FindMaintain( CTItemUpCashDlg::MAINTAIN_POTIONOFFORTUNE ) &&
@@ -4574,9 +4570,9 @@ int CTClientGame::OnGM_OPEN_PRIVSHOP_FOR_BUY()
 		m_pMainChar->IsDown() )
 		return TERR_NONE;
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TARGETUI_DIST )
 	{
@@ -4695,8 +4691,8 @@ int CTClientGame::OnGM_PRIVATE_SHOP_BUY()
 	else if( pItemInfo )
 	{
 		CString strMSG = CTChart::Format( TSTR_FMT_BUYITEM_AS_PRICE,
-			pItemInfo->m_pClientItem->GetTITEM()->m_strNAME,
-			MakeMoneyStr( pItemInfo->m_dwRune, pItemInfo->m_dwLuna, pItemInfo->m_dwCron ) );
+			(LPCTSTR)pItemInfo->m_pClientItem->GetTITEM()->m_strNAME,
+			(LPCTSTR)MakeMoneyStr( pItemInfo->m_dwRune, pItemInfo->m_dwLuna, pItemInfo->m_dwCron ) );
 		strMSG += CTChart::Format( TSTR_FMT_BUYITEM_STACK, pItemInfo->m_bItemCnt );
 
 		CString strEDITTITLE = CTChart::LoadString( TSTR_EA);
@@ -5435,7 +5431,7 @@ int CTClientGame::OnGM_PET_EFFECTCHANGE()
 	{
 		if(pPet->GetPetEffect() == 0)
 		{
-			strMSG.Format(TSTR_DYE_FIRSTT, pPet->GetName());
+			strMSG.Format(TSTR_DYE_FIRSTT, (LPCTSTR)pPet->GetName());
 
 			m_pMainWnd->MessageBoxYesNo(
 			strMSG,
@@ -5446,7 +5442,7 @@ int CTClientGame::OnGM_PET_EFFECTCHANGE()
 		}
 		else
 		{
-			strMSG.Format(TSTR_DYE, pPet->GetName());
+			strMSG.Format(TSTR_DYE, (LPCTSTR)pPet->GetName());
 
 			m_pMainWnd->MessageBoxYesNo(
 			strMSG,
@@ -5477,7 +5473,7 @@ int CTClientGame::OnGM_PET_EFFECTDELETE()
 	{
 		if(pPet->GetPetEffect() > 0)
 		{
-			strMSG.Format(TSTR_DELETE_EFFECT, pPet->GetName());
+			strMSG.Format(TSTR_DELETE_EFFECT, (LPCTSTR)pPet->GetName());
 
 			m_pMainWnd->MessageBoxYesNo(
 			strMSG,
@@ -5788,7 +5784,7 @@ int CTClientGame::OnGM_CABINET_OPEN_WARN()
 	CString strPRICE = MakeMoneyStr(dwPrice);
 
 	CString strMSG;
-	strMSG = CTChart::Format( TSTR_CABINET_OPEN_WARN, strPRICE);
+	strMSG = CTChart::Format( TSTR_CABINET_OPEN_WARN, (LPCTSTR)strPRICE);
 
 	m_pMainWnd->MessageBoxYesNo(
 		strMSG,
@@ -6554,7 +6550,7 @@ int CTClientGame::OnGM_SOULMATE_SEARCH()
 	CString strCOST = MakeMoneyStr(nCOST);
 
 	CString strMSG;
-	strMSG = CTChart::Format( TSTR_SOULMATEBOX_SEARCH, strCOST);
+	strMSG = CTChart::Format( TSTR_SOULMATEBOX_SEARCH, (LPCTSTR)strCOST);
 
 	m_pMainWnd->MessageBoxYesNo(
 		strMSG,
@@ -6700,7 +6696,7 @@ int CTClientGame::OnGM_SOULMATE_SUCCESS()
 		strREGION = pTREGION->m_strNAME;
 
 	CString strMSG;
-	strMSG = CTChart::Format( TSTR_SOULMATE_SEARCH_SUCCESS, strREGION, m_strSoulName); 
+	strMSG = CTChart::Format( TSTR_SOULMATE_SEARCH_SUCCESS, (LPCTSTR)strREGION, (LPCTSTR)m_strSoulName); 
 
 	ShowInfoMsgBox(strMSG, TRUE, TUISND_TYPE_INFO);
 
@@ -6865,9 +6861,9 @@ int CTClientGame::OnGM_NPC_DURATIONREP_NOR()
 		return TERR_NONE;
 	}
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TARGETUI_DIST )
 	{
@@ -6966,9 +6962,9 @@ int CTClientGame::OnGM_NPC_DURATIONREP_ALL()
 		return TERR_NONE;
 	}
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TARGETUI_DIST )
 	{
@@ -7021,9 +7017,9 @@ int CTClientGame::OnGM_NPC_DURATIONREP_EQUIP()
 		return TERR_NONE;
 	}
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TARGETUI_DIST )
 	{
@@ -7136,9 +7132,9 @@ int CTClientGame::OnGM_NPC_REFINE()
 		return TERR_NONE;
 	}
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TARGETUI_DIST )
 	{
@@ -7404,9 +7400,9 @@ int CTClientGame::OnGM_NPC_EXTEND_ITEM_PERIOD()
 		return TERR_NONE;
 	}
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TARGETUI_DIST )
 	{
@@ -7696,9 +7692,9 @@ int CTClientGame::OnGM_PICKUP_BALL()
 		return TERR_NONE;
 	}
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > GODBALL_DIST )
 	{
@@ -7728,9 +7724,9 @@ int CTClientGame::OnGM_MOUNT_BALL2_TOWER()
 		return TERR_NONE;
 	}
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > GODTOWER_DIST * 2.0f )
 	{
@@ -9465,7 +9461,7 @@ int CTClientGame::OnGM_TOURNAMENT_GIVEUP() // 참가포기
 			DWORD dwParam = (DWORD)( pMATCH->m_bEntryID );
 
 			m_pMainWnd->MessageBoxYesNo(
-				CTChart::Format(TSTR_TOURNAMENT_GIVE_UP, it->second->m_strText),
+				CTChart::Format(TSTR_TOURNAMENT_GIVE_UP, (LPCTSTR)it->second->m_strText),
 				TSTR_YES,
 				TSTR_NO,
 				TCOMMAND( GM_TOURNAMENT_GIVEUP_DO, dwParam ),
@@ -9528,7 +9524,7 @@ int CTClientGame::OnGM_TOURNAMENT_EVENT_SELECT_PLAYER() // 이벤트결정
 				DWORD dwParam = MAKELONG( (WORD)(nEventSel), (WORD)(nEntrySel) );
 
 				m_pMainWnd->MessageBoxYesNo(
-					CTChart::Format( TSTR_TOURNAMENT_BATTING, pEVENT->m_strEntry, pENTRY->m_strName),
+					CTChart::Format( TSTR_TOURNAMENT_BATTING, (LPCTSTR)pEVENT->m_strEntry, (LPCTSTR)pENTRY->m_strName),
 					TSTR_YES,
 					TSTR_NO,
 					TCOMMAND( GM_TOURNAMENT_EVENT_SELECT_PLAYER_DO, dwParam ),
@@ -9611,7 +9607,7 @@ int CTClientGame::OnGM_TOURNAMENT_REMOVE_PARTY() // 파티원 삭제
 	if( strPartyLeaderName == m_pMainChar->m_strNAME )
 	{
 		m_pMainWnd->MessageBoxYesNo(
-			CTChart::Format( TSTR_TOURNAMENT_UNJOIN_PARTY, pPARTY->m_strName ),
+			CTChart::Format( TSTR_TOURNAMENT_UNJOIN_PARTY, (LPCTSTR)pPARTY->m_strName ),
 			TSTR_YES,
 			TSTR_NO,
 			TCOMMAND( GM_TOURNAMENT_REMOVE_PARTY_DO, pPARTY->m_dwCharID ),
@@ -9663,9 +9659,9 @@ int CTClientGame::OnGM_TOURNAMENT_SHOW_MATCH() // 대진표 보여주기
 		return TERR_NONE;
 	}
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TARGETUI_DIST )
 	{
@@ -9693,9 +9689,9 @@ int CTClientGame::OnGM_TOURNAMENT_SHOW_EVENT()
 		return TERR_NONE;
 	}
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TARGETUI_DIST )
 	{
@@ -10109,9 +10105,9 @@ int CTClientGame::OnGM_RPS_ASK_COST()
 		return TERR_NONE;
 	}
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TARGETUI_DIST )
 	{
@@ -10260,9 +10256,9 @@ int CTClientGame::OnGM_NPC_MEETING()
 	if( NULL == m_pTARGET || m_pTARGET->m_bType != OT_NPC )
 		return TERR_NONE;
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TARGETUI_DIST )
 	{
@@ -10312,9 +10308,9 @@ int CTClientGame::OnGM_NPC_MERCENARY()
 	if( NULL == m_pTARGET || m_pTARGET->m_bType != OT_NPC )
 		return TERR_NONE;
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TARGETUI_DIST )
 	{
@@ -10344,9 +10340,9 @@ int CTClientGame::OnGM_NPC_NATIONALITY2()
 	if( NULL == m_pTARGET || m_pTARGET->m_bType != OT_NPC )
 		return TERR_NONE;
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TARGETUI_DIST )
 	{
@@ -10419,9 +10415,9 @@ int CTClientGame::OnGM_SELECT_MY_COUNTRY()
 	if( NULL == m_pTARGET || m_pTARGET->m_bType != OT_NPC )
 		return TERR_NONE;
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TARGETUI_DIST )
 	{
@@ -10482,9 +10478,9 @@ int CTClientGame::OnGM_SELECT_MY_COUNTRY_D()
 	if( NULL == m_pTARGET || m_pTARGET->m_bType != OT_NPC )
 		return TERR_NONE;
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TARGETUI_DIST )
 	{
@@ -10502,7 +10498,7 @@ int CTClientGame::OnGM_SELECT_MY_COUNTRY_D()
 		{
 			CString strFMT;
 			strFMT = CTChart::Format(TSTR_NATIONALITY_ASK,
-				CTChart::LoadString( (TSTRING) CTClientGame::m_vTCOUNTRYSTR[ TCONTRY_D ] ));
+				(LPCTSTR)CTChart::LoadString( (TSTRING) CTClientGame::m_vTCOUNTRYSTR[ TCONTRY_D ] ));
 
 			m_pMainWnd->MessageBoxYesNo(
 				strFMT,
@@ -10537,9 +10533,9 @@ int CTClientGame::OnGM_SELECT_MY_COUNTRY_C()
 	if( NULL == m_pTARGET || m_pTARGET->m_bType != OT_NPC )
 		return TERR_NONE;
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TARGETUI_DIST )
 	{
@@ -10557,7 +10553,7 @@ int CTClientGame::OnGM_SELECT_MY_COUNTRY_C()
 		{
 			CString strFMT;
 			strFMT = CTChart::Format( TSTR_NATIONALITY_ASK,
-				CTChart::LoadString( (TSTRING) CTClientGame::m_vTCOUNTRYSTR[ TCONTRY_C ] ));
+				(LPCTSTR)CTChart::LoadString( (TSTRING) CTClientGame::m_vTCOUNTRYSTR[ TCONTRY_C ] ));
 
 			m_pMainWnd->MessageBoxYesNo(
 				strFMT,
@@ -10711,9 +10707,9 @@ int CTClientGame::OnGM_NPC_DUEL3()
 	if( NULL ==  m_pTARGET || m_pTARGET->m_bType != OT_NPC )
 		return TERR_NONE;
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TARGETUI_DIST )
 	{
@@ -10744,9 +10740,9 @@ int CTClientGame::OnGM_NPC_DUEL7()
 	if( NULL ==  m_pTARGET || m_pTARGET->m_bType != OT_NPC )
 		return TERR_NONE;
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pMainChar->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	if( fDist > TARGETUI_DIST )
 	{
@@ -12208,7 +12204,7 @@ int CTClientGame::OnGM_GSKILL_RENEW_YES()
 
 
 	BYTE Action = GS_RENEW;
-	WORD wParam[] = { m_dwCmdParam };
+	WORD wParam[] = { (WORD) m_dwCmdParam };
 
 
 

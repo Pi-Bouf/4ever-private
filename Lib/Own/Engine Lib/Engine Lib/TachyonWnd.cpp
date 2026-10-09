@@ -296,10 +296,11 @@ BOOL CTachyonWnd::InitDevices()
 	m_FontFPS.SetFont(&m_Font);
 	m_bActivate = TRUE;
 
+	CTachyonInput::SetWindow(m_hWnd);
 	CTachyonObject::m_pMedia = &CTachyonRes::m_MEDIA;
 	CTachyonMesh::InitGlobalVB();
 
-	CTachyonRes::m_MEDIA.InitMEDIA(GetSafeHwnd());
+	CTachyonRes::m_MEDIA.InitMEDIA();
 	CTachyonRes::m_pDEVICE = &m_Device;
 	CTachyonSFX::InitCommon();
 	CSFX::InitTEXVB();

@@ -824,10 +824,10 @@ void CTClientObjBase::CheckMaintainOBJ(CTClientGame* pTGAME, BOOL bBroadCast)
 				pTMAINTAIN->m_dwAttackID,
 				pTMAINTAIN->m_bAttackType);
 
-			if (!pTBUF || D3DXVec3Length(&D3DXVECTOR3(
+			if (!pTBUF || D3DXVec3Length(TTEMP(D3DXVECTOR3(
 				pTBUF->GetPositionX() - GetPositionX(),
 				pTBUF->GetPositionY() - GetPositionY(),
-				pTBUF->GetPositionZ() - GetPositionZ())) > pTMAINTAIN->m_pTSKILL->m_fBufRange ||
+				pTBUF->GetPositionZ() - GetPositionZ()))) > pTMAINTAIN->m_pTSKILL->m_fBufRange ||
 				pTBUF->m_mapTMAINTAIN.find(pTMAINTAIN->m_pTSKILL->m_wSkillID) == pTBUF->m_mapTMAINTAIN.end())
 			{
 				vDeleteMaintain.push_back(pTMAINTAIN);
@@ -876,10 +876,10 @@ void CTClientObjBase::CheckMaintainOBJ(CTClientGame* pTGAME, BOOL bBroadCast)
 	{
 		CTClientMaintain* pTMAINTAINOBJ = pTGAME->m_vTMAINTAINOBJ[i];
 
-		if (D3DXVec3Length(&D3DXVECTOR3(
+		if (D3DXVec3Length(TTEMP(D3DXVECTOR3(
 			pTMAINTAINOBJ->m_vTSKILLDATA.m_vTGROUND.x - GetPositionX(),
 			pTMAINTAINOBJ->m_vTSKILLDATA.m_vTGROUND.y - GetPositionY(),
-			pTMAINTAINOBJ->m_vTSKILLDATA.m_vTGROUND.z - GetPositionZ())) <
+			pTMAINTAINOBJ->m_vTSKILLDATA.m_vTGROUND.z - GetPositionZ()))) <
 			pTMAINTAINOBJ->m_pTSKILL->m_fBufRange && (
 				pTMAINTAINOBJ->m_dwAttackID != m_dwID ||
 				pTMAINTAINOBJ->m_bAttackType != m_bType))
@@ -1077,9 +1077,9 @@ void CTClientObjBase::DoSkillFunc(LPTSKILL pTSKILL,
 
 					Push(
 						FLOAT(dwValue) / 200.0f,
-						&D3DXVECTOR2(
+						TTEMP(D3DXVECTOR2(
 							pDefPos->x - pAtkPos->x,
-							pDefPos->z - pAtkPos->z));
+							pDefPos->z - pAtkPos->z)));
 				}
 
 				break;
@@ -2830,15 +2830,15 @@ void CTClientObjBase::ResetVisible(CTClientCAM *pCamera,
 		}
 	}
 
-	m_fCamDIST = D3DXVec3Length(&D3DXVECTOR3(
+	m_fCamDIST = D3DXVec3Length(TTEMP(D3DXVECTOR3(
 		m_vPosition._41 - pCamera->m_vTarget.x,
 		m_vPosition._42 - pCamera->m_vTarget.y,
-		m_vPosition._43 - pCamera->m_vTarget.z));
+		m_vPosition._43 - pCamera->m_vTarget.z)));
 
-	m_fZValue = D3DXVec3Length(&D3DXVECTOR3(
+	m_fZValue = D3DXVec3Length(TTEMP(D3DXVECTOR3(
 		m_vPosition._41 - pCamera->m_vPosition.x,
 		m_vPosition._42 - pCamera->m_vPosition.y,
-		m_vPosition._43 - pCamera->m_vPosition.z));
+		m_vPosition._43 - pCamera->m_vPosition.z)));
 	m_bVisible = FALSE;
 
 	if (m_bType != OT_COLLISION && m_bType != OT_PATHWALL && !m_bGARBAGE && (
@@ -3359,9 +3359,9 @@ FLOAT CTClientObjBase::GetCylinderHeight(CTClientObjBase *pOBJ,
 	if (pPOINT->y + pOBJ->m_fSizeY <= m_vPosition._42 - m_fDepth)
 		return TMIN_HEIGHT;
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		pPOINT->x - m_vPosition._41,
-		pPOINT->z - m_vPosition._43));
+		pPOINT->z - m_vPosition._43)));
 
 	if (fDist < pOBJ->m_fRadius + m_fRadius)
 		return m_vPosition._42 + m_fSizeY;
@@ -3657,29 +3657,29 @@ FLOAT CTClientObjBase::GetPolyHeight(LPD3DXVECTOR3 pPOLY,
 
 		for (auto i = 0; i<3; i++)
 		{
-			FLOAT fLocal = D3DXVec2Length(&D3DXVECTOR2(
+			FLOAT fLocal = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 				pPOLY[i].x - vCENTER.x,
-				pPOLY[i].z - vCENTER.z));
+				pPOLY[i].z - vCENTER.z)));
 
 			if (fLocal > fPolyR)
 				fPolyR = fLocal;
 		}
 
-		if (fPolyR + fRadius < D3DXVec2Length(&D3DXVECTOR2(pPOS->x - vCENTER.x, pPOS->z - vCENTER.z)))
+		if (fPolyR + fRadius < D3DXVec2Length(TTEMP(D3DXVECTOR2(pPOS->x - vCENTER.x, pPOS->z - vCENTER.z))))
 			return TMIN_HEIGHT;
 
 		if (D3DXIntersectTri(
 			&pPOLY[0],
 			&pPOLY[1],
 			&pPOLY[2],
-			&D3DXVECTOR3(
+			TTEMP(D3DXVECTOR3(
 				vPOS.x,
 				-TMIN_HEIGHT,
-				vPOS.z),
-			&D3DXVECTOR3(
+				vPOS.z)),
+			TTEMP(D3DXVECTOR3(
 				0.0f,
 				-1.0f,
-				0.0f),
+				0.0f)),
 			&fU, &fV,
 			&fDist))
 		{
@@ -3729,9 +3729,9 @@ FLOAT CTClientObjBase::GetPolyHeight(LPD3DXVECTOR3 pPOLY,
 
 					if (D3DXPlaneDotCoord(&vPLANE, &pPOLY[(i + 1) % 3]) * D3DXPlaneDotCoord(&vPLANE, &pPOLY[i]) <= 0.0f)
 					{
-						fLength = D3DXVec2Length(&D3DXVECTOR2(
+						fLength = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 							vPOINT[j].x - pPOLY[i].x,
-							vPOINT[j].z - pPOLY[i].z));
+							vPOINT[j].z - pPOLY[i].z)));
 						fLength = pPOLY[i].y + fLength * (pPOLY[(i + 1) % 3].y - pPOLY[i].y) / fEdge;
 
 						if (fDist < fLength)
@@ -3802,7 +3802,7 @@ BYTE CTClientObjBase::CheckCylinder(CTClientObjBase *pOBJ,
 		return FALSE;
 	vTPOINT.y = 0.0f;
 
-	fDIST = D3DXVec3LengthSq(&(vTPOINT - vTCENTER));
+	fDIST = D3DXVec3LengthSq(TTEMP((vTPOINT - vTCENTER)));
 	fRADIUS *= fRADIUS;
 
 	if (fDIST < fRADIUS)
@@ -4153,7 +4153,7 @@ BYTE CTClientObjBase::CheckPoly(LPD3DXVECTOR3 pPOLY,
 
 	D3DXVec3Cross(
 		&vPoint,
-		&D3DXVECTOR3(0.0f, 1.0f, 0.0f),
+		TTEMP(D3DXVECTOR3(0.0f, 1.0f, 0.0f)),
 		&vPoint);
 	fDist = D3DXVec3Length(&vPoint);
 
@@ -4299,10 +4299,10 @@ BYTE CTClientObjBase::CheckPoly(LPD3DXVECTOR3 pPOLY,
 	D3DXPlaneFromPointNormal(
 		&vTNORMAL,
 		&vPoint,
-		&D3DXVECTOR3(
+		TTEMP(D3DXVECTOR3(
 			vTNORMAL.a,
 			vTNORMAL.b,
-			vTNORMAL.c));
+			vTNORMAL.c)));
 
 	D3DXPlaneNormalize(
 		&vTNORMAL,
@@ -4323,7 +4323,7 @@ BYTE CTClientObjBase::CheckPoly(LPD3DXVECTOR3 pPOLY,
 			return FALSE;
 		vO.y = 0.0f;
 
-		fDotP = D3DXVec3LengthSq(&(vP - vO));
+		fDotP = D3DXVec3LengthSq(TTEMP((vP - vO)));
 		fDotO = fRadius * fRadius;
 
 		if (fDotP > fDotO)
@@ -4413,10 +4413,10 @@ OBJHIT CTClientObjBase::HitTest(CTClientCAM *pCamera,
 	float fDepth = m_fDepth * fRadScale;
 
 	if (!D3DXSphereBoundProbe(
-		&D3DXVECTOR3(
+		TTEMP(D3DXVECTOR3(
 			m_vPosition._41,
 			m_vPosition._42,
-			m_vPosition._43),
+			m_vPosition._43)),
 		fRadH,
 		&vPos, &vDir))
 	{
@@ -4559,10 +4559,10 @@ BYTE CTClientObjBase::HitCylinder(LPD3DXVECTOR3 pSTART,
 
 	D3DXPlaneFromPoints(
 		&vPLANE,
-		&D3DXVECTOR3(
+		TTEMP(D3DXVECTOR3(
 			pSTART->x,
 			pSTART->y + 1.0f,
-			pSTART->z),
+			pSTART->z)),
 		pSTART,
 		pEND);
 
@@ -4574,7 +4574,7 @@ BYTE CTClientObjBase::HitCylinder(LPD3DXVECTOR3 pSTART,
 		vDIR = (*pEND) - (*pSTART);
 		D3DXVec3Cross(
 			&vCross,
-			&D3DXVECTOR3(0.0f, 1.0f, 0.0f),
+			TTEMP(D3DXVECTOR3(0.0f, 1.0f, 0.0f)),
 			&vDIR);
 		vCross += (*pSTART);
 
@@ -4646,17 +4646,17 @@ BYTE CTClientObjBase::HitBox(LPD3DXVECTOR3 pSTART,
 
 	D3DXPlaneFromPoints(
 		&vPlaneV,
-		&D3DXVECTOR3(
+		TTEMP(D3DXVECTOR3(
 			pSTART->x,
 			pSTART->y + 1.0f,
-			pSTART->z),
+			pSTART->z)),
 		pSTART,
 		pEND);
 
 	D3DXVec3Cross(
 		&vCross,
-		&D3DXVECTOR3(0.0f, 1.0f, 0.0f),
-		&((*pEND) - (*pSTART)));
+		TTEMP(D3DXVECTOR3(0.0f, 1.0f, 0.0f)),
+		TTEMP(((*pEND) - (*pSTART))));
 	vCross += (*pSTART);
 
 	D3DXPlaneFromPoints(
@@ -4752,10 +4752,10 @@ BYTE CTClientObjBase::HitPoly(FLOAT *pDIST,
 			D3DXPlaneFromPoints(
 				&vBOUND[i],
 				&vRECT[i],
-				&D3DXVECTOR3(
+				TTEMP(D3DXVECTOR3(
 					vRECT[i].x,
 					vRECT[i].y + 1.0f,
-					vRECT[i].z),
+					vRECT[i].z)),
 				&vRECT[(i + 1) % 4]);
 		}
 
@@ -4929,10 +4929,10 @@ BYTE CTClientObjBase::HitColPoly(FLOAT *pDIST,
 			D3DXPlaneFromPoints(
 				&vBOUND[i],
 				&vRECT[i],
-				&D3DXVECTOR3(
+				TTEMP(D3DXVECTOR3(
 					vRECT[i].x,
 					vRECT[i].y + 1.0f,
-					vRECT[i].z),
+					vRECT[i].z)),
 				&vRECT[(i + 1) % 4]);
 		}
 
@@ -5122,23 +5122,18 @@ void CTClientObjBase::PlayRandomSND(LPMAPSNDINST pINST,
 
 		if (pItem->m_nIndex >= 0)
 		{
-			if (b3DSound)
+			if (b3DSound && pWAV->Is3D(pItem->m_nIndex))
 			{
-				LPDIRECTSOUND3DBUFFER p3DBUF = pWAV->GetDS3D(pItem->m_nIndex);
+				D3DXVECTOR3 vSNDPOS = CD3DSound::ConvertPOS(
+					m_vPosition._41,
+					m_vPosition._42,
+					m_vPosition._43);
 
-				if (p3DBUF)
-				{
-					D3DXVECTOR3 vSNDPOS = CD3DSound::ConvertPOS(
-						m_vPosition._41,
-						m_vPosition._42,
-						m_vPosition._43);
-
-					p3DBUF->SetPosition(
-						vSNDPOS.x,
-						vSNDPOS.y,
-						vSNDPOS.z,
-						DS3D_IMMEDIATE);
-				}
+				pWAV->SetPosition(
+					pItem->m_nIndex,
+					vSNDPOS.x,
+					vSNDPOS.y,
+					vSNDPOS.z);
 			}
 
 			m_pMedia->Play(
@@ -5170,23 +5165,18 @@ void CTClientObjBase::PlaySND(DWORD dwSndID,
 
 		if (nIndex >= 0)
 		{
-			if (b3DSound)
+			if (b3DSound && pWAV->Is3D(nIndex))
 			{
-				LPDIRECTSOUND3DBUFFER p3DBUF = pWAV->GetDS3D(nIndex);
+				D3DXVECTOR3 vSNDPOS = CD3DSound::ConvertPOS(
+					m_vPosition._41,
+					m_vPosition._42,
+					m_vPosition._43);
 
-				if (p3DBUF)
-				{
-					D3DXVECTOR3 vSNDPOS = CD3DSound::ConvertPOS(
-						m_vPosition._41,
-						m_vPosition._42,
-						m_vPosition._43);
-
-					p3DBUF->SetPosition(
-						vSNDPOS.x,
-						vSNDPOS.y,
-						vSNDPOS.z,
-						DS3D_IMMEDIATE);
-				}
+				pWAV->SetPosition(
+					nIndex,
+					vSNDPOS.x,
+					vSNDPOS.y,
+					vSNDPOS.z);
 			}
 
 			pWAV->Play(nIndex);
@@ -6436,7 +6426,7 @@ void CTClientObjBase::ApplyMatrix(CD3DDevice *pDevice)
 				{
 					D3DXMatrixTranspose((LPD3DXMATRIX)vWORLD, m_pBone);
 					for (int i = 0; i<pDATA->m_pAni->GetNodeCount(); i++)
-						D3DXMatrixTranspose((LPD3DXMATRIX)&vWORLD[12 * (i + 1)], &(pInit ? pInit[i] * m_pBone[i + 1] : m_pBone[i + 1]));
+						D3DXMatrixTranspose((LPD3DXMATRIX)&vWORLD[12 * (i + 1)], TTEMP((pInit ? pInit[i] * m_pBone[i + 1] : m_pBone[i + 1])));
 
 					pDevice->m_pDevice->SetVertexShaderConstantF(
 						pDevice->m_vConstantVS[VC_WORLD],
@@ -6451,7 +6441,7 @@ void CTClientObjBase::ApplyMatrix(CD3DDevice *pDevice)
 					pDevice->m_pDevice->SetTransform(D3DTS_WORLDMATRIX(0), &m_pBone[0]);
 
 					for (int i = 0; i<pDATA->m_pAni->GetNodeCount(); i++)
-						pDevice->m_pDevice->SetTransform(D3DTS_WORLDMATRIX(i + 1), pInit ? &(pInit[i] * m_pBone[i + 1]) : &(matScale*m_pBone[i + 1]));
+						pDevice->m_pDevice->SetTransform(D3DTS_WORLDMATRIX(i + 1), pInit ? TTEMP((pInit[i] * m_pBone[i + 1])) : TTEMP((matScale*m_pBone[i + 1])));
 				}
 			}
 			else if (m_bUseSHADER)
@@ -7583,12 +7573,12 @@ FLOAT CTClientObjBase::GetPositionZ()
 	return GetPositionMat()._43;
 }
 
-void CTClientObjBase::SetPosition(D3DXMATRIX& matPOS)
+void CTClientObjBase::SetPosition( const D3DXMATRIX& matPOS)
 {
 	m_vPosition = matPOS;
 }
 
-void CTClientObjBase::SetPosition(D3DXVECTOR3& vPOS)
+void CTClientObjBase::SetPosition( const D3DXVECTOR3& vPOS)
 {
 	m_vPosition._41 = vPOS.x;
 	m_vPosition._42 = vPOS.y;

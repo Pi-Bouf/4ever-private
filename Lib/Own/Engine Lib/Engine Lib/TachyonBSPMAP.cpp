@@ -691,8 +691,8 @@ void CTachyonBSPMAP::Overlap( LPBYTE pData)
 
 						D3DXVec3Cross(
 							&vCross,
-							&(vPoint[1] - vPoint[0]),
-							&(vPoint[2] - vPoint[0]));
+							TTEMP((vPoint[1] - vPoint[0])),
+							TTEMP((vPoint[2] - vPoint[0])));
 
 						if( vCross != D3DXVECTOR3( 0.0f, 0.0f, 0.0f) )
 						{
@@ -842,8 +842,8 @@ void CTachyonBSPMAP::Overlap( LPBYTE pData)
 
 						D3DXVec3Cross(
 							&vCross,
-							&(vPoint[1] - vPoint[0]),
-							&(vPoint[2] - vPoint[0]));
+							TTEMP((vPoint[1] - vPoint[0])),
+							TTEMP((vPoint[2] - vPoint[0])));
 
 						if( vCross != D3DXVECTOR3( 0.0f, 0.0f, 0.0f) )
 						{
@@ -1009,8 +1009,8 @@ void CTachyonBSPMAP::LoadFromTMF( LPARAM lParam, LPBYTE pData)
 
 						D3DXVec3Cross(
 							&vCross,
-							&(vPoint[1] - vPoint[0]),
-							&(vPoint[2] - vPoint[0]));
+							TTEMP((vPoint[1] - vPoint[0])),
+							TTEMP((vPoint[2] - vPoint[0])));
 
 						if( vCross != D3DXVECTOR3( 0.0f, 0.0f, 0.0f) )
 						{
@@ -1192,8 +1192,8 @@ void CTachyonBSPMAP::LoadFromTMF( LPARAM lParam, LPBYTE pData)
 
 						D3DXVec3Cross(
 							&vCross,
-							&(vPoint[1] - vPoint[0]),
-							&(vPoint[2] - vPoint[0]));
+							TTEMP((vPoint[1] - vPoint[0])),
+							TTEMP((vPoint[2] - vPoint[0])));
 
 						if( vCross != D3DXVECTOR3( 0.0f, 0.0f, 0.0f) )
 						{

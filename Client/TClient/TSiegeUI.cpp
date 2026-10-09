@@ -96,10 +96,10 @@ void CTSiegeUI::InitSiegeUI()
 
 	//!<---
 	CString strNone = CTChart::Format( TSTR_SIEGEBALL_NONE );
-	m_pTBallCharAtk1->m_strText = CTChart::Format( TSTR_FMT_NAME, strNone );
-	m_pTBallCharAtk2->m_strText = CTChart::Format( TSTR_FMT_NAME, strNone );
-	m_pTBallCharDef1->m_strText = CTChart::Format( TSTR_FMT_NAME, strNone );
-	m_pTBallCharDef2->m_strText = CTChart::Format( TSTR_FMT_NAME, strNone );
+	m_pTBallCharAtk1->m_strText = CTChart::Format( TSTR_FMT_NAME, (LPCTSTR)strNone );
+	m_pTBallCharAtk2->m_strText = CTChart::Format( TSTR_FMT_NAME, (LPCTSTR)strNone );
+	m_pTBallCharDef1->m_strText = CTChart::Format( TSTR_FMT_NAME, (LPCTSTR)strNone );
+	m_pTBallCharDef2->m_strText = CTChart::Format( TSTR_FMT_NAME, (LPCTSTR)strNone );
 
 	CalcTimer( 0 );
 
@@ -186,10 +186,10 @@ void CTSiegeUI::RecvBalanceOfPower(
 
 	//!<---
 	CString strNone = CTChart::Format( TSTR_SIEGEBALL_NONE );
-	m_pTBallCharAtk1->m_strText = CTChart::Format( TSTR_FMT_NAME, strOwner1_Atk.IsEmpty() ? strNone : strOwner1_Atk );
-	m_pTBallCharAtk2->m_strText = CTChart::Format( TSTR_FMT_NAME, strOwner2_Atk.IsEmpty() ? strNone : strOwner2_Atk );
-	m_pTBallCharDef1->m_strText = CTChart::Format( TSTR_FMT_NAME, strOwner1_Def.IsEmpty() ? strNone : strOwner1_Def );
-	m_pTBallCharDef2->m_strText = CTChart::Format( TSTR_FMT_NAME, strOwner2_Def.IsEmpty() ? strNone : strOwner2_Def );
+	m_pTBallCharAtk1->m_strText = CTChart::Format( TSTR_FMT_NAME, (LPCTSTR)(strOwner1_Atk.IsEmpty() ? strNone : strOwner1_Atk) );
+	m_pTBallCharAtk2->m_strText = CTChart::Format( TSTR_FMT_NAME, (LPCTSTR)(strOwner2_Atk.IsEmpty() ? strNone : strOwner2_Atk) );
+	m_pTBallCharDef1->m_strText = CTChart::Format( TSTR_FMT_NAME, (LPCTSTR)(strOwner1_Def.IsEmpty() ? strNone : strOwner1_Def) );
+	m_pTBallCharDef2->m_strText = CTChart::Format( TSTR_FMT_NAME, (LPCTSTR)(strOwner2_Def.IsEmpty() ? strNone : strOwner2_Def) );
 
 	WORD _minute = 0;
 	WORD _second = 0;

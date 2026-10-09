@@ -97,7 +97,7 @@ public sealed partial class MapService
         ushort npcId = r.ReadUInt16();
 
         if (_state.FindNpc(npcId) is not { Type: TnpcReturn } npc) { SendCS_SETRETURNPOS_ACK(s, 0); return; }
-        if (!npc.CanTalk(ch.Country, ch.AidCountry, 0)) return;   // disguise buff unported ⇒ 0
+        if (!CanTalk(npc, ch)) return;   // disguise buff unported ⇒ 0
 
         if (npc.SpawnPosId != 0)
         {

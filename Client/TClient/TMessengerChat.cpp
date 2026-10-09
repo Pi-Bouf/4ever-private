@@ -320,7 +320,7 @@ void CTMessengerChat::SetChatTitle(const CString& strTarget, UINT nCnt)
 	if( nCnt <= 1 )
 		m_pChatTitle->m_strText = strTarget;
 	else
-		m_pChatTitle->m_strText = CTChart::Format( TSTR_FMT_MSGHAT_TITLE , strTarget,nCnt);
+		m_pChatTitle->m_strText = CTChart::Format( TSTR_FMT_MSGHAT_TITLE , (LPCTSTR)strTarget,nCnt);
 }
 // ===============================================================================
 void CTMessengerChat::TryChatMsgInEdit()
@@ -357,7 +357,7 @@ void CTMessengerChat::OnChatMsg(const CString& strSender, const CString& strMess
 	}
 	else
 	{
-		strFMTSND = CTChart::Format( TSTR_FMT_MSGSENDER, strSender);
+		strFMTSND = CTChart::Format( TSTR_FMT_MSGSENDER, (LPCTSTR)strSender);
 		dwCOLOR = TCOLOR_SENDER;
 	}
 

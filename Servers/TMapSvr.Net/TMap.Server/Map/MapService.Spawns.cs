@@ -84,6 +84,11 @@ public sealed partial class MapService
         public required byte Channel;
         public required SpawnSlot[] Slots;
         public bool Removed;   // set by DelMonSpawn so a regen sweep already in flight skips it
+        /// <summary>C++ <c>AddTimelimitedMon</c>'s <c>bCountry</c> — the country its monsters fight for, over the spawn's own.</summary>
+        public byte? Country;
+        /// <summary>C++ <c>MONSPAWN_SUSPEND</c> (a territory at war): a dead monster does not come back, and its death is a
+        /// battle-zone event (MapService.Mission.cs).</summary>
+        public bool Suspended;
     }
 
     private sealed class SpawnSlot
@@ -183,7 +188,7 @@ public sealed partial class MapService
             StartX = x, StartY = s.PosY, StartZ = z,   // roam anchor
             Area = s.Area, ChaseRange = tpl.ChaseRange, RoamNextMs = nowMs + RoamDelayMs,
             Dir = s.Dir, Mode = 0,               // MT_NORMAL
-            Country = s.Country, Region = s.Region,
+            Country = sp.Country ?? s.Country, Region = s.Region,
             Channel = sp.Channel, MapId = s.MapId,
         };
 
@@ -216,7 +221,7 @@ public sealed partial class MapService
     /// out), until an explicit <see cref="DelMonSpawn"/>. Returns false if the template is unknown or a live
     /// non-empty spawn for that (id, channel) already exists (C++ de-dup guard, TMap.cpp:484). <paramref
     /// name="regenType"/> is the term's REGEN_TYPE — accepted for parity but behaviorally inert here.</summary>
-    public bool AddTimelimitedMon(ushort spawnId, byte channel, byte regenType, long nowMs)
+    public bool AddTimelimitedMon(ushort spawnId, byte channel, byte regenType, long nowMs, byte? country = null)
     {
         if (SpawnById(spawnId) is not { } def) return false;
         // De-dup: refuse if a live spawn for this (id, channel) already has monsters out.
@@ -230,6 +235,7 @@ public sealed partial class MapService
             Slots = BuildSlots(def.Spawn.Count, nowMs),
         };
         if (existing is null) _spawns.Add(sp);
+        if (country is not null) sp.Country = country;
         foreach (var slot in sp.Slots) { if (slot.Live is null) TryFillSlot(sp, slot, nowMs, rollProb: false); }
         return sp.Slots.Any(sl => sl.Live is not null);
     }
@@ -330,7 +336,7 @@ public sealed partial class MapService
         if (sp.Def.Spawn.Event == SeDynamic) { DelMonSpawn(spawnId, channel); return; }
 
         sp.Slots[slotIdx].Live = null;
-        sp.Slots[slotIdx].NextRegenMs = nowMs + sp.Def.Spawn.Delay;
+        sp.Slots[slotIdx].NextRegenMs = sp.Suspended ? long.MaxValue : nowMs + sp.Def.Spawn.Delay;   // suspended: until released
     }
 
     /// <summary>C++ weighted pick over the non-essential types by <c>m_bProb</c> (TAICmdRegen.cpp:51-101):

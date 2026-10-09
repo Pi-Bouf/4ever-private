@@ -530,11 +530,8 @@ void CTNewQuestDlg::OnRButtonUp(UINT nFlags, CPoint pt)
 			(rtFRAME.Width() / 2) + rtFRAME.left,
 			(rtFRAME.Height() / 2) + rtFRAME.top);
 
-		m_pCommandHandler->ClientToScreen(&point);
-		SetCursorPos(
-			point.x,
-			point.y);
-		ShowCursor(TRUE);
+		CTachyonInput::SetCursorPos(point);
+		CTachyonInput::ShowCursor(TRUE);
 
 		m_bMOVE = FALSE;
 	}
@@ -554,11 +551,8 @@ void CTNewQuestDlg::OnRButtonDown(UINT nFlags, CPoint pt)
 			(rtFRAME.Width() / 2) + rtFRAME.left,
 			(rtFRAME.Height() / 2) + rtFRAME.top);
 
-		m_pCommandHandler->ClientToScreen(&point);
-		ShowCursor(FALSE);
-		SetCursorPos(
-			point.x,
-			point.y);
+		CTachyonInput::ShowCursor(FALSE);
+		CTachyonInput::SetCursorPos(point);
 
 		m_bMOVE = TRUE;
 	}
@@ -606,11 +600,7 @@ void CTNewQuestDlg::OnMouseMove(UINT nFlags, CPoint pt)
 			(rtFRAME.Width() / 2) + rtFRAME.left,
 			(rtFRAME.Height() / 2) + rtFRAME.top);
 
-		m_pCommandHandler->ClientToScreen(&point);
-		SetCursorPos(
-			point.x,
-			point.y);
-		m_pCommandHandler->ScreenToClient(&point);
+		CTachyonInput::SetCursorPos(point);
 		point -= pt;
 
 		m_vTCENTER.x += fLength * FLOAT(point.x) / (m_fTSCALE * FLOAT(TWORLDMAP_SIZE));
@@ -979,7 +969,7 @@ void CTNewQuestDlg::ResetTQUEST( LPTQUEST pTQUEST)
 							TCHECK_CLASS( pTSKILL->m_dwClassID, m_pHost->m_bClassID) /*&&
 							!bHasAlready*/ )
 						{
-							strREWARD = CTChart::Format( TSTR_FMT_SKILL_REWARD, pTSKILL->m_strNAME);
+							strREWARD = CTChart::Format( TSTR_FMT_SKILL_REWARD, (LPCTSTR)pTSKILL->m_strNAME);
 						}
 					}
 
@@ -1002,7 +992,7 @@ void CTNewQuestDlg::ResetTQUEST( LPTQUEST pTQUEST)
 
 						if( pTITEM && TCHECK_CLASS( pTITEM->m_dwClassID, m_pHost->m_bClassID) )
 						{
-							strREWARD = CTChart::Format( TSTR_FMT_REWARD, pTITEM->m_strNAME, pTMISSION->m_vTREWARD[i]->m_bCount);
+							strREWARD = CTChart::Format( TSTR_FMT_REWARD, (LPCTSTR)pTITEM->m_strNAME, pTMISSION->m_vTREWARD[i]->m_bCount);
 						}
 					}
 
@@ -1437,7 +1427,7 @@ CString CTNewQuestDlg::GetSpeakerString( CString strSpeaker)
 	strSpeaker.TrimLeft();
 
 	if(!strSpeaker.IsEmpty())
-		strResult = CTChart::Format( TSTR_FMT_QUEST_SPEEKER, strSpeaker);
+		strResult = CTChart::Format( TSTR_FMT_QUEST_SPEEKER, (LPCTSTR)strSpeaker);
 
 	return strResult;
 }

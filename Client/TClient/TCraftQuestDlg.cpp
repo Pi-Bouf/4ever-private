@@ -562,7 +562,7 @@ void CTCraftQuestDlg::ResetTQUEST( LPTQUEST pTQuest )
 					{
 						strREWARD = CTChart::Format(
 							TSTR_FMT_REWARD,
-							pTITEM->m_strNAME,
+							(LPCTSTR)pTITEM->m_strNAME,
 							pTQuest->m_vTREWARD[i]->m_bCount);
 					}
 				}

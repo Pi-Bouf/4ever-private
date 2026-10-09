@@ -510,8 +510,8 @@ void	CTAuctionCommander::OnClicked_BuyButton()
 			strPRICE = CTClientGame::MakeMoneyStr( ldwPrice );
 
 			strMSG = CTChart::Format( TSTR_FMT_BUYITEM_AS_PRICE,
-				pTITEM->m_strNAME,
-				strPRICE);
+				(LPCTSTR)pTITEM->m_strNAME,
+				(LPCTSTR)strPRICE);
 
 			if( pTITEM->m_bStack > 1 )
 				strMSG += CTChart::Format( TSTR_FMT_BUYITEM_STACK, pItem->m_pItem->GetCount() );
@@ -599,7 +599,7 @@ void	CTAuctionCommander::OnClicked_RegistButton()
 			CString strMoney = pGame->MakeMoneyStr( dwRune, dwLuna, dwCron );
 
 			pWnd->MessageBoxYesNo(
-				CTChart::Format( TSTR_FMT_AUCTIONREG_ASK, strMoney ),
+				CTChart::Format( TSTR_FMT_AUCTIONREG_ASK, (LPCTSTR)strMoney ),
 				TSTR_YES,
 				TSTR_NO,
 				GM_AUCTION_DO_REGIST,
@@ -705,7 +705,7 @@ void	CTAuctionCommander::OnClicked_AlignKind( BYTE bColumn, BYTE bASC, BYTE bDES
 		strArrowKey = strArrowArray[ pFindInfo->bAlignKind - bASC ];
 
 		if( bColumn == CTAuctionMainFrame::TCOLUMN_HEAD_NAME )
-			strArrowKey = CTChart::Format( TSTR_AUCTIONLIST_HEAD_NAME, strArrowKey );
+			strArrowKey = CTChart::Format( TSTR_AUCTIONLIST_HEAD_NAME, (LPCTSTR)strArrowKey );
 
 		pFrame->SetColumnString( bColumn, strArrowKey );
 

@@ -112,7 +112,7 @@ void CTKeySettingDlg::SetReplaceResult(TKEY_SET eSrcKeySet, TKEY_SET eRepKeySet)
 	if( strRepKeySet.IsEmpty() )
 		return;
 
-	m_pInfo->m_strText = CTChart::Format( TSTR_KEYRT_REPLACE, strSrcKeySet,strRepKeySet);
+	m_pInfo->m_strText = CTChart::Format( TSTR_KEYRT_REPLACE, (LPCTSTR)strSrcKeySet,(LPCTSTR)strRepKeySet);
 	m_eLastResult = RT_REPLACE;
 }
 // =========================================================================
@@ -145,7 +145,7 @@ void CTKeySettingDlg::OnKeyUp(UINT nChar, int nRepCnt, UINT nFlags)
 			if( nChar == VK_SNAPSHOT )
 				wVKey = VK_SNAPSHOT;
 			else
-				wVKey = (WORD) MapVirtualKey(LOBYTE(nFlags),1);
+				wVKey = CTachyonInput::ScanToVKey(nFlags);
 
 			WORD wModKey = CTClientKEY::GetCurMOD();
 

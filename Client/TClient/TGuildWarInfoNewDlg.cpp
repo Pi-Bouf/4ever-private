@@ -123,13 +123,13 @@ void CTGuildWarInfoNewDlg::SetCurMode()
 
 		CString castletext;
 		if (info.m_strAtkGuild != "" && info.m_strDefGuild == "")
-			castletext.Format("%s", info.m_strAtkGuild);
+			castletext.Format("%s", (LPCTSTR)info.m_strAtkGuild);
 		else if (info.m_strAtkGuild == "" && info.m_strDefGuild != "")
-			castletext.Format("%s", info.m_strDefGuild);
+			castletext.Format("%s", (LPCTSTR)info.m_strDefGuild);
 		else if (info.m_strAtkGuild == "" && info.m_strDefGuild == "")
 			castletext.Empty();
 		else
-			castletext.Format("%s  /  %s", info.m_strAtkGuild, info.m_strDefGuild);
+			castletext.Format("%s  /  %s", (LPCTSTR)info.m_strAtkGuild, (LPCTSTR)info.m_strDefGuild);
 
 		m_pList2->SetItemString(nLine2, 3, castletext);
 		m_pList2->SetUserColor(nLine2, 3, color);

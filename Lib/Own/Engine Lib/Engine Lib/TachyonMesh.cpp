@@ -807,8 +807,8 @@ int CTachyonMesh::HitTest( CD3DCamera *pCam,
 
 				D3DXVec3Cross(
 					&vCross,
-					&(vPoint[m_pMESH[i][nLevel]->m_vIB[j]->m_pIB[3 * k + 1]] - vPoint[m_pMESH[i][nLevel]->m_vIB[j]->m_pIB[3 * k]]),
-					&(vPoint[m_pMESH[i][nLevel]->m_vIB[j]->m_pIB[3 * k + 2]] - vPoint[m_pMESH[i][nLevel]->m_vIB[j]->m_pIB[3 * k]]));
+					TTEMP((vPoint[m_pMESH[i][nLevel]->m_vIB[j]->m_pIB[3 * k + 1]] - vPoint[m_pMESH[i][nLevel]->m_vIB[j]->m_pIB[3 * k]])),
+					TTEMP((vPoint[m_pMESH[i][nLevel]->m_vIB[j]->m_pIB[3 * k + 2]] - vPoint[m_pMESH[i][nLevel]->m_vIB[j]->m_pIB[3 * k]])));
 
 				if( D3DXIntersectTri(
 					&vPoint[m_pMESH[i][nLevel]->m_vIB[j]->m_pIB[3 * k]],

@@ -248,7 +248,7 @@ void CTSkillDlg::OnLButtonDown(UINT nFlags, CPoint pt)
 
 						CString strMSG;
 						LPTSKILL pTSKILL = itr->second;
-						strMSG = CTChart::Format( TSTR_WARN_SKILLINIT_ONE, pTSKILL->m_strNAME);
+						strMSG = CTChart::Format( TSTR_WARN_SKILLINIT_ONE, (LPCTSTR)pTSKILL->m_strNAME);
 
 						CTClientWnd::GetInstance()->MessageBoxYesNo(
 							strMSG,
@@ -380,9 +380,7 @@ HRESULT CTSkillDlg::Render( DWORD dwTickCount)
 {
 	if( IsVisible() )
 	{
-		CPoint point;
-		GetCursorPos(&point);
-		m_pCommandHandler->ScreenToClient(&point);
+		CPoint point = CTachyonInput::GetCursorPos();
 
 		BYTE bCNT = (BYTE)m_pTTAB->m_Buttons.size();
 		for( BYTE i=0; i<bCNT; ++i)

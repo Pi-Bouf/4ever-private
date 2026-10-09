@@ -794,8 +794,8 @@ public:
 	virtual FLOAT GetPositionY();
 	virtual FLOAT GetPositionZ();
 
-	virtual void SetPosition( D3DXMATRIX& matPOS);
-	virtual void SetPosition( D3DXVECTOR3& vPOS);
+	virtual void SetPosition( const D3DXMATRIX& matPOS);
+	virtual void SetPosition( const D3DXVECTOR3& vPOS);
 	
 	virtual void SetPositionX(FLOAT fX);
 	virtual void SetPositionY(FLOAT fY);

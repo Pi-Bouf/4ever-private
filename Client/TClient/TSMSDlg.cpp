@@ -36,7 +36,7 @@ void CTSMSDlg::Set(TYPE eType, BYTE bInvenID, BYTE bInvenSlot)
 	CTClientChar* pMainChar = CTClientGame::GetInstance()->GetMainChar();
 	
 	CString strTitle;
-	strTitle = CTChart::Format( TSTR_FMT_SMSTITLE, pMainChar->m_strNAME);
+	strTitle = CTChart::Format( TSTR_FMT_SMSTITLE, (LPCTSTR)pMainChar->m_strNAME);
 	m_nMaxLen = TMAX_SMS_CHARACTER - strTitle.GetLength();
 	m_pWarnTxt->m_strText = CTChart::Format( TSTR_FMT_SMSWARN, m_nMaxLen/2, m_nMaxLen);
 

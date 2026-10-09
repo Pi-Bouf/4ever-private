@@ -1297,7 +1297,7 @@ void CTachyonObject::ApplyMatrix(CD3DDevice *pDevice)
 			{
 				D3DXMatrixTranspose((LPD3DXMATRIX)vWORLD, m_pBone);
 				for (int i = 0; i < pDATA->m_pAni->GetNodeCount(); i++)
-					D3DXMatrixTranspose((LPD3DXMATRIX)&vWORLD[12 * (i + 1)], &(pInit ? pInit[i] * m_pBone[i + 1] : m_pBone[i + 1]));
+					D3DXMatrixTranspose((LPD3DXMATRIX)&vWORLD[12 * (i + 1)], TTEMP((pInit ? pInit[i] * m_pBone[i + 1] : m_pBone[i + 1])));
 
 				pDevice->m_pDevice->SetVertexShaderConstantF(
 					pDevice->m_vConstantVS[VC_WORLD],
@@ -1309,7 +1309,7 @@ void CTachyonObject::ApplyMatrix(CD3DDevice *pDevice)
 				pDevice->m_pDevice->SetTransform(D3DTS_WORLDMATRIX(0), &m_pBone[0]);
 
 				for (int i = 0; i < pDATA->m_pAni->GetNodeCount(); i++)
-					pDevice->m_pDevice->SetTransform(D3DTS_WORLDMATRIX(i + 1), pInit ? &(pInit[i] * m_pBone[i + 1]) : &m_pBone[i + 1]);
+					pDevice->m_pDevice->SetTransform(D3DTS_WORLDMATRIX(i + 1), pInit ? TTEMP((pInit[i] * m_pBone[i + 1])) : &m_pBone[i + 1]);
 			}
 		}
 		else if (m_bUseSHADER)
@@ -1726,10 +1726,10 @@ void CTachyonObject::Render(CD3DDevice *pDevice, CD3DCamera *pCamera, BYTE bNoBl
 		TRUE,	// PS_DETAILMAP
 		TRUE};	// PS_MAP
 
-	FLOAT fDIST = D3DXVec3Length(&D3DXVECTOR3(
+	FLOAT fDIST = D3DXVec3Length(TTEMP(D3DXVECTOR3(
 		m_vPosition._41 - pCamera->m_vPosition.x,
 		m_vPosition._42 - pCamera->m_vPosition.y,
-		m_vPosition._43 - pCamera->m_vPosition.z));
+		m_vPosition._43 - pCamera->m_vPosition.z)));
 
 	BYTE bPSC = pDevice->m_vCAPS.PrimitiveMiscCaps & D3DPMISCCAPS_PERSTAGECONSTANT ? TRUE : FALSE;
 	BYTE bALPHA = max( 1, m_bAlpha) - 1;
@@ -2110,21 +2110,19 @@ void CTachyonObject::CalcSND( LPMAPSNDINST pINST,
 
 			if( finder != pSND->end() && (*finder).second->m_bPlay )
 			{
-				LPDIRECTSOUND3DBUFFER p3DBUF = (*finder).second->m_pWAV->GetDS3D((*finder).second->m_nIndex);
-
 				(*finder).second->m_pWAV->Stop((*finder).second->m_nIndex);
-				if(p3DBUF)
+				if((*finder).second->m_pWAV->Is3D((*finder).second->m_nIndex))
 				{
 					D3DXVECTOR3 vSNDPOS = CD3DSound::ConvertPOS(
 						m_vPosition._41,
 						m_vPosition._42,
 						m_vPosition._43);
 
-					p3DBUF->SetPosition(
+					(*finder).second->m_pWAV->SetPosition(
+						(*finder).second->m_nIndex,
 						vSNDPOS.x,
 						vSNDPOS.y,
-						vSNDPOS.z,
-						DS3D_IMMEDIATE);
+						vSNDPOS.z);
 				}
 
 				(*finder).second->m_pWAV->Play((*finder).second->m_nIndex);
@@ -2286,10 +2284,10 @@ BOOL CTachyonObject::OBJInRect( CD3DCamera *pCamera, CRect rect)
 	if( rect.top == rect.bottom )
 		rect.bottom++;
 
-	FLOAT fLevel = D3DXVec3Length(&D3DXVECTOR3(
+	FLOAT fLevel = D3DXVec3Length(TTEMP(D3DXVECTOR3(
 		m_vPosition._41 - pCamera->m_vPosition.x,
 		m_vPosition._42 - pCamera->m_vPosition.y,
-		m_vPosition._43 - pCamera->m_vPosition.z));
+		m_vPosition._43 - pCamera->m_vPosition.z)));
 
 	D3DXVECTOR3 vDIR[4] = {
 		pCamera->GetRayDirection( rect.left, rect.top),
@@ -2327,7 +2325,7 @@ BOOL CTachyonObject::OBJInRect( CD3DCamera *pCamera, CRect rect)
 	D3DXPlaneFromPointNormal(
 		&vPLANE[4],
 		&pCamera->m_vPosition,
-		&(pCamera->m_vPosition - pCamera->m_vTarget));
+		TTEMP((pCamera->m_vPosition - pCamera->m_vTarget)));
 
 	LPANI pANI = GetCurANI();
 	MAPCLKINST::iterator it;
@@ -2415,10 +2413,10 @@ OBJHIT CTachyonObject::HitTest( CD3DCamera *pCam,
 							    int nPosX,
 								int nPosY)
 {
-	FLOAT fLevel = D3DXVec3Length(&D3DXVECTOR3(
+	FLOAT fLevel = D3DXVec3Length(TTEMP(D3DXVECTOR3(
 		m_vPosition._41 - pCam->m_vPosition.x,
 		m_vPosition._42 - pCam->m_vPosition.y,
-		m_vPosition._43 - pCam->m_vPosition.z));
+		m_vPosition._43 - pCam->m_vPosition.z)));
 
 	D3DXVECTOR3 vPos = pCam->GetCameraPosition( nPosX, nPosY);
 	D3DXVECTOR3 vDir = pCam->GetRayDirection( nPosX, nPosY);
@@ -2504,8 +2502,8 @@ OBJHIT CTachyonObject::HitTest( CD3DCamera *pCam,
 
 							D3DXVec3Cross(
 								&vCross,
-								&(vPoint[pMESH->m_pMESH[i][nLevel]->m_vIB[j]->m_pIB[3 * k + 1]] - vPoint[pMESH->m_pMESH[i][nLevel]->m_vIB[j]->m_pIB[3 * k]]),
-								&(vPoint[pMESH->m_pMESH[i][nLevel]->m_vIB[j]->m_pIB[3 * k + 2]] - vPoint[pMESH->m_pMESH[i][nLevel]->m_vIB[j]->m_pIB[3 * k]]));
+								TTEMP((vPoint[pMESH->m_pMESH[i][nLevel]->m_vIB[j]->m_pIB[3 * k + 1]] - vPoint[pMESH->m_pMESH[i][nLevel]->m_vIB[j]->m_pIB[3 * k]])),
+								TTEMP((vPoint[pMESH->m_pMESH[i][nLevel]->m_vIB[j]->m_pIB[3 * k + 2]] - vPoint[pMESH->m_pMESH[i][nLevel]->m_vIB[j]->m_pIB[3 * k]])));
 
 							if( D3DXIntersectTri(
 								&vPoint[pMESH->m_pMESH[i][nLevel]->m_vIB[j]->m_pIB[3 * k]],
@@ -2734,18 +2732,18 @@ void CTachyonObject::SetPIVOT( DWORD dwPivotID,
 	{
 		D3DXQuaternionRotationAxis(
 			&m_pPivot[(*itID).second].m_vRot,
-			&D3DXVECTOR3( 1.0f, 0.0f, 0.0f),
+			TTEMP(D3DXVECTOR3( 1.0f, 0.0f, 0.0f)),
 			fRotX);
 
 		D3DXQuaternionRotationAxis(
 			&vPIVOT,
-			&D3DXVECTOR3( 0.0f, 1.0f, 0.0f),
+			TTEMP(D3DXVECTOR3( 0.0f, 1.0f, 0.0f)),
 			fRotY);
 		m_pPivot[(*itID).second].m_vRot *= vPIVOT;
 
 		D3DXQuaternionRotationAxis(
 			&vPIVOT,
-			&D3DXVECTOR3( 0.0f, 0.0f, 1.0f),
+			TTEMP(D3DXVECTOR3( 0.0f, 0.0f, 1.0f)),
 			fRotZ);
 
 		m_pPivot[(*itID).second].m_vRot *= vPIVOT;

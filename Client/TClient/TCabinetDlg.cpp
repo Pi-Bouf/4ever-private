@@ -262,7 +262,7 @@ BOOL CTCabinetDlg::SelectCab(UINT nCab)
 		if( m_pCostTxt )
 		{
 			m_pCostTxt->ShowComponent(TRUE);
-			m_pCostTxt->m_strText = CTChart::Format( TSTR_CABINET_COST, strCOST);
+			m_pCostTxt->m_strText = CTChart::Format( TSTR_CABINET_COST, (LPCTSTR)strCOST);
 		}
 
 		if( m_pSelectTxt )

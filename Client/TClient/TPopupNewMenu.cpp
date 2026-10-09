@@ -114,7 +114,7 @@ CString CTPopupNewMenuDlg::GetVKString(enum TKEY_SET eKey)
 	case TKEY_HELP:
 		{
 			strTITLE = CTChart::LoadString(TSTR_TOPMENU_HELP);
-			strSHORTCUT.Format( "(%s) ", strKey );
+			strSHORTCUT.Format( "(%s) ", (LPCTSTR)strKey );
 			strSHORTCUT += strTITLE;
 
 			return strSHORTCUT;
@@ -122,7 +122,7 @@ CString CTPopupNewMenuDlg::GetVKString(enum TKEY_SET eKey)
 	case TKEY_INVEN:
 		{
 			strTITLE = CTChart::LoadString(TSTR_TOPMENU_INVEN);
-			strSHORTCUT.Format( "(%s) ", strKey );
+			strSHORTCUT.Format( "(%s) ", (LPCTSTR)strKey );
 			strSHORTCUT += strTITLE;
 
 			return strSHORTCUT;
@@ -130,7 +130,7 @@ CString CTPopupNewMenuDlg::GetVKString(enum TKEY_SET eKey)
 	case TKEY_FAMERANK:
 		{
 			strTITLE = CTChart::LoadString(TSTR_TOPMENU_HOF);
-			strSHORTCUT.Format( "(%s) ", strKey );
+			strSHORTCUT.Format( "(%s) ", (LPCTSTR)strKey );
 			strSHORTCUT += strTITLE;
 
 			return strSHORTCUT;
@@ -138,7 +138,7 @@ CString CTPopupNewMenuDlg::GetVKString(enum TKEY_SET eKey)
 	case TKEY_PET_INFO:
 		{
 			strTITLE = CTChart::LoadString(TSTR_TOPMENU_MOUNT);
-			strSHORTCUT.Format( "(%s) ", strKey );
+			strSHORTCUT.Format( "(%s) ", (LPCTSTR)strKey );
 			strSHORTCUT += strTITLE;
 
 			return strSHORTCUT;
@@ -146,7 +146,7 @@ CString CTPopupNewMenuDlg::GetVKString(enum TKEY_SET eKey)
 	case TKEY_TOGGLE_GUILD_UI:
 		{
 			strTITLE = CTChart::LoadString(TSTR_TOPMENU_GUILD);
-			strSHORTCUT.Format( "(%s) ", strKey );
+			strSHORTCUT.Format( "(%s) ", (LPCTSTR)strKey );
 			strSHORTCUT += strTITLE;
 
 			return strSHORTCUT;
@@ -154,7 +154,7 @@ CString CTPopupNewMenuDlg::GetVKString(enum TKEY_SET eKey)
 	case TKEY_QUEST_INFO:
 		{
 			strTITLE = CTChart::LoadString(TSTR_TOPMENU_QUEST);
-			strSHORTCUT.Format( "(%s) ", strKey );
+			strSHORTCUT.Format( "(%s) ", (LPCTSTR)strKey );
 			strSHORTCUT += strTITLE;
 
 			return strSHORTCUT;
@@ -162,7 +162,7 @@ CString CTPopupNewMenuDlg::GetVKString(enum TKEY_SET eKey)
 	case TKEY_SKILL_INFO:
 		{
 			strTITLE = CTChart::LoadString(TSTR_TOPMENU_SKILL);
-			strSHORTCUT.Format( "(%s) ", strKey );
+			strSHORTCUT.Format( "(%s) ", (LPCTSTR)strKey );
 			strSHORTCUT += strTITLE;
 
 			return strSHORTCUT;
@@ -170,7 +170,7 @@ CString CTPopupNewMenuDlg::GetVKString(enum TKEY_SET eKey)
 	case TKEY_CHAR_INFO:
 		{
 			strTITLE = CTChart::LoadString(TSTR_TOPMENU_CHAR);
-			strSHORTCUT.Format( "(%s) ", strKey );
+			strSHORTCUT.Format( "(%s) ", (LPCTSTR)strKey );
 			strSHORTCUT += strTITLE;
 
 			return strSHORTCUT;
@@ -178,7 +178,7 @@ CString CTPopupNewMenuDlg::GetVKString(enum TKEY_SET eKey)
 	case TKEY_HUD:
 		{
 			strTITLE = CTChart::LoadString(TSTR_TOPMENU_RANKING);
-			strSHORTCUT.Format( "(%s) ", strKey );
+			strSHORTCUT.Format( "(%s) ", (LPCTSTR)strKey );
 			strSHORTCUT += strTITLE;
 
 			return strSHORTCUT;
@@ -186,7 +186,7 @@ CString CTPopupNewMenuDlg::GetVKString(enum TKEY_SET eKey)
 	case TKEY_CASH_CAB:
 		{
 			strTITLE = CTChart::LoadString(TSTR_TOPMENU_CD);
-			strSHORTCUT.Format( "(%s) ", strKey );
+			strSHORTCUT.Format( "(%s) ", (LPCTSTR)strKey );
 			strSHORTCUT += strTITLE;
 
 			return strSHORTCUT;
@@ -194,7 +194,7 @@ CString CTPopupNewMenuDlg::GetVKString(enum TKEY_SET eKey)
 	case TKEY_TITLE:
 		{
 			strTITLE = CTChart::LoadString(TSTR_TOPMENU_TITLE);
-			strSHORTCUT.Format( "(%s) ", strKey );
+			strSHORTCUT.Format( "(%s) ", (LPCTSTR)strKey );
 			strSHORTCUT += strTITLE;
 
 			return strSHORTCUT;
@@ -203,7 +203,7 @@ CString CTPopupNewMenuDlg::GetVKString(enum TKEY_SET eKey)
 case TKEY_COMPANION:
 		{
 			strTITLE = "Companion";
-			strSHORTCUT.Format( "(%s) ", strKey );
+			strSHORTCUT.Format( "(%s) ", (LPCTSTR)strKey );
 			strSHORTCUT += strTITLE;
 
 			return strSHORTCUT;

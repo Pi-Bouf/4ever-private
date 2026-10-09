@@ -141,7 +141,8 @@ public sealed partial class WorldService
                 case BattleType.Local: s.Send(BuildLocalEnable((byte)status, second)); break;
                 case BattleType.Castle: s.Send(BuildCastleEnable((byte)status, second)); break;
                 case BattleType.Mission: s.Send(BuildMissionEnable((byte)status, start, second)); break;
-                // BT_SKYGARDEN enable is compiled out in the shipped build (#ifdef SKYGARDEN) — not sent.
+                // The C++ world builds with SKYGARDEN (stdafx.h:9): the sky garden's phases go out too.
+                case BattleType.SkyGarden: s.Send(BuildSkyGardenEnable((byte)status, second, 0, start)); break;
                 default: break;
             }
         }
@@ -151,7 +152,57 @@ public sealed partial class WorldService
             _log.LogDebug("Battle {Type} entered PEACE.", (BattleType)type);
     }
 
+    /// <summary>C++ <c>OnSM_BATTLESTATUS_REQ</c> (SSHandler.cpp:9870) when it comes from outside (the control server's
+    /// <c>CT_CASTLEENABLE</c>, or an operator / test tool on the server plane): that war phase to every map — the schedule's own
+    /// state is left alone, as in the C++ — and, for a non-mission peace, the week records (and the castle scoreboard).</summary>
+    private void OnSM_BATTLESTATUS_REQ(PacketReader r)
+    {
+        byte type = r.ReadByte(), status = r.ReadByte();
+        uint start = r.ReadUInt32(), second = r.ReadUInt32();
+        if (type >= (byte)BattleType.Count) return;
+        _log.LogInformation("War phase from outside: {Type} -> {Status} ({Second} s).", (BattleType)type, (BattleStatus)status, second);
+        BroadcastBattleStatus(type, (BattleStatus)status, start, second);
+        if (type != (byte)BattleType.Mission && status == (byte)BattleStatus.Peace)
+            OnBattlePeace((BattleType)type, (uint)(DateTimeOffset.UtcNow.ToUnixTimeSeconds() / Proto.DayOne));
+    }
+
+    /// <summary>C++ <c>OnMW_CONNECT_ACK</c> tail (SSHandler.cpp:619): a new map is told where every war stands — the forts (with
+    /// their start and the castles' day and start), the missions, the sky garden — and each guild's castle applicant counts.</summary>
+    private void SendBattleStateTo(ServerSession map)
+    {
+        if (_state.Battles is { } b)
+        {
+            var local = b[BattleType.Local]; var castle = b[BattleType.Castle];
+            var mission = b[BattleType.Mission]; var sky = b[BattleType.SkyGarden];
+            var w = new PacketWriter(Msg.MW_LOCALENABLE_REQ);
+            w.WriteByte((byte)local.Status); w.WriteUInt32(0); w.WriteUInt32(local.BattleStart);
+            w.WriteByte(castle.Day); w.WriteUInt32(castle.BattleStart);
+            map.Send(w.ToArray());
+            map.Send(BuildMissionEnable((byte)mission.Status, mission.BattleStart, 0));
+            map.Send(BuildSkyGardenEnable((byte)BattleStatus.SkyGardenStart, 0, sky.Day, sky.BattleStart));
+        }
+        foreach (var g in _state.Guilds.Values)
+        {
+            var castles = g.Members.Values.Select(m => m.Castle).Concat(g.Tactics.Values.Select(t => t.Castle))
+                .Where(c => c != 0).Distinct().OrderBy(c => c);
+            foreach (var c in castles)
+            {
+                var (count, camp) = g.GetCastleApplicantCount(c);
+                var w = new PacketWriter(Msg.MW_CASTLEAPPLICANTCOUNT_REQ);
+                w.WriteUInt16(c); w.WriteUInt32(g.Id); w.WriteByte(camp); w.WriteByte(count);
+                map.Send(w.ToArray());
+            }
+        }
+    }
+
     // ===== senders =====
+
+    private static byte[] BuildSkyGardenEnable(byte status, uint second, byte day, uint start)
+    {
+        var w = new PacketWriter(Msg.MW_SKYGARDENENABLE_REQ);
+        w.WriteByte(status); w.WriteUInt32(second); w.WriteByte(day); w.WriteUInt32(start);
+        return w.ToArray();
+    }
 
     private static byte[] BuildLocalEnable(byte status, uint second)
     {

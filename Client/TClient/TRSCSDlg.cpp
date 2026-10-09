@@ -245,7 +245,7 @@ void CTRSCSDlg::ResetCORPS()
 		m_pTSQUAD->SetItemData( nIndex, 0, (DWORD) m_vTCORPS.m_vTSQUAD[i]);
 		if(pTUNIT)
 		{
-			strNAME = CTChart::Format( TSTR_FMT_SQUAD_NAME, pTUNIT->m_strNAME);
+			strNAME = CTChart::Format( TSTR_FMT_SQUAD_NAME, (LPCTSTR)pTUNIT->m_strNAME);
 			m_pTSQUADNAME[nIndex]->m_strText = strNAME;
 
 			strNAME = CTChart::LoadString( (TSTRING) dwTCMD[m_vTCORPS.m_vTSQUAD[i]->m_bTCMD]);
@@ -817,8 +817,8 @@ if(IsVisible())
 		{
 			CPoint point = rect.CenterPoint();
 
-			//SetCapture(m_pCommandHandler->GetSafeHwnd());
-			ShowCursor(FALSE);
+			//SetCapture(TSAFE_HWND(m_pCommandHandler));
+			CTachyonInput::ShowCursor(FALSE);
 			MoveCursor(point);
 			//ClipCursor(&rect);
 
@@ -902,8 +902,7 @@ void CTRSCSDlg::OnRButtonUp( UINT nFlags, CPoint pt)
 		ComponentToScreen(&point);
 		MoveCursor(point);
 		ReleaseCapture();
-		ClipCursor(NULL);
-		ShowCursor(TRUE);
+		CTachyonInput::ShowCursor(TRUE);
 
 		m_bMOVE = FALSE;
 	}
@@ -913,8 +912,7 @@ void CTRSCSDlg::OnRButtonUp( UINT nFlags, CPoint pt)
 
 void CTRSCSDlg::MoveCursor( CPoint point)
 {
-	m_pCommandHandler->ClientToScreen(&point);
-	SetCursorPos( point.x, point.y);
+	CTachyonInput::SetCursorPos(point);
 }
 void CTRSCSDlg::ShowComponent( BOOL bVisible)
 {
@@ -1648,8 +1646,8 @@ void CTRSCSDlg::OnRButtonDown( UINT nFlags, CPoint pt)
 		{
 			CPoint point = rect.CenterPoint();
 
-			//SetCapture(m_pCommandHandler->GetSafeHwnd());
-			ShowCursor(FALSE);
+			//SetCapture(TSAFE_HWND(m_pCommandHandler));
+			CTachyonInput::ShowCursor(FALSE);
 			MoveCursor(point);
 			//ClipCursor(&rect);
 
@@ -1729,8 +1727,7 @@ void CTRSCSDlg::OnRButtonUp( UINT nFlags, CPoint pt)
 		ComponentToScreen(&point);
 		MoveCursor(point);
 		ReleaseCapture();
-		ClipCursor(NULL);
-		ShowCursor(TRUE);
+		CTachyonInput::ShowCursor(TRUE);
 
 		m_bMOVE = FALSE;
 	}
@@ -1740,8 +1737,7 @@ void CTRSCSDlg::OnRButtonUp( UINT nFlags, CPoint pt)
 
 void CTRSCSDlg::MoveCursor( CPoint point)
 {
-	m_pCommandHandler->ClientToScreen(&point);
-	SetCursorPos( point.x, point.y);
+	CTachyonInput::SetCursorPos(point);
 }
 
 BOOL CTRSCSDlg::HitTest( CPoint pt)

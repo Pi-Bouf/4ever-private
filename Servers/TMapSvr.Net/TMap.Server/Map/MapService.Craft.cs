@@ -22,8 +22,8 @@ namespace TMap.Server.Map;
 /// the same) and its option search is capped instead of looping forever; <c>bMinLevel</c> is taken as 0 (the
 /// C++ never loads it); refining with no material is refused (the C++ divides by zero).</para>
 ///
-/// <para><b>Not ported:</b> secure codes, the event bonuses (<c>m_wEventValue</c> = 0), PC-bang, and the
-/// occupation / castle NPC discounts (<c>GetDiscountRate</c> = 0, no <c>m_bAddProb</c>).</para>
+/// <para>The NPC's discount and success bonus for its fort's guild or the heroes are MapService.Fort.cs'. <b>Not ported:</b>
+/// secure codes, the event bonuses (<c>m_wEventValue</c> = 0), PC-bang.</para>
 /// </summary>
 public sealed partial class MapService
 {
@@ -108,7 +108,8 @@ public sealed partial class MapService
                 { SendUpgradeFail(s, UpgNoGrade); return; }
                 if (gt.Kind == IkUpgrade)
                 {
-                    money = _templates.ItemGradeMoney[Math.Min(item.Level, (byte)49)];   // GetDiscountRate: 0
+                    money = _templates.ItemGradeMoney[Math.Min(item.Level, (byte)49)];
+                    money -= money * DiscountRate(ch, npc) / 100;                     // GetDiscountRate
                     if (!ch.UseMoney(money, commit: false)) { SendUpgradeFail(s, UpgMoney); return; }
                 }
                 break;
@@ -437,12 +438,12 @@ public sealed partial class MapService
 
     // ============================== probability ==============================
 
-    /// <summary>C++ <c>CalcProb</c> (TMapSvr.cpp:9744) — no NPC ⇒ 0; the event bonuses and NPC hero bonuses are 0
-    /// here, the item-probability buffs are honoured (and spent).</summary>
+    /// <summary>C++ <c>CalcProb</c> (TMapSvr.cpp:9744) — no NPC ⇒ 0; the NPC's bonus for its fort's guild or the heroes, the
+    /// item-probability buffs honoured (and spent); the event bonuses are 0 here.</summary>
     private byte CalcProb(ClientSession s, Character ch, Npc? npc, Prob type, byte baseProb)
     {
         if (npc is null) return 0;
-        int w = baseProb;
+        int w = baseProb + NpcAddProb(ch, npc);                         // the owner guild's / heroes' bonus (MapService.Fort.cs)
         switch (type)
         {
             case Prob.Magic:
@@ -537,7 +538,7 @@ public sealed partial class MapService
         { SendRefineAck(s, (byte)ItemRepairResult.NotFound, inv, null); return; }
         uint cost = (uint)Math.Max(1f, levelCost * it.Price);
         var npc = _state.FindNpc(npcId);
-        const byte discount = 0;                                        // GetDiscountRate: occupation discounts unported
+        byte discount = DiscountRate(ch, npc);                          // GetDiscountRate (MapService.Fort.cs)
         uint discounted = cost - cost * discount / 100;
         if (needCost != 0)
         {

@@ -162,7 +162,7 @@
 #define ID_SERVERS_CHANNEL       (0x000068F2)
 
 BEGIN_MESSAGE_MAP(CTClientWnd, CTachyonWnd)
-	ON_MESSAGE( WM_TOBJMSG, OnOBJMessage)
+	ON_MESSAGE( WM_TOBJMSG, &CTClientWnd::OnOBJMessage)
 	ON_WM_DESTROY()
 	ON_WM_KEYDOWN()
 	ON_WM_KEYUP()
@@ -907,8 +907,7 @@ void CTClientWnd::Render()
 		if( m_MainGame.m_vKEY.m_dwTick != dwPrevTick)
 		{
 			CTachyonMesh::m_fLevelFactor = CTClientGame::GetObjDETAILOption();
-			GetCursorPos(&point);
-			ScreenToClient(&point);
+			point = CTachyonInput::GetCursorPos();
 
 
 
@@ -1772,7 +1771,7 @@ void CTClientWnd::InitResource( CString strGroupID,
 	CString strTextureName;
 	for(BYTE i = 0; i < TCUSTOMTEX_COUNT; ++i)
 	{
-		strTextureName.Format(".\\Data\\Skin\\Custom\\%s", strTextures[i]);
+		strTextureName.Format(".\\Data\\Skin\\Custom\\%s", (LPCTSTR)strTextures[i]);
 		m_MainGame.LoadCustomTextures(i + 1, strTextureName);
 	}
 
@@ -3096,9 +3095,9 @@ void CTClientWnd::InitUI( BOOL bResetOnlyPosition)
 	CTMessengerChat::DeleteAllInstance();
 
 	CD3DSound::ResetLISTENER(
-		&D3DXVECTOR3( 0.0f, 0.0f, 0.0f),
-		&D3DXVECTOR3( 0.0f, 0.0f, 1.0f),
-		&D3DXVECTOR3( 0.0f, 1.0f, 0.0f));
+		TTEMP(D3DXVECTOR3( 0.0f, 0.0f, 0.0f)),
+		TTEMP(D3DXVECTOR3( 0.0f, 0.0f, 1.0f)),
+		TTEMP(D3DXVECTOR3( 0.0f, 1.0f, 0.0f)));
 
 	static_cast<CTSecuritySystemDlg*>(m_MainGame.GetFrame(TFRAME_SECURITYSYS))->MoveComponent(CPoint(CTClientUIBase::m_vBasis[TBASISPOINT_RIGHT_MIDDLE].x - 324, CTClientUIBase::m_vBasis[TBASISPOINT_RIGHT_MIDDLE].y - 350 / 2));
 
@@ -4017,7 +4016,7 @@ void CTClientWnd::InitTCUSTOMCLOAKTEX()
 	{
 		static const CString CUSTOMTEX_PATH		= ".\\Data\\Cache\\";
 		CString strPath;
-		strPath.Format("%s%d",CUSTOMTEX_PATH, i);
+		strPath.Format("%s%d",(LPCTSTR)CUSTOMTEX_PATH, i);
 		if(PathFileExists(strPath))
 			AddTCUSTOMCLOAKTEX(i);
 	}
@@ -4028,7 +4027,7 @@ BYTE CTClientWnd::AddTCUSTOMCLOAKTEX(WORD wID)
 	static const CString CUSTOMTEX_PATH		= ".\\Data\\Cache\\";
 	
 	CString strPath;
-	strPath.Format("%s%d",CUSTOMTEX_PATH, wID);
+	strPath.Format("%s%d",(LPCTSTR)CUSTOMTEX_PATH, wID);
 
 	if(!PathFileExists(strPath))
 		return FALSE;
@@ -5408,7 +5407,7 @@ BOOL CTClientWnd::SetGamma(float fGamma, int nOverBright, float fContrast)
     float f;
 	   
 	CDC* pDC = GetDC();
-	HDC hDC = pDC->GetSafeHdc();
+	HDC hDC = TSAFE_HDC(pDC);
 
     if( !GetDeviceGammaRamp(hDC, wRamp) )
 		return FALSE;
@@ -5542,10 +5541,7 @@ void CTClientWnd::ReFresh()
 {
 	if(m_pMainFrame)
 	{
-		CPoint point;
-
-		GetCursorPos(&point);
-		ScreenToClient(&point);
+		CPoint point = CTachyonInput::GetCursorPos();
 
 		m_pMainFrame->OnMouseMove( 0, point);
 	}
@@ -5584,7 +5580,10 @@ void CTClientWnd::SelectNEWTCHAR()
 	pCLASSNAME->m_strText = CTChart::LoadString( (TSTRING) CTClientGame::m_vTCLASSSTR[m_vNEWTCHAR.m_bClass]);
 
 	if( m_TNet.m_pCLASSTEXTPOPUP )
-		m_TNet.m_pCLASSTEXTPOPUP->SetText( CTChart::GetTCLASSINFO( m_vNEWTCHAR.m_bClass ) );
+	{
+		CString strINFO = CTChart::GetTCLASSINFO( m_vNEWTCHAR.m_bClass );
+		m_TNet.m_pCLASSTEXTPOPUP->SetText( strINFO );
+	}
 
 	TImageList *pCLASSIMG = (TImageList*)pFRAME->FindKid(ID_CTRLINST_ICON_CLASS);
 	pCLASSIMG->SetCurImage( m_vNEWTCHAR.m_bClass );
@@ -5593,7 +5592,10 @@ void CTClientWnd::SelectNEWTCHAR()
 	pRACENAME->m_strText = CTChart::LoadString( (TSTRING) CTClientGame::m_vTRACESTR[m_vNEWTCHAR.m_bRace]);
 
 	if( m_TNet.m_pRACETEXTPOPUP )
-		m_TNet.m_pRACETEXTPOPUP->SetText( CTChart::GetTRACEINFO( m_vNEWTCHAR.m_bRace ) );
+	{
+		CString strINFO = CTChart::GetTRACEINFO( m_vNEWTCHAR.m_bRace );
+		m_TNet.m_pRACETEXTPOPUP->SetText( strINFO );
+	}
 
 	TImageList *pRACEIMG = (TImageList*)pFRAME->FindKid(ID_CTRLINST_ICON_RACE);
 	pRACEIMG->SetCurImage( m_vNEWTCHAR.m_bRace );
@@ -6120,10 +6122,7 @@ void CTClientWnd::ResetTOption()
 
 BOOL CTClientWnd::OnSetCursor( CWnd* pWnd, UINT nHitTest, UINT message)
 {
-	CPoint point;
-
-	GetCursorPos(&point);
-	ScreenToClient(&point);
+	CPoint point = CTachyonInput::GetCursorPos();
 
 	if( m_MainGame.m_vKEY.m_vSTATE[TKEY_ROT] || m_MainGame.m_vKEY.m_vSTATE[TKEY_CAM_ROT] || m_TNet.m_bROT || m_TNet.m_bCharROT )
 		::SetCursor(NULL);
@@ -7452,7 +7451,7 @@ CString _on_chatcmd_test(const CString& strCMD, const VECTORSTRING& vPARAM, DWOR
 {
 	CTClientGame* pTGAME = (CTClientGame*) dwUSER;
 	LPTASSISTANT pNew = new TASSISTANT;
-	pNew->m_strName = "똘똘이";
+	pNew->m_strName = "\xB6\xCA\xB6\xCA\xC0\xCC";	// "똘똘이"
 	pNew->m_dwCharID = 123;
 	pNew->m_dwCommanderID = 123;
 	pNew->m_bDie = TRUE;
@@ -7461,7 +7460,7 @@ CString _on_chatcmd_test(const CString& strCMD, const VECTORSTRING& vPARAM, DWOR
 	pNew->m_bHair = 2;
 	pTGAME->m_vTASSISTANT.push_back( pNew );
 	pNew = new TASSISTANT;
-	pNew->m_strName = "멍충이";
+	pNew->m_strName = "\xB8\xDB\xC3\xE6\xC0\xCC";	// "멍충이"
 	pNew->m_dwCharID = 123;
 	pNew->m_dwCommanderID = 0;
 	pNew->m_bDie = TRUE;
@@ -7470,7 +7469,7 @@ CString _on_chatcmd_test(const CString& strCMD, const VECTORSTRING& vPARAM, DWOR
 	pNew->m_bHair = 0;
 	pTGAME->m_vTASSISTANT.push_back( pNew );
 	pNew = new TASSISTANT;
-	pNew->m_strName = "개박이";
+	pNew->m_strName = "\xB0\xB3\xB9\xDA\xC0\xCC";	// "개박이"
 	pNew->m_dwCharID = 123;
 	pNew->m_dwCommanderID = 0;
 	pNew->m_bDie = FALSE;

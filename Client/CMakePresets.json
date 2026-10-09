@@ -1,0 +1,41 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "vs-x86",
+      "displayName": "Visual Studio 2026, x86 (no developer shell needed)",
+      "generator": "Visual Studio 18 2026",
+      "architecture": "Win32",
+      "binaryDir": "${sourceDir}/../build/vs-x86"
+    },
+    {
+      "name": "msvc-x86",
+      "displayName": "Ninja + MSVC, x86 (run from an x86 developer shell, see build.ps1)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/../build/msvc-x86",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_COMPILER": "cl",
+        "CMAKE_CXX_COMPILER": "cl"
+      }
+    },
+    {
+      "name": "clang-x86",
+      "displayName": "Ninja + clang-cl, x86 (run from an x86 developer shell, see build.ps1)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/../build/clang-x86",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_COMPILER": "clang-cl",
+        "CMAKE_CXX_COMPILER": "clang-cl",
+        "CMAKE_C_COMPILER_TARGET": "i686-pc-windows-msvc",
+        "CMAKE_CXX_COMPILER_TARGET": "i686-pc-windows-msvc"
+      }
+    }
+  ],
+  "buildPresets": [
+    { "name": "vs-x86", "configurePreset": "vs-x86", "configuration": "Release" },
+    { "name": "msvc-x86", "configurePreset": "msvc-x86" },
+    { "name": "clang-x86", "configurePreset": "clang-x86" }
+  ]
+}

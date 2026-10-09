@@ -2121,7 +2121,7 @@ void CTCastleDefInfo::Build()
 
 		DWORD dwColor = D3DCOLOR_XRGB(128, 204, 253);
 
-		strFMT = CTChart::Format( TSTR_FMT_CASTLE_DEFGUILD, m_strDefGuild );
+		strFMT = CTChart::Format( TSTR_FMT_CASTLE_DEFGUILD, (LPCTSTR)m_strDefGuild );
 		_AddLine( strFMT, dwColor);
 #ifdef MODIFY_GUILD
 #else
@@ -2141,7 +2141,7 @@ void CTCastleDefInfo::Build()
 
 		DWORD dwColor = D3DCOLOR_XRGB(254, 208, 0);
 
-		strFMT = CTChart::Format( TSTR_FMT_CASTLE_ATKGUILD, m_strAtkGuild );
+		strFMT = CTChart::Format( TSTR_FMT_CASTLE_ATKGUILD, (LPCTSTR)m_strAtkGuild );
 		_AddLine( strFMT, dwColor);
 #ifdef MODIFY_GUILD
 #else
@@ -2177,7 +2177,7 @@ void CTCastleDefInfo::Build()
 	if( !m_strMyGuild.IsEmpty() )
 	{
 		CString strFMT;
-		strFMT = CTChart::Format( TSTR_FMT_CASTLE_MYGUILD, m_strMyGuild );
+		strFMT = CTChart::Format( TSTR_FMT_CASTLE_MYGUILD, (LPCTSTR)m_strMyGuild );
 		_AddLine( strFMT, TDEFAULT_TEXT_COLOR);
 		
 		strFMT = CTChart::Format( TSTR_GUILD_GUILDPOINT, m_wMyGuildPoint );
@@ -2204,7 +2204,7 @@ void CTCastleDefInfo::WriteCTop3()
 		{
 			strFMT = CTChart::Format(TSTR_FMT_CASTLE_TOP3,
 				m_vCTop3[ i ].m_wPoint,
-				m_vCTop3[ i ].m_strName );
+				(LPCTSTR)m_vCTop3[ i ].m_strName );
 
 			_AddLine( strFMT, TDEFAULT_TEXT_COLOR);
 		}
@@ -2225,7 +2225,7 @@ void CTCastleDefInfo::WriteDTop3()
 		{
 			strFMT = CTChart::Format(TSTR_FMT_CASTLE_TOP3,
 				m_vDTop3[ i ].m_wPoint,
-				m_vDTop3[ i ].m_strName );
+				(LPCTSTR)m_vDTop3[ i ].m_strName );
 
 			_AddLine( strFMT, TDEFAULT_TEXT_COLOR);
 		}
@@ -2290,7 +2290,7 @@ void CTTerritoryDetInfo::Build()
 	if( !m_strHeroName.IsEmpty() )
 	{
 		strHERO = CTChart::Format( TSTR_FMT_HERO,
-			m_strHeroName);
+			(LPCTSTR)m_strHeroName);
 	}
 
 //	_AddLine( "", TDEFAULT_TEXT_COLOR);
@@ -2353,12 +2353,12 @@ void CTPvPDetInfo::Build()
 	else
 		_ConvertAndSetTitle( CTChart::LoadString( TSTR_PVP_DET_LOSE), TDEFAULT_TEXT_COLOR);
 
-	_AddLine( CTChart::Format( TSTR_PVP_DET_NAME, m_strName),
+	_AddLine( CTChart::Format( TSTR_PVP_DET_NAME, (LPCTSTR)m_strName),
 		TDEFAULT_TEXT_COLOR);
 
 	_AddLine(
 		CTChart::Format( TSTR_PVP_DET_CLASS,
-			CTChart::LoadString( (TSTRING) CTClientGame::m_vTCLASSSTR[ m_bClass ] ) ),
+			(LPCTSTR)CTChart::LoadString( (TSTRING) CTClientGame::m_vTCLASSSTR[ m_bClass ] ) ),
 		TDEFAULT_TEXT_COLOR);
 	
 	_AddLine( CTChart::Format( TSTR_PVP_DET_LEVEL, m_bLevel ),
@@ -2527,7 +2527,7 @@ void CTFameRankDetInfo::Build()
 		_ConvertAndSetTitle( m_strName );
 
 		_AddLine( CTChart::Format( TSTR_FAMERANKDEF_LEVEL, m_bLevel ) );
-		_AddLine( CTChart::Format( TSTR_FAMERANKDEF_CLASS, CTChart::LoadString( (TSTRING) CTClientGame::m_vTCLASSSTR[ m_bClass] )));
+		_AddLine( CTChart::Format( TSTR_FAMERANKDEF_CLASS, (LPCTSTR)CTChart::LoadString( (TSTRING) CTClientGame::m_vTCLASSSTR[ m_bClass] )));
 		_AddLine( CTChart::Format( TSTR_FAMERANKDEF_BATTLE, m_wWin, m_wLose ) );
 	}
 
@@ -2712,15 +2712,15 @@ void CTTournamentPlayerInfo::Build()
 			break;
 		};
 
-		_AddLine( CTChart::Format( TSTR_FAMERANKDEF_NAME, m_strName),
+		_AddLine( CTChart::Format( TSTR_FAMERANKDEF_NAME, (LPCTSTR)m_strName),
 			TDEFAULT_TEXT_COLOR);
 
 		_AddLine( CTChart::Format( TSTR_FAMERANKDEF_COUNTRY,
-			CTChart::LoadString( (TSTRING) CTClientGame::m_vTCOUNTRYSTR[ m_bCountry ] ) ),
+			(LPCTSTR)CTChart::LoadString( (TSTRING) CTClientGame::m_vTCOUNTRYSTR[ m_bCountry ] ) ),
 			TDEFAULT_TEXT_COLOR);
 
 		_AddLine( CTChart::Format( TSTR_FAMERANKDEF_CLASS,
-				CTChart::LoadString( (TSTRING) CTClientGame::m_vTCLASSSTR[ m_bClass ] ) ),
+				(LPCTSTR)CTChart::LoadString( (TSTRING) CTClientGame::m_vTCLASSSTR[ m_bClass ] ) ),
 				TDEFAULT_TEXT_COLOR);
 		
 		_AddLine( CTChart::Format( TSTR_FAMERANKDEF_LEVEL, m_bLevel ),
@@ -2910,14 +2910,14 @@ void CTPlayerDetInfo::Build()
 
 	if( m_bSenior )
 	{
-		_AddLine( "상관", TDEFAULT_TEXT_COLOR);
+		_AddLine( "\xBB\xF3\xB0\xFC", TDEFAULT_TEXT_COLOR);	// "상관"
 	}
 
 	CString strMSG;
-	strMSG.Format( "클래스 : %s", CTChart::LoadString( (TSTRING) CTClientGame::m_vTCLASSSTR[ m_bClass ] ) );
+	strMSG.Format( "\xC5\xAC\xB7\xA1\xBD\xBA : %s", (LPCTSTR)CTChart::LoadString( (TSTRING) CTClientGame::m_vTCLASSSTR[ m_bClass ] ) );	// "클래스 : %s"
 	_AddLine( strMSG, TDEFAULT_TEXT_COLOR);
 
-	strMSG.Format( "레벨 : %d", m_bLevel );
+	strMSG.Format( "\xB7\xB9\xBA\xA7 : %d", m_bLevel );	// "레벨 : %d"
 	_AddLine( strMSG, TDEFAULT_TEXT_COLOR);
 
 	m_TitleB.m_strText = m_strName;

@@ -26,10 +26,10 @@ void CTGuildCmdHelpDlg::Init()
 	for(INT i=0; i<CTGuildCommander::CMD_COUNT; ++i)
 	{
 		strTMP = CTChart::LoadString( (TSTRING) CTGuildCommander::CMD_STRING[i]);
-		strCMD = CTChart::Format( TSTR_FMT_GUILDCMD, strTMP);
+		strCMD = CTChart::Format( TSTR_FMT_GUILDCMD, (LPCTSTR)strTMP);
 
 		strTMP = CTChart::LoadString( (TSTRING) CTGuildCommander::CMD_DESC_STRING[i]);
-		strDESC = CTChart::Format( TSTR_FMT_GUILDCMDESC, strTMP);
+		strDESC = CTChart::Format( TSTR_FMT_GUILDCMDESC, (LPCTSTR)strTMP);
 
 		nIndex = m_pList->AddString(strCMD);
 		m_pList->SetUserColor(nIndex, 0, TCOLOR_GUILDCMD_CMD);

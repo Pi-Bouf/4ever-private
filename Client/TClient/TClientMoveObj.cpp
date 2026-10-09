@@ -301,8 +301,8 @@ BYTE CTClientMoveObj::CheckFall( CTClientMAP *pMAP,
 
 				D3DXVec3Cross(
 					&vTNORMAL,
-					&(vTPOLY[1] - vTPOLY[0]),
-					&(vTPOLY[2] - vTPOLY[0]));
+					TTEMP((vTPOLY[1] - vTPOLY[0])),
+					TTEMP((vTPOLY[2] - vTPOLY[0])));
 			}
 			else
 			{
@@ -313,8 +313,8 @@ BYTE CTClientMoveObj::CheckFall( CTClientMAP *pMAP,
 
 				D3DXVec3Cross(
 					&vTNORMAL,
-					&(vTPOLY[1] - vTPOLY[0]),
-					&(vTPOLY[2] - vTPOLY[0]));
+					TTEMP((vTPOLY[1] - vTPOLY[0])),
+					TTEMP((vTPOLY[2] - vTPOLY[0])));
 			}
 
 			pFallDIR->x = vTNORMAL.x;
@@ -452,9 +452,9 @@ void CTClientMoveObj::CalcTick( LPD3DXVECTOR3 pPREV,
 
 	if(dwTick)
 	{
-		m_fMoveSpeed = D3DXVec2Length(&D3DXVECTOR2(
+		m_fMoveSpeed = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 			m_vPosition._41 - pPREV->x,
-			m_vPosition._43 - pPREV->z)) * 1000.0f / FLOAT(dwTick);
+			m_vPosition._43 - pPREV->z))) * 1000.0f / FLOAT(dwTick);
 	}
 }
 
@@ -489,10 +489,10 @@ void CTClientMoveObj::CalcHeight( LPD3DXVECTOR3 pPREV,
 
 	fHeight = pMAP->GetHeight(
 		this, &pFLOOR,
-		&D3DXVECTOR3(
+		TTEMP(D3DXVECTOR3(
 		m_vPosition._41,
 		max( pPREV->y, m_vPosition._42) + 0.2f,
-		m_vPosition._43),
+		m_vPosition._43)),
 		fMove,
 		TRUE);
 
@@ -881,9 +881,9 @@ WORD CTClientMoveObj::GetTargetPITCH( FLOAT fTargetX,
 {
 	if(CanDIVE())
 	{
-		FLOAT fLength = D3DXVec2Length(&D3DXVECTOR2(
+		FLOAT fLength = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 			fTargetX,
-			fTargetZ));
+			fTargetZ)));
 
 		if( fLength > 0.1f )
 		{

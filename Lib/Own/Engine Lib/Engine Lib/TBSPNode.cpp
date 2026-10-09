@@ -654,8 +654,8 @@ void CTBSPNode::CreateBigWinding( LPPOINTWINDING pResult,
 
 	D3DXVec3Cross(
 		&vCross,
-		&(vPoint[1] - vPoint[0]),
-		&(vPoint[2] - vPoint[0]));
+		TTEMP((vPoint[1] - vPoint[0])),
+		TTEMP((vPoint[2] - vPoint[0])));
 
 	vNormal /= D3DXVec3Length(&vNormal);
 	vCross /= D3DXVec3Length(&vCross);
@@ -794,7 +794,7 @@ BOOL CTBSPNode::IsValidPortal( CTBSPPortal *pItem)
 					&vPlaneW,
 					&vPoint[1],
 					&vPoint[0],
-					&(vPoint[0] + vNormalW));
+					TTEMP((vPoint[0] + vNormalW)));
 
 				CTMath::CutWinding(
 					&vPlaneW,
@@ -1094,7 +1094,7 @@ D3DXPLANE CTBSPNode::GetPortalCutter( LPD3DXVECTOR3 pEdgeBegin,
 		&vAxis,
 		pEdgeBegin,
 		pEdgeEnd,
-		&((*pEdgeEnd) + (*pHostNormal)));
+		TTEMP(((*pEdgeEnd) + (*pHostNormal))));
 
 	if( CTMath::GetPointPosition( pPoint, &vAxis) == POINTPOS_BACK )
 		vAxis = -vAxis;
@@ -1212,10 +1212,10 @@ int CTBSPNode::HitTest( LPD3DXVECTOR3 pLayPos,
 			CTMath::PlaneIntersectLine(
 			&vResult,
 			pLayPos,
-			&((*pLayPos) + (*pLayDir)),
+			TTEMP(((*pLayPos) + (*pLayDir))),
 			&m_vWinding[i]->m_vPlane) &&
 			D3DXVec3Dot(
-			&(vResult - (*pLayPos)),
+			TTEMP((vResult - (*pLayPos))),
 			pLayDir) >= 0.0f )
 		{
 			D3DXVECTOR3 vNormal(
@@ -1247,7 +1247,7 @@ int CTBSPNode::HitTest( LPD3DXVECTOR3 pLayPos,
 					&vPlane,
 					&vPoint[1],
 					&vPoint[0],
-					&(vPoint[0] + vNormal));
+					TTEMP((vPoint[0] + vNormal)));
 
 				if( CTMath::GetPointPosition( &vResult, &vPlane) == POINTPOS_BACK )
 				{
@@ -1258,7 +1258,7 @@ int CTBSPNode::HitTest( LPD3DXVECTOR3 pLayPos,
 
 			if(bResult)
 			{
-				fDistance = D3DXVec3Length(&(vResult - (*pLayPos)));
+				fDistance = D3DXVec3Length(TTEMP((vResult - (*pLayPos))));
 
 				if( nResult == -1 || fDistance < (*pDistance) )
 				{
@@ -1935,19 +1935,19 @@ void CTBSPNode::AddLight( LPTEXTURESET pTEX,
 
 				D3DXVec3Cross(
 					&vNormal,
-					&D3DXVECTOR3(
+					TTEMP(D3DXVECTOR3(
 					m_vWinding[i]->m_vPlane.a,
 					m_vWinding[i]->m_vPlane.b,
-					m_vWinding[i]->m_vPlane.c),
+					m_vWinding[i]->m_vPlane.c)),
 					&vResult);
 				vNormal /= D3DXVec3Length(&vNormal);
 
 				D3DXMatrixRotationAxis(
 					&vROT,
-					&D3DXVECTOR3(
+					TTEMP(D3DXVECTOR3(
 					m_vWinding[i]->m_vPlane.a,
 					m_vWinding[i]->m_vPlane.b,
-					m_vWinding[i]->m_vPlane.c),
+					m_vWinding[i]->m_vPlane.c)),
 					pLIGHT->m_fROT);
 
 				CTMath::Transform(
@@ -1956,10 +1956,10 @@ void CTBSPNode::AddLight( LPTEXTURESET pTEX,
 
 				D3DXMatrixRotationAxis(
 					&vROT,
-					&D3DXVECTOR3(
+					TTEMP(D3DXVECTOR3(
 					m_vWinding[i]->m_vPlane.a,
 					m_vWinding[i]->m_vPlane.b,
-					m_vWinding[i]->m_vPlane.c),
+					m_vWinding[i]->m_vPlane.c)),
 					D3DX_PI / 2.0f);
 
 				D3DXVECTOR3 vAxisV = vNormal;
@@ -1973,29 +1973,29 @@ void CTBSPNode::AddLight( LPTEXTURESET pTEX,
 
 				D3DXPlaneFromPointNormal(
 					&vPlaneU,
-					&(pLIGHT->m_vPOS + fWidth * vAxisU),
+					TTEMP((pLIGHT->m_vPOS + fWidth * vAxisU)),
 					&vAxisU);
 
 				D3DXPlaneFromPointNormal(
 					&vPlaneV,
-					&(pLIGHT->m_vPOS + fWidth * vAxisV),
+					TTEMP((pLIGHT->m_vPOS + fWidth * vAxisV)),
 					&vAxisV);
 
 				for( int j=0; j<INT(pWinding->m_vPoint.size()); j++)
 				{
 					pWinding->m_vPoint[j]->m_fU1 = -D3DXPlaneDotCoord(
 						&vPlaneU,
-						&D3DXVECTOR3(
+						TTEMP(D3DXVECTOR3(
 						pWinding->m_vPoint[j]->m_fPosX,
 						pWinding->m_vPoint[j]->m_fPosY,
-						pWinding->m_vPoint[j]->m_fPosZ)) / (2.0f * fWidth);
+						pWinding->m_vPoint[j]->m_fPosZ))) / (2.0f * fWidth);
 
 					pWinding->m_vPoint[j]->m_fV1 = -D3DXPlaneDotCoord(
 						&vPlaneV,
-						&D3DXVECTOR3(
+						TTEMP(D3DXVECTOR3(
 						pWinding->m_vPoint[j]->m_fPosX,
 						pWinding->m_vPoint[j]->m_fPosY,
-						pWinding->m_vPoint[j]->m_fPosZ)) / (2.0f * fWidth);
+						pWinding->m_vPoint[j]->m_fPosZ))) / (2.0f * fWidth);
 
 					pWinding->m_vPoint[j]->m_fU2 = pWinding->m_vPoint[j]->m_fU1;
 					pWinding->m_vPoint[j]->m_fV2 = pWinding->m_vPoint[j]->m_fV1;
@@ -2007,7 +2007,7 @@ void CTBSPNode::AddLight( LPTEXTURESET pTEX,
 
 					D3DXPlaneFromPointNormal(
 						&vPlane,
-						&(pLIGHT->m_vPOS + fWidth * vNormal),
+						TTEMP((pLIGHT->m_vPOS + fWidth * vNormal)),
 						&vNormal);
 					vPlane = -vPlane;
 

@@ -108,8 +108,8 @@ public:
 		FLOAT fTime);
 
 	static D3DXQUATERNION MaxSlerp(
-		D3DXQUATERNION& vStart,
-		D3DXQUATERNION& vEnd,
+		const D3DXQUATERNION& vStart,
+		const D3DXQUATERNION& vEnd,
 		FLOAT fTime);
 
 	static D3DXQUATERNION LnDiff(

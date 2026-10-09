@@ -240,7 +240,7 @@ void CTClientNpc::InitTNPC( CD3DDevice *pDevice,
 		if( fp )
 		{
 			fseek(fp, 0, SEEK_END);
-			fprintf(fp,"NPC Object ID - 0x%.8X를 찾을 수 없습니다.\n", m_pTNPC->m_dwOBJ);
+			fprintf(fp,"NPC Object ID - 0x%.8X\xB8\xA6 \xC3\xA3\xC0\xBB \xBC\xF6 \xBE\xF8\xBD\xC0\xB4\xCF\xB4\xD9.\n", m_pTNPC->m_dwOBJ);	// "NPC Object ID - 0x%.8X를 찾을 수 없습니다.\n"
 			fclose(fp);
 		}		
 		return;

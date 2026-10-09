@@ -204,7 +204,7 @@ BYTE CTNICEventSink::InitTEVENT( CString& strIP, int nTimer)
 	szWQL.Format(
 		L"SELECT * FROM __InstanceModificationEvent WITHIN %d WHERE TargetInstance ISA 'Win32_NetworkAdapter' AND TargetInstance.DeviceID = '%s'",
 		nTimer,
-		szDeviceID);
+		(LPCWSTR)szDeviceID);
 
 	hr = m_pIWBEM->ExecNotificationQueryAsync(
 		L"WQL",

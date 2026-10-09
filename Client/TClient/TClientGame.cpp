@@ -112,8 +112,8 @@ struct TOBJ_LENGTH_SORTER
 
 	bool operator () ( CTClientObjBase* _Left, CTClientObjBase* _Right)
 	{
-		return D3DXVec3LengthSq( &(m_vPOSCHAR - _Left->GetPosition()))
-			< D3DXVec3LengthSq( &(m_vPOSCHAR - _Right->GetPosition())) ;
+		return D3DXVec3LengthSq( TTEMP((m_vPOSCHAR - _Left->GetPosition())))
+			< D3DXVec3LengthSq( TTEMP((m_vPOSCHAR - _Right->GetPosition()))) ;
 	};
 };
 
@@ -1002,9 +1002,9 @@ void CTClientGame::CalcSCENE( DWORD dwTick)
 			&vPOS,
 			fNextH);
 
-		FLOAT fMove = D3DXVec2Length(&D3DXVECTOR2(
+		FLOAT fMove = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 			vTNEXT.x - vPOS.x,
-			vTNEXT.z - vPOS.z));
+			vTNEXT.z - vPOS.z)));
 
 		if( m_vMAP.GetHeight( m_pMainChar, NULL, &vTNEXT, fMove, FALSE) > vPOS.y + fMove / CTClientMAP::m_fMoveBound + THEIGHT_ZERO )
 		{
@@ -1796,9 +1796,9 @@ void CTClientGame::ResetTFOG( BYTE bWATER)
 			FLOAT fLocalX = pTFOG->m_vTLOCAL[i]->m_fPosX - FLOAT(bUnitX) * fUnitLength;
 			FLOAT fLocalZ = pTFOG->m_vTLOCAL[i]->m_fPosZ - FLOAT(bUnitZ) * fUnitLength;
 
-			FLOAT fLength = D3DXVec2Length(&D3DXVECTOR2(
+			FLOAT fLength = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 				fLocalX - fPosX,
-				fLocalZ - fPosZ));
+				fLocalZ - fPosZ)));
 
 			if( fLength < pTFOG->m_vTLOCAL[i]->m_fRADIUS )
 			{
@@ -1958,19 +1958,19 @@ void CTClientGame::ResetTARGET()
 	if( !m_pTARGET || !m_pCtrlHost )
 		return;
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pTARGET->GetPositionX() - m_pCtrlHost->GetPositionX(),
-		m_pTARGET->GetPositionZ() - m_pCtrlHost->GetPositionZ()));
+		m_pTARGET->GetPositionZ() - m_pCtrlHost->GetPositionZ())));
 
 	CTClientPet* pTPET = GetMainPet();
 
 	if( fDist > TARGET_DIST || !m_pTARGET->CheckRequired() || (
 		m_pMainChar->m_bStandHide && fDist - m_pTARGET->m_fSight > TSTANDHIDE_SIGHT_DIST) || (
 		m_pMainChar->m_bGhost && m_pMainChar != m_pTARGET &&
-		!m_pTARGET->m_bDrawGhost && D3DXVec3Length(&D3DXVECTOR3(
+		!m_pTARGET->m_bDrawGhost && D3DXVec3Length(TTEMP(D3DXVECTOR3(
 		m_pTARGET->GetPositionX() - m_pMainChar->m_vTDEAD.x,
 		m_pTARGET->GetPositionY() - m_pMainChar->m_vTDEAD.y,
-		m_pTARGET->GetPositionZ() - m_pMainChar->m_vTDEAD.z)) > TGHOST_DIST ))
+		m_pTARGET->GetPositionZ() - m_pMainChar->m_vTDEAD.z))) > TGHOST_DIST ))
 	{
 		CTClientObjBase::m_mapTSELECTOBJ.clear();
 		CTClientObjBase::m_mapTSELECTDEADOBJ.clear();
@@ -2277,9 +2277,9 @@ void CTClientGame::UpdateBoxGauge(DWORD dwTick)
 		if (pItem->GetTITEM()->m_bKind == IK_SPECIALBOX)
 		{
 			SendCS_ITEMUSE_REQ(
-				&D3DXVECTOR2(
+				TTEMP(D3DXVECTOR2(
 					m_pMainChar->GetPositionX(),
-					m_pMainChar->GetPositionZ()),
+					m_pMainChar->GetPositionZ())),
 				pItem->GetTITEM()->m_wItemID,
 				bInvenID,
 				bItemID,
@@ -2354,10 +2354,10 @@ void CTClientGame::PushDrawOBJ( CTClientObjBase *pTOBJ)
 			if( !pTOBJ->m_bDrawGhost &&
 				m_pMainChar->m_bGhost && pTOBJ != m_pMainChar &&
 				(pTOBJ->m_fCamDIST > TGHOSTCAM_DIST ||
-				D3DXVec3Length(&D3DXVECTOR3(
+				D3DXVec3Length(TTEMP(D3DXVECTOR3(
 				m_pMainChar->m_vTDEAD.x - pTOBJ->GetPositionX(),
 				m_pMainChar->m_vTDEAD.y - pTOBJ->GetPositionY(),
-				m_pMainChar->m_vTDEAD.z - pTOBJ->GetPositionZ())) > TGHOST_DIST) )
+				m_pMainChar->m_vTDEAD.z - pTOBJ->GetPositionZ()))) > TGHOST_DIST) )
 			{
 				bDraw = FALSE;
 			}
@@ -2368,10 +2368,10 @@ void CTClientGame::PushDrawOBJ( CTClientObjBase *pTOBJ)
 			if( !pTOBJ->m_bDrawGhost &&
 				m_pMainChar->m_bGhost && pTOBJ != m_pMainChar &&
 				(pTOBJ->m_fCamDIST > TGHOSTCAM_DIST ||
-				D3DXVec3Length(&D3DXVECTOR3(
+				D3DXVec3Length(TTEMP(D3DXVECTOR3(
 				m_pMainChar->m_vTDEAD.x - pTOBJ->GetPositionX(),
 				m_pMainChar->m_vTDEAD.y - pTOBJ->GetPositionY(),
-				m_pMainChar->m_vTDEAD.z - pTOBJ->GetPositionZ())) > TGHOST_DIST) )
+				m_pMainChar->m_vTDEAD.z - pTOBJ->GetPositionZ()))) > TGHOST_DIST) )
 			{
 				bDraw = FALSE;
 			}
@@ -2690,9 +2690,9 @@ void CTClientGame::RenderTOBJ( LPLISTTOBJBASE pLIST,
 
 			RenderTSQUARE(
 				&m_vTGROUND,
-				&D3DXVECTOR2(
+				TTEMP(D3DXVECTOR2(
 				2.0f * pTSKILL->m_pTSKILL->m_fAtkRange,
-				2.0f * pTSKILL->m_pTSKILL->m_fAtkRange),
+				2.0f * pTSKILL->m_pTSKILL->m_fAtkRange)),
 				&vUV,
 				fLength > 0.0f ? &vDIR : NULL,
 				1.0f,
@@ -2738,7 +2738,7 @@ void CTClientGame::RenderTOBJ( CTClientObjBase *pTOBJ,
 		CTDynamicBillboard::CanUSE(
 		m_pDevice,
 		m_pCamera,
-		&pTOBJ->GetPosition(),
+		TTEMP(pTOBJ->GetPosition()),
 		pTOBJ->m_fDBBRadius,
 		pTOBJ->m_fSizeY) )
 	{
@@ -2897,7 +2897,7 @@ void CTClientGame::RenderTTEXT( CTClientObjBase *pTOBJ)
 
 				if(pTCHAR->m_bPrivateShop)
 				{
-					strTITLE = CTChart::Format( TSTR_FMT_PRVSHOP_TITLE, strNAME);
+					strTITLE = CTChart::Format( TSTR_FMT_PRVSHOP_TITLE, (LPCTSTR)strNAME);
 					strNAME = pTCHAR->m_strPrivateShop;
 				}
 				else if(!pTCHAR->m_strTACTICS.IsEmpty() && !IsInBOWMap() && !IsInBRMap())
@@ -2934,18 +2934,18 @@ void CTClientGame::RenderTTEXT( CTClientObjBase *pTOBJ)
 				if( pTCHAR->m_bUseFameTitle && !pTCHAR->m_strFameTitle.IsEmpty() )
 
 
-					strNAME = CTChart::Format( TSTR_FMT_FIELDRANKNAME, pTCHAR->m_strFameTitle, strNAME);
+					strNAME = CTChart::Format( TSTR_FMT_FIELDRANKNAME, (LPCTSTR)pTCHAR->m_strFameTitle, (LPCTSTR)strNAME);
 
 
 			}
 
 			if(strTITLE.IsEmpty())
-				strTEXT = CTChart::Format( TSTR_FMT_FIELDNAME, strNAME);
+				strTEXT = CTChart::Format( TSTR_FMT_FIELDNAME, (LPCTSTR)strNAME);
 			else
-				strTEXT = CTChart::Format( TSTR_FMT_FIELDTITLE, strTITLE, strNAME);
+				strTEXT = CTChart::Format( TSTR_FMT_FIELDTITLE, (LPCTSTR)strTITLE, (LPCTSTR)strNAME);
 		}
 		else if(pTOBJ->IsDrawNameWhenDead())
-			strTEXT = CTChart::Format( TSTR_FMT_DEAD, strNAME);
+			strTEXT = CTChart::Format( TSTR_FMT_DEAD, (LPCTSTR)strNAME);
 		else
 			strTEXT = strNAME;
 
@@ -2960,7 +2960,8 @@ void CTClientGame::RenderTTEXT( CTClientObjBase *pTOBJ)
 			strTEXT += strCOUNT;
 		}
 
-		pTOBJ->m_vNAME.MakeText( m_pDevice->m_pDevice, strTEXT, CRect( 0, 0, 0, 0), DT_CALCRECT|DT_CENTER);
+		CRect rcNAME( 0, 0, 0, 0);
+		pTOBJ->m_vNAME.MakeText( m_pDevice->m_pDevice, strTEXT, rcNAME, DT_CALCRECT|DT_CENTER);
 		FLOAT fBaseHeight = FLOAT(pTOBJ->m_vNAME.GetHeight());
 		D3DXMATRIX vWORLD;
 
@@ -3005,7 +3006,8 @@ void CTClientGame::RenderTTEXT( CTClientObjBase *pTOBJ)
 		if(!strUserTITLE.IsEmpty())
 		{
 
-			pTOBJ->m_vUSERTITLE.MakeText( m_pDevice->m_pDevice, strUserTITLE, CRect( 0, 0, 0, 0), DT_CALCRECT|DT_CENTER);
+			CRect rcUSERTITLE( 0, 0, 0, 0);
+			pTOBJ->m_vUSERTITLE.MakeText( m_pDevice->m_pDevice, strUserTITLE, rcUSERTITLE, DT_CALCRECT|DT_CENTER);
 			
 
 			fBaseHeight = FLOAT(pTOBJ->m_vUSERTITLE.GetHeight());
@@ -3383,13 +3385,13 @@ void CTClientGame::RenderTSQUARE( CTClientObjBase *pTOBJ,
 	BYTE bLand = pTOBJ->m_bLand && m_vMAP.m_pMAP ? TRUE : FALSE;
 
 	RenderTSQUARE(
-		&D3DXVECTOR3(
+		TTEMP(D3DXVECTOR3(
 		pTOBJ->GetPositionX(),
 		bLand ? pTOBJ->GetPositionY() : pTOBJ->m_fSquareHeight,
-		pTOBJ->GetPositionZ()),
-		&D3DXVECTOR2(
+		pTOBJ->GetPositionZ())),
+		TTEMP(D3DXVECTOR2(
 		pTOBJ->m_fSizeX,
-		pTOBJ->m_fSizeZ),
+		pTOBJ->m_fSizeZ)),
 		pUV, pDIR,
 		fSCALE,
 		bLand);
@@ -3442,7 +3444,7 @@ void CTClientGame::RenderTSQUARE( LPD3DXVECTOR3 pPOS,
 				NULL,
 				0.0f,
 				NULL,
-				&D3DXVECTOR2( 0.5f, 0.5f),
+				TTEMP(D3DXVECTOR2( 0.5f, 0.5f)),
 				atan2f( pDIR->x, pDIR->y) + D3DX_PI,
 				NULL);
 
@@ -3451,7 +3453,7 @@ void CTClientGame::RenderTSQUARE( LPD3DXVECTOR3 pPOS,
 			vROT._41 = 0.0f;
 			vROT._42 = 0.0f;
 
-			m_pDevice->m_pDevice->SetTransform( D3DTS_TEXTURE0, &(vMAT * vROT));
+			m_pDevice->m_pDevice->SetTransform( D3DTS_TEXTURE0, TTEMP((vMAT * vROT)));
 		}
 		else
 			m_pDevice->m_pDevice->SetTransform( D3DTS_TEXTURE0, &vMAT);
@@ -3833,7 +3835,7 @@ void CTClientGame::CalcCHARGE( DWORD dwTick)
 			}
 		}
 
-		if( m_bCHARGE && D3DXVec2Length(&D3DXVECTOR2( vTARGET.x, vTARGET.z)) > 0.0f )
+		if( m_bCHARGE && D3DXVec2Length(TTEMP(D3DXVECTOR2( vTARGET.x, vTARGET.z))) > 0.0f )
 		{
 			WORD wPITCH = m_pMainChar->GetTargetPITCH(
 				vTARGET.x,
@@ -4135,7 +4137,7 @@ void CTClientGame::CalcTargetMove( DWORD dwTick)
 		m_vTGROUND.y - m_pCtrlHost->GetPositionY(),
 		m_vTGROUND.z - m_pCtrlHost->GetPositionZ());
 
-	if( D3DXVec2Length(&D3DXVECTOR2( vTARGET.x, vTARGET.z)) < m_fBOUND )
+	if( D3DXVec2Length(TTEMP(D3DXVECTOR2( vTARGET.x, vTARGET.z))) < m_fBOUND )
 	{
 		DWORD dwMoveGM = m_dwMoveGM;
 
@@ -4263,7 +4265,7 @@ void CTClientGame::CalcMainChar( DWORD dwTick)
 		WORD(m_pCtrlHost->GetPositionX() / CELL_SIZE),
 		WORD(m_pCtrlHost->GetPositionZ() / CELL_SIZE));
 	WORD wSquadID = GetPartyID(m_pMainChar);
-	FLOAT fSyncDist = D3DXVec3Length( &(m_pMainChar->m_vSyncLastPosition - m_pMainChar->GetPosition()) );
+	FLOAT fSyncDist = D3DXVec3Length( TTEMP((m_pMainChar->m_vSyncLastPosition - m_pMainChar->GetPosition())) );
 
 	if( abs(nDIR) > DIR_RANGE ||
 		abs(nPITCH) > DIR_RANGE ||
@@ -4466,7 +4468,7 @@ FLOAT CTClientGame::CalcCamera( DWORD dwTick)
 	m_pCamera->m_vPROJ = m_pCamera->m_matView * m_pCamera->m_matProjection * m_pTextCAM->m_vPROJ;
 	CD3DSound::ResetLISTENER(
 		&m_pCamera->m_vPosition,
-		&(m_pCamera->m_vTarget - m_pCamera->m_vPosition),
+		TTEMP((m_pCamera->m_vTarget - m_pCamera->m_vPosition)),
 		&m_pCamera->m_vUp);
 
 	if(m_bQUAKE)
@@ -4969,10 +4971,10 @@ void CTClientGame::CalcTSQUADRSCS( LPTSQUAD pTSQUAD,
 				pTSQUAD->m_vTARROW.m_vTSKILLDATA.m_vTGROUND.y = m_vMAP.GetHeight(
 					m_pMainChar,
 					NULL,
-					&D3DXVECTOR3(
+					TTEMP(D3DXVECTOR3(
 					pTSQUAD->m_vTARROW.m_vTSKILLDATA.m_vTGROUND.x,
 					m_pMainChar->GetPositionY(),
-					pTSQUAD->m_vTARROW.m_vTSKILLDATA.m_vTGROUND.z),
+					pTSQUAD->m_vTARROW.m_vTSKILLDATA.m_vTGROUND.z)),
 					0.0f, FALSE);
 			}
 		}
@@ -5046,10 +5048,10 @@ void CTClientGame::CalcTSQUADRSCS( LPTSQUAD pTSQUAD,
 				pTSQUAD->m_vTARROW.m_vTSKILLDATA.m_vTGROUND.y = m_vMAP.GetHeight(
 					m_pMainChar,
 					NULL,
-					&D3DXVECTOR3(
+					TTEMP(D3DXVECTOR3(
 					pTSQUAD->m_vTARROW.m_vTSKILLDATA.m_vTGROUND.x,
 					m_pMainChar->GetPositionY(),
-					pTSQUAD->m_vTARROW.m_vTSKILLDATA.m_vTGROUND.z),
+					pTSQUAD->m_vTARROW.m_vTSKILLDATA.m_vTGROUND.z)),
 					0.0f, FALSE);
 			}
 		}
@@ -5285,10 +5287,10 @@ void CTClientGame::CalcTRSCS( DWORD dwTick)
 				m_vTCMDARROW.m_vTSKILLDATA.m_vTGROUND.y = m_vMAP.GetHeight(
 					m_pMainChar,
 					NULL,
-					&D3DXVECTOR3(
+					TTEMP(D3DXVECTOR3(
 					m_vTCMDARROW.m_vTSKILLDATA.m_vTGROUND.x,
 					m_pMainChar->GetPositionY(),
-					m_vTCMDARROW.m_vTSKILLDATA.m_vTGROUND.z),
+					m_vTCMDARROW.m_vTSKILLDATA.m_vTGROUND.z)),
 					0.0f, FALSE);
 			}
 		}
@@ -5346,10 +5348,10 @@ void CTClientGame::CalcTRSCS( DWORD dwTick)
 				m_vTCMDARROW.m_vTSKILLDATA.m_vTGROUND.y = m_vMAP.GetHeight(
 					m_pMainChar,
 					NULL,
-					&D3DXVECTOR3(
+					TTEMP(D3DXVECTOR3(
 					m_vTCMDARROW.m_vTSKILLDATA.m_vTGROUND.x,
 					m_pMainChar->GetPositionY(),
-					m_vTCMDARROW.m_vTSKILLDATA.m_vTGROUND.z),
+					m_vTCMDARROW.m_vTSKILLDATA.m_vTGROUND.z)),
 					0.0f, FALSE);
 			}
 		}
@@ -5357,9 +5359,9 @@ void CTClientGame::CalcTRSCS( DWORD dwTick)
 		break;
 
 	case TRSCSCMD_MOVE		:
-		if( D3DXVec2Length(&D3DXVECTOR2(
+		if( D3DXVec2Length(TTEMP(D3DXVECTOR2(
 			FLOAT(pTUNIT->m_wPosX) - m_vTCMDARROW.m_vTSKILLDATA.m_vTGROUND.x,
-			FLOAT(pTUNIT->m_wPosZ) - m_vTCMDARROW.m_vTSKILLDATA.m_vTGROUND.z)) < TRSCSMOVE_BOUND )
+			FLOAT(pTUNIT->m_wPosZ) - m_vTCMDARROW.m_vTSKILLDATA.m_vTGROUND.z))) < TRSCSMOVE_BOUND )
 		{
 			pTUNIT->m_bTCMD = TRSCSCMD_NONE;
 			pTUNIT->m_wTargetX = 0;
@@ -5733,9 +5735,9 @@ BYTE CTClientGame::GetTNODEPORTAL( LPTNPCPORTAL *pTRESULT,
 
 				if(pTNPC)
 				{
-					FLOAT fLocal = D3DXVec2Length(&D3DXVECTOR2(
+					FLOAT fLocal = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 						pTNPC->m_fPosX - pFROM->x,
-						pTNPC->m_fPosZ - pFROM->z));
+						pTNPC->m_fPosZ - pFROM->z)));
 
 					if( !pTPORTAL || fLocal < fDIST )
 					{
@@ -5789,9 +5791,9 @@ BYTE CTClientGame::GetTNODEPORTAL( LPTNPCPORTAL *pTRESULT,
 
 				if(pTNPC)
 				{
-					FLOAT fLocal = D3DXVec2Length(&D3DXVECTOR2(
+					FLOAT fLocal = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 						pTNPC->m_fPosX - pFROM->x,
-						pTNPC->m_fPosZ - pFROM->z));
+						pTNPC->m_fPosZ - pFROM->z)));
 
 					if( !pTPORTAL || fLocal < fDIST )
 					{
@@ -5841,12 +5843,12 @@ LPTNPCPORTAL CTClientGame::FindTNODEPORTAL( LPVTNPCPORTAL pTPORTAL,
 
 				if( bFromX == bNpcX && bFromZ == bNpcZ )
 				{
-					FLOAT fLocal = pTO ? D3DXVec2Length(&D3DXVECTOR2(
+					FLOAT fLocal = pTO ? D3DXVec2Length(TTEMP(D3DXVECTOR2(
 						pTO->m_fPosX - pTLOCAL->m_pTPORTAL->m_fPosX,
-						pTO->m_fPosZ - pTLOCAL->m_pTPORTAL->m_fPosZ)) :
-						D3DXVec2Length(&D3DXVECTOR2(
+						pTO->m_fPosZ - pTLOCAL->m_pTPORTAL->m_fPosZ))) :
+						D3DXVec2Length(TTEMP(D3DXVECTOR2(
 						pTNPC->m_fPosX - pFROM->x,
-						pTNPC->m_fPosZ - pFROM->z));
+						pTNPC->m_fPosZ - pFROM->z)));
 
 					if( !pTRESULT || fLocal < fDIST )
 					{
@@ -6322,7 +6324,7 @@ BYTE CTClientGame::ResetTPATHDATA()
 				D3DXPlaneFromPointNormal(
 					&m_vTAUTOPLANE,
 					&m_vTAUTOPATH,
-					&GetTAUTOPATHDIR());
+					TTEMP(GetTAUTOPATHDIR()));
 
 				m_bTAUTOPATH = FALSE;
 				m_bTAUTOREV = FALSE;
@@ -6389,7 +6391,7 @@ BYTE CTClientGame::ResetTPATHDATA()
 			D3DXPlaneFromPointNormal(
 				&m_vTAUTOPLANE,
 				&m_vTAUTOPATH,
-				&GetTAUTOPATHDIR());
+				TTEMP(GetTAUTOPATHDIR()));
 
 			m_pTAUTOPATH = pTNODEPATH;
 			m_bTAUTOREV = FALSE;
@@ -6525,9 +6527,9 @@ void CTClientGame::CalcTNODEGUIDE( DWORD dwTick)
 			vTPOS = vTPOS + fDIST * vTDIR / fLength;
 			fLength -= fDIST;
 
-			fDIST = D3DXVec2Length(&D3DXVECTOR2(
+			fDIST = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 				vTPOS.x - vTDEST.x,
-				vTPOS.z - vTDEST.y));
+				vTPOS.z - vTDEST.y)));
 
 			if( fDIST < TGUIDE_NODE_LENGTH )
 			{
@@ -6652,9 +6654,9 @@ void CTClientGame::CalcARROW( DWORD dwTick)
 					vDIR *= fLength / fLocal;
 			}
 
-			fLength = D3DXVec2Length(&D3DXVECTOR2(
+			fLength = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 				pTARGET->GetPositionX() - pTARROW->m_vWorld._41 - vDIR.x,
-				pTARGET->GetPositionZ() - pTARROW->m_vWorld._43 - vDIR.y));
+				pTARGET->GetPositionZ() - pTARROW->m_vWorld._43 - vDIR.y)));
 
 			if( fLength > pTARGET->m_fRadius )
 			{
@@ -6750,10 +6752,10 @@ CTClientObjBase *CTClientGame::SeekRecallTarget( CTClientRecall *pRECALL)
 	for( itRECALL = m_mapFIXRECALL.begin(); itRECALL != m_mapFIXRECALL.end(); itRECALL++)
 		if( !(*itRECALL).second->IsDead() && CanDefend( pRECALL, (*itRECALL).second, pRECALL->m_pTCURSKILL->m_pTSKILL) )
 		{
-			FLOAT fLOCAL = D3DXVec3Length(&D3DXVECTOR3(
+			FLOAT fLOCAL = D3DXVec3Length(TTEMP(D3DXVECTOR3(
 				pRECALL->GetPositionX() - (*itRECALL).second->GetPositionX(),
 				pRECALL->GetPositionY() - (*itRECALL).second->GetPositionY(),
-				pRECALL->GetPositionZ() - (*itRECALL).second->GetPositionZ()));
+				pRECALL->GetPositionZ() - (*itRECALL).second->GetPositionZ())));
 
 			if( fLOCAL < pRECALL->GetLB((*itRECALL).second) && (!pTARGET || fLOCAL < fDIST) && CanDetect( pRECALL, (*itRECALL).second) )
 			{
@@ -6765,10 +6767,10 @@ CTClientObjBase *CTClientGame::SeekRecallTarget( CTClientRecall *pRECALL)
 	for( itRECALL = m_mapRECALL.begin(); itRECALL != m_mapRECALL.end(); itRECALL++)
 		if( !(*itRECALL).second->IsDead() && CanDefend( pRECALL, (*itRECALL).second, pRECALL->m_pTCURSKILL->m_pTSKILL) )
 		{
-			FLOAT fLOCAL = D3DXVec3Length(&D3DXVECTOR3(
+			FLOAT fLOCAL = D3DXVec3Length(TTEMP(D3DXVECTOR3(
 				pRECALL->GetPositionX() - (*itRECALL).second->GetPositionX(),
 				pRECALL->GetPositionY() - (*itRECALL).second->GetPositionY(),
-				pRECALL->GetPositionZ() - (*itRECALL).second->GetPositionZ()));
+				pRECALL->GetPositionZ() - (*itRECALL).second->GetPositionZ())));
 
 			if( fLOCAL < pRECALL->GetLB((*itRECALL).second) && (!pTARGET || fLOCAL < fDIST) && CanDetect( pRECALL, (*itRECALL).second) )
 			{
@@ -6780,10 +6782,10 @@ CTClientObjBase *CTClientGame::SeekRecallTarget( CTClientRecall *pRECALL)
 	for( itPC = m_mapPLAYER.begin(); itPC != m_mapPLAYER.end(); itPC++)
 		if( !(*itPC).second->IsDead() && CanDefend( pRECALL, (*itPC).second, pRECALL->m_pTCURSKILL->m_pTSKILL) )
 		{
-			FLOAT fLOCAL = D3DXVec3Length(&D3DXVECTOR3(
+			FLOAT fLOCAL = D3DXVec3Length(TTEMP(D3DXVECTOR3(
 				pRECALL->GetPositionX() - (*itPC).second->GetPositionX(),
 				pRECALL->GetPositionY() - (*itPC).second->GetPositionY(),
-				pRECALL->GetPositionZ() - (*itPC).second->GetPositionZ()));
+				pRECALL->GetPositionZ() - (*itPC).second->GetPositionZ())));
 
 			if( fLOCAL < pRECALL->GetLB((*itPC).second) && (!pTARGET || fLOCAL < fDIST) && CanDetect( pRECALL, (*itPC).second) )
 			{
@@ -6795,10 +6797,10 @@ CTClientObjBase *CTClientGame::SeekRecallTarget( CTClientRecall *pRECALL)
 	for( itMON = m_mapMONSTER.begin(); itMON != m_mapMONSTER.end(); itMON++)
 		if( !(*itMON).second->IsDead() && CanDefend( pRECALL, (*itMON).second, pRECALL->m_pTCURSKILL->m_pTSKILL) )
 		{
-			FLOAT fLOCAL = D3DXVec3Length(&D3DXVECTOR3(
+			FLOAT fLOCAL = D3DXVec3Length(TTEMP(D3DXVECTOR3(
 				pRECALL->GetPositionX() - (*itMON).second->GetPositionX(),
 				pRECALL->GetPositionY() - (*itMON).second->GetPositionY(),
-				pRECALL->GetPositionZ() - (*itMON).second->GetPositionZ()));
+				pRECALL->GetPositionZ() - (*itMON).second->GetPositionZ())));
 
 			if( fLOCAL < pRECALL->GetLB((*itMON).second) && (!pTARGET || fLOCAL < fDIST) && CanDetect( pRECALL, (*itMON).second) )
 			{
@@ -6829,10 +6831,10 @@ CTClientObjBase *CTClientGame::SeekSpolecnikTarget( CTClientSpolecnik *pSPOLECNI
 	for( itSPOLECNIK = m_mapSPOLECNIK.begin(); itSPOLECNIK != m_mapSPOLECNIK.end(); itSPOLECNIK++)
 		if( !(*itSPOLECNIK).second->IsDead()  )
 		{
-			FLOAT fLOCAL = D3DXVec3Length(&D3DXVECTOR3(
+			FLOAT fLOCAL = D3DXVec3Length(TTEMP(D3DXVECTOR3(
 				pSPOLECNIK->GetPositionX() - (*itSPOLECNIK).second->GetPositionX(),
 				pSPOLECNIK->GetPositionY() - (*itSPOLECNIK).second->GetPositionY(),
-				pSPOLECNIK->GetPositionZ() - (*itSPOLECNIK).second->GetPositionZ()));
+				pSPOLECNIK->GetPositionZ() - (*itSPOLECNIK).second->GetPositionZ())));
 
 			if( fLOCAL < pSPOLECNIK->GetLB((*itSPOLECNIK).second) && (!pTARGET || fLOCAL < fDIST) && CanDetect( pSPOLECNIK, (*itSPOLECNIK).second) )
 			{
@@ -6843,10 +6845,10 @@ CTClientObjBase *CTClientGame::SeekSpolecnikTarget( CTClientSpolecnik *pSPOLECNI
 	for( itPC = m_mapPLAYER.begin(); itPC != m_mapPLAYER.end(); itPC++)
 		if( !(*itPC).second->IsDead() )
 		{
-			FLOAT fLOCAL = D3DXVec3Length(&D3DXVECTOR3(
+			FLOAT fLOCAL = D3DXVec3Length(TTEMP(D3DXVECTOR3(
 				pSPOLECNIK->GetPositionX() - (*itPC).second->GetPositionX(),
 				pSPOLECNIK->GetPositionY() - (*itPC).second->GetPositionY(),
-				pSPOLECNIK->GetPositionZ() - (*itPC).second->GetPositionZ()));
+				pSPOLECNIK->GetPositionZ() - (*itPC).second->GetPositionZ())));
 
 			if( fLOCAL < pSPOLECNIK->GetLB((*itPC).second) && (!pTARGET || fLOCAL < fDIST) && CanDetect( pSPOLECNIK, (*itPC).second) )
 			{
@@ -6858,10 +6860,10 @@ CTClientObjBase *CTClientGame::SeekSpolecnikTarget( CTClientSpolecnik *pSPOLECNI
 	for( itMON = m_mapMONSTER.begin(); itMON != m_mapMONSTER.end(); itMON++)
 		if( !(*itMON).second->IsDead() )
 		{
-			FLOAT fLOCAL = D3DXVec3Length(&D3DXVECTOR3(
+			FLOAT fLOCAL = D3DXVec3Length(TTEMP(D3DXVECTOR3(
 				pSPOLECNIK->GetPositionX() - (*itMON).second->GetPositionX(),
 				pSPOLECNIK->GetPositionY() - (*itMON).second->GetPositionY(),
-				pSPOLECNIK->GetPositionZ() - (*itMON).second->GetPositionZ()));
+				pSPOLECNIK->GetPositionZ() - (*itMON).second->GetPositionZ())));
 
 			if( fLOCAL < pSPOLECNIK->GetLB((*itMON).second) && (!pTARGET || fLOCAL < fDIST) && CanDetect( pSPOLECNIK, (*itMON).second) )
 			{
@@ -6878,10 +6880,10 @@ CTClientObjBase *CTClientGame::SeekMonTarget( CTClientMonster *pMON)
 	if(pMON->m_bGoHome)
 		return NULL;
 
-	FLOAT fDIST = D3DXVec3Length(&D3DXVECTOR3(
+	FLOAT fDIST = D3DXVec3Length(TTEMP(D3DXVECTOR3(
 		pMON->GetPositionX() - m_pMainChar->GetPositionX(),
 		pMON->GetPositionY() - m_pMainChar->GetPositionY(),
-		pMON->GetPositionZ() - m_pMainChar->GetPositionZ()));
+		pMON->GetPositionZ() - m_pMainChar->GetPositionZ())));
 
 	CTClientObjBase *pTARGET = m_pMainChar->IsDead() ||
 		fDIST > pMON->GetLB(m_pMainChar) ||
@@ -6894,10 +6896,10 @@ CTClientObjBase *CTClientGame::SeekMonTarget( CTClientMonster *pMON)
 	for( itRECALL = m_mapFIXRECALL.begin(); itRECALL != m_mapFIXRECALL.end(); itRECALL++)
 		if( !(*itRECALL).second->IsDead() && CanDefend( pMON, (*itRECALL).second, pMON->m_pTDEFSKILL) )
 		{
-			FLOAT fLOCAL = D3DXVec3Length(&D3DXVECTOR3(
+			FLOAT fLOCAL = D3DXVec3Length(TTEMP(D3DXVECTOR3(
 				pMON->GetPositionX() - (*itRECALL).second->GetPositionX(),
 				pMON->GetPositionY() - (*itRECALL).second->GetPositionY(),
-				pMON->GetPositionZ() - (*itRECALL).second->GetPositionZ()));
+				pMON->GetPositionZ() - (*itRECALL).second->GetPositionZ())));
 
 			if( fLOCAL < pMON->GetLB((*itRECALL).second) && (!pTARGET || fLOCAL < fDIST) && CanDetect( pMON, (*itRECALL).second) )
 			{
@@ -6909,10 +6911,10 @@ CTClientObjBase *CTClientGame::SeekMonTarget( CTClientMonster *pMON)
 	for( itRECALL = m_mapRECALL.begin(); itRECALL != m_mapRECALL.end(); itRECALL++)
 		if( !(*itRECALL).second->IsDead() && CanDefend( pMON, (*itRECALL).second, pMON->m_pTDEFSKILL) )
 		{
-			FLOAT fLOCAL = D3DXVec3Length(&D3DXVECTOR3(
+			FLOAT fLOCAL = D3DXVec3Length(TTEMP(D3DXVECTOR3(
 				pMON->GetPositionX() - (*itRECALL).second->GetPositionX(),
 				pMON->GetPositionY() - (*itRECALL).second->GetPositionY(),
-				pMON->GetPositionZ() - (*itRECALL).second->GetPositionZ()));
+				pMON->GetPositionZ() - (*itRECALL).second->GetPositionZ())));
 
 			if( fLOCAL < pMON->GetLB((*itRECALL).second) && (!pTARGET || fLOCAL < fDIST) && CanDetect( pMON, (*itRECALL).second) )
 			{
@@ -6924,10 +6926,10 @@ CTClientObjBase *CTClientGame::SeekMonTarget( CTClientMonster *pMON)
 	for( itPC = m_mapPLAYER.begin(); itPC != m_mapPLAYER.end(); itPC++)
 		if( !(*itPC).second->IsDead() && CanDefend( pMON, (*itPC).second, pMON->m_pTDEFSKILL) )
 		{
-			FLOAT fLOCAL = D3DXVec3Length(&D3DXVECTOR3(
+			FLOAT fLOCAL = D3DXVec3Length(TTEMP(D3DXVECTOR3(
 				pMON->GetPositionX() - (*itPC).second->GetPositionX(),
 				pMON->GetPositionY() - (*itPC).second->GetPositionY(),
-				pMON->GetPositionZ() - (*itPC).second->GetPositionZ()));
+				pMON->GetPositionZ() - (*itPC).second->GetPositionZ())));
 
 			if( fLOCAL < pMON->GetLB((*itPC).second) && (!pTARGET || fLOCAL < fDIST) && CanDetect( pMON, (*itPC).second) )
 			{
@@ -6986,7 +6988,7 @@ void CTClientGame::CalcSLAVEMON( DWORD dwTick)
 
 					if( !pFollow->CanFLY() || fAB >= fabs(vTPOS.y - vFOLLOW.y) )
 					{
-						FLOAT fDist = D3DXVec3LengthSq(&(vTPOS - vFOLLOW));
+						FLOAT fDist = D3DXVec3LengthSq(TTEMP((vTPOS - vFOLLOW)));
 
 						if( fDist < fAB * fAB )
 						{
@@ -7072,7 +7074,7 @@ void CTClientGame::CalcSLAVEMON( DWORD dwTick)
 				{
 					D3DXVECTOR3 vFOLLOW = pFollow->GetPosition();
 
-					FLOAT fDist = fDist = D3DXVec3LengthSq(&(vTPOS - vFOLLOW));
+					FLOAT fDist = fDist = D3DXVec3LengthSq(TTEMP((vTPOS - vFOLLOW)));
 
 					FLOAT fLOST = pMONSTER->GetLOST(pFollow);
 					FLOAT fAB = pMONSTER->GetAB(pFollow);
@@ -7465,9 +7467,9 @@ void CTClientGame::CalcSLAVEMON( DWORD dwTick)
 
 			if(bROAM)
 			{
-				FLOAT fDist = D3DXVec2LengthSq(&D3DXVECTOR2(
+				FLOAT fDist = D3DXVec2LengthSq(TTEMP(D3DXVECTOR2(
 					pMONSTER->m_vTGOAL.x - vTPOS.x,
-					pMONSTER->m_vTGOAL.z - vTPOS.z));
+					pMONSTER->m_vTGOAL.z - vTPOS.z)));
 
 				BYTE bCORRECT = pMONSTER->m_bUPDATE;
 				WORD wPITCH = pMONSTER->m_wPITCH;
@@ -7594,7 +7596,7 @@ void CTClientGame::CalcSLAVEMON( DWORD dwTick)
 			D3DXVECTOR3 vTSTART = vTPOS;
 
 			FLOAT fAB = pMONSTER->GetAB(pFollow);
-			FLOAT fDist = D3DXVec2Length( &D3DXVECTOR2( vFOLLOW.x - vTPOS.x, vFOLLOW.z - vTPOS.z ) );
+			FLOAT fDist = D3DXVec2Length( TTEMP(D3DXVECTOR2( vFOLLOW.x - vTPOS.x, vFOLLOW.z - vTPOS.z )) );
 
 			if( pFollow == m_pMainChar &&
 				fDist - fAB > 0.125f )
@@ -7810,9 +7812,9 @@ void CTClientGame::CalcMONSTER( DWORD dwTick)
 			bHandling,
 			this);
 
-		if( !m_pMainChar->m_bGhost || D3DXVec2Length( &D3DXVECTOR2(
+		if( !m_pMainChar->m_bGhost || D3DXVec2Length( TTEMP(D3DXVECTOR2(
 			vPOS.x - m_pMainChar->GetPositionX(),
-			vPOS.z - m_pMainChar->GetPositionZ())) < CELL_SIZE )
+			vPOS.z - m_pMainChar->GetPositionZ()))) < CELL_SIZE )
 		{
 			BYTE bCHECK = pMON->m_bSlide || pMON->IsPush() ? TRUE : FALSE;
 
@@ -8001,7 +8003,7 @@ void CTClientGame::CalcSLAVERECALL( CTClientRecall *pTRECALL,
 		FLOAT fRANGE = pTRECALL->GetMinRange(
 			pTARGET,
 			pTRECALL->m_pTCURSKILL->m_pTSKILL);
-		FLOAT fDIST = D3DXVec3LengthSq(&(vTARGET - vTPOS));
+		FLOAT fDIST = D3DXVec3LengthSq(TTEMP((vTARGET - vTPOS)));
 
 		pTRECALL->m_bTargetType = pTARGET->m_bType;
 		pTRECALL->m_dwTargetID = pTARGET->m_dwID;
@@ -8179,9 +8181,9 @@ void CTClientGame::CalcSLAVERECALL( CTClientRecall *pTRECALL,
 				vTARGET = pTRECALL->m_vRecallRunAwayTarget;
 			}
 
-			FLOAT fDIST = D3DXVec2LengthSq(&D3DXVECTOR2(
+			FLOAT fDIST = D3DXVec2LengthSq(TTEMP(D3DXVECTOR2(
 				vTARGET.x - vTPOS.x,
-				vTARGET.z - vTPOS.z));
+				vTARGET.z - vTPOS.z)));
 			FLOAT fRadius = m_pMainChar->m_fRadius + pTRECALL->m_fRadius;
 
 			BYTE bActionID = pTRECALL->m_bAction;
@@ -8398,9 +8400,9 @@ void CTClientGame::CalcRECALL( CTClientRecall *pTRECALL,
 
 		if(bHandling)
 		{
-			FLOAT fMove = D3DXVec2Length(&D3DXVECTOR2(
+			FLOAT fMove = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 				vTNEXT.x - vPOS.x,
-				vTNEXT.z - vPOS.z));
+				vTNEXT.z - vPOS.z)));
 
 			if( m_vMAP.GetHeight( pTRECALL, NULL, &vTNEXT, fMove, FALSE) > vPOS.y + fMove / CTClientMAP::m_fMoveBound )
 			{
@@ -8609,7 +8611,7 @@ void CTClientGame::CalcSLAVESPOLECNIK( DWORD dwTick)
 				D3DXVECTOR3 vTARGET = pTARGET->GetPosition();
 
 				FLOAT fRANGE = 2.0f;
-				FLOAT fDIST = D3DXVec3LengthSq(&(vTARGET - vTPOS));
+				FLOAT fDIST = D3DXVec3LengthSq(TTEMP((vTARGET - vTPOS)));
 
 				pTRECALL->m_bTargetType = pTARGET->m_bType;
 				pTRECALL->m_dwTargetID = pTARGET->m_dwID;
@@ -8669,9 +8671,9 @@ void CTClientGame::CalcSLAVESPOLECNIK( DWORD dwTick)
 				BYTE bCORRECT = FALSE;
 				
 				D3DXVECTOR3 vTARGET = pTARGET->GetPosition();
-				FLOAT fDIST = D3DXVec2LengthSq(&D3DXVECTOR2(
+				FLOAT fDIST = D3DXVec2LengthSq(TTEMP(D3DXVECTOR2(
 					vTARGET.x - vTPOS.x,
-					vTARGET.z - vTPOS.z));
+					vTARGET.z - vTPOS.z)));
 				FLOAT fRadius = pTARGET->m_fRadius + pTRECALL->m_fRadius;
 
 				BYTE bActionID = pTRECALL->m_bAction;
@@ -8917,9 +8919,9 @@ void CTClientGame::CalcSPOLECNIK( CTClientSpolecnik *pTSPOLECNIK,
 
 		if(bHandling)
 		{
-			FLOAT fMove = D3DXVec2Length(&D3DXVECTOR2(
+			FLOAT fMove = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 				vTNEXT.x - vPOS.x,
-				vTNEXT.z - vPOS.z));
+				vTNEXT.z - vPOS.z)));
 
 			if( m_vMAP.GetHeight( pTSPOLECNIK, NULL, &vTNEXT, fMove, FALSE) > vPOS.y + fMove / CTClientMAP::m_fMoveBound )
 			{
@@ -12427,7 +12429,7 @@ void CTClientGame::OnChar( UINT nChar, int nRepCnt, UINT nFlags)
 	if( m_vTFRAME[TFRAME_KEYSETTING]->IsVisible() )
 		return;
 
-	WORD wVKey = (WORD) MapVirtualKey(LOBYTE(nFlags),1);
+	WORD wVKey = CTachyonInput::ScanToVKey(nFlags);
 	WORD wModKey = CTClientKEY::GetCurMOD();
 	WORD wKEY = CTKeySetting::GetInstance()->GetCurKeySet(wVKey,wModKey);
 
@@ -12527,9 +12529,9 @@ void CTClientGame::OnKeyDown( UINT nChar, int nRepCnt, UINT nFlags)
 	{
 		if( CTNationOption::JAPAN_IME || CTNationOption::TAIWAN_IME )
 		{
-			HIMC hImc = ImmGetContext(m_pMainWnd->GetSafeHwnd());
+			HIMC hImc = ImmGetContext(TSAFE_HWND(m_pMainWnd));
 			ImmNotifyIME( hImc, NI_COMPOSITIONSTR, CPS_CANCEL, 0);
-			ImmReleaseContext( m_pMainWnd->GetSafeHwnd(), hImc);
+			ImmReleaseContext( TSAFE_HWND(m_pMainWnd), hImc);
 		}
 
 		if(pKeyDlg->IsWaitInput())
@@ -12542,12 +12544,12 @@ void CTClientGame::OnKeyDown( UINT nChar, int nRepCnt, UINT nFlags)
 	{
 		if( CTNationOption::JAPAN_IME || CTNationOption::TAIWAN_IME )
 		{
-			HIMC hImc = ImmGetContext(m_pMainWnd->GetSafeHwnd());
+			HIMC hImc = ImmGetContext(TSAFE_HWND(m_pMainWnd));
 			ImmNotifyIME( hImc, NI_COMPOSITIONSTR, CPS_CANCEL, 0);
-			ImmReleaseContext( m_pMainWnd->GetSafeHwnd(), hImc);
+			ImmReleaseContext( TSAFE_HWND(m_pMainWnd), hImc);
 		}
 
-		if( m_vTFRAME[TFRAME_CINEMATIC]->IsVisible() && CTKeySetting::GetInstance()->GetCurKeySet( (WORD) MapVirtualKey( LOBYTE(nFlags), 1), CTClientKEY::GetCurMOD()) == TKEY_CLOSE_UI )
+		if( m_vTFRAME[TFRAME_CINEMATIC]->IsVisible() && CTKeySetting::GetInstance()->GetCurKeySet( CTachyonInput::ScanToVKey(nFlags), CTClientKEY::GetCurMOD()) == TKEY_CLOSE_UI )
 			OnGM_SKIP_SCENE();
 
 		return;
@@ -12561,12 +12563,12 @@ void CTClientGame::OnKeyDown( UINT nChar, int nRepCnt, UINT nFlags)
 	{
 		if( CTNationOption::JAPAN_IME || CTNationOption::TAIWAN_IME )
 		{
-			HIMC hImc = ImmGetContext(m_pMainWnd->GetSafeHwnd());
+			HIMC hImc = ImmGetContext(TSAFE_HWND(m_pMainWnd));
 			ImmNotifyIME( hImc, NI_COMPOSITIONSTR, CPS_CANCEL, 0);
-			ImmReleaseContext( m_pMainWnd->GetSafeHwnd(), hImc);
+			ImmReleaseContext( TSAFE_HWND(m_pMainWnd), hImc);
 		}
 
-		OnActivateKEY((WORD) MapVirtualKey( LOBYTE(nFlags), 1));
+		OnActivateKEY(CTachyonInput::ScanToVKey(nFlags));
 	}
 #ifdef NEW_IF
 	if( pTEDIT && pTEDIT == m_pChatFrame->GetChatEditMenu() )
@@ -12607,7 +12609,7 @@ void CTClientGame::OnKeyUp( UINT nChar, int nRepCnt, UINT nFlags)
 	TEdit *pTEDIT = GetCurEdit();
 
 	if( !pTEDIT )
-		OnReleaseKEY((WORD) MapVirtualKey(LOBYTE(nFlags),1));
+		OnReleaseKEY(CTachyonInput::ScanToVKey(nFlags));
 
 	CFrameGroup::OnKeyUp( nChar, nRepCnt, nFlags);
 }
@@ -12662,8 +12664,7 @@ void CTClientGame::OnMouseMove( UINT nFlags, CPoint pt)
 	if(bMOVE)
 	{
 		pt = point;
-		ClientToScreen( m_pMainWnd->GetSafeHwnd(), &point);
-		SetCursorPos( point.x, point.y);
+		CTachyonInput::SetCursorPos(point);
 	}
 	m_vKEY.m_point = pt;
 
@@ -13779,19 +13780,19 @@ void CTClientGame::SetMaterial( const D3DMATERIAL9& vMAT)
 	{
 		m_pDevice->m_pDevice->SetVertexShaderConstantF(
 			m_pDevice->m_vConstantVS[VC_MTRLAMBIENT],
-			(FLOAT *) &D3DXVECTOR4(
+			(FLOAT *) TTEMP(D3DXVECTOR4(
 			vMAT.Ambient.r,
 			vMAT.Ambient.g,
 			vMAT.Ambient.b,
-			vMAT.Ambient.a), 1);
+			vMAT.Ambient.a)), 1);
 
 		m_pDevice->m_pDevice->SetVertexShaderConstantF(
 			m_pDevice->m_vConstantVS[VC_MTRLDIFFUSE],
-			(FLOAT *) &D3DXVECTOR4(
+			(FLOAT *) TTEMP(D3DXVECTOR4(
 			vMAT.Diffuse.r,
 			vMAT.Diffuse.g,
 			vMAT.Diffuse.b,
-			vMAT.Diffuse.a), 1);
+			vMAT.Diffuse.a)), 1);
 	}
 
 	m_pDevice->m_pDevice->SetMaterial(&vMAT);
@@ -13815,11 +13816,11 @@ void CTClientGame::SetAmbient( BYTE bRValue,
 
 	m_pDevice->m_pDevice->SetVertexShaderConstantF(
 		m_pDevice->m_vConstantVS[VC_AMBIENT],
-		(FLOAT *) &D3DXVECTOR4(
+		(FLOAT *) TTEMP(D3DXVECTOR4(
 		FLOAT(bRValue) / 255.0f,
 		FLOAT(bGValue) / 255.0f,
 		FLOAT(bBValue) / 255.0f,
-		1.0f), 1);
+		1.0f)), 1);
 }
 
 void CTClientGame::EnableLIGHT( CTClientBSP *pTBSP)
@@ -13871,15 +13872,15 @@ void CTClientGame::EnableLIGHT( CTClientBSP *pTBSP)
 	for( int i=0; i<vLightCount[0]; i++)
 	{
 		memcpy( pCONST, vTLIGHT[i]->m_Light.Type == D3DLIGHT_POINT ?
-			&D3DXVECTOR4(
+			TTEMP(D3DXVECTOR4(
 			1.0f / (vTLIGHT[i]->m_Light.Range * TLIGHT_SCALE * vTLIGHT[i]->m_Light.Range * TLIGHT_SCALE),
 			0.0f,
 			0.0f,
-			0.0f) : &D3DXVECTOR4(
+			0.0f)) : TTEMP(D3DXVECTOR4(
 			vTLIGHT[i]->m_Light.Ambient.r,
 			vTLIGHT[i]->m_Light.Ambient.g,
 			vTLIGHT[i]->m_Light.Ambient.b,
-			vTLIGHT[i]->m_Light.Ambient.a),
+			vTLIGHT[i]->m_Light.Ambient.a)),
 			4 * sizeof(FLOAT));
 		pCONST += 4;
 	}
@@ -13891,11 +13892,11 @@ void CTClientGame::EnableLIGHT( CTClientBSP *pTBSP)
 
 	for(auto i=0; i<vLightCount[0]; i++)
 	{
-		memcpy( pCONST, &D3DXVECTOR4(
+		memcpy( pCONST, TTEMP(D3DXVECTOR4(
 			vTLIGHT[i]->m_Light.Diffuse.r,
 			vTLIGHT[i]->m_Light.Diffuse.g,
 			vTLIGHT[i]->m_Light.Diffuse.b,
-			vTLIGHT[i]->m_Light.Diffuse.a),
+			vTLIGHT[i]->m_Light.Diffuse.a)),
 			4 * sizeof(FLOAT));
 		pCONST += 4;
 	}
@@ -13908,15 +13909,15 @@ void CTClientGame::EnableLIGHT( CTClientBSP *pTBSP)
 	for(auto i=0; i<vLightCount[0]; i++)
 	{
 		memcpy( pCONST, vTLIGHT[i]->m_Light.Type == D3DLIGHT_POINT ?
-			&D3DXVECTOR4(
+			TTEMP(D3DXVECTOR4(
 			vTLIGHT[i]->m_Light.Position.x,
 			vTLIGHT[i]->m_Light.Position.y,
 			vTLIGHT[i]->m_Light.Position.z,
-			-1.0f) : &D3DXVECTOR4(
+			-1.0f)) : TTEMP(D3DXVECTOR4(
 			vTLIGHT[i]->m_Light.Direction.x,
 			vTLIGHT[i]->m_Light.Direction.y,
 			vTLIGHT[i]->m_Light.Direction.z,
-			1.0f),
+			1.0f)),
 			4 * sizeof(FLOAT));
 		pCONST += 4;
 	}
@@ -13946,11 +13947,11 @@ void CTClientGame::EnableLIGHT()
 
 	for(auto i=0; i<TLIGHT_COUNT; i++)
 	{
-		memcpy( &vCONST[i * 4], &D3DXVECTOR4(
+		memcpy( &vCONST[i * 4], TTEMP(D3DXVECTOR4(
 			m_vLIGHT[i].m_Light.Ambient.r,
 			m_vLIGHT[i].m_Light.Ambient.g,
 			m_vLIGHT[i].m_Light.Ambient.b,
-			m_vLIGHT[i].m_Light.Ambient.a),
+			m_vLIGHT[i].m_Light.Ambient.a)),
 			4 * sizeof(FLOAT));
 	}
 
@@ -13960,11 +13961,11 @@ void CTClientGame::EnableLIGHT()
 
 	for(auto i=0; i<TLIGHT_COUNT; i++)
 	{
-		memcpy( &vCONST[i * 4], &D3DXVECTOR4(
+		memcpy( &vCONST[i * 4], TTEMP(D3DXVECTOR4(
 			m_vLIGHT[i].m_Light.Diffuse.r,
 			m_vLIGHT[i].m_Light.Diffuse.g,
 			m_vLIGHT[i].m_Light.Diffuse.b,
-			m_vLIGHT[i].m_Light.Diffuse.a),
+			m_vLIGHT[i].m_Light.Diffuse.a)),
 			4 * sizeof(FLOAT));
 	}
 
@@ -13974,11 +13975,11 @@ void CTClientGame::EnableLIGHT()
 
 	for(auto i=0; i<TLIGHT_COUNT; i++)
 	{
-		memcpy( &vCONST[i * 4], &D3DXVECTOR4(
+		memcpy( &vCONST[i * 4], TTEMP(D3DXVECTOR4(
 			m_vLIGHT[i].m_Light.Direction.x,
 			m_vLIGHT[i].m_Light.Direction.y,
 			m_vLIGHT[i].m_Light.Direction.z,
-			1.0f),
+			1.0f)),
 			4 * sizeof(FLOAT));
 	}
 
@@ -14023,37 +14024,37 @@ void CTClientGame::ResetSCENEConstant()
 
 	m_pDevice->m_pDevice->SetVertexShaderConstantF(
 		m_pDevice->m_vConstantVS[VC_MTRLAMBIENT],
-		(FLOAT *) &D3DXVECTOR4(
+		(FLOAT *) TTEMP(D3DXVECTOR4(
 		m_vNormal.Ambient.r,
 		m_vNormal.Ambient.g,
 		m_vNormal.Ambient.b,
-		m_vNormal.Ambient.a), 1);
+		m_vNormal.Ambient.a)), 1);
 
 	m_pDevice->m_pDevice->SetVertexShaderConstantF(
 		m_pDevice->m_vConstantVS[VC_MTRLDIFFUSE],
-		(FLOAT *) &D3DXVECTOR4(
+		(FLOAT *) TTEMP(D3DXVECTOR4(
 		m_vNormal.Diffuse.r,
 		m_vNormal.Diffuse.g,
 		m_vNormal.Diffuse.b,
-		m_vNormal.Diffuse.a), 1);
+		m_vNormal.Diffuse.a)), 1);
 
 	m_pDevice->m_pDevice->SetVertexShaderConstantF(
 		m_pDevice->m_vConstantVS[VC_AMBIENT],
-		(FLOAT *) &D3DXVECTOR4(
+		(FLOAT *) TTEMP(D3DXVECTOR4(
 		m_vMAP.GetSpecRange(),
 		m_vMAP.GetSpecMax(),
 		0.0f,
-		0.0f), 1);
+		0.0f)), 1);
 
 	m_pDevice->m_pDevice->SetVertexShaderConstantF(
 		m_pDevice->m_vConstantVS[VC_CAMPOS],
-		(FLOAT *) &D3DXVECTOR4(
+		(FLOAT *) TTEMP(D3DXVECTOR4(
 		m_pCamera->m_vPosition.x,
 		m_pCamera->m_vPosition.y,
 		m_pCamera->m_vPosition.z,
-		0.0f), 1);
+		0.0f)), 1);
 
-	D3DXMatrixTranspose( (LPD3DXMATRIX) vCONST, &(m_pCamera->m_matView * m_pCamera->m_matProjection));
+	D3DXMatrixTranspose( (LPD3DXMATRIX) vCONST, TTEMP((m_pCamera->m_matView * m_pCamera->m_matProjection)));
 	m_pDevice->m_pDevice->SetVertexShaderConstantF(
 		m_pDevice->m_vConstantVS[VC_PROJ],
 		vCONST, 4);
@@ -14173,9 +14174,9 @@ void CTClientGame::RangeSHOT( CTClientObjBase *pTATTACK,
 
 	for( itRECALL = m_mapFIXRECALL.begin(); itRECALL != m_mapFIXRECALL.end(); itRECALL++)
 	{
-		FLOAT fDIST = D3DXVec2Length(&D3DXVECTOR2(
+		FLOAT fDIST = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 			pTGROUND->x - (*itRECALL).second->GetPositionX(),
-			pTGROUND->z - (*itRECALL).second->GetPositionZ()));
+			pTGROUND->z - (*itRECALL).second->GetPositionZ())));
 
 		if( CanDefend( pTATTACK, (*itRECALL).second, pTSKILL) && fDIST < pTSKILL->m_fAtkRange )
 
@@ -14188,9 +14189,9 @@ void CTClientGame::RangeSHOT( CTClientObjBase *pTATTACK,
 
 	for( itRECALL = m_mapRECALL.begin(); itRECALL != m_mapRECALL.end(); itRECALL++)
 	{
-		FLOAT fDIST = D3DXVec2Length(&D3DXVECTOR2(
+		FLOAT fDIST = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 			pTGROUND->x - (*itRECALL).second->GetPositionX(),
-			pTGROUND->z - (*itRECALL).second->GetPositionZ()));
+			pTGROUND->z - (*itRECALL).second->GetPositionZ())));
 
 if( CanDefend( pTATTACK, (*itRECALL).second, pTSKILL) && fDIST < pTSKILL->m_fAtkRange )
 
@@ -14205,9 +14206,9 @@ if( CanDefend( pTATTACK, (*itRECALL).second, pTSKILL) && fDIST < pTSKILL->m_fAtk
 
 	for( itMON = m_mapMONSTER.begin(); itMON != m_mapMONSTER.end(); itMON++)
 	{
-		FLOAT fDIST = D3DXVec2Length(&D3DXVECTOR2(
+		FLOAT fDIST = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 			pTGROUND->x - (*itMON).second->GetPositionX(),
-			pTGROUND->z - (*itMON).second->GetPositionZ()));
+			pTGROUND->z - (*itMON).second->GetPositionZ())));
 
 		if( CanDefend( pTATTACK, (*itMON).second, pTSKILL) && fDIST < pTSKILL->m_fAtkRange )
 
@@ -14220,9 +14221,9 @@ if( CanDefend( pTATTACK, (*itRECALL).second, pTSKILL) && fDIST < pTSKILL->m_fAtk
 
 	for( itPC = m_mapPLAYER.begin(); itPC != m_mapPLAYER.end(); itPC++)
 	{
-		FLOAT fDIST = D3DXVec2Length(&D3DXVECTOR2(
+		FLOAT fDIST = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 			pTGROUND->x - (*itPC).second->GetPositionX(),
-			pTGROUND->z - (*itPC).second->GetPositionZ()));
+			pTGROUND->z - (*itPC).second->GetPositionZ())));
 
 	if( CanDefend( pTATTACK, (*itPC).second, pTSKILL) && fDIST < pTSKILL->m_fAtkRange )
 
@@ -14665,7 +14666,7 @@ void CTClientGame::ShotArrow( CTClientObjBase *pTOBJ, LPTSKILLDATA pSKILLDATA, L
 					pTOBJ->m_bType, 
 					pTOBJ->m_dwID, 
 					pTVISUAL->m_dwPivot[MT_BATTLE],
-					pTSKILL->m_strNAME);
+					(LPCTSTR)pTSKILL->m_strNAME);
 
 				return;
 			}
@@ -14716,9 +14717,9 @@ void CTClientGame::ShotArrow( CTClientObjBase *pTOBJ, LPTSKILLDATA pSKILLDATA, L
 							sinf(fDIR),
 							cosf(fDIR));
 
-						pTARROW->m_dwTotalTick = DWORD(D3DXVec2Length(&D3DXVECTOR2(
+						pTARROW->m_dwTotalTick = DWORD(D3DXVec2Length(TTEMP(D3DXVECTOR2(
 							pTARGET->GetPositionX() - pTOBJ->m_pBone[dwOBJPIVOT + 1]._41,
-							pTARGET->GetPositionZ() - pTOBJ->m_pBone[dwOBJPIVOT + 1]._43)) / (2.0f * pTARROW->m_fVelocityX));
+							pTARGET->GetPositionZ() - pTOBJ->m_pBone[dwOBJPIVOT + 1]._43))) / (2.0f * pTARROW->m_fVelocityX));
 						pTARROW->m_bAccel = TRUE;
 					}
 
@@ -15883,7 +15884,7 @@ void CTClientGame::ResetPlayerINFO( BYTE bContinue)
 		bContinue);
 
 	m_vTTEXT[TTEXT_PLAYER_NAME]->m_strText = CTChart::Format( TSTR_FMT_NAME,
-		m_pMainChar->GetName());
+		(LPCTSTR)m_pMainChar->GetName());
 
 	CString strCLASS;
 	strCLASS = CTChart::LoadString( (TSTRING) m_vTCLASSSTR[m_pMainChar->m_bClassID] );
@@ -15974,7 +15975,7 @@ void CTClientGame::ResetTargetINFO( CTClientObjBase *pTARGET, BYTE bContinue)
 	if( pTARGET && pTARGET->m_bType != OT_SWITCH )
 	{
 		m_vTTEXT[TTEXT_TARGET_NAME]->m_strText = CTChart::Format( TSTR_FMT_NAME,
-			pTARGET->GetName());
+			(LPCTSTR)pTARGET->GetName());
 
 #ifdef NEW_IF
 #else
@@ -16214,7 +16215,7 @@ void CTClientGame::ResetTargetINFO( LPTPARTY pTPARTY, BYTE bContinue)
 		m_vTFACEIMG[TFACEIMG_TARGETPC]->ShowComponent(TRUE);
 
 		m_vTTEXT[TTEXT_TARGET_NAME]->m_strText = CTChart::Format( TSTR_FMT_NAME,
-			pTPARTY->m_strNAME);
+			(LPCTSTR)pTPARTY->m_strNAME);
 
 		if(pTPARTY->m_dwMaxHP)
 		{
@@ -16408,7 +16409,7 @@ void CTClientGame::ResetPartyINFO( BYTE bContinue)
 #endif
 
 			m_vTTEXT[ vNAME[i] ]->m_strText = CTChart::Format( TSTR_FMT_NAME,
-				m_vTPARTY[i]->m_strNAME);
+				(LPCTSTR)m_vTPARTY[i]->m_strNAME);
 
 #ifdef NEW_IF
 #else
@@ -16879,9 +16880,9 @@ void CTClientGame::BuildHitDEADMON( LPLISTTOBJBASE pLIST, CPoint point)
 		if( pTOBJ->m_bType != OT_MON || !pTOBJ->m_bCanSelected || !pTOBJ->IsDead() )
 			continue;
 		
-		if( D3DXVec2Length(&D3DXVECTOR2(
+		if( D3DXVec2Length(TTEMP(D3DXVECTOR2(
 			pTOBJ->GetPositionX() - m_pMainChar->GetPositionX(),
-			pTOBJ->GetPositionZ() - m_pMainChar->GetPositionZ())) >= TARGET_DIST )
+			pTOBJ->GetPositionZ() - m_pMainChar->GetPositionZ()))) >= TARGET_DIST )
 		{
 			continue;
 		}
@@ -17564,7 +17565,7 @@ void CTClientGame::ResetRecallINFO( BYTE bContinue)
 #endif
 		
 		m_vTTEXT[TTEXT_SUMMON_NAME]->m_strText = CTChart::Format( TSTR_FMT_NAME,
-			pTRECALL->GetName());
+			(LPCTSTR)pTRECALL->GetName());
 
 		m_vTTEXT[TTEXT_SUMMON_LEVEL]->m_strText = CTChart::Format( TSTR_FMT_LEVEL,
 			pTRECALL->m_bLevel);
@@ -19007,10 +19008,10 @@ void CTClientGame::DropItem_PetToMain(UINT nFlags, BYTE bTargetUI, BYTE bSlotID)
 
 void CTClientGame::CalcGhost( DWORD dwTick)
 {
-	FLOAT fDist = D3DXVec3Length(&D3DXVECTOR3(
+	FLOAT fDist = D3DXVec3Length(TTEMP(D3DXVECTOR3(
 		m_pMainChar->GetPositionX() - m_pMainChar->m_vTDEAD.x,
 		m_pMainChar->GetPositionY() - m_pMainChar->m_vTDEAD.y,
-		m_pMainChar->GetPositionZ() - m_pMainChar->m_vTDEAD.z));
+		m_pMainChar->GetPositionZ() - m_pMainChar->m_vTDEAD.z)));
 
 	BYTE bCheck = CheckRevival( &(m_pMainChar->m_vTDEAD) );
 
@@ -19043,9 +19044,9 @@ void CTClientGame::CalcGhost( DWORD dwTick)
 		m_bRevival = FALSE;
 	}
 
-	if( D3DXVec2Length( &D3DXVECTOR2(
+	if( D3DXVec2Length( TTEMP(D3DXVECTOR2(
 		vPOS.x - m_pMainChar->GetPositionX(),
-		vPOS.z - m_pMainChar->GetPositionZ())) < CTClientObjBase::m_fCamDist )
+		vPOS.z - m_pMainChar->GetPositionZ()))) < CTClientObjBase::m_fCamDist )
 	{
 		m_vMainDead.CalcTick(
 			&vPOS,
@@ -20412,9 +20413,9 @@ void CTClientGame::UseTItem( BYTE bInvenID,
 
 			CTClientItem::Lock( pTITEM->GetTITEM()->m_wDelayGroupID );
 			SendCS_ITEMUSE_REQ(
-				&D3DXVECTOR2(
+				TTEMP(D3DXVECTOR2(
 				m_pMainChar->GetPositionX(),
-				m_pMainChar->GetPositionZ()),
+				m_pMainChar->GetPositionZ())),
 				pTITEM->GetTITEM()->m_wItemID,
 				bInvenID,
 				bSlotID,
@@ -20541,7 +20542,7 @@ void CTClientGame::UseTItem( BYTE bInvenID,
 				m_bPortalItemSlot	= bSlotID;
 
 				CString strMSG;
-				strMSG = CTChart::Format( TSTR_USEITEM_MEMBERRECALL, m_pTPARTY->m_strNAME);
+				strMSG = CTChart::Format( TSTR_USEITEM_MEMBERRECALL, (LPCTSTR)m_pTPARTY->m_strNAME);
 
 				m_pMainWnd->MessageBoxYesNo(
 					strMSG,
@@ -21002,9 +21003,9 @@ void CTClientGame::UseTItem( BYTE bInvenID,
 		{
 			CTClientItem::Lock(pTITEM->GetTITEM()->m_wDelayGroupID);
 			SendCS_ITEMUSE_REQ(
-				&D3DXVECTOR2(
+				TTEMP(D3DXVECTOR2(
 				m_pMainChar->GetPositionX(),
-				m_pMainChar->GetPositionZ()),
+				m_pMainChar->GetPositionZ())),
 				pTITEM->GetTITEM()->m_wItemID,
 				bInvenID,
 				bSlotID,
@@ -21850,9 +21851,9 @@ BYTE CTClientGame::CheckRevival( LPD3DXVECTOR3 vTARGET )
 	MAPTGATE::iterator itTGATE;
 	BYTE bRESULT = TRUE;
 
-	FLOAT fDIST = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDIST = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		m_pMainChar->GetPositionX() - vTARGET->x,
-		m_pMainChar->GetPositionZ() - vTARGET->z)) + m_pMainChar->m_fRadius;
+		m_pMainChar->GetPositionZ() - vTARGET->z))) + m_pMainChar->m_fRadius;
 
 	for( itTGATE = m_vMAP.m_mapTGate.begin(); itTGATE != m_vMAP.m_mapTGate.end(); itTGATE++)
 	{
@@ -21861,9 +21862,9 @@ BYTE CTClientGame::CheckRevival( LPD3DXVECTOR3 vTARGET )
 		FLOAT fRESULT = 0.0f;
 
 		if( !(*itTGATE).second->m_bGARBAGE && (*itTGATE).second->IsActiveTGate() &&
-			(*itTGATE).second && D3DXVec2Length(&D3DXVECTOR2(
+			(*itTGATE).second && D3DXVec2Length(TTEMP(D3DXVECTOR2(
 			(*itTGATE).second->GetPositionX() - vTARGET->x,
-			(*itTGATE).second->GetPositionZ() - vTARGET->z)) < (*itTGATE).second->m_fRadius + fDIST &&
+			(*itTGATE).second->GetPositionZ() - vTARGET->z))) < (*itTGATE).second->m_fRadius + fDIST &&
 			m_pMainChar->CheckCollision( (*itTGATE).second, &vTSTART, &vTEND, m_pMainChar->m_fSizeY, &fRESULT) )
 		{
 			bRESULT = FALSE;
@@ -22098,10 +22099,10 @@ void CTClientGame::BuildPickList(
 					(*itTOBJ)->m_bCanSelected && (*itTOBJ) != m_pMainChar &&
 					!m_pMainChar->IsAlliance(*itTOBJ) )
 				{
-					(*itTOBJ)->m_fZValue = D3DXVec3Length(&D3DXVECTOR3(
+					(*itTOBJ)->m_fZValue = D3DXVec3Length(TTEMP(D3DXVECTOR3(
 						m_pCtrlHost->GetPositionX() - (*itTOBJ)->GetPositionX(),
 						m_pCtrlHost->GetPositionY() - (*itTOBJ)->GetPositionY(),
-						m_pCtrlHost->GetPositionZ() - (*itTOBJ)->GetPositionZ()));
+						m_pCtrlHost->GetPositionZ() - (*itTOBJ)->GetPositionZ())));
 
 					if( (*itTOBJ)->m_fZValue < TPICK_DIST )
 					{
@@ -22347,34 +22348,34 @@ void CTClientGame::TradeMSG( CString strNAME,
 
 	switch(bERROR)
 	{
-	case DEALITEM_INVALIDITEM	: strMSG = CTChart::Format( TSTR_ERROR_TRADE_INVALIDITEM, strNAME); break;
+	case DEALITEM_INVALIDITEM	: strMSG = CTChart::Format( TSTR_ERROR_TRADE_INVALIDITEM, (LPCTSTR)strNAME); break;
 	case DEALITEM_NOTARGET		: strMSG = CTChart::LoadString( TSTR_ERROR_TRADE_TARGET); break;
 	case DEALITEM_OVERMONEY		:
-	case DEALITEM_NOMONEY		: strMSG = CTChart::Format( TSTR_ERROR_TRADE_NOMONEY, strNAME); break;
+	case DEALITEM_NOMONEY		: strMSG = CTChart::Format( TSTR_ERROR_TRADE_NOMONEY, (LPCTSTR)strNAME); break;
 	case DEALITEM_NOINVEN		:
-	case DEALITEM_NOITEM		: strMSG = CTChart::Format( TSTR_ERROR_TRADE_NOITEM, strNAME); break;
-	case DEALITEM_DEALING		: strMSG = CTChart::Format( TSTR_ERROR_TRADE_ALREADY, strNAME); break;
+	case DEALITEM_NOITEM		: strMSG = CTChart::Format( TSTR_ERROR_TRADE_NOITEM, (LPCTSTR)strNAME); break;
+	case DEALITEM_DEALING		: strMSG = CTChart::Format( TSTR_ERROR_TRADE_ALREADY, (LPCTSTR)strNAME); break;
 	case DEALITEM_CANCEL		:
 		if( strNAME != m_pMainChar->GetName() )
-			strMSG = CTChart::Format( TSTR_ERROR_TRADE_CANCEL, strNAME);
+			strMSG = CTChart::Format( TSTR_ERROR_TRADE_CANCEL, (LPCTSTR)strNAME);
 
 		break;
 
 	case DEALITEM_DENY			:
 		if( strNAME != m_pMainChar->GetName() )
-			strMSG = CTChart::Format( TSTR_ERROR_TRADE_DENY, strNAME);
+			strMSG = CTChart::Format( TSTR_ERROR_TRADE_DENY, (LPCTSTR)strNAME);
 
 		break;
 
 	case DEALITEM_BUSY			:
 		if( strNAME != m_pMainChar->GetName() )
-			strMSG = CTChart::Format( TSTR_ERR_TARGET_BUSY, strNAME);
+			strMSG = CTChart::Format( TSTR_ERR_TARGET_BUSY, (LPCTSTR)strNAME);
 
 		break;
 
 	case DEALITEM_ENEMY			: strMSG = CTChart::LoadString( TSTR_ERROR_TRADE_ENEMY); break;
 	case DEALITEM_CANTRECV		: strMSG = CTChart::LoadString( TSTR_ERROR_TRADE_CANTRECV); break;
-	case DEALITEM_SUCCESS		: strMSG = CTChart::Format( TSTR_ERROR_TRADE_SUCCESS, strNAME); break;
+	case DEALITEM_SUCCESS		: strMSG = CTChart::Format( TSTR_ERROR_TRADE_SUCCESS, (LPCTSTR)strNAME); break;
 	}
 
 	if( !strTYPE.IsEmpty() &&
@@ -22607,9 +22608,9 @@ BYTE CTClientGame::GetTargetKind( CTClientObjBase *pATTACK,
 		}
 		else if( !bPOINT && pTSKILL->m_fAtkRange > 0.0f )
 		{
-			FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+			FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 				pTARGET->GetPositionX() - pPOS->x,
-				pTARGET->GetPositionZ() - pPOS->y));
+				pTARGET->GetPositionZ() - pPOS->y)));
 
 			if( fDist < pTSKILL->m_fAtkRange && CanDefend( pATTACK, pTARGET, pTSKILL) )
 				return TARGETKIND_TARGET;
@@ -22617,9 +22618,9 @@ BYTE CTClientGame::GetTargetKind( CTClientObjBase *pATTACK,
 		else if( pDEFEND == pTARGET && (bPOINT || CanDefend( pATTACK, pTARGET, pTSKILL)) )
 			return TARGETKIND_TARGET;
 
-	FLOAT fDist = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fDist = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		pTARGET->GetPositionX() - pATTACK->GetPositionX(),
-		pTARGET->GetPositionZ() - pATTACK->GetPositionZ()));
+		pTARGET->GetPositionZ() - pATTACK->GetPositionZ())));
 
 	if( fDist < TARGET_BOUND )
 		return TARGETKIND_BOUND;
@@ -23480,9 +23481,9 @@ BYTE CTClientGame::CanDetect( CTClientObjBase *pSEEKER,
 		pTARGET->GetPositionY() + pTARGET->m_fSizeY / 2.0f,
 		pTARGET->GetPositionZ());
 
-	FLOAT fRange = D3DXVec2Length(&D3DXVECTOR2(
+	FLOAT fRange = D3DXVec2Length(TTEMP(D3DXVECTOR2(
 		vTARGET.x - vSTART.x,
-		vTARGET.z - vSTART.z));
+		vTARGET.z - vSTART.z)));
 
 	if( fRange > 0.01f )
 	{
@@ -23842,20 +23843,18 @@ void CTClientGame::CalcBGM( DWORD dwTick)
 
 					if( nIndex >= 0 )
 					{
-						LPDIRECTSOUND3DBUFFER p3DBUF = pWAV->GetDS3D(nIndex);
-
-						if(p3DBUF)
+						if(pWAV->Is3D(nIndex))
 						{
 							D3DXVECTOR3 vSNDPOS = CD3DSound::ConvertPOS(
 								m_pCamera->m_vPosition.x + FLOAT(rand() % (20 * INT(TENVSND_RANGE))) / 10.0f - TENVSND_RANGE,
 								m_pCamera->m_vPosition.y,
 								m_pCamera->m_vPosition.z + FLOAT(rand() % (20 * INT(TENVSND_RANGE))) / 10.0f - TENVSND_RANGE);
 
-							p3DBUF->SetPosition(
+							pWAV->SetPosition(
+								nIndex,
 								vSNDPOS.x,
 								vSNDPOS.y,
-								vSNDPOS.z,
-								DS3D_IMMEDIATE);
+								vSNDPOS.z);
 						}
 
 						pWAV->Play(nIndex);
@@ -25432,10 +25431,10 @@ void CTClientGame::ResetTRSCSCMD( CTClientObjBase *pTMARK,
 				pTARROW->m_vTSKILLDATA.m_vTGROUND.y = m_vMAP.GetHeight(
 					m_pMainChar,
 					NULL,
-					&D3DXVECTOR3(
+					TTEMP(D3DXVECTOR3(
 					pTARROW->m_vTSKILLDATA.m_vTGROUND.x,
 					m_pMainChar->GetPositionY(),
-					pTARROW->m_vTSKILLDATA.m_vTGROUND.z),
+					pTARROW->m_vTSKILLDATA.m_vTGROUND.z)),
 					0.0f, FALSE);
 			}
 		}
@@ -25469,10 +25468,10 @@ void CTClientGame::ResetTRSCSCMD( CTClientObjBase *pTMARK,
 				pTARROW->m_vTSKILLDATA.m_vTGROUND.y = m_vMAP.GetHeight(
 					m_pMainChar,
 					NULL,
-					&D3DXVECTOR3(
+					TTEMP(D3DXVECTOR3(
 					pTARROW->m_vTSKILLDATA.m_vTGROUND.x,
 					m_pMainChar->GetPositionY(),
-					pTARROW->m_vTSKILLDATA.m_vTGROUND.z),
+					pTARROW->m_vTSKILLDATA.m_vTGROUND.z)),
 					0.0f, FALSE);
 			}
 		}
@@ -25487,10 +25486,10 @@ void CTClientGame::ResetTRSCSCMD( CTClientObjBase *pTMARK,
 			pTARROW->m_vTSKILLDATA.m_vTGROUND.y = m_vMAP.GetHeight(
 				m_pMainChar,
 				NULL,
-				&D3DXVECTOR3(
+				TTEMP(D3DXVECTOR3(
 				pTARROW->m_vTSKILLDATA.m_vTGROUND.x,
 				m_pMainChar->GetPositionY(),
-				pTARROW->m_vTSKILLDATA.m_vTGROUND.z),
+				pTARROW->m_vTSKILLDATA.m_vTGROUND.z)),
 				0.0f, FALSE);
 		}
 
@@ -25557,7 +25556,7 @@ BYTE CTClientGame::IsVisibleEnemy( LPTENEMY pTENEMY)
 		{
 			LPTUNIT pTUNIT = m_pTRSCS->m_vTCORPS.m_vTSQUAD[i]->m_vTUNIT[j];
 
-			if( D3DXVec2Length(&(vTENEMY - m_pTRSCS->GetUnitPOS(pTUNIT))) < CTClientObjBase::m_fCamDist / 2.0f )
+			if( D3DXVec2Length(TTEMP((vTENEMY - m_pTRSCS->GetUnitPOS(pTUNIT)))) < CTClientObjBase::m_fCamDist / 2.0f )
 				return TRUE;
 		}
 
@@ -25590,7 +25589,7 @@ BYTE CTClientGame::HitRSCSOBJ( CPoint point,
 	vTPOS.x += FLOAT(TMINIMAPTEX_SIZE) / 2.0f;
 	vTPOS.y += FLOAT(TMINIMAPTEX_SIZE) / 2.0f;
 
-	return D3DXVec2Length(&D3DXVECTOR2( FLOAT(point.x) - vTPOS.x, FLOAT(point.y) - vTPOS.y)) < TRSCSPICK_RANGE;
+	return D3DXVec2Length(TTEMP(D3DXVECTOR2( FLOAT(point.x) - vTPOS.x, FLOAT(point.y) - vTPOS.y))) < TRSCSPICK_RANGE;
 }
 
 void CTClientGame::ReleaseRSCS()
@@ -26282,7 +26281,7 @@ void CTClientGame::TCapture()
 	if(!strFileName.IsEmpty())
 	{
 		strTYPE = CTChart::LoadString( TSTR_INFO_TITLE);
-		strMSG = CTChart::Format( TSTR_FMT_CAPTUREMSG, strFileName);
+		strMSG = CTChart::Format( TSTR_FMT_CAPTUREMSG, (LPCTSTR)strFileName);
 
 		m_pChatFrame->ChatSysMSG( strTYPE, m_pMainChar->GetName(), strMSG, TCOLOR_INFO, TCHAT_FLAG_INFO);
 	}
@@ -26477,8 +26476,8 @@ void CTClientGame::MoveMainChar( const CPoint &ptScreen, BOOL bShowPointer )
 	m_pCtrlHost = GetCtrlOBJ();
 	D3DXPlaneFromPointNormal(
 		&vPLANE,
-		&D3DXVECTOR3( 0.0f, m_pCtrlHost->GetPositionY(), 0.0f),
-		&D3DXVECTOR3( 0.0f, 1.0f, 0.0f));
+		TTEMP(D3DXVECTOR3( 0.0f, m_pCtrlHost->GetPositionY(), 0.0f)),
+		TTEMP(D3DXVECTOR3( 0.0f, 1.0f, 0.0f)));
 
 	if( CTMath::PlaneIntersectLine(
 		&vDIR,
@@ -26491,7 +26490,7 @@ void CTClientGame::MoveMainChar( const CPoint &ptScreen, BOOL bShowPointer )
 			m_pCtrlHost->GetPositionY(),
 			m_pCtrlHost->GetPositionZ());
 
-		if( D3DXVec3Dot( &(vTARGET - vSTART), &(vDIR - vSTART)) < 0.0f )
+		if( D3DXVec3Dot( TTEMP((vTARGET - vSTART)), TTEMP((vDIR - vSTART))) < 0.0f )
 		{
 			vDIR -= vPOS;
 			vDIR = -vDIR;
@@ -26520,7 +26519,7 @@ void CTClientGame::MoveMainChar( const CPoint &ptScreen, BOOL bShowPointer )
 				&m_vBOUND,
 				&vSTART,
 				&vTARGET,
-				&(vTARGET + vPOS));
+				TTEMP((vTARGET + vPOS)));
 
 			m_pCtrlHost->m_bMouseDIR = TKDIR_F;
 			m_pCtrlHost->m_bKeyDIR = TKDIR_F;
@@ -26559,10 +26558,10 @@ void CTClientGame::GetRandomPosition(FLOAT& fPosX,
 	FLOAT fCurH = m_vMAP.GetHeight(
 		pTOBJ,
 		NULL,
-		&D3DXVECTOR3(
+		TTEMP(D3DXVECTOR3(
 		fPosX,
 		fPosY,
-		fPosZ),
+		fPosZ)),
 		0.0f, FALSE);
 
 	for(int i=0; i<TMAX_RAND_POS; ++i)
@@ -26573,10 +26572,10 @@ void CTClientGame::GetRandomPosition(FLOAT& fPosX,
 		FLOAT fNewH = m_vMAP.GetHeight(
 			pTOBJ,
 			NULL,
-			&D3DXVECTOR3(
+			TTEMP(D3DXVECTOR3(
 			fNewPosX,
 			fPosY,
-			fNewPosZ),
+			fNewPosZ)),
 			0.0f, FALSE);
 
 		if( fabs(fCurH-fNewH) < fMaxOffset )
@@ -26846,8 +26845,8 @@ void CTClientGame::DebugMSG( const CString& strMSG, BOOL bPrintChat, BOOL bFile,
 
 	if( m_pChatFrame && bPrintChat )
 		m_pChatFrame->ChatSysMSG(
-			"�����",
-			"�����",
+			"\x3F\x3F\x3F\x3F\x3F",	// original Korean text lost in the UTF-8 conversion, MSVC emitted "?????"
+			"\x3F\x3F\x3F\x3F\x3F",
 
 
 
@@ -27052,7 +27051,7 @@ void CTClientGame::CopyToClipboard( CString strTEXT )
 		pSTR[strTEXT.GetLength()] = (TCHAR) 0;
 		GlobalUnlock(hHANDLE);
 
-		if(!OpenClipboard(m_pMainWnd->GetSafeHwnd()))
+		if(!OpenClipboard(TSAFE_HWND(m_pMainWnd)))
 		{
 			GlobalFree(hHANDLE);
 			AfxMessageBox( "Cannot open the Clipboard" );
@@ -27155,9 +27154,9 @@ BOOL CTClientGame::CheckOpenCash( LPTOPENBYCASH pOpenByCash, TNPC_TYPE eNpcType 
 FLOAT CTClientGame::GetDifferencial(D3DXMATRIX vCharPos, D3DXMATRIX vDefendPos)
 {
 	return abs(D3DXVec3Length(
-		&D3DXVECTOR3(vCharPos._41 - vDefendPos._41,
+		TTEMP(D3DXVECTOR3(vCharPos._41 - vDefendPos._41,
 		vCharPos._42 - vDefendPos._42,
-		vCharPos._43 - vDefendPos._43)));
+		vCharPos._43 - vDefendPos._43))));
 
 }
 void CTClientGame::CheckItemupUseCashItem()
@@ -27208,7 +27207,7 @@ void CTClientGame::CheckItemupUseCashItem()
 				bProtectionOfUpgrading = TRUE;
 			}
 
-			pCashDlg->m_pTopMessage->m_strText = CTChart::Format( TSTR_ITEMUP_WARN_UP_NOTUSE_CASHITEM_MESSAGE_1, strCost);
+			pCashDlg->m_pTopMessage->m_strText = CTChart::Format( TSTR_ITEMUP_WARN_UP_NOTUSE_CASHITEM_MESSAGE_1, (LPCTSTR)strCost);
 			
 			if ( bProtectionOfUpgrading )
 
@@ -27648,7 +27647,7 @@ void CTClientGame::CalcTournamentChar( DWORD dwTick)
 	if( m_LeftChar.m_OBJ.m_pOBJ != NULL )
 	{
 		m_LeftChar.CalcTick(
-			&m_LeftChar.GetPosition(),
+			TTEMP(m_LeftChar.GetPosition()),
 			m_pDevice,
 			CTClientGame::GetInstance()->GetResource(),
 			dwTick);
@@ -27678,7 +27677,7 @@ void CTClientGame::CalcTournamentChar( DWORD dwTick)
 	if( m_RightChar.m_OBJ.m_pOBJ != NULL )
 	{
 		m_RightChar.CalcTick(
-			&m_RightChar.GetPosition(),
+			TTEMP(m_RightChar.GetPosition()),
 			m_pDevice,
 			CTClientGame::GetInstance()->GetResource(),
 			dwTick);
@@ -28244,14 +28243,14 @@ CString CTClientGame::GetWMIValue(char* type,wchar_t *value)
   
 
 
-    IWbemClassObject *pclsObj; 
+    IWbemClassObject *pclsObj = NULL; 
     ULONG uReturn = 0; 
     if(pEnumerator) { 
         HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1, &pclsObj, &uReturn); 
         if(uReturn) { 
             _variant_t var_val; 
             hr = pclsObj->Get(value, 0, &var_val, 0, 0); 
-            _bstr_t str = var_val; 
+            _bstr_t str = var_val.operator _bstr_t(); 
             ReturnValue = (char*)str; 
             VariantClear(&var_val); 
         } 

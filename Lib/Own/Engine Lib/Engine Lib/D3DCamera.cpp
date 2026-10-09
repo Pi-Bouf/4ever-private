@@ -128,9 +128,9 @@ void CD3DCamera::ResetFOV( FLOAT fFOV)
 		m_fFarPlane);
 }
 
-void CD3DCamera::SetPosition( D3DXVECTOR3& vPosition,
-							  D3DXVECTOR3& vTarget,
-							  D3DXVECTOR3& vUp,
+void CD3DCamera::SetPosition( const D3DXVECTOR3& vPosition,
+							  const D3DXVECTOR3& vTarget,
+							  const D3DXVECTOR3& vUp,
 							  BOOL bMove)
 {
 	D3DXMatrixLookAtLH(
@@ -313,7 +313,7 @@ void CD3DCamera::Move( LPD3DXPLANE pPlane,
 			vResult.y,
 			vResult.z);
 
-		if( D3DXVec3Dot( &(m_vTarget - m_vPosition), &vAxisZ) < 0 )
+		if( D3DXVec3Dot( TTEMP((m_vTarget - m_vPosition)), &vAxisZ) < 0 )
 			vAxisY = -vAxisY;
 	}
 
@@ -443,7 +443,7 @@ D3DXVECTOR3 CD3DCamera::GetRayDirection( int nPosX, int nPosY)
 		&m_matInvView,
 		&vStop);
 
-	return (vStop - vStart) / D3DXVec3Length(&(vStop - vStart));
+	return (vStop - vStart) / D3DXVec3Length(TTEMP((vStop - vStart)));
 }
 
 D3DXVECTOR3 CD3DCamera::GetPlanePoint( LPD3DXPLANE pPlane,
@@ -456,7 +456,7 @@ D3DXVECTOR3 CD3DCamera::GetPlanePoint( LPD3DXPLANE pPlane,
 	if(!CTMath::PlaneIntersectLine(
 		&vResult,
 		&m_vPosition,
-		&(m_vPosition + vDirection),
+		TTEMP((m_vPosition + vDirection)),
 		pPlane))
 	{
 		vResult = D3DXVECTOR3(

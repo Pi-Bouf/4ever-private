@@ -12,8 +12,8 @@ namespace TMap.Server.Map;
 /// <para><b>Multi-attack skills</b> (an <c>SDT_ABILITY</c> / <c>MTYPE_EFC</c> row — Mana Arrows, Flame Missiles…) fire that many
 /// missiles: each picked target takes one plus a random few more (up to the skill's <c>bTargetHit</c>), and what is left
 /// goes to the first target.</para>
-/// <para>Casters: a player and its summons / placed objects. <b>Not ported</b> (as for <c>CS_SKILLUSE</c>): a monster caster, the
-/// peace zone, <c>CheckPrevAct</c>, the skill item (<c>UseSkillItem</c>) and the aggro on the bystanders.</para>
+/// <para>Casters: a player and its summons / placed objects; no hostile one in a peace zone. <b>Not ported</b> (as for
+/// <c>CS_SKILLUSE</c>): a monster caster, <c>CheckPrevAct</c>, the skill item (<c>UseSkillItem</c>) and the aggro on the bystanders.</para>
 /// </summary>
 public sealed partial class MapService
 {
@@ -43,6 +43,7 @@ public sealed partial class MapService
 
         var skill = pc is not null ? LearnedSkill(pc, skillId) : summon!.Skills.FirstOrDefault(k => k.SkillId == skillId);
         if (skill?.Template is not { } tpl) { SendLoopSkillFail(s, SkillUseResult.NotFound, attackId, attackType, skillId); return; }
+        if (tpl.IsNegative && CheckPeaceZone(me)) { SendLoopSkillFail(s, SkillUseResult.PeaceZone, attackId, attackType, skillId); return; }
 
         var targets = PickLoopTargets(tpl, skill.Level, listed);
 

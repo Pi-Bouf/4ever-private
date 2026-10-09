@@ -10612,7 +10612,7 @@ void CTChart::InitTAUCTIONTREE( CString strPath )
 	CArchive ar( &file, CArchive::load );
 
 	WORD wCount = 0;
-	ar >> (WORD) wCount;
+	ar >> wCount;
 
 	size_t i = 0;
 	for( ; i < wCount; ++i )
@@ -10622,7 +10622,7 @@ void CTChart::InitTAUCTIONTREE( CString strPath )
 		{
 			ar
 				>> pAucTree->m_strName
-				>> (DWORD)pAucTree->m_ID.dwValue;
+				>> pAucTree->m_ID.dwValue;
 
 			m_vTAUCTIONTREE.push_back( pAucTree );
 		}
@@ -10972,7 +10972,7 @@ void CTChart::InitTFAMETITLE( CString strPath )
 	CArchive ar( &file, CArchive::load );
 
 	WORD wCount = 0;
-	ar >> (WORD) wCount;
+	ar >> wCount;
 
 	size_t i = 0;
 	for( ; i < wCount; ++i )
@@ -11029,7 +11029,7 @@ void CTChart::InitTEQUIPCREATECHAR( CString strPath )
 	CArchive ar( &file, CArchive::load );
 
 	WORD wCount = 0;
-	ar >> (WORD) wCount;
+	ar >> wCount;
 
 	WORD i = 0;
 	for( ; i < wCount; ++i )
@@ -11093,7 +11093,7 @@ void CTChart::InitTRPS( CString strPath )
 	CArchive ar( &file, CArchive::load );
 
 	WORD wCount = 0;
-	ar >> (WORD) wCount;
+	ar >> wCount;
 
 	WORD i = 0;
 	for( ; i < wCount; ++i )
@@ -11146,7 +11146,7 @@ void CTChart::InitTArena( CString strPath )
 	CArchive ar( &file, CArchive::load );
 
 	WORD wCount = 0;
-	ar >> (WORD) wCount;
+	ar >> wCount;
 
 	WORD i = 0;
 	for( ; i < wCount; ++i )
@@ -11197,7 +11197,7 @@ void CTChart::InitBattleInsignia( CString strPath )
 
 	DWORD dwPoint;
 	WORD wCount = 0;
-	ar >> (WORD) wCount;
+	ar >> wCount;
 
 	for (WORD i = 0 ; i < wCount; ++i)
 	{

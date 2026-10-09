@@ -10,8 +10,8 @@ namespace TMap.Server.Map;
 /// every bag, incl. equipped). A <c>bNeedCost</c> request just quotes the price. A portable-smith item
 /// (<c>IK_NPCCALL</c>) is consumed when supplied.
 ///
-/// <para>Deferred (documented): the NPC discount (<c>GetDiscountRate</c> — NPCs unported ⇒ rate 0, full
-/// price) + the PC-bang bonus; the secure-code guard (unported ⇒ treated unlocked); the per-item
+/// <para>The NPC's discount (<c>GetDiscountRate</c>, MapService.Fort.cs) and 20% more for a PC-bang player come off the cost.
+/// Deferred (documented): the secure-code guard (unported ⇒ treated unlocked); the per-item
 /// <c>MTYPE_REPCOST</c> cost magic; and the enchant-based weapon/shield power level (<c>GetPowerLevel</c>
 /// uses the item's attr grade — the C++ fallback). No DB save (the C++ repair path saves nothing).</para>
 /// </summary>
@@ -27,7 +27,7 @@ public sealed partial class MapService
         byte type = r.ReadByte();
         byte invenId = r.ReadByte();
         byte itemSlot = r.ReadByte();
-        r.ReadUInt16();               // wNpcID — only used for the (deferred) discount lookup
+        ushort npcId = r.ReadUInt16();
         byte npcInven = r.ReadByte();
         byte npcItem = r.ReadByte();
         // (secure-code guard, NPC discount + PC-bang bonus deferred; the C++ has no deal/store guard here.)
@@ -62,9 +62,11 @@ public sealed partial class MapService
 
         if (toRepair.Count == 0) { SendCS_DURATIONREP_ACK(s, ItemRepairResult.NotFound, toRepair); return; }
 
-        uint discountCost = cost;   // discount rate deferred (0) ⇒ discounted == full
+        byte discount = DiscountRate(ch, _state.FindNpc(npcId));
+        if ((ch.InPcBang & PcbangReal) != 0) discount += 20;                    // a PC-bang player: 20% more
+        uint discountCost = cost - cost * discount / 100;
 
-        if (needCost != 0) { SendCS_DURATIONREPCOST_ACK(s, cost, 0); return; }   // quote only, no repair
+        if (needCost != 0) { SendCS_DURATIONREPCOST_ACK(s, cost, discount); return; }   // quote only, no repair
 
         if (!ch.UseMoney(discountCost, commit: false))
         {

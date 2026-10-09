@@ -367,11 +367,8 @@ void CTWorldmapDlg::OnRButtonDown( UINT nFlags, CPoint pt)
 			m_pDevice->m_option.m_dwScreenX / 2,
 			m_pDevice->m_option.m_dwScreenY / 2);
 
-		m_pCommandHandler->ClientToScreen(&point);
-		ShowCursor(FALSE);
-		SetCursorPos(
-			point.x,
-			point.y);
+		CTachyonInput::ShowCursor(FALSE);
+		CTachyonInput::SetCursorPos(point);
 
 		m_bMOVE = TRUE;
 	}
@@ -419,11 +416,7 @@ void CTWorldmapDlg::OnMouseMove( UINT nFlags, CPoint pt)
 			m_pDevice->m_option.m_dwScreenX / 2,
 			m_pDevice->m_option.m_dwScreenY / 2);
 
-		m_pCommandHandler->ClientToScreen(&point);
-		SetCursorPos(
-			point.x,
-			point.y);
-		m_pCommandHandler->ScreenToClient(&point);
+		CTachyonInput::SetCursorPos(point);
 		point -= pt;
 
 		m_vTCENTER.x += fLength * FLOAT(point.x) / (m_fTSCALE * FLOAT(TWORLDMAP_SIZE));
@@ -483,11 +476,8 @@ void CTWorldmapDlg::OnRButtonUp( UINT nFlags, CPoint pt)
 			m_pDevice->m_option.m_dwScreenX / 2,
 			m_pDevice->m_option.m_dwScreenY / 2);
 
-		m_pCommandHandler->ClientToScreen(&point);
-		SetCursorPos(
-			point.x,
-			point.y);
-		ShowCursor(TRUE);
+		CTachyonInput::SetCursorPos(point);
+		CTachyonInput::ShowCursor(TRUE);
 
 		m_bMOVE = FALSE;
 	}
@@ -771,8 +761,7 @@ void CTWorldmapDlg::RenderOBJ( DWORD dwTickCount)
 
 		if(!m_bMOVE)
 		{
-			GetCursorPos(&pt);
-			m_pCommandHandler->ScreenToClient(&pt);
+			pt = CTachyonInput::GetCursorPos();
 		}
 
 
@@ -1163,9 +1152,9 @@ void CTWorldmapDlg::RenderOBJ( DWORD dwTickCount)
 
 				CString TEXT;
 				if( strTITLE.IsEmpty() )
-					TEXT = CTChart::Format( TSTR_FMT_WORLDMAP_NAME, strTITLE, strNAME);
+					TEXT = CTChart::Format( TSTR_FMT_WORLDMAP_NAME, (LPCTSTR)strTITLE, (LPCTSTR)strNAME);
 				else
-					TEXT = CTChart::Format( TSTR_FMT_WORLDMAP_TITLE, strTITLE, strNAME);
+					TEXT = CTChart::Format( TSTR_FMT_WORLDMAP_TITLE, (LPCTSTR)strTITLE, (LPCTSTR)strNAME);
 
 
 

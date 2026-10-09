@@ -3587,8 +3587,8 @@ struct tagTFRAMEOFFSET
 	BYTE m_bBasisPoint;
 	CPoint m_vOffset;
 
-	struct tagTFRAMEOFFSET() {}
-	struct tagTFRAMEOFFSET( DWORD dwFrame, BYTE bBasisPoint, CPoint vOffset )
+	tagTFRAMEOFFSET() {}
+	tagTFRAMEOFFSET( DWORD dwFrame, BYTE bBasisPoint, CPoint vOffset )
 		: m_dwFRAME(dwFrame), m_bBasisPoint(bBasisPoint), m_vOffset(vOffset) {}
 };
 

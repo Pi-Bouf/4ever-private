@@ -18,6 +18,9 @@ public sealed class GuildArticle
 public sealed class GuildItem
 {
     public long ItemDbId { get; init; }   // m_dlID
+    public byte ItemSlot { get; set; }     // m_bItemID
+    public byte Gem { get; set; }          // m_bGem
+    public ushort MoggItemId { get; set; } // m_wMoggItemID
     public uint StorageId { get; set; }    // m_dwItemID (slot)
     public ushort ItemId { get; set; }     // m_wItemID
     public byte Level { get; set; }
